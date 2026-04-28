@@ -32,7 +32,7 @@ This skill follows strict outside-in test-driven development:
 1. **Read.** Before each loop iteration, read the ticket again and the relevant code. Pick the next acceptance criterion to satisfy.
 2. **Red.** Write a test that captures that acceptance criterion. Run it. Confirm it fails *for the right reason* — the assertion you care about, not a syntax error or a missing import. A test that fails for the wrong reason is no test at all.
 3. **Green.** Write the minimum code that makes the test pass. Don't anticipate future tests; don't add features the current test doesn't drive. Run the test. Confirm it passes. Run the *whole* test suite. Confirm nothing else broke.
-4. **Refactor.** With tests green, look at what you wrote. Is there duplication? Is naming clear? Are abstractions at the right level? Improve the code without changing behavior. Run the tests after each refactor step to confirm green is preserved.
+4. **Refactor.** With tests green, look at what you wrote. Is there duplication? Is naming clear? Are abstractions at the right level? Improve the code without changing behavior. Run the tests after each refactor step to confirm green is preserved. One concrete lens: aim for *deep modules* — simple interfaces that hide significant complexity. If you find thin layers that just delegate without hiding anything (shallow modules), consider merging them or pushing logic inward. The refactor step is the right moment to deepen abstractions; the test suite makes it safe.
 5. **Commit.** Small, focused commits at green points. The commit message should describe what behavior was added, not what files changed. "Add validation for empty draft titles" beats "Update DraftService.ts."
 6. **Repeat** until every acceptance criterion is met.
 

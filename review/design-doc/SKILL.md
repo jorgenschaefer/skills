@@ -35,7 +35,7 @@ Walk through these questions. Each corresponds to a common failure mode of desig
 - **Is the data model clear?** New tables, new columns, new types — are they specified? Is the migration story addressed (forwards and backwards)? Do existing entities need new constraints or relations?
 - **Are the API contracts specified?** New endpoints, changed endpoints, internal RPC contracts — are signatures, payloads, error shapes, and idempotency semantics specified?
 - **Does the design trace through a real user scenario?** Walk through one yourself if the doc doesn't. Where does data come from, where does it go, what can fail at each hop?
-- **Are module boundaries clear?** What's new, what changes, what's untouched. Diffuse "we'll touch a bunch of stuff" designs are hard to ticket and hard to review.
+- **Are module boundaries clear?** What's new, what changes, what's untouched. Diffuse "we'll touch a bunch of stuff" designs are hard to ticket and hard to review. Also ask whether proposed modules are *deep*: a deep module hides significant complexity behind a simple interface; a shallow module's interface is nearly as complex as its implementation. Common shallow-module smells: pass-through layers, information leakage (exposing internal data structures or config to callers), and abstractions too thin to justify their existence. A shallow module boundary is a should-fix finding — either merge the layers or explain what complexity the boundary genuinely hides.
 
 ### Cross-cutting concerns
 

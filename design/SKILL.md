@@ -34,6 +34,8 @@ If any of these are missing, get them before producing a design. A design writte
 
 **Survey the existing code.** Find the modules likely affected. Read their interfaces. Look at how similar features were built before — there's usually a pattern to follow or deliberately deviate from. Note any code smells you'll need to work around or address.
 
+**Prefer deep modules when drawing boundaries.** A deep module has a simple interface that hides significant complexity — callers get a lot of value with little they need to know. A shallow module's interface is nearly as complex as its implementation; it leaks rather than encapsulates. Common shallow-module smells: pass-through methods that add no logic, information leakage (exposing internal data structures or config), and abstractions too small to justify their existence. For each proposed module boundary, ask: is this module earning its abstraction? If it mostly delegates to another layer without hiding anything, merge the layers or rethink the boundary.
+
 **Generate options before committing.** For each significant decision, brainstorm at least two or three approaches. The first idea is rarely the best. Write down the alternatives even if you reject them quickly — they go into ADRs.
 
 **Identify the cross-cutting concerns.** It's easy to design the happy path and forget about: authentication and authorization, observability (logging, metrics, tracing), error handling and retries, rate limiting, data migration, backwards compatibility, feature flags, security and PII, performance under load, multi-tenancy if applicable, internationalization if applicable. Walk through this list explicitly. Most design failures happen because one of these was forgotten.
