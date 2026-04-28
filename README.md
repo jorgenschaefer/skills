@@ -16,7 +16,24 @@ npx skills add jorgenschaefer/skills@<skill-name>
 
 ## Available skills
 
+### Workflow phases
+
+- **discovery** — explore a feature or problem and produce a Feature Brief before any design or code
+- **design** — translate a Feature Brief into a Design Doc and Architecture Decision Records
+- **planning** — break a Design Doc into independently-deployable tickets using the tracer-bullet approach
+- **implementation** — implement one ticket at a time using TDD (red-green-refactor)
+
+### Reviews
+
+- **review/feature-brief** — review a Feature Brief before it advances to design
+- **review/design-doc** — review a Design Doc and ADRs before breaking into tickets (highest-leverage review)
+- **review/tickets** — review a Ticket Backlog before implementation begins
+- **review/implementation** — review a code change before merging
+
+### Maintenance
+
 - **boy-scout** — triage incidental code finds: apply trivially safe fixes immediately, create tracked tickets for everything else
+- **refactor-project** — comprehensive structural review of a codebase to identify architectural friction and propose a refactoring plan
 
 ## Adding a new skill
 
