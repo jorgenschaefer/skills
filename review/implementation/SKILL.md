@@ -44,7 +44,7 @@ Tests are not just "did the implementer write some tests" — tests are evidence
 
 - **Does it match the codebase's conventions?** Naming, structure, error handling style, logging style. Code that looks like it was airdropped from another codebase is a finding.
 - **Do identifiers use the ubiquitous language?** Check `UBIQUITOUS_LANGUAGE.md`. Class names, function names, and variable names that introduce synonyms for glossary terms are a should-fix — they fragment the model between documentation and code.
-- **Is the code clear?** Could a future maintainer who lacks context understand it? Long functions, nested conditionals, dense expressions — push back when they hurt readability without earning their complexity.
+- **Is the code clear?** Could a future maintainer who lacks context understand it? Long functions, nested conditionals, dense expressions — push back when they hurt readability without earning their complexity. Clever tricks and non-obvious idioms are findings: bugs are far harder to find than code is to write, so the bar for "dumb but obvious" is high.
 - **Are abstractions at the right level?** Premature abstraction (an interface used once, prepared for hypothetical future use) is as bad as missing abstraction (the same logic copy-pasted three times). Both are findings. When evaluating an abstraction, ask whether it is *deep*: a deep module has a simple interface that hides significant complexity; a shallow module's interface is nearly as complex as its implementation and leaks rather than encapsulates. Common shallow-module smells: pass-through methods that add no logic, and abstractions too small to justify their existence. Shallow modules spread complexity onto callers rather than containing it — flag them as a should-fix.
 - **Is the code dead-weight free?** Commented-out code, debug prints, unused imports, leftover TODOs about this ticket — these should be cleaned up.
 - **Is duplication justified?** Sometimes duplication is fine (different domains that happen to look similar). Sometimes it's a refactor waiting to happen. Use judgment.
@@ -77,6 +77,7 @@ Tests are not just "did the implementer write some tests" — tests are evidence
 ### Performance
 
 - **Are there obvious inefficiencies?** N+1 queries, unbounded loops, in-memory operations on large data, missing indexes for new queries.
+- **Is optimization justified?** An optimization that obscures intent without a measured bottleneck is a finding. Ask what benchmark motivated the change; if there isn't one, flag it — the readable version should be preferred unless performance is demonstrably critical.
 - **Is caching used appropriately?** Both "missing where needed" and "added speculatively" are findings.
 - **Are slow operations bounded?** Timeouts on external calls, pagination on list endpoints, limits on retry counts.
 

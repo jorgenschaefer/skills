@@ -67,7 +67,7 @@ The hardest part of scope discipline is when the ticket's acceptance criteria se
 
 Code that ships from this phase should be:
 
-- **Clear over clever.** The next person to read this will not have your context. Optimize for their understanding.
+- **Clear over clever.** The next person to read this will not have your context. Write the simplest, most boring code that works. Bugs are ten times harder to find than code is to write — cleverness makes bugs invisible; obviousness makes them stand out. When tempted to optimize, ask whether you have a measured bottleneck; without one, the readable version is the right version.
 - **Consistent with the existing codebase.** Follow established patterns unless you have a reason to deviate, and if you deviate, document why.
 - **Placed in the right domain folder.** New files belong in domain-organized directories (`orders/`, `users/`) rather than generic technical-layer directories (`services/`, `controllers/`, `models/`). If the codebase is already layered, match the existing structure — but note the tension in the PR description so it can be tracked and cleaned up later.
 - **Named from the ubiquitous language.** Identifiers should use the canonical terms from `UBIQUITOUS_LANGUAGE.md`. Don't invent synonyms for concepts the project already has names for.
