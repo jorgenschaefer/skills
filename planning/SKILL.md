@@ -54,6 +54,8 @@ In practice, some dependencies are unavoidable. A ticket that displays data need
 
 **Read `UBIQUITOUS_LANGUAGE.md`** at the project root before naming anything. Ticket titles, goal statements, and acceptance criteria should use the canonical terms. When a term from the glossary applies, use it exactly — don't paraphrase.
 
+**Check that suggested file paths follow domain-first organization.** When writing "Implementation notes," name specific files and directories — but avoid top-level `services/`, `controllers/`, or `models/` as organizing principles. Prefer `orders/OrderService.ts` over `services/OrderService.ts`. If tickets are being written for an already-layered codebase, flag the structural tension in a ticket note rather than silently perpetuating a structure the design may intend to move away from.
+
 **Read the Design Doc carefully.** Note the major components, the data model changes, the API surface, the cross-cutting concerns. Anything explicitly out-of-scope in the design is also out-of-scope here.
 
 **Identify the thinnest end-to-end path.** What's the minimum viable version of the feature that touches every layer the full feature will touch? That's your first ticket — or first few tickets if even the minimum needs splitting.
@@ -149,6 +151,7 @@ Anything from the Design Doc not covered by these tickets, with reasoning.
 - **More than ~10-15 tickets for a feature** — possible, but suspicious. Either the feature is huge (in which case it should probably be split into sub-features at the design level), or you're slicing too thin.
 - **A long chain of strictly-sequential tickets** — if each one is useless without the next, you've sliced by layer rather than by value.
 - **A ticket that touches every module in the codebase** — too big, or too cross-cutting to be a single ticket.
+- **Implementation notes that suggest layered file paths** — `services/FooService.ts`, `controllers/BarController.ts` as the primary organization rather than domain folders. Redirect toward domain-first paths, or explicitly note the gap with a pointer to the design intent.
 
 ## What you do not produce
 

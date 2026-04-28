@@ -69,6 +69,7 @@ Code that ships from this phase should be:
 
 - **Clear over clever.** The next person to read this will not have your context. Optimize for their understanding.
 - **Consistent with the existing codebase.** Follow established patterns unless you have a reason to deviate, and if you deviate, document why.
+- **Placed in the right domain folder.** New files belong in domain-organized directories (`orders/`, `users/`) rather than generic technical-layer directories (`services/`, `controllers/`, `models/`). If the codebase is already layered, match the existing structure — but note the tension in the PR description so it can be tracked and cleaned up later.
 - **Named from the ubiquitous language.** Identifiers should use the canonical terms from `UBIQUITOUS_LANGUAGE.md`. Don't invent synonyms for concepts the project already has names for.
 - **Well-tested at appropriate levels.** Every behavior the ticket adds is covered by at least one test. Edge cases the ticket explicitly mentions are covered.
 - **Free of dead code, debug prints, and commented-out blocks.** Clean up before committing.
@@ -89,6 +90,7 @@ A ticket isn't done because the code compiles. Walk through this list:
 - [ ] Feature flag set up correctly if the ticket required it.
 - [ ] No commented-out code, no `console.log`/`print` debugging artifacts, no TODOs about this ticket left behind.
 - [ ] If a migration was added, you've tested both the up and down paths (or whatever rollback story applies).
+- [ ] New files are placed in domain-organized paths, or the structural choice is explicitly noted in the PR description.
 
 ## When tests are hard to write
 

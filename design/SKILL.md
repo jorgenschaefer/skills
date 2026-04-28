@@ -36,6 +36,8 @@ If any of these are missing, get them before producing a design. A design writte
 
 **Prefer deep modules when drawing boundaries.** A deep module has a simple interface that hides significant complexity — callers get a lot of value with little they need to know. A shallow module's interface is nearly as complex as its implementation; it leaks rather than encapsulates. Common shallow-module smells: pass-through methods that add no logic, information leakage (exposing internal data structures or config), and abstractions too small to justify their existence. For each proposed module boundary, ask: is this module earning its abstraction? If it mostly delegates to another layer without hiding anything, merge the layers or rethink the boundary.
 
+**Organize by domain, not by layer (screaming architecture).** When proposing folder structure or module layout, group code by business domain or feature (`orders/`, `users/`, `billing/`) rather than technical role (`controllers/`, `services/`, `models/`). The folder structure should reveal what the system *does*, not what framework it runs on. If the existing codebase is layered, note that in the Design Doc — either propose a migration path toward domain-first organization, or explicitly justify why new code will extend the layered structure.
+
 **Generate options before committing.** For each significant decision, brainstorm at least two or three approaches. The first idea is rarely the best. Write down the alternatives even if you reject them quickly — they go into ADRs.
 
 **Identify the cross-cutting concerns.** It's easy to design the happy path and forget about: authentication and authorization, observability (logging, metrics, tracing), error handling and retries, rate limiting, data migration, backwards compatibility, feature flags, security and PII, performance under load, multi-tenancy if applicable, internationalization if applicable. Walk through this list explicitly. Most design failures happen because one of these was forgotten.
@@ -111,7 +113,7 @@ What does a reader need to know about the existing system to understand this des
 The heart of the doc. Describe the design in enough detail that the planning phase can break it into tickets and the implementer can build it. This will usually include:
 
 - A high-level diagram or description of the components involved
-- Module boundaries: what's new, what changes, what's untouched
+- Module boundaries: what's new, what changes, what's untouched — organized by domain, not by technical layer (screaming architecture)
 - Data model changes: new tables, new fields, migrations
 - API contracts: new endpoints, changed endpoints, internal service contracts
 - The flow of a representative user request or operation, end to end

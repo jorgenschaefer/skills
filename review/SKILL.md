@@ -105,6 +105,16 @@ Good: "This ticket's scope appears to span what the design doc treats as two sep
 
 Specificity is kind. Vague feedback is harder to act on than direct feedback.
 
+## Screaming architecture check
+
+Check whether the artifact organizes code by domain rather than by technical layer. Signs of a violation:
+- Files placed in top-level `controllers/`, `services/`, `models/`, or `helpers/` directories rather than in domain or feature folders
+- Feature code scattered across multiple generic-layer directories instead of grouped under a single domain directory
+
+Severity depends on context:
+- **Blocker** — greenfield code, a new project, or a design that explicitly proposes domain-first structure. There is no reason to adopt a layered layout here.
+- **Should-fix** — code added to an existing layered codebase that wasn't using screaming architecture. The right fix is to flag the tension and track a structural cleanup; it shouldn't necessarily block this particular change.
+
 ## Ubiquitous language check
 
 Before writing findings, read `UBIQUITOUS_LANGUAGE.md` at the project root if it exists. Then ask: does the artifact use the canonical terms? Synonyms, paraphrases, or invented names for concepts that already have glossary entries are a **should-fix** finding. Flag them with the canonical term as the suggested fix.
