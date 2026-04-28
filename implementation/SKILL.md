@@ -27,13 +27,22 @@ If anything is missing or unclear, ask before writing code. Misunderstanding the
 
 ## The TDD loop
 
-This skill follows strict outside-in test-driven development:
+This skill follows strict outside-in test-driven development.
+
+**Tests verify behavior, not implementation.** Write tests through public interfaces — don't test private methods or internal collaborators. The right test survives a complete internal refactor. If renaming a private function breaks a test, that test was wrong. See [tests.md](tests.md) for examples and [mocking.md](mocking.md) for mocking guidelines.
+
+**Anti-pattern: horizontal slicing.** Do not write all tests first, then all code. Tests written in bulk verify imagined behavior and are blind to what actually matters — you outrun your headlights and commit to test structure before understanding the implementation. Each test must respond to what you learned from the previous cycle. One test → one implementation → repeat.
+
+```
+WRONG (horizontal):  RED: test1, test2, test3  →  GREEN: impl1, impl2, impl3
+RIGHT (vertical):    RED→GREEN: test1→impl1    →  RED→GREEN: test2→impl2
+```
 
 1. **Read.** Before each loop iteration, read the ticket again and the relevant code. Pick the next acceptance criterion to satisfy.
 2. **Red.** Write a test that captures that acceptance criterion. Run it. Confirm it fails *for the right reason* — the assertion you care about, not a syntax error or a missing import. A test that fails for the wrong reason is no test at all.
 3. **Green.** Write the minimum code that makes the test pass. Don't anticipate future tests; don't add features the current test doesn't drive. Run the test. Confirm it passes. Run the *whole* test suite. Confirm nothing else broke.
-4. **Refactor.** With tests green, look at what you wrote. Is there duplication? Is naming clear? Are abstractions at the right level? Improve the code without changing behavior. Run the tests after each refactor step to confirm green is preserved. One concrete lens: aim for *deep modules* — simple interfaces that hide significant complexity. If you find thin layers that just delegate without hiding anything (shallow modules), consider merging them or pushing logic inward. The refactor step is the right moment to deepen abstractions; the test suite makes it safe.
-5. **Commit.** Small, focused commits at green points. The commit message should describe what behavior was added, not what files changed. "Add validation for empty draft titles" beats "Update DraftService.ts."
+4. **Refactor.** With tests green, look at what you wrote. Is there duplication? Is naming clear? Are abstractions at the right level? Improve the code without changing behavior. Run the tests after each refactor step to confirm green is preserved. One concrete lens: aim for *deep modules* — simple interfaces that hide significant complexity. If you find thin layers that just delegate without hiding anything (shallow modules), consider merging them or pushing logic inward. The refactor step is the right moment to deepen abstractions; the test suite makes it safe. See [deep-modules.md](deep-modules.md) and [refactoring.md](refactoring.md).
+5. **Commit.** Commit per logical behavior or acceptance criterion — not per individual TDD cycle. One ticket typically yields one commit. The commit message should describe what behavior was added, not what files changed. "Add validation for empty draft titles" beats "Update DraftService.ts."
 6. **Repeat** until every acceptance criterion is met.
 
 The discipline matters. The order matters. Skipping the red step ("I know the test will fail, I'll just write the code") is the most common way TDD breaks down — you end up writing tests that pass on the first run, which means they're not actually testing what you think they are.
@@ -95,7 +104,7 @@ A ticket isn't done because the code compiles. Walk through this list:
 
 ## When tests are hard to write
 
-If you can't figure out how to test something, that's usually a design signal. Common causes:
+If you can't figure out how to test something, that's usually a design signal. See [interface-design.md](interface-design.md) for testable interface patterns. Common causes:
 
 - **Tight coupling** — the code under test depends on too much. Inject the dependencies, or extract the testable logic.
 - **Hidden state** — global state, singletons, time, randomness. Make these explicit and injectable.
