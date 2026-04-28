@@ -40,13 +40,13 @@ If any of these are missing, get them before producing a design. A design writte
 
 **Design clear adapter boundaries.** Within each domain module, distinguish three layers: (1) the *inbound adapter* (route handler, controller) — authenticates, validates raw input into a domain object, calls business logic, maps the result to a response; (2) the *business logic* — operates on domain objects only, contains all domain rules, never touches HTTP types or DB types; (3) the *outbound adapter* (repository, data access) — translates domain objects to DB format, calls the DB, returns domain objects, contains no domain rules. Types must mirror this separation: validation schemas (Zod, etc.) belong only in the inbound adapter, domain types belong with the business logic, and database types (ORM entities, SQL row shapes) belong only in the outbound adapter. For simple CRUD all three can be in one file, but the concerns must be visibly distinct. Call this out explicitly in the Design Doc so implementers know where each kind of code belongs.
 
-**Generate options before committing.** For each significant decision, brainstorm at least two or three approaches. The first idea is rarely the best. Write down the alternatives even if you reject them quickly — they go into ADRs.
+**Generate options before committing.** For each significant decision — one that affects more than one module, would be expensive to reverse, or has plausible alternatives — brainstorm at least two or three approaches. The first idea is rarely the best. Write down the alternatives even if you reject them quickly — they go into ADRs.
 
 **Identify the cross-cutting concerns.** It's easy to design the happy path and forget about: authentication and authorization, observability (logging, metrics, tracing), error handling and retries, rate limiting, data migration, backwards compatibility, feature flags, security and PII, performance under load, multi-tenancy if applicable, internationalization if applicable. Walk through this list explicitly. Most design failures happen because one of these was forgotten.
 
 **Trace through a concrete user scenario end-to-end.** Pick a typical use case from the brief and walk it through your proposed design from request to response (or trigger to outcome). Where does data come from? Where does it go? What can fail at each step? This usually surfaces gaps faster than abstract reasoning.
 
-**Check terminology.** Does this design introduce new canonical terms — module names, entity names, process names — that aren't yet in `UBIQUITOUS_LANGUAGE.md`? Do any proposed names conflict with existing entries? Resolve conflicts before finalizing the design; inconsistent names in a design doc become inconsistent names in code.
+**Check terminology.** Does this design introduce new canonical terms — module names, entity names, process names — that aren't yet in `UBIQUITOUS_LANGUAGE.md`? Do any proposed names conflict with existing entries? Resolve conflicts before finalizing the design; inconsistent names in a design doc become inconsistent names in code. If a proposed name conflicts with a glossary entry for the same concept, defer to the glossary: rename the design element. If you believe the glossary entry is wrong, update the glossary and note the change in the Design Doc. The glossary is authoritative; the design adapts to it.
 
 **Think about what changes outside the new code.** Database migrations, config changes, infrastructure changes, deployment order constraints, third-party integrations, monitoring/alerting updates, runbook entries. These are often where production incidents come from.
 
@@ -109,7 +109,7 @@ One paragraph. What's being built and the shape of the proposed solution. A read
 Restated from the brief, possibly refined. If you've changed scope, say so explicitly and explain why.
 
 ## Background
-What does a reader need to know about the existing system to understand this design? Be brief — link to existing docs rather than reproducing them. But don't assume the reader has memorized your codebase.
+Write only what a reader needs to follow the design decisions. Assume familiarity with the codebase's main purpose; don't assume familiarity with its internals. One paragraph usually suffices; link to existing docs rather than reproducing them.
 
 ## Proposed design
 The heart of the doc. Describe the design in enough detail that the planning phase can break it into tickets and the implementer can build it. This will usually include:
@@ -126,7 +126,7 @@ The heart of the doc. Describe the design in enough detail that the planning pha
 - Backwards compatibility and migration strategy
 - Feature flags or rollout plan if applicable
 
-Don't write all of these as headings if they're not all relevant — but consider each one and explicitly note "N/A" or omit only after thinking.
+Consider each item on this list. If it's relevant, give it a heading and address it. If it's genuinely not applicable, omit it silently — but think about it first.
 
 ## Alternatives considered
 Brief summary of options you rejected, with reasoning. This is where you defend the design against the obvious "why didn't you just..." questions.
@@ -153,13 +153,6 @@ A good Design Doc is:
 - **Aware of the existing code.** Designs that ignore existing patterns produce inconsistent codebases. Either follow the pattern or explicitly say "we're deviating because X."
 - **Skimmable.** Use headings, lists, and short paragraphs. A reviewer should be able to skim in 10 minutes and read in detail in 30.
 
-## What good does NOT look like
-
-- A design that reads like an implementation. You're not writing code; you're describing what code should do and how the pieces fit.
-- A design without alternatives. If you didn't consider alternatives, you didn't really design — you just wrote down the first thing that came to mind.
-- A design that ignores cross-cutting concerns. If the doc doesn't mention auth, observability, or migration anywhere, you've probably forgotten them rather than confirmed they're not needed.
-- A design that solves a different problem than the brief. Re-read the brief before finalizing.
-
 ## What you do not produce
 
 - Tickets or sprint plans (Planning phase)
@@ -168,7 +161,7 @@ A good Design Doc is:
 
 ## After writing
 
-Save the Design Doc to `docs/design/<feature-slug>.md` and any ADRs to `docs/adr/`.
+Save the Design Doc to `docs/design/<feature-slug>.md` and any ADRs to `docs/adr/`. If the target directories don't exist, create them. If you can't write the files, tell the user the artifact paths and paste the content inline so they can save it manually.
 
 Update `UBIQUITOUS_LANGUAGE.md` at the project root with any new technical or domain terms introduced by this design — module names, entity names, process names, API concepts. Don't duplicate entries already there.
 

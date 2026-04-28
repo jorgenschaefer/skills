@@ -13,8 +13,8 @@ The unique job of this review is to catch the failure modes specific to early-st
 
 Before reviewing, confirm:
 
-1. The artifact is actually a Feature Brief (it should follow the structure from the `discovery` skill: Summary, Problem, Users, Why now, Goals, Non-goals, Constraints, Success criteria, Open questions, Out of scope).
-2. You're in a clean context — not a continuation of the discovery conversation.
+1. The artifact is actually a Feature Brief (it should follow the structure from the `discovery` skill: Summary, Problem, Users, Why now, Goals, Non-goals, Constraints, Success criteria, Open questions, Out of scope for this brief).
+2. You're in a clean context — you did not participate in creating this artifact. If you're unsure, treat your judgment as potentially contaminated: note it in "What was NOT checked" and flag any area where prior context might be biasing you.
 3. You can read the brief in full. If it references other docs (existing system documentation, prior briefs, regulatory requirements), be aware they exist but don't pretend to have read them unless you actually did.
 
 ## What to check
@@ -26,7 +26,7 @@ Walk through these questions. Each one corresponds to a common failure mode at t
 - **Is the problem stated, or is a solution stated as if it were a problem?** "We need a queue" describes a solution. The problem might be "requests are timing out." Look for solution language disguised as problem language.
 - **Is the problem one problem or several?** Briefs that try to solve multiple problems at once usually solve none of them well. If the brief addresses several distinct issues, suggest splitting.
 - **Are symptoms confused with causes?** The brief may name a visible symptom (e.g., "support tickets are up") that is downstream of a deeper cause. The deeper cause is what the design should target.
-- **Is the problem actually a problem?** Sometimes briefs propose solutions to non-issues — work that wouldn't change anything users observe. Ask: if this shipped and nothing else changed, would anyone notice?
+- **Is the problem actually a problem?** Sometimes briefs propose solutions to non-issues — work that no stakeholder would notice if it shipped: no user experience change, no operational improvement, no risk reduction. If no one would notice, the brief hasn't established that it's a problem.
 
 ### Users and stakeholders
 
@@ -38,7 +38,7 @@ Walk through these questions. Each one corresponds to a common failure mode at t
 ### Why now
 
 - **Is the trigger explicit?** A brief without "why now" leaves priorities unclear and reveals little about constraints.
-- **Does the trigger justify the scope?** A small, recent regulatory deadline implies a different design space than a long-simmering UX complaint. Make sure the brief's scope matches what the trigger justifies.
+- **Is the urgency of the trigger proportionate to the breadth of the proposed change?** A narrow compliance deadline doesn't justify redesigning the whole auth system; a long-simmering UX complaint rarely justifies a full rewrite. Mismatch is a finding.
 
 ### Goals and non-goals
 
@@ -78,18 +78,11 @@ Walk through these questions. Each one corresponds to a common failure mode at t
 
 ## Common findings
 
-To calibrate, here are the failure modes most often surfaced at this phase:
+Easy-to-miss issues not named explicitly in the checks above:
 
-- Solution language disguised as problem language
-- Vague success criteria that can't be tested
-- Missing non-goals → invites scope creep in design
-- Multiple problems bundled into one brief
-- "Why now" left unstated → priorities unclear
-- Affected users named only generically ("users")
+- Cross-cutting concerns (security, compliance, accessibility, observability needs) absent entirely
+- "Why now" left unstated
 - Non-user stakeholders forgotten
-- Constraints stated without justification, hiding premature design choices
-- Cross-cutting concerns (security, compliance, accessibility, observability needs) not mentioned at all
-- Architecture / tech choices smuggled into the brief
 
 ## Verdict guidance for this phase
 
@@ -100,4 +93,4 @@ To calibrate, here are the failure modes most often surfaced at this phase:
 
 ## Output
 
-Save the review at `docs/reviews/feature-brief-<feature-slug>-<YYYY-MM-DD>.md` using the format defined in the shared review base. Reference specific sections of the brief. Suggest the author address findings, then re-review or proceed to design depending on the verdict.
+Save the review at `docs/reviews/feature-brief-<feature-slug>-<YYYY-MM-DD>.md` using the format defined in the shared review base. Reference specific sections of the brief. Suggest the author address findings before re-reviewing. If the verdict is Approve or Approve with comments, suggest the next step is the design skill.

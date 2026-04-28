@@ -16,7 +16,7 @@ Before reviewing, confirm:
 1. The artifact is a Design Doc (it should follow the `design` skill structure: Summary, Goals/non-goals, Background, Proposed design, Alternatives considered, Risks/open questions, Rollout plan, Testing strategy, Out of scope).
 2. You can read the Feature Brief the design is based on. The design must be evaluated against the brief — a good design that solves the wrong problem is a bad design.
 3. You have access to the codebase. Many design issues only become visible when you check the design against existing code. If you don't have access, note it in "What was NOT checked."
-4. You're in a clean context.
+4. You're in a clean context — you did not participate in creating this artifact. If you're unsure, treat your judgment as potentially contaminated: note it in "What was NOT checked" and flag any area where prior context might be biasing you.
 
 ## What to check
 
@@ -34,8 +34,8 @@ Walk through these questions. Each corresponds to a common failure mode of desig
 - **Is the design specific?** "We'll add a service" is not a design. A design says what the service does, what its interface is, what data it owns, how it's deployed, how it fails. Look for hand-waving.
 - **Is the data model clear?** New tables, new columns, new types — are they specified? Is the migration story addressed (forwards and backwards)? Do existing entities need new constraints or relations?
 - **Are the API contracts specified?** New endpoints, changed endpoints, internal RPC contracts — are signatures, payloads, error shapes, and idempotency semantics specified?
-- **Does the design trace through a real user scenario?** Walk through one yourself if the doc doesn't. Where does data come from, where does it go, what can fail at each hop?
-- **Are module boundaries clear?** What's new, what changes, what's untouched. Diffuse "we'll touch a bunch of stuff" designs are hard to ticket and hard to review. Also ask whether proposed modules are *deep*: a deep module hides significant complexity behind a simple interface; a shallow module's interface is nearly as complex as its implementation. Common shallow-module smells: pass-through layers, information leakage (exposing internal data structures or config to callers), and abstractions too thin to justify their existence. A shallow module boundary is a should-fix finding — either merge the layers or explain what complexity the boundary genuinely hides.
+- **Does the design trace through a real user scenario?** If the doc doesn't trace a user scenario, flag that as a should-fix finding — a design that can't be walked end-to-end hasn't been fully thought through. Do not supply the trace yourself.
+- **Are module boundaries clear?** What's new, what changes, what's untouched. Diffuse "we'll touch a bunch of stuff" designs are hard to ticket and hard to review. Also ask whether proposed modules are *deep*: a deep module hides significant complexity behind a simple interface; a shallow module's interface is nearly as complex as its implementation. Common shallow-module smells: pass-through layers, abstraction leakage (abstraction leakage: a module exposes its internal structure or data shapes to callers), and abstractions too thin to justify their existence. A shallow module boundary is a should-fix finding — either merge the layers or explain what complexity the boundary genuinely hides.
 - **Are adapter boundaries specified?** The design should make clear that inbound adapters (route handlers, controllers) own authentication, input validation, and request mapping; business logic operates on domain objects only; outbound adapters (repositories) translate domain objects to and from DB format. If the design is silent on this split, or if it places validation or persistence logic inside the domain layer, that is a should-fix. Also verify that the design distinguishes the three type categories: validation schemas live only in the inbound adapter, domain types live with the business logic, database types live only in the outbound adapter. A design that conflates these (e.g., "pass the Zod-validated request object into the service") should be flagged.
 
 ### Cross-cutting concerns
@@ -59,13 +59,13 @@ This is where most design failures hide. Check each one explicitly. If the desig
 ### Alternatives and reasoning
 
 - **Are alternatives considered?** A design that presents one option as inevitable is hiding its reasoning. Push for at least one alternative with explicit comparison.
-- **Are the right alternatives considered?** Sometimes the doc lists alternatives but skips the obvious one. If you can think of an obvious option the doc didn't address, ask.
+- **Are the right alternatives considered?** For each major choice in the design, ask: is there a simpler approach that would satisfy the brief? If yes and the doc doesn't address it, that's a finding — either the simpler path was considered and ruled out (state why), or it was missed.
 - **Is the chosen option's tradeoff named?** Every choice trades something for something. If the design only lists upsides of the chosen option, it hasn't been honestly evaluated.
 
 ### Architecture Decision Records
 
 - **Are significant decisions captured in ADRs?** Each major decision in the design (database choice, sync vs async, new dependency, new pattern) should have an ADR. Designs that bury major decisions in prose are hard to revisit.
-- **Are existing ADRs respected?** The design may contradict a prior ADR without realizing it. Spot-check.
+- **Are existing ADRs respected?** Read the most recent 3–5 ADRs and verify the proposed design doesn't contradict any decision they record. If the ADR list is short, read all of them.
 - **Do ADRs follow the format?** Status, Context, Decision, Alternatives, Consequences. Check the consequences section in particular — many ADRs hand-wave it.
 
 ### Existing-code awareness
@@ -96,8 +96,6 @@ This is where most design failures hide. Check each one explicitly. If the desig
 
 - **The "implementer test."** Could a competent engineer pick up this doc and start work? If they'd need to ask 10 questions before starting, it's underspecified. If they could start without reading the doc at all, it's a no-op.
 - **The "six months later" test.** When someone debugs a production issue in this code six months from now, will the design doc help them understand why things were built this way?
-- **The "lipstick test."** Strip away the formatting and section headers. Does the prose describe a real plan, or does it gesture at one? Some designs look thorough but are mostly heading scaffolding around vague paragraphs.
-
 ## Common findings
 
 To calibrate, here are the failure modes most often surfaced at this phase:
@@ -122,4 +120,4 @@ To calibrate, here are the failure modes most often surfaced at this phase:
 
 ## Output
 
-Save the review at `docs/reviews/design-doc-<feature-slug>-<YYYY-MM-DD>.md` using the format from the shared review base. Reference specific sections of the design. If you reviewed ADRs, list them and review each one's consequences section in particular. Suggest next steps based on verdict.
+Save the review at `docs/reviews/design-doc-<feature-slug>-<YYYY-MM-DD>.md` using the format from the shared review base. Reference specific sections of the design. If you reviewed ADRs, list them and review each one's consequences section in particular (Consequences are the section most often hand-waved — they reveal whether the author thought through what the decision forecloses, not just what it enables.). If the verdict is Approve or Approve with comments, suggest the next step is the planning skill.

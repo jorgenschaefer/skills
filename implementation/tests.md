@@ -60,5 +60,3 @@ test("createUser makes user retrievable", async () => {
 });
 ```
 
----
-_Adapted from [Matt Pocock](https://mattpocock.com)'s TDD skill._

@@ -32,5 +32,3 @@ When designing interfaces, ask:
 - Can I simplify the parameters?
 - Can I hide more complexity inside?
 
----
-_Adapted from [Matt Pocock](https://mattpocock.com)'s TDD skill._

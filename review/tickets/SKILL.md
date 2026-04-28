@@ -15,7 +15,7 @@ Before reviewing, confirm:
 
 1. The artifact is a Ticket Backlog (a directory of ticket files plus a README.md overview, following the `planning` skill structure).
 2. You have access to the Design Doc the tickets are based on. You cannot review tickets meaningfully without the design — many findings come from cross-checking design content against ticket coverage.
-3. You're in a clean context.
+3. You're in a clean context — you did not participate in creating this artifact. If you're unsure, treat your judgment as potentially contaminated: note it in "What was NOT checked" and flag any area where prior context might be biasing you.
 
 ## What to check
 
@@ -37,8 +37,8 @@ For each ticket, verify:
 
 ### Backlog-level checks
 
-- **Is there a tracer bullet?** Look for the first ticket. Does it deliver a thin end-to-end slice that touches every layer the full feature will touch? If the first several tickets are all "set up infrastructure" or "build the database schema" with no user-visible output, the slicing is layer-by-layer rather than tracer-bullet.
-- **Does the design get fully covered?** Walk through the Design Doc. For every major component, contract, behavior, and cross-cutting concern, find the ticket that implements it. Anything in the design without a ticket is a coverage gap. Things the design explicitly puts out-of-scope are fine.
+- **Is there a tracer bullet?** Look for the first ticket that delivers user-visible behavior (spike tickets don't count). Is it a thin end-to-end slice that touches every layer the full feature will touch? If the first several tickets are all "set up infrastructure" or "build the database schema" with no user-visible output, the slicing is layer-by-layer rather than tracer-bullet.
+- **Does the design get fully covered?** Walk through the Design Doc. For every major component, contract, behavior, and cross-cutting concern, find the ticket that implements it. Anything in the design without a ticket is a coverage gap. Things the design explicitly puts out-of-scope are fine. As you do this check, build a coverage table — a list mapping each Design Doc section to the ticket(s) that implement it. You'll include this in the output.
 - **Anything in the tickets that's NOT in the design?** Tickets that introduce work not described in the design are scope creep — either the design needs updating, or the ticket is unjustified.
 - **Is the order sensible?** Dependencies should come before dependents. High-risk pieces should come early. Tickets that block many others should come early. Tracer bullets should come first.
 - **Are cross-cutting concerns ticketed?** Observability, security review, performance testing, migration scripts, runbook updates, monitoring/alerting setup — these are commonly forgotten. Check the design for what should be there, then check the backlog for whether it is.
@@ -56,7 +56,7 @@ For each ticket, verify:
 - **The "ship after ticket N" test.** For each ticket, ask: "if we shipped after this ticket and stopped, would users have something useful?" The answer should usually be yes, especially for the early tickets.
 - **The "two implementers" test.** If two implementers picked up adjacent tickets in parallel, would they collide? If yes, the dependency graph is wrong, or the slicing is wrong.
 - **The "rename test."** Read each ticket title in isolation. Does the title accurately describe the work? Generic titles like "Backend changes" or "Update API" are findings.
-- **The "design smuggling" test.** Are tickets quietly making design decisions the Design Doc didn't make? "Implement caching" buried in a ticket is a design decision, not just an implementation detail.
+- **The "design smuggling" test.** Do any tickets authorize implementation choices the Design Doc didn't make? Caching strategies, library picks, structural decisions — these belong in the design, not buried in a ticket.
 - **The layer-by-layer test.** Are the first 2-3 tickets all infrastructure (DB schema, plumbing, scaffolding) before any user-visible behavior? That's the layer-by-layer antipattern. Tracer bullets thread through all layers in the first ticket.
 
 ## Common findings
@@ -82,4 +82,4 @@ For each ticket, verify:
 
 ## Output
 
-Save the review at `docs/reviews/tickets-<feature-slug>-<YYYY-MM-DD>.md` using the format from the shared review base. When citing findings, refer to specific ticket numbers. Include a coverage table or list mapping Design Doc sections to ticket numbers — this makes coverage gaps visible at a glance. Suggest next steps based on verdict.
+Save the review at `docs/reviews/tickets-<feature-slug>-<YYYY-MM-DD>.md` using the format from the shared review base. When citing findings, refer to specific ticket numbers. Include the coverage table you built during the design coverage check. If the verdict is Approve or Approve with comments, suggest the next step is the implementation skill.

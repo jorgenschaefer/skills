@@ -3,7 +3,7 @@
 Mock at **system boundaries** only:
 
 - External APIs (payment, email, etc.)
-- Databases (sometimes - prefer test DB)
+- Databases (prefer a real database instance — a local Docker container or test schema — over mocking the DB layer; only mock if integration tests are prohibitively slow)
 - Time/randomness
 - File system (sometimes)
 
@@ -58,5 +58,3 @@ The SDK approach means:
 - Easier to see which endpoints a test exercises
 - Type safety per endpoint
 
----
-_Adapted from [Matt Pocock](https://mattpocock.com)'s TDD skill._

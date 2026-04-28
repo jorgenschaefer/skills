@@ -31,18 +31,18 @@ This skill follows strict outside-in test-driven development.
 
 **Tests verify behavior, not implementation.** Write tests through public interfaces — don't test private methods or internal collaborators. The right test survives a complete internal refactor. If renaming a private function breaks a test, that test was wrong. See [tests.md](tests.md) for examples and [mocking.md](mocking.md) for mocking guidelines.
 
-**Anti-pattern: horizontal slicing.** Do not write all tests first, then all code. Tests written in bulk verify imagined behavior and are blind to what actually matters — you outrun your headlights and commit to test structure before understanding the implementation. Each test must respond to what you learned from the previous cycle. One test → one implementation → repeat.
+**Anti-pattern: bulk-test-first.** Do not write all tests first, then all code. Tests written in bulk verify imagined behavior and are blind to what actually matters — you outrun your headlights and commit to test structure before understanding the implementation. Each test must respond to what you learned from the previous cycle. One test → one implementation → repeat.
 
 ```
-WRONG (horizontal):  RED: test1, test2, test3  →  GREEN: impl1, impl2, impl3
-RIGHT (vertical):    RED→GREEN: test1→impl1    →  RED→GREEN: test2→impl2
+WRONG (bulk-test-first):  RED: test1, test2, test3  →  GREEN: impl1, impl2, impl3
+RIGHT (one-cycle-at-a-time):    RED→GREEN: test1→impl1    →  RED→GREEN: test2→impl2
 ```
 
 1. **Read.** Before each loop iteration, read the ticket again and the relevant code. Pick the next acceptance criterion to satisfy.
 2. **Red.** Write a test that captures that acceptance criterion. Run it. Confirm it fails *for the right reason* — the assertion you care about, not a syntax error or a missing import. A test that fails for the wrong reason is no test at all.
 3. **Green.** Write the minimum code that makes the test pass. Don't anticipate future tests; don't add features the current test doesn't drive. Run the test. Confirm it passes. Run the *whole* test suite. Confirm nothing else broke.
-4. **Refactor.** With tests green, look at what you wrote. Is there duplication? Is naming clear? Are abstractions at the right level? Improve the code without changing behavior. Run the tests after each refactor step to confirm green is preserved. One concrete lens: aim for *deep modules* — simple interfaces that hide significant complexity. If you find thin layers that just delegate without hiding anything (shallow modules), consider merging them or pushing logic inward. The refactor step is the right moment to deepen abstractions; the test suite makes it safe. See [deep-modules.md](deep-modules.md) and [refactoring.md](refactoring.md).
-5. **Commit.** Commit per logical behavior or acceptance criterion — not per individual TDD cycle. One ticket typically yields one commit. The commit message should describe what behavior was added, not what files changed. "Add validation for empty draft titles" beats "Update DraftService.ts."
+4. **Refactor.** With tests green, look at what you wrote. Is there duplication? Is naming clear? Are abstractions at the right level? Improve the code without changing behavior. Run the tests after each refactor step to confirm green is preserved. One concrete lens: aim for *deep modules* — simple interfaces that hide significant complexity. If you find thin layers that just delegate without hiding anything (shallow modules), consider merging the layers into one module, or moving the logic down into a deeper implementation so callers interact with a simpler interface. The refactor step is the right moment to deepen abstractions; the test suite makes it safe. See [deep-modules.md](deep-modules.md) and [refactoring.md](refactoring.md).
+5. **Commit.** Commit per logical behavior or acceptance criterion — typically one commit per acceptance criterion item, sometimes fewer if criteria are tightly coupled. Multiple small commits per ticket are normal and preferred over one large one. The commit message should describe what behavior was added, not what files changed. "Add validation for empty draft titles" beats "Update DraftService.ts."
 6. **Repeat** until every acceptance criterion is met.
 
 The discipline matters. The order matters. Skipping the red step ("I know the test will fail, I'll just write the code") is the most common way TDD breaks down — you end up writing tests that pass on the first run, which means they're not actually testing what you think they are.
@@ -65,7 +65,7 @@ The ticket has an explicit scope. Stay inside it.
 
 When you find yourself wanting to:
 
-- **Fix unrelated bugs** — note them in your final summary, but don't fix them in this PR. They're separate tickets.
+- **Fix unrelated bugs** — note them in your PR description (see 'Producing the PR description' below), but don't fix them in this PR. They're separate tickets.
 - **Refactor adjacent code** — if it's needed to make your ticket clean, do the minimum needed and call it out. If it's just "this code could be better," don't.
 - **Add features the ticket doesn't ask for** — don't. Future tickets will do that. Adding speculative features is how scope creep starts.
 - **Question the design** — if the design has a real problem, stop, surface it to the user, and let the architect revisit. Don't silently work around it.
@@ -99,7 +99,7 @@ A ticket isn't done because the code compiles. Walk through this list:
 - [ ] Documentation updated if the ticket required it.
 - [ ] Feature flag set up correctly if the ticket required it.
 - [ ] No commented-out code, no `console.log`/`print` debugging artifacts, no TODOs about this ticket left behind.
-- [ ] If a migration was added, you've tested both the up and down paths (or whatever rollback story applies).
+- [ ] If a migration was added, you've tested both the up and down paths (for append-only migrations where "down" is not meaningful, test the rollback procedure as described in the ticket's acceptance criteria instead).
 - [ ] New files are placed in domain-organized paths, or the structural choice is explicitly noted in the PR description.
 
 ## When tests are hard to write
@@ -109,7 +109,7 @@ If you can't figure out how to test something, that's usually a design signal. S
 - **Tight coupling** — the code under test depends on too much. Inject the dependencies, or extract the testable logic.
 - **Hidden state** — global state, singletons, time, randomness. Make these explicit and injectable.
 - **Wrong abstraction level** — you might be trying to test at the wrong granularity. Drop to a unit test or rise to an integration test.
-- **Genuinely hard things** — concurrency, network conditions, UI rendering. There are patterns for each; ask if you're stuck.
+- **Genuinely hard things** — concurrency, network conditions, UI rendering. There are patterns for each; if you're stuck after consulting interface-design.md, surface the problem in the PR description as a blocker and stop rather than writing untested code.
 
 If a piece of code resists testing entirely, that's a strong signal something is wrong with its design. Pause and surface it.
 
@@ -117,7 +117,7 @@ If a piece of code resists testing entirely, that's a strong signal something is
 
 Run the existing test suite *before* you start. Confirm it passes. If it doesn't, stop and tell the user — don't add your changes on top of a broken baseline.
 
-If your changes legitimately need to update existing tests (e.g., a function signature changed), do so deliberately. But be suspicious: if you find yourself updating many existing tests to make them pass, you might be breaking behavior you shouldn't be breaking.
+If your changes legitimately need to update existing tests (e.g., a function signature changed), do so deliberately. But be suspicious: if you find yourself updating existing tests that are unrelated to the behavior your ticket changes — more than one or two, or tests in different modules — that's a signal you may be breaking behavior you shouldn't be.
 
 ## Producing the PR description
 
@@ -139,3 +139,5 @@ When the ticket is done, write a PR description (or summary) that includes:
 ## After implementation
 
 Tell the user the ticket is done, point to the PR or branch, and summarize. Suggest a clean-context review using the `review/implementation` skill before merging.
+
+_Reference files adapted from [Matt Pocock](https://mattpocock.com)'s TDD skill._

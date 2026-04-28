@@ -1,6 +1,6 @@
 ---
 name: refactor-project
-description: Do a deep refactoring of the project to make the project more maintainable and easier to understand and reason about.
+description: Use this skill when the user wants a comprehensive structural review of a codebase — not a targeted fix for a specific bug or feature, but a survey of where the architecture is creating friction. Trigger when the user says things like "the codebase is getting hard to change", "clean up the architecture", "do a structural review", "improve our module boundaries", or asks to improve maintainability project-wide. Do NOT use for feature design (use the design skill) or for reviewing a specific recent change (use review/implementation).
 ---
 
 # Refactor Project
@@ -51,7 +51,7 @@ For simple CRUD, all three layers can live in one function or file — but even 
 
 ### 1. Explore the codebase
 
-Use the Agent tool with subagent_type=Explore to navigate the codebase naturally. Do NOT follow rigid heuristics — explore organically and note where you experience friction:
+Use the Agent tool with subagent_type=Explore to navigate the codebase naturally. Use these questions to guide your attention — they name the patterns most likely to cause long-term friction. Don't treat them as an exhaustive checklist; if you encounter friction not on this list, note it.
 
 - Where does understanding one concept require bouncing between many small files?
 - Where is business logic hidden behind framework or database adaption code?
@@ -60,10 +60,34 @@ Use the Agent tool with subagent_type=Explore to navigate the codebase naturally
 - Where do tightly-coupled modules create integration risk in the seams between them?
 - Which parts of the codebase are untested, or hard to test?
 
-The friction you encounter IS the signal.
+Document each friction point as you encounter it: note the file or module, the pattern creating friction, and why it makes the code hard to change or understand. These notes become the "Friction points found" section of the proposal.
 
 ### 2. Propose a refactoring plan
 
-What are the most important refactorings to make the codebase more maintainable and easier to understand and reason about?
+Save the proposal to `docs/refactor/<YYYY-MM-DD>-<slug>.md`. If the target directory doesn't exist, create it. If you can't write the file, tell the user the artifact path and paste the content inline so they can save it manually.
 
-Provide a list of proposed refactorings, with an explanation of why it is important and how it will help.
+Use this structure:
+
+```markdown
+# Refactoring Proposal: <project or area>
+
+**Date:** <YYYY-MM-DD>
+
+## Summary
+One paragraph: the headline finding — what kind of friction dominates?
+
+## Friction points found
+A list of specific locations with notes on what makes each one hard to change or understand.
+
+## Proposed refactorings
+For each proposed refactoring:
+- **What:** the specific change (rename, move, merge, split, add boundary)
+- **Why:** what friction it removes
+- **Impact:** how much code is affected; how risky
+- **Approach:** a starting point for implementation
+
+## Suggested order
+Which refactorings to do first and why.
+```
+
+Do not implement any refactoring in this skill. The output is a proposal; implementation follows the normal ticket workflow. If the user asks you to implement, redirect: create tickets for the highest-priority refactorings using the planning skill instead.

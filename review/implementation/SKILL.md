@@ -16,7 +16,7 @@ Before reviewing, confirm:
 1. You can read the diff or the changed files in full.
 2. You have access to the **ticket** the implementation is for, and to the **Design Doc** the ticket is part of. Code review without the ticket is reduced to style nitpicking.
 3. You can run the tests locally if needed, or you can verify CI passed.
-4. You're in a clean context — you didn't write this code, and you're not chained to the conversation that produced it.
+4. You're in a clean context — you did not participate in creating this artifact. If you're unsure, treat your judgment as potentially contaminated: note it in "What was NOT checked" and flag any area where prior context might be biasing you.
 
 ## What to check
 
@@ -25,7 +25,7 @@ Before reviewing, confirm:
 The single most important check. Walk through every acceptance criterion in the ticket and verify each one is met by the diff.
 
 - **Is each acceptance criterion satisfied?** For each, find the code (and tests) that satisfies it. If you can't, that's a blocker.
-- **Are any acceptance criteria addressed only in tests, not in production code?** That's a smell — the test exists but doesn't actually drive code that runs in production.
+- **Is each acceptance criterion satisfied by actual runtime behavior, or is it only "satisfied" by test scaffolding (stubs, fakes, or test doubles) that would pass without any real implementation?**
 - **Are any acceptance criteria addressed only in production code, with no test?** Also a smell — the behavior is unproven.
 - **Has scope crept beyond the ticket?** Code in the diff that doesn't trace to the ticket's acceptance criteria is scope creep. Sometimes there are good reasons (a tightly-coupled refactor was needed); call them out either way.
 
@@ -66,12 +66,12 @@ Tests are not just "did the implementer write some tests" — tests are evidence
 - **Are secrets handled correctly?** No secrets in code, no secrets in logs, no secrets in error messages.
 - **Are authorization checks present?** Endpoints that mutate state should check who's allowed to do what. Missing auth checks are a classic blocker-level finding.
 - **Is sensitive data redacted in logs?** PII, tokens, passwords — these should never make it into log output.
-- **Is the cryptography boring?** Custom crypto is almost never the right answer. If you see hand-rolled hashing, signing, or encryption, push back hard.
+- **Is the cryptography boring?** Custom crypto is almost never the right answer. If the code composes low-level cryptographic primitives directly (raw digest functions, manual padding, custom key derivation) rather than using a well-established high-level library (bcrypt, libsodium, native TLS), push back hard. Using a library correctly is not hand-rolling.
 
 ### Observability
 
 - **Are the right things logged?** Errors, important state transitions, external service interactions. Not too verbose, not too sparse.
-- **Are metrics emitted where the design called for them?** If the design or ticket mentioned metrics, check they're actually wired up.
+- **Are metrics emitted where appropriate?** If the design or ticket specified metrics, verify they're actually wired up. If they weren't specified, check whether the change introduces significant behaviors (state transitions, external calls, error paths) that should be instrumented — flag any that aren't.
 - **Are log messages useful?** "Error" with no context is unhelpful. "Failed to charge customer 12345 — gateway timeout after 30s" is useful.
 - **Will an on-call engineer be able to debug this when it breaks?** Imagine a production incident. Does the code emit enough signal to diagnose it?
 
@@ -79,7 +79,7 @@ Tests are not just "did the implementer write some tests" — tests are evidence
 
 - **Are there obvious inefficiencies?** N+1 queries, unbounded loops, in-memory operations on large data, missing indexes for new queries.
 - **Is optimization justified?** An optimization that obscures intent without a measured bottleneck is a finding. Ask what benchmark motivated the change; if there isn't one, flag it — the readable version should be preferred unless performance is demonstrably critical.
-- **Is caching used appropriately?** Both "missing where needed" and "added speculatively" are findings.
+- **Is caching used appropriately?** Both "missing where needed" and "added speculatively" are findings. For "missing where needed": look for repeated DB or API calls with identical inputs within a single request, or unconditional loads of large data sets on hot paths. Those are the patterns that warrant caching.
 - **Are slow operations bounded?** Timeouts on external calls, pagination on list endpoints, limits on retry counts.
 
 ### Migrations and operational concerns
@@ -104,7 +104,7 @@ Tests are not just "did the implementer write some tests" — tests are evidence
 
 - **The "Tuesday morning" test.** It's Tuesday morning. Production breaks because of this PR. Can the on-call engineer figure out what happened from logs and metrics alone?
 - **The "six months later" test.** Six months from now, someone reads this code without context. Will they understand it? Will they trust it?
-- **The "different reviewer" test.** If a different reviewer looked at this PR, would they catch something you didn't? What might that be?
+- **The "different reviewer" test.** Name the two areas of this code where a different reviewer would most likely raise a concern you haven't raised. Then check those two areas before finishing.
 
 ## Common findings
 
@@ -131,4 +131,4 @@ Tests are not just "did the implementer write some tests" — tests are evidence
 
 ## Output
 
-Save the review at `docs/reviews/implementation-<ticket-number>-<YYYY-MM-DD>.md` using the format from the shared review base. Reference specific files, functions, and line ranges. Include the acceptance-criteria coverage as an explicit list with each item marked verified or not. Suggest next steps based on verdict.
+Save the review at `docs/reviews/implementation-<ticket-number>-<YYYY-MM-DD>.md` using the format from the shared review base. Reference specific files, functions, and line ranges. Include the acceptance-criteria coverage as an explicit list with each item marked verified or not. If the verdict is Approve or Approve with comments, suggest merging and creating any follow-up tickets noted in the PR description.

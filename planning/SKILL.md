@@ -30,6 +30,8 @@ Good slicing produces tickets like:
 
 Each one is shippable. Each one is independently testable. Each one delivers some user-visible value, even if small. If the project gets cancelled after ticket 2, you've still shipped something useful.
 
+Watch for "set up the project" tickets that do nothing but scaffolding — fold the scaffolding into the first feature ticket as a tracer bullet instead.
+
 ## Properties of a good ticket
 
 Every ticket should be:
@@ -54,7 +56,7 @@ In practice, some dependencies are unavoidable. A ticket that displays data need
 
 **Read `UBIQUITOUS_LANGUAGE.md`** at the project root before naming anything. Ticket titles, goal statements, and acceptance criteria should use the canonical terms. When a term from the glossary applies, use it exactly — don't paraphrase.
 
-**Check that suggested file paths follow domain-first organization.** When writing "Implementation notes," name specific files and directories — but avoid top-level `services/`, `controllers/`, or `models/` as organizing principles. Prefer `orders/OrderService.ts` over `services/OrderService.ts`. If tickets are being written for an already-layered codebase, flag the structural tension in a ticket note rather than silently perpetuating a structure the design may intend to move away from.
+**Check that suggested file paths follow domain-first organization.** When writing "Implementation notes," name specific files and directories — but avoid top-level `services/`, `controllers/`, or `models/` as organizing principles. Prefer `orders/OrderService.ts` over `services/OrderService.ts`. If tickets are being written for an already-layered codebase, flag the structural tension in a ticket note rather than silently perpetuating a structure the design may intend to move away from. Watch for implementation notes that suggest layered file paths (`services/FooService.ts`, `controllers/BarController.ts`) — redirect these toward domain-first paths or explicitly note the structural tension with a pointer to the design intent.
 
 **Read the Design Doc carefully.** Note the major components, the data model changes, the API surface, the cross-cutting concerns. Anything explicitly out-of-scope in the design is also out-of-scope here.
 
@@ -113,6 +115,31 @@ Optional. Pointers to specific files, modules, or patterns the implementer shoul
 - Telemetry / logging verified working in <environment> (if applicable)
 ```
 
+## Spike tickets
+
+Spikes are time-boxed investigations. Use this template:
+
+```markdown
+# <NNN>: Spike — <question to answer>
+
+**Status:** Backlog | In Progress | Done
+**Design Doc:** <link>
+**Time-box:** <1–2 days max>
+
+## Question
+One sentence: what does this spike need to answer?
+
+## Context
+Why this needs to be answered before feature work can proceed.
+
+## Output
+The output is a written recommendation (not production code): what we should do, and why.
+
+## Definition of done
+- [ ] Written recommendation saved to <location>
+- [ ] Follow-up feature tickets created or updated based on findings
+```
+
 ## The backlog overview
 
 In addition to individual ticket files, produce a backlog overview at `docs/tickets/<feature-slug>/README.md`:
@@ -130,11 +157,10 @@ In addition to individual ticket files, produce a backlog overview at `docs/tick
 ...
 
 ## Dependency graph
-```
-001 ──> 002 ──> 003
-         └────> 004
-005 (independent)
-```
+
+    001 ──> 002 ──> 003
+             └────> 004
+    005 (independent)
 
 ## Notes on ordering
 Why this order. What's the tracer bullet. What can parallelize.
@@ -142,16 +168,6 @@ Why this order. What's the tracer bullet. What can parallelize.
 ## Out of scope
 Anything from the Design Doc not covered by these tickets, with reasoning.
 ```
-
-## Smells to watch for
-
-- **A ticket whose acceptance criteria are vague** ("works correctly", "performs well") — go back and make them observable.
-- **A ticket that says "refactor X" with no behavior change** — fine as a tech-debt ticket, but flag it; it's not the same kind of work as a feature ticket.
-- **A "set up the project" ticket that does nothing but scaffolding** — sometimes necessary, but try to fold scaffolding into the first feature ticket as a tracer bullet.
-- **More than ~10-15 tickets for a feature** — possible, but suspicious. Either the feature is huge (in which case it should probably be split into sub-features at the design level), or you're slicing too thin.
-- **A long chain of strictly-sequential tickets** — if each one is useless without the next, you've sliced by layer rather than by value.
-- **A ticket that touches every module in the codebase** — too big, or too cross-cutting to be a single ticket.
-- **Implementation notes that suggest layered file paths** — `services/FooService.ts`, `controllers/BarController.ts` as the primary organization rather than domain folders. Redirect toward domain-first paths, or explicitly note the gap with a pointer to the design intent.
 
 ## What you do not produce
 
@@ -161,4 +177,4 @@ Anything from the Design Doc not covered by these tickets, with reasoning.
 
 ## After writing
 
-Save tickets to `docs/tickets/<feature-slug>/` and the README. Tell the user how many tickets you produced, the suggested order, and what the tracer bullet is. Suggest a clean-context review using the `review/tickets` skill before implementation begins.
+Save tickets to `docs/tickets/<feature-slug>/` and the README. If the target directory doesn't exist, create it. If you can't write the files, tell the user the artifact paths and paste the content inline so they can save it manually. Tell the user how many tickets you produced, the suggested order, and what the tracer bullet is. Suggest a clean-context review using the `review/tickets` skill before implementation begins.
