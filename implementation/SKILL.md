@@ -72,6 +72,24 @@ When you find yourself wanting to:
 
 The hardest part of scope discipline is when the ticket's acceptance criteria seem to require something the design doesn't cover. When this happens, it's a signal to pause, not to invent. Either the criteria are wrong, the design is wrong, or you're misreading something. Surface the conflict to the user.
 
+## When to pause
+
+Stop and ask before proceeding when:
+
+- An acceptance criterion is ambiguous — ask for clarification before writing code
+- Implementation reveals a genuine conflict with the design — name it, don't work around it
+- An error or unexpected state suggests a design assumption is wrong — report before guessing
+
+When pausing, structure your message:
+
+**Paused on:** [task or acceptance criterion]  
+**Issue:** [one sentence]  
+**Options:**
+1. [option A]
+2. [option B]
+
+What would you like to do?
+
 ## Code quality bar
 
 Code that ships from this phase should be:
