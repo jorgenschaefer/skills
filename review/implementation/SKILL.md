@@ -46,6 +46,7 @@ Tests are not just "did the implementer write some tests" — tests are evidence
 - **Do identifiers use the ubiquitous language?** Check `UBIQUITOUS_LANGUAGE.md`. Class names, function names, and variable names that introduce synonyms for glossary terms are a should-fix — they fragment the model between documentation and code.
 - **Is the code clear?** Could a future maintainer who lacks context understand it? Long functions, nested conditionals, dense expressions — push back when they hurt readability without earning their complexity. Clever tricks and non-obvious idioms are findings: bugs are far harder to find than code is to write, so the bar for "dumb but obvious" is high.
 - **Are abstractions at the right level?** Premature abstraction (an interface used once, prepared for hypothetical future use) is as bad as missing abstraction (the same logic copy-pasted three times). Both are findings. When evaluating an abstraction, ask whether it is *deep*: a deep module has a simple interface that hides significant complexity; a shallow module's interface is nearly as complex as its implementation and leaks rather than encapsulates. Common shallow-module smells: pass-through methods that add no logic, and abstractions too small to justify their existence. Shallow modules spread complexity onto callers rather than containing it — flag them as a should-fix.
+- **Are adapter boundaries respected?** Business logic should receive and return domain objects only — no HTTP/framework types, no validation-schema types (e.g., Zod inferred types), no ORM entities or DB row types. The inbound adapter (route handler, controller) owns validation and input mapping; the outbound adapter (repository) owns DB translation. If business logic imports from a validation library or an ORM, that is a should-fix. Equally, verify that the three type categories are kept separate: validation schemas belong in the inbound layer, domain types belong in the business logic, and database types belong in the outbound layer. Even in simple CRUD code that lives in one function, the three concerns should be visibly distinct and not interleaved.
 - **Is the code dead-weight free?** Commented-out code, debug prints, unused imports, leftover TODOs about this ticket — these should be cleaned up.
 - **Is duplication justified?** Sometimes duplication is fine (different domains that happen to look similar). Sometimes it's a refactor waiting to happen. Use judgment.
 - **Is naming honest?** A function called `validateUser` that also creates the user is misnamed. Names that lie are a finding.
@@ -115,6 +116,8 @@ Tests are not just "did the implementer write some tests" — tests are evidence
 - Scope creep: changes outside the ticket's scope
 - Magic numbers, hardcoded values that should be config
 - Inconsistent error handling style
+- Business logic receiving raw HTTP types, Zod inferred types, or ORM entities instead of domain objects
+- Validation-schema types, domain types, or DB types crossing layer boundaries
 - Tests updated to match new behavior in ways that might mask bugs
 - Migration without a tested rollback path
 - Feature flag added but never removed in code (and no follow-up ticket)

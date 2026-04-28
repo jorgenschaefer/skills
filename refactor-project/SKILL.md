@@ -37,7 +37,15 @@ A **deep module** (John Ousterhout, "A Philosophy of Software Design") has a sma
 
 A project has **clear business logic** if the code that implements a feature is not hidden behind framework or database adaption code.
 
-For example, the code that takes a web request object (framework specific) and turns it into a domain object should be very small, and pass the domain object to the business logic layer. Also, any layer that adapts the domain object to a database format should be small. All logic related to the domain as opposed to techical details of the framework should be together, in modules grouped by feature.
+Code that touches the outside world lives at the edges; business logic in the middle works only with domain objects:
+
+1. **Inbound adapter** (route handler, controller): authenticate, validate input into a domain object, call business logic, map the result to a response. No domain rules here.
+2. **Business logic**: operates on domain objects only, applies domain rules, returns domain objects or raises domain errors. No HTTP types, no validation-schema types, no ORM entities or DB row types.
+3. **Outbound adapter** (repository, data access): translates domain objects to DB format, calls the DB, returns domain objects. No domain rules here.
+
+Types mirror the same separation — **validation schemas** (Zod, etc.) belong only in the inbound adapter, **domain types** belong with the business logic, and **database types** (ORM entities, SQL row shapes) belong only in the outbound adapter. Passing a Zod inferred type or an ORM entity into the business logic is a boundary violation.
+
+For simple CRUD, all three layers can live in one function or file — but even then, the three concerns must be visibly distinct and not tangled together.
 
 ## Process
 
