@@ -30,6 +30,7 @@ For each ticket, verify:
 - **Acceptance criteria are observable.** Each acceptance criterion should be checkable by reading code, running a test, or observing system behavior. Vague criteria ("works correctly," "performs well") are findings.
 - **Scope is clear.** "In scope" and "Out of scope" are both populated. Out-of-scope items reference where the deferred work is handled (another ticket, a future iteration, an explicit non-goal).
 - **Size is plausible.** Roughly fits in a focused work session. Tickets that look like multi-week projects need splitting.
+- **Ubiquitous language.** The ticket title, goal, and acceptance criteria use the canonical terms from `UBIQUITOUS_LANGUAGE.md`. A ticket whose title paraphrases a glossary term creates ambiguity for the implementer.
 - **Traceability.** The ticket references the Design Doc section it implements. Tickets without traceability often turn out to implement something not in the design.
 - **Dependencies are explicit.** If the ticket depends on another ticket, it says so. Hidden dependencies surface as merge conflicts and "wait, you didn't tell me X needed to ship first" moments.
 - **Definition of done is concrete.** Includes tests, documentation if applicable, deployment if applicable, telemetry if applicable.

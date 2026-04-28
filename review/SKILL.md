@@ -105,6 +105,12 @@ Good: "This ticket's scope appears to span what the design doc treats as two sep
 
 Specificity is kind. Vague feedback is harder to act on than direct feedback.
 
+## Ubiquitous language check
+
+Before writing findings, read `UBIQUITOUS_LANGUAGE.md` at the project root if it exists. Then ask: does the artifact use the canonical terms? Synonyms, paraphrases, or invented names for concepts that already have glossary entries are a **should-fix** finding. Flag them with the canonical term as the suggested fix.
+
+If the artifact is the first in a chain (a Feature Brief) or introduces new architectural concepts (a Design Doc), also check whether new terms it uses have been added to the glossary. Missing entries aren't a review finding — that's the producing skill's responsibility — but you can note them as a nit if they're conspicuously absent.
+
 ## When the artifact is good
 
 Sometimes the artifact really is solid. When that happens:

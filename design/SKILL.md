@@ -24,6 +24,7 @@ Before starting design, make sure you have:
 1. **The Feature Brief.** If the user hasn't pointed you at one, ask. If they want to skip discovery entirely, push back gently — at minimum get a few sentences of problem statement and goals before designing.
 2. **Access to the codebase.** Most design decisions are constrained by what already exists. You need to read the existing code, not guess at it.
 3. **Knowledge of the team's conventions.** Check `CLAUDE.md` / `AGENTS.md` at the repo root and any subdirectory equivalents. They tell you the existing patterns, the test framework, deployment model, etc.
+4. **The project's ubiquitous language.** Read `UBIQUITOUS_LANGUAGE.md` at the project root if it exists. Use the canonical terms in your design — for modules, entities, processes, and APIs. Don't introduce synonyms for concepts that already have names.
 
 If any of these are missing, get them before producing a design. A design written without knowledge of the existing code is fiction.
 
@@ -38,6 +39,8 @@ If any of these are missing, get them before producing a design. A design writte
 **Identify the cross-cutting concerns.** It's easy to design the happy path and forget about: authentication and authorization, observability (logging, metrics, tracing), error handling and retries, rate limiting, data migration, backwards compatibility, feature flags, security and PII, performance under load, multi-tenancy if applicable, internationalization if applicable. Walk through this list explicitly. Most design failures happen because one of these was forgotten.
 
 **Trace through a concrete user scenario end-to-end.** Pick a typical use case from the brief and walk it through your proposed design from request to response (or trigger to outcome). Where does data come from? Where does it go? What can fail at each step? This usually surfaces gaps faster than abstract reasoning.
+
+**Check terminology.** Does this design introduce new canonical terms — module names, entity names, process names — that aren't yet in `UBIQUITOUS_LANGUAGE.md`? Do any proposed names conflict with existing entries? Resolve conflicts before finalizing the design; inconsistent names in a design doc become inconsistent names in code.
 
 **Think about what changes outside the new code.** Database migrations, config changes, infrastructure changes, deployment order constraints, third-party integrations, monitoring/alerting updates, runbook entries. These are often where production incidents come from.
 
@@ -159,4 +162,8 @@ A good Design Doc is:
 
 ## After writing
 
-Save the Design Doc to `docs/design/<feature-slug>.md` and any ADRs to `docs/adr/`. Tell the user what was written and where. Suggest the next step is a clean-context review using the `review/design-doc` skill before moving to planning.
+Save the Design Doc to `docs/design/<feature-slug>.md` and any ADRs to `docs/adr/`.
+
+Update `UBIQUITOUS_LANGUAGE.md` at the project root with any new technical or domain terms introduced by this design — module names, entity names, process names, API concepts. Don't duplicate entries already there.
+
+Tell the user what was written and where. Suggest the next step is a clean-context review using the `review/design-doc` skill before moving to planning.

@@ -43,6 +43,7 @@ Tests are not just "did the implementer write some tests" — tests are evidence
 ### Code quality
 
 - **Does it match the codebase's conventions?** Naming, structure, error handling style, logging style. Code that looks like it was airdropped from another codebase is a finding.
+- **Do identifiers use the ubiquitous language?** Check `UBIQUITOUS_LANGUAGE.md`. Class names, function names, and variable names that introduce synonyms for glossary terms are a should-fix — they fragment the model between documentation and code.
 - **Is the code clear?** Could a future maintainer who lacks context understand it? Long functions, nested conditionals, dense expressions — push back when they hurt readability without earning their complexity.
 - **Are abstractions at the right level?** Premature abstraction (an interface used once, prepared for hypothetical future use) is as bad as missing abstraction (the same logic copy-pasted three times). Both are findings.
 - **Is the code dead-weight free?** Commented-out code, debug prints, unused imports, leftover TODOs about this ticket — these should be cleaned up.

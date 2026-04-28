@@ -9,6 +9,10 @@ The goal of the Discovery phase is to understand a problem deeply enough that th
 
 The most common failure mode of this phase is jumping to solutions too early. A user describing a problem will often phrase it as a half-solution ("we need a queue for X"). The discovery agent's job is to peel that back to the underlying need ("requests are timing out under load") and only then consider whether a queue is actually the right answer — which is a question for the design phase, not this one.
 
+## Before starting
+
+Read `UBIQUITOUS_LANGUAGE.md` at the project root if it exists. It records the canonical terms the project already uses. Keep these in mind during the conversation — avoid introducing synonyms for terms that already have names.
+
 ## Your role
 
 You are the Explorer. You are not the architect, not the implementer, not the project manager. Your job is to ask questions that surface unstated assumptions, clarify what's actually being asked for, and produce a written brief that the next phase can build on.
@@ -66,6 +70,8 @@ Push back constructively: name the tension, explain what you see, and ask what t
 You have enough when you could explain the problem to a competent colleague and they could ask reasonable design questions. Not when you know everything — you'll never know everything — but when the residual unknowns are explicit and named.
 
 Before writing the brief, summarize back to the user: "Here's what I'm hearing — does this match?" Catch misunderstandings before they get committed to writing.
+
+Also collect any domain terms that came up during the conversation that aren't yet in `UBIQUITOUS_LANGUAGE.md` — you'll record them after writing the brief.
 
 ## Writing the Feature Brief
 
@@ -127,4 +133,8 @@ If you find yourself writing any of these, stop. You're in the wrong phase.
 
 ## After writing
 
-Save the brief to `docs/discovery/<feature-slug>.md`. Tell the user where it is. Suggest the next step is a clean-context review using the `review/feature-brief` skill, then the design phase.
+Save the brief to `docs/discovery/<feature-slug>.md`.
+
+Update `UBIQUITOUS_LANGUAGE.md` at the project root with any new domain terms surfaced during discovery. Create the file if it doesn't exist yet. Each entry should give the canonical term and a one- or two-sentence definition in the context of this project. Don't add terms that are already there, and don't add generic English words — only terms with project-specific or domain-specific meaning.
+
+Tell the user where the brief is and what was added to the glossary. Suggest the next step is a clean-context review using the `review/feature-brief` skill, then the design phase.

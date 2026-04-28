@@ -21,6 +21,7 @@ Before starting, make sure you have:
 2. **The Design Doc.** The ticket should reference it. Read it for context before starting.
 3. **The codebase.** Read the relevant existing code. Understand the patterns. Run the existing tests to confirm they pass before you start changing anything.
 4. **The repo's conventions.** Check `CLAUDE.md` / `AGENTS.md` for build/test/lint commands, code style, and any project-specific rules.
+5. **The project's ubiquitous language.** Read `UBIQUITOUS_LANGUAGE.md` at the project root if it exists. Use canonical terms in identifiers — class names, function names, variable names, test descriptions.
 
 If anything is missing or unclear, ask before writing code. Misunderstanding the ticket is the most expensive mistake at this stage.
 
@@ -68,6 +69,7 @@ Code that ships from this phase should be:
 
 - **Clear over clever.** The next person to read this will not have your context. Optimize for their understanding.
 - **Consistent with the existing codebase.** Follow established patterns unless you have a reason to deviate, and if you deviate, document why.
+- **Named from the ubiquitous language.** Identifiers should use the canonical terms from `UBIQUITOUS_LANGUAGE.md`. Don't invent synonyms for concepts the project already has names for.
 - **Well-tested at appropriate levels.** Every behavior the ticket adds is covered by at least one test. Edge cases the ticket explicitly mentions are covered.
 - **Free of dead code, debug prints, and commented-out blocks.** Clean up before committing.
 - **Documented where non-obvious.** Comments explain why, not what. The code itself should make the "what" clear.

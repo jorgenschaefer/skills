@@ -71,6 +71,7 @@ This is where most design failures hide. Check each one explicitly. If the desig
 
 - **Does the design fit existing patterns?** If the codebase has an established way to add a new service, endpoint, background job, etc., the design should follow it — or explicitly say why it deviates.
 - **Does the design account for code that needs to change?** A design that proposes new modules without acknowledging the existing modules that need to be modified to integrate is incomplete.
+- **Does the design use canonical names?** Check `UBIQUITOUS_LANGUAGE.md`. If the design names a module, entity, or process differently from the glossary entry for the same concept, that's a should-fix — the design will seed inconsistency in code and tickets.
 - **Does the design propose to do something the codebase already does?** Reinventing existing infrastructure is a classic failure of a designer working without enough codebase context.
 
 ### Risks and uncertainty

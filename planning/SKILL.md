@@ -52,6 +52,8 @@ In practice, some dependencies are unavoidable. A ticket that displays data need
 
 ## How to approach the work
 
+**Read `UBIQUITOUS_LANGUAGE.md`** at the project root before naming anything. Ticket titles, goal statements, and acceptance criteria should use the canonical terms. When a term from the glossary applies, use it exactly — don't paraphrase.
+
 **Read the Design Doc carefully.** Note the major components, the data model changes, the API surface, the cross-cutting concerns. Anything explicitly out-of-scope in the design is also out-of-scope here.
 
 **Identify the thinnest end-to-end path.** What's the minimum viable version of the feature that touches every layer the full feature will touch? That's your first ticket — or first few tickets if even the minimum needs splitting.
