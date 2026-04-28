@@ -138,3 +138,9 @@ But: the bar for declaring an artifact clean is high. Most artifacts have at lea
 Save the review file. Tell the user the verdict and headline findings. Do not modify the original artifact — that's the author's job, in response to your review. The review is a recommendation, not an edit.
 
 If it's Request changes or Block, suggest the author address findings before re-reviewing.
+
+## Boy scout findings
+
+While reviewing, you may notice things unrelated to the artifact under review — stale code, latent bugs, misleading names in nearby files. Do not include these in the review findings; they pollute the severity classification and distract from the artifact's own issues.
+
+Instead, after completing the review, invoke the `boy-scout` skill to triage any such findings: trivially safe fixes can be applied immediately, everything else becomes a ticket in `docs/tickets/boy-scout/`. Note in the review's "What was checked" section that boy-scout triage was done (or explicitly that it was skipped and why).

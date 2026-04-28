@@ -16,7 +16,7 @@ npx skills add jorgenschaefer/skills@<skill-name>
 
 ## Available skills
 
-<!-- Skills are listed here as they are added. Each skill lives in its own subdirectory. -->
+- **boy-scout** — triage incidental code finds: apply trivially safe fixes immediately, create tracked tickets for everything else
 
 ## Adding a new skill
 

@@ -165,4 +165,6 @@ Save the Design Doc to `docs/design/<feature-slug>.md` and any ADRs to `docs/adr
 
 Update `UBIQUITOUS_LANGUAGE.md` at the project root with any new technical or domain terms introduced by this design — module names, entity names, process names, API concepts. Don't duplicate entries already there.
 
+If the codebase survey during design surfaced code smells or findings outside the scope of this feature, invoke the `boy-scout` skill to triage them: trivially safe fixes can be applied immediately; everything else becomes a ticket in `docs/tickets/boy-scout/`. Noting smells in the Design Doc is optional context; tracking them as tickets is required.
+
 Tell the user what was written and where. Suggest the next step is a clean-context review using the `review/design-doc` skill before moving to planning.

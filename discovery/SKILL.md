@@ -111,4 +111,6 @@ Save the brief to `docs/discovery/<feature-slug>.md`. If the target directory do
 
 Update `UBIQUITOUS_LANGUAGE.md` at the project root with any new domain terms surfaced during discovery. Create the file if it doesn't exist yet. Each entry should give the canonical term and a one- or two-sentence definition in the context of this project. Don't add terms that are already there, and don't add generic English words — only terms with project-specific or domain-specific meaning.
 
+If codebase exploration during discovery surfaced code smells or problems unrelated to the feature brief, invoke the `boy-scout` skill to triage them before ending the session.
+
 Tell the user where the brief is and what was added to the glossary. Suggest the next step is a clean-context review using the `review/feature-brief` skill, then the design phase.
