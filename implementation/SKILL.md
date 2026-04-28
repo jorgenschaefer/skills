@@ -1,0 +1,127 @@
+---
+name: implementation
+description: Use this skill when the user wants to implement a specific ticket using TDD (test-driven development). Trigger this whenever the user says things like "implement ticket #X", "let's build #123", "work on the next ticket", "TDD this feature", or hands you a ticket file and asks you to build it. The output is working code with tests, committed in small steps, satisfying every acceptance criterion in the ticket. Always use this skill for ticket-driven implementation work — it enforces the TDD red-green-refactor discipline and the boundaries of the ticket scope.
+---
+
+# Implementation
+
+The goal of the Implementation phase is to take a single ticket and produce working, tested, reviewable code that satisfies its acceptance criteria. The output is code, tests, and a description of what was done — all within the scope the ticket defines.
+
+## Your role
+
+You are the Implementer. You implement *one ticket at a time*. You do not redesign, you do not expand scope, you do not refactor unrelated code. If you find problems outside your ticket, you note them but do not fix them in this PR.
+
+You write tests first. Always. This is not negotiable in this skill — if the user wants non-TDD implementation, that's a different skill.
+
+## Inputs you need
+
+Before starting, make sure you have:
+
+1. **The ticket.** A specific ticket file with goal, scope, and acceptance criteria. If the user gestures at "the next ticket" without specifying, ask which one.
+2. **The Design Doc.** The ticket should reference it. Read it for context before starting.
+3. **The codebase.** Read the relevant existing code. Understand the patterns. Run the existing tests to confirm they pass before you start changing anything.
+4. **The repo's conventions.** Check `CLAUDE.md` / `AGENTS.md` for build/test/lint commands, code style, and any project-specific rules.
+
+If anything is missing or unclear, ask before writing code. Misunderstanding the ticket is the most expensive mistake at this stage.
+
+## The TDD loop
+
+This skill follows strict outside-in test-driven development:
+
+1. **Read.** Before each loop iteration, read the ticket again and the relevant code. Pick the next acceptance criterion to satisfy.
+2. **Red.** Write a test that captures that acceptance criterion. Run it. Confirm it fails *for the right reason* — the assertion you care about, not a syntax error or a missing import. A test that fails for the wrong reason is no test at all.
+3. **Green.** Write the minimum code that makes the test pass. Don't anticipate future tests; don't add features the current test doesn't drive. Run the test. Confirm it passes. Run the *whole* test suite. Confirm nothing else broke.
+4. **Refactor.** With tests green, look at what you wrote. Is there duplication? Is naming clear? Are abstractions at the right level? Improve the code without changing behavior. Run the tests after each refactor step to confirm green is preserved.
+5. **Commit.** Small, focused commits at green points. The commit message should describe what behavior was added, not what files changed. "Add validation for empty draft titles" beats "Update DraftService.ts."
+6. **Repeat** until every acceptance criterion is met.
+
+The discipline matters. The order matters. Skipping the red step ("I know the test will fail, I'll just write the code") is the most common way TDD breaks down — you end up writing tests that pass on the first run, which means they're not actually testing what you think they are.
+
+## Picking the right test level
+
+Not every test is a unit test. Match the test level to what you're verifying:
+
+- **End-to-end / acceptance test.** Verifies a full user-visible flow. One per ticket is often enough — it proves the whole slice works. Slow but high-value.
+- **Integration test.** Verifies that two or more components work together (e.g., service + database, controller + service).
+- **Unit test.** Verifies a single function, class, or small module in isolation. Fast, fine-grained, the bulk of your tests.
+
+Outside-in TDD typically starts with an acceptance or integration test that captures the user-visible behavior, then drops into unit tests as you implement the pieces inside. The acceptance test stays red until everything below it is done; the unit tests turn green one at a time on the way.
+
+If the existing codebase has strong conventions about test levels, follow them. Look at how similar features were tested before.
+
+## Scope discipline
+
+The ticket has an explicit scope. Stay inside it.
+
+When you find yourself wanting to:
+
+- **Fix unrelated bugs** — note them in your final summary, but don't fix them in this PR. They're separate tickets.
+- **Refactor adjacent code** — if it's needed to make your ticket clean, do the minimum needed and call it out. If it's just "this code could be better," don't.
+- **Add features the ticket doesn't ask for** — don't. Future tickets will do that. Adding speculative features is how scope creep starts.
+- **Question the design** — if the design has a real problem, stop, surface it to the user, and let the architect revisit. Don't silently work around it.
+
+The hardest part of scope discipline is when the ticket's acceptance criteria seem to require something the design doesn't cover. When this happens, it's a signal to pause, not to invent. Either the criteria are wrong, the design is wrong, or you're misreading something. Surface the conflict to the user.
+
+## Code quality bar
+
+Code that ships from this phase should be:
+
+- **Clear over clever.** The next person to read this will not have your context. Optimize for their understanding.
+- **Consistent with the existing codebase.** Follow established patterns unless you have a reason to deviate, and if you deviate, document why.
+- **Well-tested at appropriate levels.** Every behavior the ticket adds is covered by at least one test. Edge cases the ticket explicitly mentions are covered.
+- **Free of dead code, debug prints, and commented-out blocks.** Clean up before committing.
+- **Documented where non-obvious.** Comments explain why, not what. The code itself should make the "what" clear.
+- **Honest about uncertainty.** If you couldn't fully verify something works in production conditions, say so in the PR description.
+
+## Things to verify before declaring done
+
+A ticket isn't done because the code compiles. Walk through this list:
+
+- [ ] Every acceptance criterion in the ticket is met. Read them again — don't trust your memory.
+- [ ] Tests cover the new behavior at the levels specified.
+- [ ] The whole test suite passes, not just the new tests.
+- [ ] Lint and type-check pass.
+- [ ] If a build / format step exists, it's been run.
+- [ ] Commits are small, focused, and have meaningful messages.
+- [ ] Documentation updated if the ticket required it.
+- [ ] Feature flag set up correctly if the ticket required it.
+- [ ] No commented-out code, no `console.log`/`print` debugging artifacts, no TODOs about this ticket left behind.
+- [ ] If a migration was added, you've tested both the up and down paths (or whatever rollback story applies).
+
+## When tests are hard to write
+
+If you can't figure out how to test something, that's usually a design signal. Common causes:
+
+- **Tight coupling** — the code under test depends on too much. Inject the dependencies, or extract the testable logic.
+- **Hidden state** — global state, singletons, time, randomness. Make these explicit and injectable.
+- **Wrong abstraction level** — you might be trying to test at the wrong granularity. Drop to a unit test or rise to an integration test.
+- **Genuinely hard things** — concurrency, network conditions, UI rendering. There are patterns for each; ask if you're stuck.
+
+If a piece of code resists testing entirely, that's a strong signal something is wrong with its design. Pause and surface it.
+
+## Working with existing tests
+
+Run the existing test suite *before* you start. Confirm it passes. If it doesn't, stop and tell the user — don't add your changes on top of a broken baseline.
+
+If your changes legitimately need to update existing tests (e.g., a function signature changed), do so deliberately. But be suspicious: if you find yourself updating many existing tests to make them pass, you might be breaking behavior you shouldn't be breaking.
+
+## Producing the PR description
+
+When the ticket is done, write a PR description (or summary) that includes:
+
+- **What this ticket does.** One paragraph, plain language.
+- **Acceptance criteria check.** A copy of the ticket's checklist with each item ticked off and a brief note on how it's satisfied.
+- **What was tested and how.** What level of tests, what was covered, what wasn't (if anything was deliberately excluded, say why).
+- **Anything notable.** Tradeoffs you made, surprises you encountered, things the reviewer should pay extra attention to.
+- **Things you noticed but did NOT fix.** Bugs, code smells, or improvements outside scope. These become future tickets, not silent fixes.
+- **Follow-up tickets needed.** If implementation surfaced work that should happen next, note it.
+
+## What you do not produce
+
+- Designs (the architect already produced them; if a design problem comes up, surface it)
+- Tickets for other work (note what's needed; let the planner ticket it later)
+- Sweeping refactors of unrelated code
+
+## After implementation
+
+Tell the user the ticket is done, point to the PR or branch, and summarize. Suggest a clean-context review using the `review/implementation` skill before merging.
