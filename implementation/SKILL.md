@@ -145,7 +145,7 @@ When the ticket is done, write a PR description (or summary) that includes:
 - **Acceptance criteria check.** A copy of the ticket's checklist with each item ticked off and a brief note on how it's satisfied.
 - **What was tested and how.** What level of tests, what was covered, what wasn't (if anything was deliberately excluded, say why).
 - **Anything notable.** Tradeoffs you made, surprises you encountered, things the reviewer should pay extra attention to.
-- **Things you noticed but did NOT fix.** Before adding these, invoke the `boy-scout` skill to triage each one: trivially safe fixes (remove dead imports, delete commented-out blocks, fix comment typos) should be applied immediately; everything else becomes a ticket in `docs/tickets/boy-scout/`. List the resulting tickets here by number, not as free-form observations.
+- **Things you noticed but did NOT fix.** Before adding these, invoke the `boy-scout` skill to triage each one: trivially safe fixes (remove dead imports, delete commented-out blocks, fix comment typos) should be applied immediately; everything else becomes a ticket in `docs/features/boy-scout/tickets/`. List the resulting tickets here by number, not as free-form observations.
 - **Follow-up tickets needed.** If implementation surfaced work that should happen next, note it.
 
 ## What you do not produce

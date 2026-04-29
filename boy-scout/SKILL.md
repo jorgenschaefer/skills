@@ -1,6 +1,6 @@
 ---
 name: boy-scout
-description: Use this skill to triage incidental code finds — things noticed while doing other work (implementing a ticket, surveying for a design, reviewing an artifact). Trigger when any skill surfaces a "noticed but not fixed" list, when the user says "boy scout pass" or "log a cleanup finding", or after implementation, design, or review produces incidental observations. The output is immediate trivial fixes applied in place and/or tracked tickets at docs/tickets/boy-scout/.
+description: Use this skill to triage incidental code finds — things noticed while doing other work (implementing a ticket, surveying for a design, reviewing an artifact). Trigger when any skill surfaces a "noticed but not fixed" list, when the user says "boy scout pass" or "log a cleanup finding", or after implementation, design, or review produces incidental observations. The output is immediate trivial fixes applied in place and/or tracked tickets at docs/features/boy-scout/tickets/.
 ---
 
 # Boy Scout Rule
@@ -44,7 +44,7 @@ Everything not trivially safe gets a ticket:
 
 ## Writing a ticket
 
-Boy scout tickets live at `docs/tickets/boy-scout/NNN-<slug>.md`. Check the existing files in that directory (create it if it doesn't exist) and use the next available number.
+Boy scout tickets live at `docs/features/boy-scout/tickets/NNN-<slug>.md`. `docs/features/boy-scout/` is a pseudo-feature folder with no entry artifact (`brief.md` or `proposal.md`) — it is a permanent ticket backlog, not a feature. Check the existing files in that directory (create it if it doesn't exist) and use the next available number.
 
 Use this template:
 
