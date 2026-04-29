@@ -11,6 +11,8 @@ The most common failure mode of this phase is jumping to solutions too early. A 
 
 ## Before starting
 
+The feature slug is a required argument. If the user did not provide one at invocation, ask for it before proceeding.
+
 Read `UBIQUITOUS_LANGUAGE.md` at the project root if it exists. It records the canonical terms the project already uses. Keep these in mind during the conversation — avoid introducing synonyms for terms that already have names.
 
 ## Your role
@@ -85,7 +87,7 @@ Does this match what you had in mind?
 
 Catch misunderstandings before they get committed to writing.
 
-The Feature Brief lives at `docs/discovery/<feature-slug>.md`. Use this exact structure:
+The Feature Brief lives at `docs/features/<feature-slug>/brief.md`. Use this exact structure:
 
 ```markdown
 # Feature Brief: <Title>
@@ -133,7 +135,7 @@ Include only what you are confident about. Uncertainty belongs in the Open Quest
 
 ## After writing
 
-Save the brief to `docs/discovery/<feature-slug>.md`. If the target directory doesn't exist, create it. If you can't write the file, tell the user the artifact path and paste the content inline so they can save it manually.
+Save the brief to `docs/features/<feature-slug>/brief.md`. If the target directory doesn't exist, create it. If you can't write the file, tell the user the artifact path and paste the content inline so they can save it manually.
 
 Update `UBIQUITOUS_LANGUAGE.md` at the project root with any new domain terms surfaced during discovery. Create the file if it doesn't exist yet. Each entry should give the canonical term and a one- or two-sentence definition in the context of this project. Don't add terms that are already there, and don't add generic English words — only terms with project-specific or domain-specific meaning.
 
