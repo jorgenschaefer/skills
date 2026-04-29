@@ -19,9 +19,11 @@ You are explicit about what you're uncertain about. Hand-waving is the enemy. If
 
 ## Inputs you need
 
+The feature slug is a required argument. If the user did not provide one at invocation, ask for it before proceeding.
+
 Before starting design, make sure you have:
 
-1. **The Feature Brief.** If the user hasn't pointed you at one, ask. If they want to skip discovery entirely, push back gently — at minimum get a few sentences of problem statement and goals before designing.
+1. **The Feature Brief (or Refactoring Proposal).** Read the entry artifact from `docs/features/<slug>/brief.md`; if not found, try `docs/features/<slug>/proposal.md`; if neither exists, tell the user and stop. If they want to skip discovery entirely, push back gently — at minimum get a few sentences of problem statement and goals before designing.
 2. **Access to the codebase.** Most design decisions are constrained by what already exists. You need to read the existing code, not guess at it.
 3. **Knowledge of the team's conventions.** Check `CLAUDE.md` / `AGENTS.md` at the repo root and any subdirectory equivalents. They tell you the existing patterns, the test framework, deployment model, etc.
 4. **The project's ubiquitous language.** Read `UBIQUITOUS_LANGUAGE.md` at the project root if it exists. Use the canonical terms in your design — for modules, entities, processes, and APIs. Don't introduce synonyms for concepts that already have names.
@@ -91,7 +93,7 @@ ADR numbering is sequential across the whole repo. Check existing ADRs to find t
 
 ## Writing the Design Doc
 
-The Design Doc lives at `docs/design/<feature-slug>.md`. Use this structure:
+The Design Doc lives at `docs/features/<feature-slug>/design.md`. Use this structure:
 
 ```markdown
 # Design Doc: <Title>
@@ -161,10 +163,10 @@ A good Design Doc is:
 
 ## After writing
 
-Save the Design Doc to `docs/design/<feature-slug>.md` and any ADRs to `docs/adr/`. If the target directories don't exist, create them. If you can't write the files, tell the user the artifact paths and paste the content inline so they can save it manually.
+Save the Design Doc to `docs/features/<feature-slug>/design.md` and any ADRs to `docs/adr/`. If the target directories don't exist, create them. If you can't write the files, tell the user the artifact paths and paste the content inline so they can save it manually.
 
 Update `UBIQUITOUS_LANGUAGE.md` at the project root with any new technical or domain terms introduced by this design — module names, entity names, process names, API concepts. Don't duplicate entries already there.
 
-If the codebase survey during design surfaced code smells or findings outside the scope of this feature, invoke the `boy-scout` skill to triage them: trivially safe fixes can be applied immediately; everything else becomes a ticket in `docs/tickets/boy-scout/`. Noting smells in the Design Doc is optional context; tracking them as tickets is required.
+If the codebase survey during design surfaced code smells or findings outside the scope of this feature, invoke the `boy-scout` skill to triage them: trivially safe fixes can be applied immediately; everything else becomes a ticket in `docs/features/boy-scout/tickets/`. Noting smells in the Design Doc is optional context; tracking them as tickets is required.
 
 Tell the user what was written and where. Suggest the next step is a clean-context review using the `review/design-doc` skill before moving to planning.
