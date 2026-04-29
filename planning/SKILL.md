@@ -9,6 +9,10 @@ The goal of the Planning phase is to translate a Design Doc into a sequence of t
 
 The planning phase is where good designs become buildable software — or, when done badly, where they become an undifferentiated wall of work that gets implemented as one giant pull request months later. The discipline of slicing work into independently-deployable increments is what makes agentic implementation tractable, what makes review human-scaled, and what lets you change your mind cheaply.
 
+## Before starting
+
+The feature slug is a required argument. If the user did not provide one at invocation, ask for it before proceeding.
+
 ## Your role
 
 You are the Planner. You take a Design Doc and produce a list of tickets that, taken together, implement the design. You think hard about ordering, dependencies, and how each ticket can stand on its own.
@@ -58,7 +62,7 @@ In practice, some dependencies are unavoidable. A ticket that displays data need
 
 **Check that suggested file paths follow domain-first organization.** When writing "Implementation notes," name specific files and directories — but avoid top-level `services/`, `controllers/`, or `models/` as organizing principles. Prefer `orders/OrderService.ts` over `services/OrderService.ts`. If tickets are being written for an already-layered codebase, flag the structural tension in a ticket note rather than silently perpetuating a structure the design may intend to move away from. Watch for implementation notes that suggest layered file paths (`services/FooService.ts`, `controllers/BarController.ts`) — redirect these toward domain-first paths or explicitly note the structural tension with a pointer to the design intent.
 
-**Read the Design Doc carefully.** Note the major components, the data model changes, the API surface, the cross-cutting concerns. Anything explicitly out-of-scope in the design is also out-of-scope here.
+**Read the Design Doc** from `docs/features/<slug>/design.md`. Note the major components, the data model changes, the API surface, the cross-cutting concerns. Anything explicitly out-of-scope in the design is also out-of-scope here.
 
 **Identify the thinnest end-to-end path.** What's the minimum viable version of the feature that touches every layer the full feature will touch? That's your first ticket — or first few tickets if even the minimum needs splitting.
 
@@ -72,7 +76,7 @@ In practice, some dependencies are unavoidable. A ticket that displays data need
 
 ## The ticket format
 
-Each ticket lives at `docs/tickets/<feature-slug>/<NNN>-<slug>.md` with this structure:
+Each ticket lives at `docs/features/<feature-slug>/tickets/<NNN>-<slug>.md` with this structure:
 
 ```markdown
 # <NNN>: <Short title>
@@ -142,7 +146,7 @@ The output is a written recommendation (not production code): what we should do,
 
 ## The backlog overview
 
-In addition to individual ticket files, produce a backlog overview at `docs/tickets/<feature-slug>/README.md`:
+In addition to individual ticket files, produce a backlog overview at `docs/features/<feature-slug>/tickets/README.md`:
 
 ```markdown
 # Backlog: <Feature title>
@@ -177,4 +181,4 @@ Anything from the Design Doc not covered by these tickets, with reasoning.
 
 ## After writing
 
-Save tickets to `docs/tickets/<feature-slug>/` and the README. If the target directory doesn't exist, create it. If you can't write the files, tell the user the artifact paths and paste the content inline so they can save it manually. Tell the user how many tickets you produced, the suggested order, and what the tracer bullet is. Suggest a clean-context review using the `review/tickets` skill before implementation begins.
+Save tickets to `docs/features/<feature-slug>/tickets/` and the README. If the target directory doesn't exist, create it. If you can't write the files, tell the user the artifact paths and paste the content inline so they can save it manually. Tell the user how many tickets you produced, the suggested order, and what the tracer bullet is. Suggest a clean-context review using the `review/tickets` skill before implementation begins.
