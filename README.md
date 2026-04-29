@@ -1,4 +1,4 @@
-# jorgenschaefer agent skills
+# Jorgen's agent skills
 
 Custom [agent skills](https://skills.sh) for Claude Code and other AI agents.
 
@@ -39,6 +39,16 @@ npx skills add jorgenschaefer/skills@<skill-name>
 - **boy-scout** — triage incidental code finds: apply trivially safe fixes immediately, create tracked tickets for everything else
 - **refactor-project** — comprehensive structural review of a codebase to identify architectural friction and propose a refactoring plan
 - **workflow-status** — report the current phase and artifact state of an in-progress feature
+
+## Feature lifecycle
+
+When a feature is fully implemented and its final review is approved, delete the feature folder:
+
+```bash
+rm -rf docs/features/<feature-slug>/
+```
+
+The durable artifacts — ADRs in `docs/adr/` and any updates to `CLAUDE.md` — have already been written. The feature folder is working memory for the workflow; git history preserves it if you ever need to look back.
 
 ## Credits
 
