@@ -83,29 +83,7 @@ Examples of decisions that don't:
 - Variable names, function signatures, file layout within a single module
 - Things fully determined by existing conventions
 
-ADRs use this structure:
-
-```markdown
-# ADR <NNNN>: <Title>
-
-**Status:** Proposed | Accepted | Superseded by ADR-XXXX
-**Date:** <YYYY-MM-DD>
-**Context:** Link to Design Doc or Feature Brief
-
-## Context
-What's the situation. What problem does this decision address. What constraints apply.
-
-## Decision
-What we're going to do. One or two sentences in the active voice.
-
-## Alternatives considered
-Each alternative gets a short paragraph: what it is, why it's plausible, why we didn't pick it.
-
-## Consequences
-What becomes easier. What becomes harder. What we're committing to. What this forecloses.
-```
-
-ADR numbering is sequential across the whole repo. Before writing a new ADR, read all existing ADRs in `docs/adr/` to find the next number and to verify your proposed design doesn't contradict an accepted decision. If it does, address the contradiction explicitly — either write an ADR that supersedes the old one, or revise your design to respect the existing decision and explain the constraint in the Risks section.
+When writing an ADR, use the structure and numbering conventions in [adr-format.md](adr-format.md).
 
 ## Writing the Design Doc
 
@@ -181,29 +159,7 @@ A good Design Doc is:
 
 Save the Design Doc to `docs/features/<feature-slug>/design.md` and any ADRs to `docs/adr/`. If the target directories don't exist, create them. If you can't write the files, tell the user the artifact paths and paste the content inline so they can save it manually.
 
-Update `UBIQUITOUS_LANGUAGE.md` at the project root with any new technical or domain terms introduced by this design — module names, entity names, process names, API concepts. For each new term, add a table row to the appropriate group:
-
-```
-| **Term** | One-sentence definition in this project's context | Other words used for this concept |
-```
-
-If an existing group fits the term, add the row there. If no group fits, add a new group heading and start a new table. Don't add terms already present.
-
-If a new term conflicts with or is easily confused with an existing glossary entry, append a bullet to the Flagged ambiguities section naming both terms and the recommended canonical choice.
-
-Do NOT update the Relationships section or the Example dialogue — those are maintained by the dedicated `ubiquitous-language` skill, which synthesises the whole file.
-
-If the file doesn't exist yet, create it with this minimal structure (no Relationships section or Example dialogue — those will be added when the dedicated skill is first invoked):
-
-```md
-# Ubiquitous Language
-
-## <Group name>
-
-| Term | Definition | Aliases to avoid |
-| --- | --- | --- |
-| **<Term>** | <definition> | <aliases> |
-```
+If this design introduced new technical or domain terms (module names, entity names, process names, API concepts), follow the instructions in [ubiquitous-language-update.md](ubiquitous-language-update.md) to update the glossary.
 
 If the codebase survey during design surfaced code smells or findings outside the scope of this feature, invoke the `boy-scout` skill to triage them: trivially safe fixes can be applied immediately; everything else becomes a ticket in `docs/features/boy-scout/tickets/`. Noting smells in the Design Doc is optional context; tracking them as tickets is required.
 
