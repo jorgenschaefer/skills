@@ -30,7 +30,10 @@ The skills together define a phased agentic development workflow. Each skill req
 
 `refactor-project` is an alternative entry point: it produces a Refactoring Proposal at `docs/features/<feature-slug>/proposal.md` instead of a Feature Brief. Downstream skills (design, planning) accept either entry artifact.
 
+`workflow-status` is a utility skill: given a feature slug, it reads the feature folder and reports what phase the work is in, what artifacts exist, and what the next step is.
+
 Each skill is intended to be invoked in a clean context, separate from the conversation that produced the artifact it consumes. The `review` sub-skills in particular depend on "fresh eyes" — they must not share context with the producing conversation.
+
 
 ## Adding or modifying skills
 

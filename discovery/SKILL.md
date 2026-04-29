@@ -71,7 +71,13 @@ During the conversation, different types of insights surface. When something bel
 
 ## When you have enough
 
-You have enough when you could explain the problem to a competent colleague and they could ask reasonable design questions. Not when you know everything — you'll never know everything — but when the residual unknowns are explicit and named.
+You have enough when all of the following are true:
+
+- All 7 dimensions are covered, even if briefly: problem, people, trigger, constraints, success criteria, non-goals, open questions
+- No open question whose answer would change the problem statement (if one exists, resolve it before writing)
+- You've confirmed the summary-back with the user
+
+Not when you know everything — you'll never know everything — but when the residual unknowns are explicit, named, and would only affect design decisions (not the problem statement itself).
 
 ## Writing the Feature Brief
 
@@ -121,7 +127,7 @@ What can't change. Technical, organizational, regulatory, timeline, budget.
 Observable, measurable outcomes. How will we know this worked?
 
 ## Open questions
-Things that aren't yet resolved. Each one should have a name attached if possible — who can answer it?
+Things that aren't yet resolved. Each one should specify a resolution path — who or what will resolve it and how (e.g., "design phase will research X", "user to decide Y before design begins", "spike needed to validate Z").
 
 ## Out of scope for this brief
 Anything explicitly deferred to design or later phases. Architecture, tech choices, UI mockups, ticket breakdowns — none of these belong here.
@@ -139,7 +145,7 @@ Save the brief to `docs/features/<feature-slug>/brief.md`. If the target directo
 
 Update `UBIQUITOUS_LANGUAGE.md` at the project root with any new domain terms surfaced during discovery. Create the file if it doesn't exist yet. Each entry should give the canonical term and a one- or two-sentence definition in the context of this project. Don't add terms that are already there, and don't add generic English words — only terms with project-specific or domain-specific meaning.
 
-If codebase exploration during discovery surfaced code smells or problems unrelated to the feature brief, invoke the `boy-scout` skill to triage them before ending the session.
+If the conversation surfaced incidental problems in existing code (e.g., the user mentioned a known bug or inconsistency), invoke the `boy-scout` skill to triage them before ending the session.
 
 Tell the user where the brief is and what was added to the glossary.
 

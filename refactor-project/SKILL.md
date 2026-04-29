@@ -53,6 +53,10 @@ The feature slug is a required argument. If the user did not provide one at invo
 
 ## Process
 
+### 0. Read existing ADRs
+
+Before exploring, read all ADRs in `docs/adr/` if they exist. Note any architectural decisions that constrain what can be refactored — a proposed refactoring that would contradict an accepted ADR must either be dropped or argue explicitly for an ADR supersession.
+
 ### 1. Explore the codebase
 
 Use the Agent tool with subagent_type=Explore to navigate the codebase naturally. Use these questions to guide your attention — they name the patterns most likely to cause long-term friction. Don't treat them as an exhaustive checklist; if you encounter friction not on this list, note it.
@@ -89,9 +93,13 @@ For each proposed refactoring:
 - **Why:** what friction it removes
 - **Impact:** how much code is affected; how risky
 - **Approach:** a starting point for implementation
+- **Priority:** High / Medium / Low — estimated by impact (how much friction removed) × inverse effort (lower effort = higher priority)
 
 ## Suggested order
-Which refactorings to do first and why.
+Which refactorings to do first and why. High-impact, low-effort changes should generally come first.
+
+## Scope decisions
+Things examined during exploration that were deliberately not included in the proposal, and why. This prevents future confusion about whether issues were missed or consciously deferred.
 ```
 
 Do not implement any refactoring in this skill. The output is a proposal; implementation follows the normal ticket workflow. If the user asks you to implement, redirect: create tickets for the highest-priority refactorings using the planning skill instead.

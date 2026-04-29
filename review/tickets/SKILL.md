@@ -52,14 +52,17 @@ For each ticket, verify:
 - **Are spikes called out where appropriate?** If the design had open questions, the backlog should usually have spike tickets to resolve them, not feature tickets that depend on the answer.
 - **Is unglamorous work ticketed?** Documentation updates, runbook entries, monitoring config, deprecation cleanup, feature flag setup and removal. These are real work, not afterthoughts. If they're missing, they'll either be forgotten or scope-creep into other tickets.
 - **Are feature flags handled?** If the rollout plan involves flags, there should be tickets for adding the flag and (eventually) removing it.
+- **Do all tickets have Status: Backlog?** A freshly-produced backlog should have every ticket at Backlog status. Any other status is a nit (likely a copy-paste artifact), but worth flagging so it gets corrected before implementation begins.
+- **Does the README contain a design coverage table?** A coverage table mapping Design Doc sections to ticket numbers should be present. If it's missing, note it as a should-fix — it makes the coverage check in this review harder and leaves a gap for future readers.
 
 ### Smell tests
 
+- **The layer-by-layer test.** Are the first 2-3 tickets all infrastructure (DB schema, plumbing, scaffolding) before any user-visible behavior? That's the layer-by-layer antipattern. Tracer bullets thread through all layers in the first ticket. Run this test first — it's the most common failure mode.
 - **The "ship after ticket N" test.** For each ticket, ask: "if we shipped after this ticket and stopped, would users have something useful?" The answer should usually be yes, especially for the early tickets.
 - **The "two implementers" test.** If two implementers picked up adjacent tickets in parallel, would they collide? If yes, the dependency graph is wrong, or the slicing is wrong.
 - **The "rename test."** Read each ticket title in isolation. Does the title accurately describe the work? Generic titles like "Backend changes" or "Update API" are findings.
 - **The "design smuggling" test.** Do any tickets authorize implementation choices the Design Doc didn't make? Caching strategies, library picks, structural decisions — these belong in the design, not buried in a ticket.
-- **The layer-by-layer test.** Are the first 2-3 tickets all infrastructure (DB schema, plumbing, scaffolding) before any user-visible behavior? That's the layer-by-layer antipattern. Tracer bullets thread through all layers in the first ticket.
+- **The screaming architecture test.** Do any implementation notes reference file paths that use technical-layer organization (`services/FooService.ts`, `controllers/BarController.ts`) rather than domain-first organization (`orders/FooService.ts`)? If so, flag as a nit and note the domain-first alternative. If the codebase is already layered, the note should acknowledge the tension rather than silently perpetuating it.
 
 ## Common findings
 

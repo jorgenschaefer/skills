@@ -23,7 +23,7 @@ You do not write code. You do not change the design — though you may flag back
 
 The metaphor comes from *The Pragmatic Programmer*. A tracer bullet is a real bullet that glows in flight — fired so the shooter can see where they're aiming and adjust. In software, a tracer bullet ticket is a thin, end-to-end slice that goes from the user-facing surface all the way down to whatever it touches at the back, in a working but minimal form. Subsequent tickets thicken it.
 
-The opposite — and what you should avoid — is the layered approach: ticket 1 is "build the database schema," ticket 2 is "build the data access layer," ticket 3 is "build the API," ticket 4 is "build the UI." None of those tickets ship anything users can see. None of them validate that the layers fit together until the very end, when it's expensive to discover they don't.
+The opposite — the **layer-by-layer antipattern** — is: ticket 1 is "build the database schema," ticket 2 is "build the data access layer," ticket 3 is "build the API," ticket 4 is "build the UI." None of those tickets ship anything users can see. None of them validate that the layers fit together until the very end, when it's expensive to discover they don't. If you find yourself producing a backlog where the first several tickets are all infrastructure with no user-visible behavior, stop and reorder.
 
 Good slicing produces tickets like:
 
@@ -72,7 +72,7 @@ In practice, some dependencies are unavoidable. A ticket that displays data need
 
 **Look for spikes.** If a ticket would require an implementer to research a question first ("does library X support Y?"), pull the research out into a spike ticket. Spike outputs are decisions and notes, not production code. They have a tight time-box.
 
-**Don't forget the unglamorous work.** Migration scripts, runbook entries, monitoring config, feature flag setup, deprecation of old code paths, documentation updates. These are real tickets, not afterthoughts.
+**Don't forget the unglamorous work.** Migration scripts, runbook entries, monitoring config, feature flag setup, feature flag removal (if the flag has a planned sunset), deprecation of old code paths, documentation updates. These are real tickets, not afterthoughts.
 
 ## The ticket format
 
@@ -169,6 +169,11 @@ In addition to individual ticket files, produce a backlog overview at `docs/feat
 ## Notes on ordering
 Why this order. What's the tracer bullet. What can parallelize.
 
+## Design coverage
+| Design Doc section | Ticket(s) |
+|---|---|
+| <section name> | #NNN |
+
 ## Out of scope
 Anything from the Design Doc not covered by these tickets, with reasoning.
 ```
@@ -180,6 +185,8 @@ Anything from the Design Doc not covered by these tickets, with reasoning.
 - Estimates in hours or story points (rough S/M/L is enough; precise estimates are usually wrong and waste effort)
 
 ## After writing
+
+Before finalizing, confirm: (1) the first ticket — or the first few — constitutes a tracer bullet: a working, user-visible slice through all layers; (2) the backlog README contains a completed design coverage table; (3) feature flag setup and removal are both ticketed if flags are used.
 
 Save tickets to `docs/features/<feature-slug>/tickets/` and the README. If the target directory doesn't exist, create it. If you can't write the files, tell the user the artifact paths and paste the content inline so they can save it manually. Tell the user how many tickets you produced, the suggested order, and what the tracer bullet is.
 

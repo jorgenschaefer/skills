@@ -52,28 +52,27 @@ Code should be organized by domain, not by technical layer.
 
 ### 2. Deep modules
 
-A module is deep when its interface is small relative to the complexity it hides. A module is shallow when its interface is nearly as complex as its implementation.
+A module is deep when its interface is small relative to the complexity it hides; shallow when its interface is nearly as complex as its implementation. The finding is not "too small" but "the caller is worse off for this abstraction existing."
 
 Flag:
 - Pass-through methods that add no logic
 - Abstractions too thin to justify their existence
-- Interfaces that leak rather than encapsulate complexity
-
-Shallow modules spread complexity onto callers. That is the finding — not that the module is "too small", but that the caller is worse off for the abstraction existing. Evaluate: is the interface simpler than what it hides? If not, it is shallow.
+- Interfaces that leak rather than encapsulate internal structure
+- Callers that are more complex after the abstraction than they would be without it
 
 ### 3. Adapter boundaries
 
-Business logic should touch only domain objects. Inbound and outbound adapters own the translation to/from the outside world.
+Business logic must touch only domain objects. Three layers, three rules:
 
-**Inbound adapter** (route handler, controller, GraphQL resolver): authenticate the request, validate raw input into a domain object, call business logic, map the result to a response format. No domain rules live here.
+- **Inbound adapter** (route handler, controller): authenticate → validate input into domain object → call logic → map to response. No domain rules.
+- **Business logic**: domain objects in, domain objects out. No HTTP types, no Zod-inferred types, no ORM entities, no DB row types.
+- **Outbound adapter** (repository, API client): translate domain ↔ external format. No domain rules.
 
-**Business logic**: receives domain objects, applies domain rules, returns domain objects or raises domain errors. No HTTP types, no validation-schema types (e.g., Zod inferred types), no ORM entities, no DB row types.
-
-**Outbound adapter** (repository, external API client): translates domain objects to the external format, performs the I/O, translates results back to domain objects. No domain rules.
-
-**Types follow the boundary.** Validation schemas belong in the inbound adapter. Domain types belong in business logic. Database types belong in the outbound adapter. A type in the wrong layer is a **should-fix**. If business logic imports from a validation library or an ORM, that is a should-fix.
-
-Even in simple CRUD code where all three happen in one function, the concerns should be visibly distinct and not interleaved.
+Flag:
+- Business logic importing from a validation library or ORM (should-fix)
+- Validation schemas, domain types, or DB types crossing a layer boundary (should-fix)
+- Domain rules implemented in an adapter (should-fix)
+- Even in simple CRUD, check that concerns are visibly distinct — interleaved logic is still a violation
 
 ### 4. Test quality
 
@@ -97,11 +96,11 @@ Tests are evidence that the code does what it claims — not just that it runs.
 
 ### 6. Correctness
 
-- **Error paths, not just the happy path.** What happens when the network call fails, the row isn't there, the input is malformed, the third-party API returns 500?
-- **Concurrency.** If the change touches shared state: race conditions, double-submits, cache stampedes, deadlocks. Has the implementer thought about concurrent access?
-- **State machines.** If stateful entities are involved: are illegal states reachable? Are transitions atomic where they need to be? Walk the state graph.
-- **External dependency robustness.** Timeouts, retries with backoff, circuit breakers where the codebase uses them. A naive blocking call to an external service with no timeout is a finding.
-- **Time and randomness.** Hardcoded `now()` and `random()` calls inside business logic are correctness bugs and testing pain. They should be injected.
+- **Error paths.** What happens when the network call fails, the row isn't there, the input is malformed, the API returns 500? Every external call has a failure mode.
+- **Concurrency.** Shared state: race conditions, double-submits, cache stampedes, deadlocks.
+- **State machines.** Stateful entities: illegal states reachable? Transitions atomic where needed?
+- **External dependency robustness.** Timeouts, retries with backoff, circuit breakers. A blocking external call with no timeout is a finding.
+- **Time and randomness.** Hardcoded `now()` or `random()` inside business logic: correctness bug and testing pain. Inject them.
 
 ### 7. Security
 
@@ -121,11 +120,11 @@ Tests are evidence that the code does what it claims — not just that it runs.
 
 ### 9. Performance
 
-- **N+1 queries.** A query inside a loop that scales with the result set size. Always a should-fix.
-- **Unbounded operations.** Loops or in-memory operations on arbitrarily large data without pagination or limits.
-- **Missing indexes.** New queries on columns without an index, especially in WHERE clauses or JOIN conditions.
-- **Optimization without measurement.** An optimization that obscures intent without a measured bottleneck is a finding. The readable version should be preferred unless performance is demonstrably critical.
-- **Caching.** Two failure modes: *missing where needed* (repeated DB or API calls with identical inputs within one request — should-fix) and *added speculatively* without evidence of a bottleneck (also should-fix). Both are findings.
+- **N+1 queries.** A query inside a loop that scales with result set size. Always a should-fix.
+- **Unbounded operations.** In-memory loops on arbitrarily large data without pagination or limits.
+- **Missing indexes.** New queries on unindexed columns in WHERE or JOIN conditions.
+- **Optimization without measurement.** Obscures intent without a measured bottleneck — prefer the readable version unless demonstrably critical.
+- **Caching.** Two failure modes, both should-fix: *missing where needed* (repeated identical DB/API calls in one request), *added speculatively* without evidence of a bottleneck.
 - **Slow operations bounded.** Timeouts on external calls, pagination on list endpoints, limits on retry counts.
 
 ## Output format

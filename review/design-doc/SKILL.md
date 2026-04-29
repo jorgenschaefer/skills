@@ -30,6 +30,7 @@ Walk through these questions. Each corresponds to a common failure mode of desig
 - **Do design goals match brief goals?** Subtle scope drift between brief and design is common — the design ends up solving an adjacent problem. Cross-check each design goal against the brief.
 - **Are the brief's non-goals respected?** A design that quietly addresses non-goals is doing extra work that the brief explicitly excluded.
 - **Are the brief's constraints honored?** Each constraint should either be visibly addressed in the design or explicitly noted as non-applicable.
+- **Are the brief's open questions resolved?** Read the brief's open questions section. For each question, verify the design either answers it or explicitly defers it with a reason. An open question that could change the design approach and is not addressed is a should-fix.
 
 ### The proposed design itself
 

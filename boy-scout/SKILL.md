@@ -25,7 +25,7 @@ If multiple findings were noticed in one session, triage them all at once.
 For each finding, apply it immediately if **all** of the following are true:
 
 1. The change is confined to a single file.
-2. The change cannot alter runtime behavior under any code path.
+2. The change cannot plausibly alter runtime behavior — removing an import that has side effects on load is not safe; when in doubt, write a ticket.
 3. You can justify this in one sentence with no caveats.
 
 Canonical trivially safe examples:
@@ -77,9 +77,9 @@ The `Noticed during` field is first-class — it closes the traceability loop so
 
 A finding is worth a ticket if, left unfixed, it would cause an actual problem for a future maintainer or user. Style preferences and arbitrary refactors do not qualify. When in doubt, ask: "Would this make someone's life worse in a concrete, describable way?" If no, skip it.
 
-## Pattern recognition
+## Batching related findings
 
-If you notice the same kind of finding in three or more separate places, do not create a ticket per instance. Write one ticket that describes the pattern, names the locations, and notes that a `refactor-project` survey may be warranted. Batch cleanup of a systemic smell is architectural work, not boy-scout work.
+If the same trivial finding appears in exactly 2 files, apply both fixes and note both in your report. If it appears in 3 or more separate places, do not create a ticket per instance — write one ticket that describes the pattern, names the locations, and notes that a `refactor-project` survey may be warranted. Batch cleanup of a systemic smell is architectural work, not boy-scout work.
 
 ## What you do not produce
 

@@ -95,7 +95,7 @@ If there were things you couldn't fully verify (lacked context, lacked access to
 ## Verdict guidance
 
 - **Approve** — no findings above nit level. Rare; be sure.
-- **Approve with comments** — only nits and minor should-fix items. The author can address at their discretion.
+- **Approve with comments** — only nit-level issues remain. Minor should-fix items that are isolated and low-risk may be included if the reviewer is confident they can be addressed without re-review. When in doubt, use Request changes.
 - **Request changes** — should-fix items that should be addressed, but no blockers. The author should respond to each finding before advancing.
 - **Block** — at least one blocker. The artifact cannot advance until blockers are resolved.
 
@@ -112,16 +112,6 @@ Bad: "Did you even read the design doc?"
 Good: "This ticket's scope appears to span what the design doc treats as two separate modules — see Design Doc §3.2. Suggest splitting."
 
 Specificity is kind. Vague feedback is harder to act on than direct feedback.
-
-## Screaming architecture check
-
-Check whether the artifact organizes code by domain rather than by technical layer. Signs of a violation:
-- Files placed in top-level `controllers/`, `services/`, `models/`, or `helpers/` directories rather than in domain or feature folders
-- Feature code scattered across multiple generic-layer directories instead of grouped under a single domain directory
-
-Severity depends on context:
-- **Blocker** — code in a project with no existing layered structure, OR a new module being added to a project that doesn't yet use layered organization elsewhere. There is no path-dependency justifying a layered layout here.
-- **Should-fix** — code added to an existing layered codebase that wasn't using screaming architecture. The right fix is to flag the tension and track a structural cleanup; it shouldn't necessarily block this particular change.
 
 ## Ubiquitous language check
 
@@ -145,7 +135,7 @@ Save the review file. Tell the user the verdict and headline findings. Do not mo
 
 If it's Request changes or Block, suggest the author address findings before re-reviewing.
 
-## Boy scout findings
+### Boy scout findings
 
 While reviewing, you may notice things unrelated to the artifact under review — stale code, latent bugs, misleading names in nearby files. Do not include these in the review findings; they pollute the severity classification and distract from the artifact's own issues.
 

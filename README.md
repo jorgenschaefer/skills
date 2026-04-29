@@ -38,6 +38,11 @@ npx skills add jorgenschaefer/skills@<skill-name>
 
 - **boy-scout** — triage incidental code finds: apply trivially safe fixes immediately, create tracked tickets for everything else
 - **refactor-project** — comprehensive structural review of a codebase to identify architectural friction and propose a refactoring plan
+- **workflow-status** — report the current phase and artifact state of an in-progress feature
+
+## Credits
+
+The TDD reference files in `implementation/` (`tests.md`, `deep-modules.md`, `mocking.md`, `interface-design.md`, `refactoring.md`) are adapted from [Matt Pocock](https://mattpocock.com)'s TDD skill.
 
 ## Adding a new skill
 

@@ -32,7 +32,7 @@ If any of these are missing, get them before producing a design. A design writte
 
 ## How to approach the work
 
-**Read the brief twice before designing.** First pass for understanding, second pass with a designer's eye: which parts of this constrain the design, which leave room? What are the non-goals (those keep you from over-building)?
+**Read the brief with two lenses in sequence.** First for comprehension: what is being asked, what problem does the user actually have? Then for design constraints: what limits the solution space, what are the non-goals that protect you from over-building?
 
 **Survey the existing code.** Find the modules likely affected. Read their interfaces. Look at how similar features were built before — there's usually a pattern to follow or deliberately deviate from. Note any code smells you'll need to work around or address.
 
@@ -44,7 +44,23 @@ If any of these are missing, get them before producing a design. A design writte
 
 **Generate options before committing.** For each significant decision — one that affects more than one module, would be expensive to reverse, or has plausible alternatives — brainstorm at least two or three approaches. The first idea is rarely the best. Write down the alternatives even if you reject them quickly — they go into ADRs.
 
-**Identify the cross-cutting concerns.** It's easy to design the happy path and forget about: authentication and authorization, observability (logging, metrics, tracing), error handling and retries, rate limiting, data migration, backwards compatibility, feature flags, security and PII, performance under load, multi-tenancy if applicable, internationalization if applicable. Walk through this list explicitly. Most design failures happen because one of these was forgotten.
+When uncertain about a technical choice: recommend a spike if the uncertainty could change the entire approach; record it as a risk if it's about tuning or edge cases within an already-chosen approach.
+
+**Identify the cross-cutting concerns.** Walk this list explicitly — most design failures happen because one of these was forgotten:
+
+- Authentication and authorization
+- Observability (logging, metrics, tracing, alerting)
+- Error handling, retries, and partial failure
+- Rate limiting and abuse prevention
+- Data migration (forwards and backwards)
+- Backwards compatibility with existing clients
+- Feature flags and rollout strategy
+- Security and PII handling
+- Performance under expected load
+- Multi-tenancy / data isolation (if applicable)
+- Internationalization / localization (if applicable)
+- Accessibility (if user-facing)
+- Cost of new cloud resources or external calls
 
 **Trace through a concrete user scenario end-to-end.** Pick a typical use case from the brief and walk it through your proposed design from request to response (or trigger to outcome). Where does data come from? Where does it go? What can fail at each step? This usually surfaces gaps faster than abstract reasoning.
 
@@ -89,7 +105,7 @@ Each alternative gets a short paragraph: what it is, why it's plausible, why we 
 What becomes easier. What becomes harder. What we're committing to. What this forecloses.
 ```
 
-ADR numbering is sequential across the whole repo. Check existing ADRs to find the next number.
+ADR numbering is sequential across the whole repo. Before writing a new ADR, read all existing ADRs in `docs/adr/` to find the next number and to verify your proposed design doesn't contradict an accepted decision. If it does, address the contradiction explicitly — either write an ADR that supersedes the old one, or revise your design to respect the existing decision and explain the constraint in the Risks section.
 
 ## Writing the Design Doc
 

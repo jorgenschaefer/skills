@@ -16,7 +16,7 @@ Before reviewing, confirm you have:
 1. The **diff or changed files** in full — the actual code under review.
 2. The **ticket** the implementation is for — acceptance criteria, scope, in-scope/out-of-scope.
 3. The **Design Doc** the ticket is part of — architecture decisions, proposed approach, referenced ADRs.
-4. **CI status** — whether the test suite and linting passed.
+4. **CI status** — whether the test suite and linting passed. If CI is failing, record it immediately as a blocker in Phase 4 and note it in the summary — a review cannot approve code that doesn't pass CI. Proceed with Phase 2 and 3 to document other findings, but the verdict is Block regardless of other findings.
 
 If the ticket or Design Doc is missing, note it. The code quality review (Phase 2) can proceed without them, but the workflow compliance review (Phase 3) will be partial. Don't silently skip Phase 3 checks — mark them as "could not verify: no ticket provided."
 
@@ -24,7 +24,7 @@ Also confirm you're in a clean context — you did not participate in creating t
 
 ## Phase 2: Code quality
 
-Read `../code-review/SKILL.md` in full. Apply all nine quality dimensions it describes to the diff gathered in Phase 1. The scope is already known — do not re-run scope-discovery from that skill's protocol.
+Read `../../code-review/SKILL.md` in full. Apply all nine quality dimensions it describes to the diff gathered in Phase 1. The scope is already known — do not re-run scope-discovery from that skill's protocol.
 
 Record your findings using Blocker/Should-fix/Nit severity. These form the Code Quality section of the combined output in Phase 4.
 

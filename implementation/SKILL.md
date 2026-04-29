@@ -19,9 +19,10 @@ Before starting, make sure you have:
 
 1. **The ticket.** A specific ticket file with goal, scope, and acceptance criteria. If the user gestures at "the next ticket" without specifying, ask which one.
 2. **The Design Doc.** The ticket should reference it. Read it for context before starting.
-3. **The codebase.** Read the relevant existing code. Understand the patterns. Run the existing tests to confirm they pass before you start changing anything.
+3. **The codebase.** Read the relevant existing code. Understand the patterns. Run the existing test suite — if it doesn't pass, stop and report to the user before adding any changes on top of a broken baseline.
 4. **The repo's conventions.** Check `CLAUDE.md` / `AGENTS.md` for build/test/lint commands, code style, and any project-specific rules.
 5. **The project's ubiquitous language.** Read `UBIQUITOUS_LANGUAGE.md` at the project root if it exists. Use canonical terms in identifiers — class names, function names, variable names, test descriptions.
+6. **The reference files for this skill.** Read [tests.md](tests.md), [deep-modules.md](deep-modules.md), [mocking.md](mocking.md), and [refactoring.md](refactoring.md) before writing any code. They contain the patterns and guidelines this skill applies throughout the TDD loop.
 
 If anything is missing or unclear, ask before writing code. Misunderstanding the ticket is the most expensive mistake at this stage.
 
@@ -133,8 +134,6 @@ If a piece of code resists testing entirely, that's a strong signal something is
 
 ## Working with existing tests
 
-Run the existing test suite *before* you start. Confirm it passes. If it doesn't, stop and tell the user — don't add your changes on top of a broken baseline.
-
 If your changes legitimately need to update existing tests (e.g., a function signature changed), do so deliberately. But be suspicious: if you find yourself updating existing tests that are unrelated to the behavior your ticket changes — more than one or two, or tests in different modules — that's a signal you may be breaking behavior you shouldn't be.
 
 ## Producing the PR description
@@ -168,5 +167,3 @@ After the review agent finishes, read the review file it saved at `docs/features
 Tell the user the ticket is done, point to the PR or branch, summarize, and report what the review found and what was addressed. The ticket is ready to merge only after all blockers and should-fixes are resolved.
 
 Then suggest the next step: if there are remaining tickets in the backlog, implement the next one using the `implementation` skill; if all tickets are done, the feature is complete and ready for final merge.
-
-_Reference files adapted from [Matt Pocock](https://mattpocock.com)'s TDD skill._

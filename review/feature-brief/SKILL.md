@@ -64,7 +64,7 @@ Walk through these questions. Each one corresponds to a common failure mode at t
 ### Open questions
 
 - **Are the right questions surfaced?** Briefs that pretend everything is known are usually wrong. Look for areas the brief glosses over — those probably contain unsurfaced open questions.
-- **Are owners assigned?** Open questions without owners tend to stay open forever.
+- **Does each question have a resolution path?** An open question should specify how it will be resolved (e.g., "design phase will research X", "user to decide Y before design begins", "spike needed to validate Z"). Questions with no resolution path tend to stay open forever.
 
 ### Out of scope
 
@@ -74,7 +74,7 @@ Walk through these questions. Each one corresponds to a common failure mode at t
 
 - **Skim test.** Can someone read the Summary alone and understand what's being proposed? If not, the Summary is doing too little work.
 - **The "future engineer" test.** If a new engineer joins the team in six months and reads only this brief, will they understand why this work was done? If they'd be confused, the brief lacks context.
-- **The ubiquitous language check.** Does the brief use terminology consistently with `UBIQUITOUS_LANGUAGE.md`? A brief that uses different words for the same concept as the rest of the project will cause drift in every downstream artifact.
+- **The ubiquitous language check.** Does the brief use terminology consistently with `UBIQUITOUS_LANGUAGE.md`? A brief that uses different words for the same concept as the rest of the project will cause drift in every downstream artifact. Terms that already have glossary entries: using synonyms or paraphrases is a **should-fix**. New terms the brief introduces that aren't in the glossary: also a **should-fix** — the discovery skill was responsible for adding them.
 - **The contradiction check.** Do any two sections contradict each other? Goals vs. constraints, problem vs. success criteria, scope vs. non-goals. Contradictions are common in early drafts.
 - **The implicit-design check.** Has the brief crept into design territory? Architecture decisions, tech choices, UI layouts, ticket-level work. If yes, they should move to the design phase or be deleted.
 
