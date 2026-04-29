@@ -41,6 +41,13 @@ Domain terms used across this skills project and the agentic development workflo
 | **Phase artifact** | Any document produced by a workflow skill; useful while building but treated as reference-only once its phase is complete | Intermediate artifact |
 | **Permanent artifact** | An artifact that carries forward to influence future work regardless of feature status — currently ADRs and `UBIQUITOUS_LANGUAGE.md` | Long-lived artifact |
 
+## Phase dynamics
+
+| Term | Definition | Aliases to avoid |
+| --- | --- | --- |
+| **Product-technical boundary decision** | A requirement or configuration value the user already knows and has decided, which only becomes relevant once the problem is fully understood — e.g. "truncate lists at 5 items", "default timeout is 30s". Not derived through technical analysis; the user brings it. Too specific for the Feature Brief, but not a design output either. Belongs in the Design Doc, surfaced by the clarification round. | Product detail, implementation detail, design decision |
+| **Clarification round** | A step in the design phase triggered by product-technical boundary decisions not in the Feature Brief, or by any pending ADR. The agent presents both together in a single structured message before producing the Design Doc. ADR confirmations are always included — writing an ADR without user input is never acceptable. Skipped only when no gaps exist and no ADRs are planned. | Check-in, clarification pass, design questions |
+
 ## Relationships
 
 - A **Feature** has exactly one **Feature slug** and one **Feature folder**
