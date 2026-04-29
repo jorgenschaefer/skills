@@ -181,4 +181,15 @@ Anything from the Design Doc not covered by these tickets, with reasoning.
 
 ## After writing
 
-Save tickets to `docs/features/<feature-slug>/tickets/` and the README. If the target directory doesn't exist, create it. If you can't write the files, tell the user the artifact paths and paste the content inline so they can save it manually. Tell the user how many tickets you produced, the suggested order, and what the tracer bullet is. Suggest a clean-context review using the `review/tickets` skill before implementation begins.
+Save tickets to `docs/features/<feature-slug>/tickets/` and the README. If the target directory doesn't exist, create it. If you can't write the files, tell the user the artifact paths and paste the content inline so they can save it manually. Tell the user how many tickets you produced, the suggested order, and what the tracer bullet is.
+
+Then run an automated review in a clean context. Use the `Agent` tool with `subagent_type: "general-purpose"` so the review agent has no memory of this conversation — this gives the backlog fresh eyes. The agent's self-contained prompt should be:
+
+> Invoke the `review/tickets` skill for feature slug `<slug>`. The backlog is at `docs/features/<slug>/tickets/`.
+
+After the review agent finishes, read the review file it saved at `docs/features/<slug>/tickets-review-<NN>.md`. Update the tickets and backlog README to address every finding:
+- **Blocker**: must be resolved before leaving this phase — revise the tickets
+- **Should-fix**: address these — they represent real quality gaps
+- **Nit**: use judgment
+
+Tell the user what the review found, what was addressed, and the final verdict. Then suggest the next step is implementing tickets one at a time using the `implementation` skill.

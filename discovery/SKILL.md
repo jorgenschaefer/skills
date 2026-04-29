@@ -141,4 +141,15 @@ Update `UBIQUITOUS_LANGUAGE.md` at the project root with any new domain terms su
 
 If codebase exploration during discovery surfaced code smells or problems unrelated to the feature brief, invoke the `boy-scout` skill to triage them before ending the session.
 
-Tell the user where the brief is and what was added to the glossary. Suggest the next step is a clean-context review using the `review/feature-brief` skill, then the design phase.
+Tell the user where the brief is and what was added to the glossary.
+
+Then run an automated review in a clean context. Use the `Agent` tool with `subagent_type: "general-purpose"` so the review agent has no memory of this conversation — this gives the brief fresh eyes. The agent's self-contained prompt should be:
+
+> Invoke the `review/feature-brief` skill for feature slug `<slug>`. The Feature Brief is at `docs/features/<slug>/brief.md`.
+
+After the review agent finishes, read the review file it saved at `docs/features/<slug>/brief-review-<NN>.md`. Update the Feature Brief to address every finding:
+- **Blocker**: must be resolved before leaving this phase — revise the brief
+- **Should-fix**: address these — they represent real quality gaps
+- **Nit**: use judgment; incorporate if easy, skip if trivial
+
+Tell the user what the review found (blockers, should-fixes, nits), what was addressed, and the final verdict. Then suggest the next step is the design phase.

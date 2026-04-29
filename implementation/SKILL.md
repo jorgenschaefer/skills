@@ -156,6 +156,15 @@ When the ticket is done, write a PR description (or summary) that includes:
 
 ## After implementation
 
-Tell the user the ticket is done, point to the PR or branch, and summarize. Suggest a clean-context review using the `review/implementation` skill before merging.
+Before declaring the ticket done, run an automated review in a clean context. Use the `Agent` tool with `subagent_type: "general-purpose"` so the review agent has no memory of this conversation — this gives the code fresh eyes. The agent's self-contained prompt should be:
+
+> Invoke the `review/implementation` skill. The ticket is at `<ticket-path>`. The Design Doc is at `docs/features/<slug>/design.md`. Find the diff by running `git log --oneline` to identify recent commits and `git show <hash>` to view each.
+
+After the review agent finishes, read the review file it saved at `docs/features/<slug>/implementation-review-<NN>.md`. Address every finding before declaring done:
+- **Blocker**: must be fixed before merging — go back to the TDD loop
+- **Should-fix**: address these — they represent real quality gaps
+- **Nit**: use judgment
+
+Tell the user the ticket is done, point to the PR or branch, summarize, and report what the review found and what was addressed. The ticket is ready to merge only after all blockers and should-fixes are resolved.
 
 _Reference files adapted from [Matt Pocock](https://mattpocock.com)'s TDD skill._

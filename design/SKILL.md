@@ -169,4 +169,15 @@ Update `UBIQUITOUS_LANGUAGE.md` at the project root with any new technical or do
 
 If the codebase survey during design surfaced code smells or findings outside the scope of this feature, invoke the `boy-scout` skill to triage them: trivially safe fixes can be applied immediately; everything else becomes a ticket in `docs/features/boy-scout/tickets/`. Noting smells in the Design Doc is optional context; tracking them as tickets is required.
 
-Tell the user what was written and where. Suggest the next step is a clean-context review using the `review/design-doc` skill before moving to planning.
+Tell the user what was written and where.
+
+Then run an automated review in a clean context. Use the `Agent` tool with `subagent_type: "general-purpose"` so the review agent has no memory of this conversation — this gives the design fresh eyes. The agent's self-contained prompt should be:
+
+> Invoke the `review/design-doc` skill for feature slug `<slug>`. The Design Doc is at `docs/features/<slug>/design.md`.
+
+After the review agent finishes, read the review file it saved at `docs/features/<slug>/design-review-<NN>.md`. Update the Design Doc and any relevant ADRs to address every finding:
+- **Blocker**: must be resolved before leaving this phase — revise the design
+- **Should-fix**: address these — they represent real quality gaps
+- **Nit**: use judgment
+
+Tell the user what the review found, what was addressed, and the final verdict. Then suggest the next step is the planning phase.
