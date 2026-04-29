@@ -47,6 +47,10 @@ Types mirror the same separation — **validation schemas** (Zod, etc.) belong o
 
 For simple CRUD, all three layers can live in one function or file — but even then, the three concerns must be visibly distinct and not tangled together.
 
+## Before starting
+
+The feature slug is a required argument. If the user did not provide one at invocation, ask for it before proceeding.
+
 ## Process
 
 ### 1. Explore the codebase
@@ -64,7 +68,7 @@ Document each friction point as you encounter it: note the file or module, the p
 
 ### 2. Propose a refactoring plan
 
-Save the proposal to `docs/refactor/<YYYY-MM-DD>-<slug>.md`. If the target directory doesn't exist, create it. If you can't write the file, tell the user the artifact path and paste the content inline so they can save it manually.
+Save the proposal to `docs/features/<slug>/proposal.md`. If the target directory doesn't exist, create it. If you can't write the file, tell the user the artifact path and paste the content inline so they can save it manually.
 
 Use this structure:
 
