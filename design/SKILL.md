@@ -42,9 +42,9 @@ If any of these are missing, get them before producing a design. A design writte
 
 2. **An ADR is about to be written** — ADRs record significant, hard-to-reverse decisions. Before committing any ADR to paper, always present the decision, your recommendation, and the key alternatives to the user and ask for confirmation or redirection.
 
-Collect all questions from both cases and ask them together in a single structured message, grouped by type (product decisions first, ADR confirmations second), before producing any design output. Wait for the user's response, then incorporate the answers.
+Collect all questions from both cases and ask them together in a single structured message, grouped by type (product decisions first, ADR confirmations second), before producing any design output. Wait for the user's response, then incorporate the answers. In non-interactive or sub-agent contexts where no response arrives, proceed rather than blocking.
 
-If the user doesn't answer a specific question, pick a reasonable default, apply it, and flag it explicitly in the Design Doc so it can be corrected during implementation.
+If the user doesn't answer some or all questions — or no response arrives — pick reasonable defaults, apply them, and flag them together in a single consolidated block at the top of the Design Doc: *"Clarification round: no response received. The following values were assumed — correct during implementation if needed: [list each assumption]."*
 
 Skip this step only if you have genuinely found no product-technical gaps **and** no ADRs are planned.
 
