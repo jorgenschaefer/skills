@@ -178,7 +178,7 @@ Tell the user what was written and where.
 
 Then run an automated review in a clean context. Use the `Agent` tool with `subagent_type: "general-purpose"` so the review agent has no memory of this conversation — this gives the design fresh eyes. The agent's self-contained prompt should be:
 
-> Invoke the `review/design` skill for feature slug `<slug>`. The Design Doc is at `docs/features/<slug>/design.md`.
+> Invoke the `design-review` skill for feature slug `<slug>`. The Design Doc is at `docs/features/<slug>/design.md`.
 
 After the review agent finishes, read the review file it saved at `docs/features/<slug>/design-review-<NN>.md`. Update the Design Doc and any relevant ADRs to address every finding:
 - **Blocker**: must be resolved before leaving this phase — revise the design

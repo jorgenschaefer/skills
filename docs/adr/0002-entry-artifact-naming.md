@@ -22,6 +22,6 @@ Distinct filenames: `discovery.md` for Feature Briefs (from `discovery`), `refac
 
 ## Consequences
 
-- Downstream skills (design, planning, review/discovery) must check for `discovery.md` first, then `refactoring.md`. This adds one conditional lookup but is easy to specify in skill instructions.
+- Downstream skills (design, planning, discovery-review) must check for `discovery.md` first, then `refactoring.md`. This adds one conditional lookup but is easy to specify in skill instructions.
 - A feature folder cannot have both `discovery.md` and `refactoring.md` from the same initial entry — entry points are mutually exclusive in practice. If a user runs both, the folder will contain both files; this is not prevented but is also not a supported workflow.
 - The document type is immediately visible from the filename, which is the right tradeoff for a documentation system.

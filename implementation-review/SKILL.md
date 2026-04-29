@@ -1,11 +1,11 @@
 ---
-name: review-implementation
+name: implementation-review
 description: Use this skill to review a code change produced by the Implementation phase before it gets merged. Checks workflow compliance (ticket adherence, acceptance criteria, design alignment, scope) and delegates code quality analysis to the code-review skill, combining both into a single verdict. Trigger whenever the user says "review this PR", "code review for ticket X", "is this implementation ready to merge", or hands you a diff and asks for feedback. Always use a clean context, separate from the conversation that produced the code, since the value of the review depends on fresh eyes that don't share the implementer's blind spots.
 ---
 
 # Implementation Review
 
-This skill reviews a **code change** produced by the Implementation phase — the diff, tests, and related changes that satisfy a ticket. It builds on the shared review base; read `../SKILL.md` first for the reviewer stance, output format, and severity definitions.
+This skill reviews a **code change** produced by the Implementation phase — the diff, tests, and related changes that satisfy a ticket. It builds on the shared review base; read `review-base.md` first for the reviewer stance, output format, and severity definitions.
 
 The unique job of this review is to verify that the code does what the ticket says it does, that it does so correctly and well, and that it doesn't introduce problems the ticket didn't ask for. It works in four phases.
 
@@ -24,7 +24,7 @@ Also confirm you're in a clean context — you did not participate in creating t
 
 ## Phase 2: Code quality
 
-Read `../../code-review/SKILL.md` in full. Apply all nine quality dimensions it describes to the diff gathered in Phase 1. The scope is already known — do not re-run scope-discovery from that skill's protocol.
+Read `../code-review/SKILL.md` in full. Apply all nine quality dimensions it describes to the diff gathered in Phase 1. The scope is already known — do not re-run scope-discovery from that skill's protocol.
 
 Record your findings using Blocker/Should-fix/Nit severity. These form the Code Quality section of the combined output in Phase 4.
 
@@ -67,7 +67,7 @@ The single most important check. Walk through every acceptance criterion in the 
 
 ## Phase 4: Combined verdict
 
-Merge findings from Phases 2 and 3 into a single structured output using the format from `../SKILL.md`. Include an explicit **Acceptance Criteria Coverage** table listing each criterion with its status (verified / not verified / partially verified) and the file/test that proves it.
+Merge findings from Phases 2 and 3 into a single structured output using the format from `review-base.md`. Include an explicit **Acceptance Criteria Coverage** table listing each criterion with its status (verified / not verified / partially verified) and the file/test that proves it.
 
 Apply the smell tests before finalizing:
 

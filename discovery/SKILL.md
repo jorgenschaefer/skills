@@ -151,7 +151,7 @@ Tell the user where the brief is and what was added to the glossary.
 
 Then run an automated review in a clean context. Use the `Agent` tool with `subagent_type: "general-purpose"` so the review agent has no memory of this conversation — this gives the brief fresh eyes. The agent's self-contained prompt should be:
 
-> Invoke the `review/discovery` skill for feature slug `<slug>`. The Feature Brief is at `docs/features/<slug>/discovery.md`.
+> Invoke the `discovery-review` skill for feature slug `<slug>`. The Feature Brief is at `docs/features/<slug>/discovery.md`.
 
 After the review agent finishes, read the review file it saved at `docs/features/<slug>/discovery-review-<NN>.md`. Update the Feature Brief to address every finding:
 - **Blocker**: must be resolved before leaving this phase — revise the brief

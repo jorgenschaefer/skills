@@ -1,11 +1,11 @@
 ---
-name: review-planning
+name: planning-review
 description: Use this skill to review a Ticket Backlog produced by the Planning phase before implementation begins. Trigger this whenever the user says things like "review these tickets", "is this backlog ready", "critique the ticket breakdown", or hands you a directory under docs/features/ and asks for feedback. The output is a structured review file with findings categorized by severity. Always use a clean context, separate from the conversation that produced the tickets, so dependencies and independence properties get checked with fresh eyes.
 ---
 
 # Planning Review
 
-This skill reviews a **Ticket Backlog** — the artifact produced by the Planning phase. It builds on the shared review base; read `../SKILL.md` first for the reviewer stance, output format, and severity definitions.
+This skill reviews a **Ticket Backlog** — the artifact produced by the Planning phase. It builds on the shared review base; read `review-base.md` first for the reviewer stance, output format, and severity definitions.
 
 The unique job of this review is to verify that the work has been sliced well: each ticket can stand on its own, the ordering makes sense, and nothing from the design has been forgotten or smuggled out of scope.
 
@@ -87,4 +87,4 @@ For each ticket, verify:
 
 ## Output
 
-Save the review at `docs/features/<slug>/tickets-review-<NN>.md` using the format from the shared review base. When citing findings, refer to specific ticket numbers. Include the coverage table you built during the design coverage check. If the verdict is Approve or Approve with comments, suggest the next step is the implementation skill.
+Save the review at `docs/features/<slug>/tickets-review-<NN>.md` using the format from `review-base.md`. When citing findings, refer to specific ticket numbers. Include the coverage table you built during the design coverage check. If the verdict is Approve or Approve with comments, suggest the next step is the implementation skill.

@@ -59,18 +59,18 @@ Domain terms used across this skills project and the agentic development workflo
 >
 > **Dev:** "The feature is small. Can the Design Doc just be one paragraph?"
 >
-> **Domain expert:** "Yes, as long as it records the ADRs for any non-obvious choices. The review/design step is your gate — it catches hand-waving before it becomes a Ticket Backlog nobody can implement."
+> **Domain expert:** "Yes, as long as it records the ADRs for any non-obvious choices. The design-review step is your gate — it catches hand-waving before it becomes a Ticket Backlog nobody can implement."
 >
 > **Dev:** "Do the ADRs live inside the Feature folder?"
 >
 > **Domain expert:** "No — `docs/adr/` at the repo root. ADRs are Permanent artifacts: once the feature is done the Design Doc is reference-only, but the ADRs carry forward to inform every future design."
 >
-> **Dev:** "And when I run review/design, should I do it in the same conversation that produced the Design Doc?"
+> **Dev:** "And when I run design-review, should I do it in the same conversation that produced the Design Doc?"
 >
 > **Domain expert:** "Definitely not. The review sub-skills depend on clean context — a reviewer who wrote the artifact can't give it fresh eyes."
 
 ## Flagged ambiguities
 
-- **"review"** is used for both the phase (the act of reviewing an artifact) and the review sub-skills (`review/design`, etc.) and the output file. Canonical usage: **Review** or **review sub-skill** for the phase/skill, **review file** for the artifact it produces.
+- **"review"** is used for both the phase (the act of reviewing an artifact) and the review skills (`design-review`, etc.) and the output file. Canonical usage: **Review** or **review skill** for the phase/skill, **review file** for the artifact it produces.
 - **"entry point" vs "entry artifact"**: these are distinct. An **entry point** is a skill (discovery or refactor-project); an **entry artifact** is the document that skill produces. Don't use them interchangeably.
 - **"feature"** sometimes refers to the product concept (what is being built) and sometimes the tracking context (the Feature folder and its slug). Context usually disambiguates, but when precision matters, prefer "Feature" for the concept and "Feature folder" or "Feature slug" for the tracking artifact.

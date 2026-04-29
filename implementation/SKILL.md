@@ -157,7 +157,7 @@ When the ticket is done, write a PR description (or summary) that includes:
 
 Before declaring the ticket done, run an automated review in a clean context. Use the `Agent` tool with `subagent_type: "general-purpose"` so the review agent has no memory of this conversation — this gives the code fresh eyes. The agent's self-contained prompt should be:
 
-> Invoke the `review/implementation` skill. The ticket is at `<ticket-path>`. The Design Doc is at `docs/features/<slug>/design.md`. Find the diff by running `git log --oneline` to identify recent commits and `git show <hash>` to view each.
+> Invoke the `implementation-review` skill. The ticket is at `<ticket-path>`. The Design Doc is at `docs/features/<slug>/design.md`. Find the diff by running `git log --oneline` to identify recent commits and `git show <hash>` to view each.
 
 After the review agent finishes, read the review file it saved at `docs/features/<slug>/implementation-review-<NN>.md`. Address every finding before declaring done:
 - **Blocker**: must be fixed before merging — go back to the TDD loop

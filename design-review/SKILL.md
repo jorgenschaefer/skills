@@ -1,11 +1,11 @@
 ---
-name: review-design
+name: design-review
 description: Use this skill to review a Design Doc (and any associated ADRs) produced by the Design phase before the work is broken into tickets. Trigger this whenever the user says things like "review this design doc", "critique the architecture", "is this design ready for tickets", or hands you a file from docs/features/ and asks for feedback. The output is a structured review file with findings categorized by severity. This is the highest-leverage review in the workflow — catching architectural problems here is far cheaper than catching them in code. Always use a clean context, separate from the conversation that produced the design.
 ---
 
 # Design Review
 
-This skill reviews a **Design Doc** and any associated **ADRs** — the artifacts produced by the Design phase. It builds on the shared review base; read `../SKILL.md` first for the reviewer stance, output format, and severity definitions.
+This skill reviews a **Design Doc** and any associated **ADRs** — the artifacts produced by the Design phase. It builds on the shared review base; read `review-base.md` first for the reviewer stance, output format, and severity definitions.
 
 This is the highest-leverage review in the workflow. Architectural problems caught here cost a review's worth of effort to fix. Caught after implementation, they cost weeks. Read carefully and skeptically.
 
@@ -123,4 +123,4 @@ To calibrate, here are the failure modes most often surfaced at this phase:
 
 ## Output
 
-Save the review at `docs/features/<slug>/design-review-<NN>.md` using the format from the shared review base. Reference specific sections of the design. If you reviewed ADRs, list them and review each one's consequences section in particular (Consequences are the section most often hand-waved — they reveal whether the author thought through what the decision forecloses, not just what it enables.). If the verdict is Approve or Approve with comments, suggest the next step is the planning skill.
+Save the review at `docs/features/<slug>/design-review-<NN>.md` using the format from `review-base.md`. Reference specific sections of the design. If you reviewed ADRs, list them and review each one's consequences section in particular (Consequences are the section most often hand-waved — they reveal whether the author thought through what the decision forecloses, not just what it enables.). If the verdict is Approve or Approve with comments, suggest the next step is the planning skill.

@@ -21,10 +21,10 @@ Check `docs/features/<slug>/` for the following artifacts in order. Report what 
 | Refactoring Proposal | `refactoring.md` | refactor-project |
 | Design Doc | `design.md` | design |
 | Ticket Backlog | `tickets/` directory | planning |
-| Brief review(s) | `discovery-review-NN.md` | review/discovery |
-| Design review(s) | `design-review-NN.md` | review/design |
-| Ticket review(s) | `tickets-review-NN.md` | review/planning |
-| Implementation review(s) | `implementation-review-NN.md` | review/implementation |
+| Brief review(s) | `discovery-review-NN.md` | discovery-review |
+| Design review(s) | `design-review-NN.md` | design-review |
+| Ticket review(s) | `tickets-review-NN.md` | planning-review |
+| Implementation review(s) | `implementation-review-NN.md` | implementation-review |
 
 Also check `docs/adr/` for any ADRs whose filename contains the slug.
 

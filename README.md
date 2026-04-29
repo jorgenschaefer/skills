@@ -25,10 +25,10 @@ npx skills add jorgenschaefer/skills@<skill-name>
 
 ### Reviews
 
-- **review/discovery** — review a Feature Brief before it advances to design
-- **review/design** — review a Design Doc and ADRs before breaking into tickets (highest-leverage review)
-- **review/planning** — review a Ticket Backlog before implementation begins
-- **review/implementation** — review a code change before merging; checks ticket compliance and delegates code quality to the code-review skill
+- **discovery-review** — review a Feature Brief before it advances to design
+- **design-review** — review a Design Doc and ADRs before breaking into tickets (highest-leverage review)
+- **planning-review** — review a Ticket Backlog before implementation begins
+- **implementation-review** — review a code change before merging; checks ticket compliance and delegates code quality to the code-review skill
 
 ### Code review
 

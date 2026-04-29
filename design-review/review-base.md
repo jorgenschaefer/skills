@@ -1,18 +1,13 @@
----
-name: review
-description: Shared base for all review skills. Contains the reviewer stance, output format, and severity levels used by every phase-specific reviewer (review/discovery, review/design, review/planning, review/implementation). Phase-specific review skills should reference this base and then layer their own checklist of failure modes on top. Use the phase-specific skill, not this one, when reviewing a particular artifact.
----
-
 # Review (shared base)
 
-This skill defines how reviews are conducted across every phase of the agentic development workflow. It is referenced by the four phase-specific review skills:
+This file defines how reviews are conducted across every phase of the agentic development workflow. It is referenced by the four phase-specific review skills:
 
-- `review/discovery` — reviews Feature Briefs
-- `review/design` — reviews Design Docs and ADRs
-- `review/planning` — reviews ticket backlogs
-- `review/implementation` — reviews code changes
+- `discovery-review` — reviews Feature Briefs
+- `design-review` — reviews Design Docs and ADRs
+- `planning-review` — reviews ticket backlogs
+- `implementation-review` — reviews code changes
 
-When reviewing a specific artifact, use the appropriate phase-specific skill — it includes everything here *plus* the failure modes specific to that artifact type. This base skill captures only what's common across all of them.
+When reviewing a specific artifact, use the appropriate phase-specific skill — it includes everything here *plus* the failure modes specific to that artifact type. This base captures only what's common across all of them.
 
 ## The reviewer's stance
 
@@ -51,7 +46,7 @@ When in doubt, use should-fix. Reserve blocker for things that are genuinely bro
 
 ## Slug argument and artifact path
 
-Review sub-skills are invoked with a feature slug argument (e.g., `/review/discovery payment-retry`). The slug is used to construct both the artifact path to read and the review output path.
+Review skills are invoked with a feature slug argument (e.g., `/discovery-review payment-retry`). The slug is used to construct both the artifact path to read and the review output path.
 
 If the user provides a file path instead of a slug (e.g., pastes `docs/features/payment-retry/discovery.md`), derive the slug from the folder name two levels above the artifact file — in this example, `payment-retry`. If neither a slug nor a derivable path is provided, ask before proceeding.
 
