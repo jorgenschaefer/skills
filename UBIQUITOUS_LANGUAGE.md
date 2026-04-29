@@ -10,7 +10,7 @@ Domain terms used across this project. Each entry gives the canonical term and i
 
 **Entry point** — The first skill invoked for a feature, which produces the initial artifact that feeds the rest of the workflow. Currently either `discovery` (produces a Feature Brief) or `refactor-project` (produces a Refactoring Proposal).
 
-**Entry artifact** — The initial document in a feature folder, produced by the entry point skill. Either `brief.md` (from `discovery`) or `proposal.md` (from `refactor-project`). Downstream skills look for the entry artifact to understand the feature's scope before proceeding.
+**Entry artifact** — The initial document in a feature folder, produced by the entry point skill. Either `discovery.md` (from `discovery`) or `refactoring.md` (from `refactor-project`). Downstream skills look for the entry artifact to understand the feature's scope before proceeding.
 
 **Phase artifact** — Any document produced by a workflow skill (Feature Brief, Design Doc, Refactoring Proposal, Ticket Backlog, individual tickets, ADRs, review files). Phase artifacts are scaffolding — useful while building, but not the long-term output.
 

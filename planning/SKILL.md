@@ -192,7 +192,7 @@ Save tickets to `docs/features/<feature-slug>/tickets/` and the README. If the t
 
 Then run an automated review in a clean context. Use the `Agent` tool with `subagent_type: "general-purpose"` so the review agent has no memory of this conversation — this gives the backlog fresh eyes. The agent's self-contained prompt should be:
 
-> Invoke the `review/tickets` skill for feature slug `<slug>`. The backlog is at `docs/features/<slug>/tickets/`.
+> Invoke the `review/planning` skill for feature slug `<slug>`. The backlog is at `docs/features/<slug>/tickets/`.
 
 After the review agent finishes, read the review file it saved at `docs/features/<slug>/tickets-review-<NN>.md`. Update the tickets and backlog README to address every finding:
 - **Blocker**: must be resolved before leaving this phase — revise the tickets

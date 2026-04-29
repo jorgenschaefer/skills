@@ -93,7 +93,7 @@ Does this match what you had in mind?
 
 Catch misunderstandings before they get committed to writing.
 
-The Feature Brief lives at `docs/features/<feature-slug>/brief.md`. Use this exact structure:
+The Feature Brief lives at `docs/features/<feature-slug>/discovery.md`. Use this exact structure:
 
 ```markdown
 # Feature Brief: <Title>
@@ -141,7 +141,7 @@ Include only what you are confident about. Uncertainty belongs in the Open Quest
 
 ## After writing
 
-Save the brief to `docs/features/<feature-slug>/brief.md`. If the target directory doesn't exist, create it. If you can't write the file, tell the user the artifact path and paste the content inline so they can save it manually.
+Save the Feature Brief to `docs/features/<feature-slug>/discovery.md`. If the target directory doesn't exist, create it. If you can't write the file, tell the user the artifact path and paste the content inline so they can save it manually.
 
 Update `UBIQUITOUS_LANGUAGE.md` at the project root with any new domain terms surfaced during discovery. Create the file if it doesn't exist yet. Each entry should give the canonical term and a one- or two-sentence definition in the context of this project. Don't add terms that are already there, and don't add generic English words — only terms with project-specific or domain-specific meaning.
 
@@ -151,9 +151,9 @@ Tell the user where the brief is and what was added to the glossary.
 
 Then run an automated review in a clean context. Use the `Agent` tool with `subagent_type: "general-purpose"` so the review agent has no memory of this conversation — this gives the brief fresh eyes. The agent's self-contained prompt should be:
 
-> Invoke the `review/feature-brief` skill for feature slug `<slug>`. The Feature Brief is at `docs/features/<slug>/brief.md`.
+> Invoke the `review/discovery` skill for feature slug `<slug>`. The Feature Brief is at `docs/features/<slug>/discovery.md`.
 
-After the review agent finishes, read the review file it saved at `docs/features/<slug>/brief-review-<NN>.md`. Update the Feature Brief to address every finding:
+After the review agent finishes, read the review file it saved at `docs/features/<slug>/discovery-review-<NN>.md`. Update the Feature Brief to address every finding:
 - **Blocker**: must be resolved before leaving this phase — revise the brief
 - **Should-fix**: address these — they represent real quality gaps
 - **Nit**: use judgment; incorporate if easy, skip if trivial

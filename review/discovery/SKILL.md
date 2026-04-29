@@ -1,9 +1,9 @@
 ---
-name: review-feature-brief
+name: review-discovery
 description: Use this skill to review a Feature Brief produced by the Discovery phase before it advances to Design. Trigger this whenever the user says things like "review this Feature Brief", "critique this brief", "is this brief ready for design", or hands you a file from docs/features/ and asks for feedback. The output is a structured review file with findings categorized by severity. Always use a clean context for this review — do not chain it after the discussion that produced the brief, since the value of the review depends on fresh eyes.
 ---
 
-# Feature Brief Review
+# Discovery Review
 
 This skill reviews a **Feature Brief** — the artifact produced by the Discovery phase. It builds on the shared review base; read `../SKILL.md` first for the reviewer stance, output format, and severity definitions.
 
@@ -11,13 +11,13 @@ The unique job of this review is to catch the failure modes specific to early-st
 
 ## Setup
 
-The feature slug is a required argument. If the user did not provide one at invocation, ask for it before proceeding. Read the brief from `docs/features/<slug>/brief.md`.
+The feature slug is a required argument. If the user did not provide one at invocation, ask for it before proceeding. Read the Feature Brief from `docs/features/<slug>/discovery.md`.
 
 Before reviewing, confirm:
 
 1. The artifact is actually a Feature Brief (it should follow the structure from the `discovery` skill: Summary, Problem, Users, Why now, Goals, Non-goals, Constraints, Success criteria, Open questions, Out of scope for this brief).
 2. You're in a clean context — you did not participate in creating this artifact. If you're unsure, treat your judgment as potentially contaminated: note it in "What was NOT checked" and flag any area where prior context might be biasing you.
-3. You can read the brief in full. If it references other docs (existing system documentation, prior briefs, regulatory requirements), be aware they exist but don't pretend to have read them unless you actually did.
+3. You can read the Feature Brief in full. If it references other docs (existing system documentation, prior briefs, regulatory requirements), be aware they exist but don't pretend to have read them unless you actually did.
 
 ## What to check
 
@@ -95,4 +95,4 @@ Easy-to-miss issues not named explicitly in the checks above:
 
 ## Output
 
-Save the review at `docs/features/<slug>/brief-review-<NN>.md` using the format defined in the shared review base. Reference specific sections of the brief. Suggest the author address findings before re-reviewing. If the verdict is Approve or Approve with comments, suggest the next step is the design skill.
+Save the review at `docs/features/<slug>/discovery-review-<NN>.md` using the format defined in the shared review base. Reference specific sections of the brief. Suggest the author address findings before re-reviewing. If the verdict is Approve or Approve with comments, suggest the next step is the design skill.

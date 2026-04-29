@@ -72,7 +72,7 @@ Document each friction point as you encounter it: note the file or module, the p
 
 ### 2. Propose a refactoring plan
 
-Save the proposal to `docs/features/<slug>/proposal.md`. If the target directory doesn't exist, create it. If you can't write the file, tell the user the artifact path and paste the content inline so they can save it manually.
+Save the proposal to `docs/features/<slug>/refactoring.md`. If the target directory doesn't exist, create it. If you can't write the file, tell the user the artifact path and paste the content inline so they can save it manually.
 
 Use this structure:
 

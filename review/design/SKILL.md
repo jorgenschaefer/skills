@@ -1,9 +1,9 @@
 ---
-name: review-design-doc
+name: review-design
 description: Use this skill to review a Design Doc (and any associated ADRs) produced by the Design phase before the work is broken into tickets. Trigger this whenever the user says things like "review this design doc", "critique the architecture", "is this design ready for tickets", or hands you a file from docs/features/ and asks for feedback. The output is a structured review file with findings categorized by severity. This is the highest-leverage review in the workflow — catching architectural problems here is far cheaper than catching them in code. Always use a clean context, separate from the conversation that produced the design.
 ---
 
-# Design Doc Review
+# Design Review
 
 This skill reviews a **Design Doc** and any associated **ADRs** — the artifacts produced by the Design phase. It builds on the shared review base; read `../SKILL.md` first for the reviewer stance, output format, and severity definitions.
 

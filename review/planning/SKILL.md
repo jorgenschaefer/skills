@@ -1,9 +1,9 @@
 ---
-name: review-tickets
+name: review-planning
 description: Use this skill to review a Ticket Backlog produced by the Planning phase before implementation begins. Trigger this whenever the user says things like "review these tickets", "is this backlog ready", "critique the ticket breakdown", or hands you a directory under docs/features/ and asks for feedback. The output is a structured review file with findings categorized by severity. Always use a clean context, separate from the conversation that produced the tickets, so dependencies and independence properties get checked with fresh eyes.
 ---
 
-# Tickets Review
+# Planning Review
 
 This skill reviews a **Ticket Backlog** — the artifact produced by the Planning phase. It builds on the shared review base; read `../SKILL.md` first for the reviewer stance, output format, and severity definitions.
 

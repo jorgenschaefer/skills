@@ -44,7 +44,7 @@ Everything not trivially safe gets a ticket:
 
 ## Writing a ticket
 
-Boy scout tickets live at `docs/features/boy-scout/tickets/NNN-<slug>.md`. `docs/features/boy-scout/` is a pseudo-feature folder with no entry artifact (`brief.md` or `proposal.md`) — it is a permanent ticket backlog, not a feature. Check the existing files in that directory (create it if it doesn't exist) and use the next available number.
+Boy scout tickets live at `docs/features/boy-scout/tickets/NNN-<slug>.md`. `docs/features/boy-scout/` is a pseudo-feature folder with no entry artifact (`discovery.md` or `refactoring.md`) — it is a permanent ticket backlog, not a feature. Check the existing files in that directory (create it if it doesn't exist) and use the next available number.
 
 Use this template:
 

@@ -23,7 +23,7 @@ The feature slug is a required argument. If the user did not provide one at invo
 
 Before starting design, make sure you have:
 
-1. **The Feature Brief (or Refactoring Proposal).** Read the entry artifact from `docs/features/<slug>/brief.md`; if not found, try `docs/features/<slug>/proposal.md`; if neither exists, tell the user and stop. If they want to skip discovery entirely, push back gently — at minimum get a few sentences of problem statement and goals before designing.
+1. **The Feature Brief (or Refactoring Proposal).** Read the entry artifact from `docs/features/<slug>/discovery.md`; if not found, try `docs/features/<slug>/refactoring.md`; if neither exists, tell the user and stop. If they want to skip discovery entirely, push back gently — at minimum get a few sentences of problem statement and goals before designing.
 2. **Access to the codebase.** Most design decisions are constrained by what already exists. You need to read the existing code, not guess at it.
 3. **Knowledge of the team's conventions.** Check `CLAUDE.md` / `AGENTS.md` at the repo root and any subdirectory equivalents. They tell you the existing patterns, the test framework, deployment model, etc.
 4. **The project's ubiquitous language.** Read `UBIQUITOUS_LANGUAGE.md` at the project root if it exists. Use the canonical terms in your design — for modules, entities, processes, and APIs. Don't introduce synonyms for concepts that already have names.
@@ -189,7 +189,7 @@ Tell the user what was written and where.
 
 Then run an automated review in a clean context. Use the `Agent` tool with `subagent_type: "general-purpose"` so the review agent has no memory of this conversation — this gives the design fresh eyes. The agent's self-contained prompt should be:
 
-> Invoke the `review/design-doc` skill for feature slug `<slug>`. The Design Doc is at `docs/features/<slug>/design.md`.
+> Invoke the `review/design` skill for feature slug `<slug>`. The Design Doc is at `docs/features/<slug>/design.md`.
 
 After the review agent finishes, read the review file it saved at `docs/features/<slug>/design-review-<NN>.md`. Update the Design Doc and any relevant ADRs to address every finding:
 - **Blocker**: must be resolved before leaving this phase — revise the design

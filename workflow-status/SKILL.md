@@ -17,13 +17,13 @@ Check `docs/features/<slug>/` for the following artifacts in order. Report what 
 
 | Artifact | Path | Produced by |
 |---|---|---|
-| Feature Brief | `brief.md` | discovery |
-| Refactoring Proposal | `proposal.md` | refactor-project |
+| Feature Brief | `discovery.md` | discovery |
+| Refactoring Proposal | `refactoring.md` | refactor-project |
 | Design Doc | `design.md` | design |
 | Ticket Backlog | `tickets/` directory | planning |
-| Brief review(s) | `brief-review-NN.md` | review/feature-brief |
-| Design review(s) | `design-review-NN.md` | review/design-doc |
-| Ticket review(s) | `tickets-review-NN.md` | review/tickets |
+| Brief review(s) | `discovery-review-NN.md` | review/discovery |
+| Design review(s) | `design-review-NN.md` | review/design |
+| Ticket review(s) | `tickets-review-NN.md` | review/planning |
 | Implementation review(s) | `implementation-review-NN.md` | review/implementation |
 
 Also check `docs/adr/` for any ADRs whose filename contains the slug.
@@ -32,8 +32,8 @@ Also check `docs/adr/` for any ADRs whose filename contains the slug.
 
 The feature is in the phase whose primary artifact exists but is not yet complete or has not yet advanced:
 
-1. **Discovery** — `brief.md` missing or `brief-review-NN.md` has verdict "Block" or "Request changes"
-2. **Design** — `brief.md` exists and approved; `design.md` missing or `design-review-NN.md` verdict not "Approve"
+1. **Discovery** — `discovery.md` missing or `discovery-review-NN.md` has verdict "Block" or "Request changes"
+2. **Design** — `discovery.md` exists and approved; `design.md` missing or `design-review-NN.md` verdict not "Approve"
 3. **Planning** — `design.md` exists and approved; `tickets/` missing or `tickets-review-NN.md` verdict not "Approve"
 4. **Implementation** — `tickets/` exists and approved; at least one ticket exists without a corresponding approved implementation review
 5. **Complete** — all tickets have approved implementation reviews
@@ -51,13 +51,13 @@ Report to the conversation (not a file) in this format:
 **Next step:** <one sentence — what skill to run or what action to take>
 
 ### Artifacts
-- [x] Feature Brief (`brief.md`) — <one phrase: date, or last review verdict>
+- [x] Feature Brief (`discovery.md`) — <one phrase: date, or last review verdict>
 - [ ] Design Doc — missing
 - [x] Ticket Backlog — <N tickets>
 ...
 
 ### Latest review verdicts
-- Brief review: <Approve / Request changes / Block / none>
+- Discovery review: <Approve / Request changes / Block / none>
 - Design review: <Approve / Request changes / Block / none>
 - Tickets review: <Approve / Request changes / Block / none>
 - Implementation reviews: <N of M tickets reviewed>
