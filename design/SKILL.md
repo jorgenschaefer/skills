@@ -36,6 +36,18 @@ If any of these are missing, get them before producing a design. A design writte
 
 **Survey the existing code.** Find the modules likely affected. Read their interfaces. Look at how similar features were built before — there's usually a pattern to follow or deliberately deviate from. Note any code smells you'll need to work around or address.
 
+**Before designing: clarification round.** Run a clarification round whenever either of the following is true:
+
+1. **Product-technical boundary decisions exist** — specific values, defaults, thresholds, or behavioral preferences the user has in mind but that the Feature Brief doesn't specify (discovery reviewers deliberately strip these as out of scope for the Feature Brief). Common examples: a list truncates at N items, a timeout is X seconds, a feature defaults to on or off. Default toward asking rather than assuming: if you are about to write a specific value or default behavior into the design without a source for it, that is a signal to ask.
+
+2. **An ADR is about to be written** — ADRs record significant, hard-to-reverse decisions. Before committing any ADR to paper, always present the decision, your recommendation, and the key alternatives to the user and ask for confirmation or redirection.
+
+Collect all questions from both cases and ask them together in a single structured message, grouped by type (product decisions first, ADR confirmations second), before producing any design output. Wait for the user's response, then incorporate the answers.
+
+If the user doesn't answer a specific question, pick a reasonable default, apply it, and flag it explicitly in the Design Doc so it can be corrected during implementation.
+
+Skip this step only if you have genuinely found no product-technical gaps **and** no ADRs are planned.
+
 **Prefer deep modules when drawing boundaries.** A deep module has a simple interface that hides significant complexity — callers get a lot of value with little they need to know. A shallow module's interface is nearly as complex as its implementation; it leaks rather than encapsulates. Common shallow-module smells: pass-through methods that add no logic, information leakage (exposing internal data structures or config), and abstractions too small to justify their existence. For each proposed module boundary, ask: is this module earning its abstraction? If it mostly delegates to another layer without hiding anything, merge the layers or rethink the boundary.
 
 **Organize by domain, not by layer (screaming architecture).** When proposing folder structure or module layout, group code by business domain or feature (`orders/`, `users/`, `billing/`) rather than technical role (`controllers/`, `services/`, `models/`). The folder structure should reveal what the system *does*, not what framework it runs on. If the existing codebase is layered, note that in the Design Doc — either propose a migration path toward domain-first organization, or explicitly justify why new code will extend the layered structure.
