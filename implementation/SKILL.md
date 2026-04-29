@@ -167,4 +167,6 @@ After the review agent finishes, read the review file it saved at `docs/features
 
 Tell the user the ticket is done, point to the PR or branch, summarize, and report what the review found and what was addressed. The ticket is ready to merge only after all blockers and should-fixes are resolved.
 
+Then suggest the next step: if there are remaining tickets in the backlog, implement the next one using the `implementation` skill; if all tickets are done, the feature is complete and ready for final merge.
+
 _Reference files adapted from [Matt Pocock](https://mattpocock.com)'s TDD skill._

@@ -95,3 +95,5 @@ Which refactorings to do first and why.
 ```
 
 Do not implement any refactoring in this skill. The output is a proposal; implementation follows the normal ticket workflow. If the user asks you to implement, redirect: create tickets for the highest-priority refactorings using the planning skill instead.
+
+After saving, tell the user what was found and where the proposal lives. Then suggest the next step is the design phase — run the `design` skill with the same feature slug to translate the refactoring proposal into a Design Doc.
