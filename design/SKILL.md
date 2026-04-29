@@ -42,7 +42,7 @@ If any of these are missing, get them before producing a design. A design writte
 
 **Design clear adapter boundaries.** Within each domain module, distinguish three layers: (1) the *inbound adapter* (route handler, controller) — authenticates, validates raw input into a domain object, calls business logic, maps the result to a response; (2) the *business logic* — operates on domain objects only, contains all domain rules, never touches HTTP types or DB types; (3) the *outbound adapter* (repository, data access) — translates domain objects to DB format, calls the DB, returns domain objects, contains no domain rules. Types must mirror this separation: validation schemas (Zod, etc.) belong only in the inbound adapter, domain types belong with the business logic, and database types (ORM entities, SQL row shapes) belong only in the outbound adapter. For simple CRUD all three can be in one file, but the concerns must be visibly distinct. Call this out explicitly in the Design Doc so implementers know where each kind of code belongs.
 
-**Generate options before committing.** For each significant decision — one that affects more than one module, would be expensive to reverse, or has plausible alternatives — brainstorm at least two or three approaches. The first idea is rarely the best. Write down the alternatives even if you reject them quickly — they go into ADRs.
+**Generate options before committing.** For each significant decision — one that affects more than one module or would be expensive to reverse — brainstorm at least two or three approaches. The first idea is rarely the best. Write down the alternatives even if you reject them quickly.
 
 When uncertain about a technical choice: recommend a spike if the uncertainty could change the entire approach; record it as a risk if it's about tuning or edge cases within an already-chosen approach.
 
@@ -70,7 +70,15 @@ When uncertain about a technical choice: recommend a spike if the uncertainty co
 
 ## Architecture Decision Records (ADRs)
 
-Significant decisions get their own ADR file at `docs/adr/<NNNN>-<slug>.md`. "Significant" means: the decision affects more than one module, would be expensive to reverse, has plausible alternatives, or future engineers will wonder "why did we do it this way?"
+Significant decisions get their own ADR file at `docs/adr/<NNNN>-<slug>.md`. The bar is intentionally high. An ADR exists so future engineers can understand *why* the system has the shape it has and avoid choices that would conflict with load-bearing constraints.
+
+A decision warrants an ADR when **at least one** of the following is true:
+1. **Hard to reverse** — undoing it later would require rework across multiple parts of the codebase, a data migration, or a coordinated change.
+2. **Cross-cutting constraint** — the choice governs how future engineers must build adjacent things; knowing about it prevents inconsistency or conflict elsewhere.
+
+Two tests to apply before writing:
+- *"If we changed this in six months, what would break?"* — if the answer is "one component's configuration," skip it.
+- *"Does a future engineer building something new need to know about this choice to avoid an incompatible decision?"* — if no, skip it.
 
 Examples of decisions that warrant an ADR:
 - Picking a database, message queue, or other major dependency
@@ -82,6 +90,9 @@ Examples of decisions that warrant an ADR:
 Examples of decisions that don't:
 - Variable names, function signatures, file layout within a single module
 - Things fully determined by existing conventions
+- UI/UX behavior localized to a single component (default expand/collapse state, sort order, button placement)
+- Configuration values that can be changed in one place without rippling through other code
+- Decisions where only one option was ever seriously considered
 
 When writing an ADR, use the structure and numbering conventions in [adr-format.md](adr-format.md).
 
