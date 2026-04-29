@@ -16,6 +16,10 @@ npx skills add jorgenschaefer/skills@<skill-name>
 
 ## Available skills
 
+### Project setup
+
+- **adr-init** — bootstrap ADRs in a brownfield project by excavating load-bearing design decisions from the existing codebase
+
 ### Workflow phases
 
 - **discovery** — explore a feature or problem and produce a Feature Brief before any design or code
