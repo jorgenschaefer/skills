@@ -95,4 +95,4 @@ Easy-to-miss issues not named explicitly in the checks above:
 
 ## Output
 
-Save the review at `docs/features/<slug>/reviews/brief-<YYYY-MM-DD>.md` using the format defined in the shared review base. Reference specific sections of the brief. Suggest the author address findings before re-reviewing. If the verdict is Approve or Approve with comments, suggest the next step is the design skill.
+Save the review at `docs/features/<slug>/brief-review-<NN>.md` using the format defined in the shared review base. Reference specific sections of the brief. Suggest the author address findings before re-reviewing. If the verdict is Approve or Approve with comments, suggest the next step is the design skill.

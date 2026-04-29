@@ -57,7 +57,7 @@ If the user provides a file path instead of a slug (e.g., pastes `docs/features/
 
 ## Output format
 
-Reviews produce a structured Markdown document, not free-form prose. Save reviews at `docs/features/<slug>/reviews/<artifact>-<YYYY-MM-DD>.md`.
+Reviews produce a structured Markdown document, not free-form prose. Save reviews at `docs/features/<slug>/<artifact>-review-<NN>.md` (e.g., `brief-review-01.md`, `design-review-02.md`). Use the next available sequential number for that artifact type in the feature folder.
 
 ```markdown
 # Review: <artifact path>

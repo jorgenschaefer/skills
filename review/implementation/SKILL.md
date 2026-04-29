@@ -82,7 +82,7 @@ Determine the combined verdict:
 - **Approve with comments** if: only nits remain across both dimensions.
 - **Approve** if: rare. Hold the bar.
 
-Save the combined review at `docs/features/<slug>/reviews/implementation-<ticket-NNN>-<YYYY-MM-DD>.md`. Reference specific files, functions, and line ranges in findings. If the verdict is Approve or Approve with comments, suggest merging and note any follow-up tickets from the PR description.
+Save the combined review at `docs/features/<slug>/implementation-review-<NN>.md`. Reference specific files, functions, and line ranges in findings. If the verdict is Approve or Approve with comments, suggest merging and note any follow-up tickets from the PR description.
 
 ## Common findings
 

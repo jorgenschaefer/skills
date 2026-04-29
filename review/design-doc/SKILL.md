@@ -122,4 +122,4 @@ To calibrate, here are the failure modes most often surfaced at this phase:
 
 ## Output
 
-Save the review at `docs/features/<slug>/reviews/design-<YYYY-MM-DD>.md` using the format from the shared review base. Reference specific sections of the design. If you reviewed ADRs, list them and review each one's consequences section in particular (Consequences are the section most often hand-waved — they reveal whether the author thought through what the decision forecloses, not just what it enables.). If the verdict is Approve or Approve with comments, suggest the next step is the planning skill.
+Save the review at `docs/features/<slug>/design-review-<NN>.md` using the format from the shared review base. Reference specific sections of the design. If you reviewed ADRs, list them and review each one's consequences section in particular (Consequences are the section most often hand-waved — they reveal whether the author thought through what the decision forecloses, not just what it enables.). If the verdict is Approve or Approve with comments, suggest the next step is the planning skill.

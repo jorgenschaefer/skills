@@ -84,4 +84,4 @@ For each ticket, verify:
 
 ## Output
 
-Save the review at `docs/features/<slug>/reviews/tickets-<YYYY-MM-DD>.md` using the format from the shared review base. When citing findings, refer to specific ticket numbers. Include the coverage table you built during the design coverage check. If the verdict is Approve or Approve with comments, suggest the next step is the implementation skill.
+Save the review at `docs/features/<slug>/tickets-review-<NN>.md` using the format from the shared review base. When citing findings, refer to specific ticket numbers. Include the coverage table you built during the design coverage check. If the verdict is Approve or Approve with comments, suggest the next step is the implementation skill.
