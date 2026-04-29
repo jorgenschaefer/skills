@@ -49,9 +49,15 @@ Every finding has a severity. Use these three levels consistently:
 
 When in doubt, use should-fix. Reserve blocker for things that are genuinely broken.
 
+## Slug argument and artifact path
+
+Review sub-skills are invoked with a feature slug argument (e.g., `/review/feature-brief payment-retry`). The slug is used to construct both the artifact path to read and the review output path.
+
+If the user provides a file path instead of a slug (e.g., pastes `docs/features/payment-retry/brief.md`), derive the slug from the folder name two levels above the artifact file — in this example, `payment-retry`. If neither a slug nor a derivable path is provided, ask before proceeding.
+
 ## Output format
 
-Reviews produce a structured Markdown document, not free-form prose. Save reviews at `docs/reviews/<artifact>-<YYYY-MM-DD>.md`.
+Reviews produce a structured Markdown document, not free-form prose. Save reviews at `docs/features/<slug>/reviews/<artifact>-<YYYY-MM-DD>.md`.
 
 ```markdown
 # Review: <artifact path>
@@ -143,4 +149,4 @@ If it's Request changes or Block, suggest the author address findings before re-
 
 While reviewing, you may notice things unrelated to the artifact under review — stale code, latent bugs, misleading names in nearby files. Do not include these in the review findings; they pollute the severity classification and distract from the artifact's own issues.
 
-Instead, after completing the review, invoke the `boy-scout` skill to triage any such findings: trivially safe fixes can be applied immediately, everything else becomes a ticket in `docs/tickets/boy-scout/`. Note in the review's "What was checked" section that boy-scout triage was done (or explicitly that it was skipped and why).
+Instead, after completing the review, invoke the `boy-scout` skill to triage any such findings: trivially safe fixes can be applied immediately, everything else becomes a ticket in `docs/features/boy-scout/tickets/`. Note in the review's "What was checked" section that boy-scout triage was done (or explicitly that it was skipped and why).

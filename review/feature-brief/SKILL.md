@@ -1,6 +1,6 @@
 ---
 name: review-feature-brief
-description: Use this skill to review a Feature Brief produced by the Discovery phase before it advances to Design. Trigger this whenever the user says things like "review this Feature Brief", "critique this brief", "is this brief ready for design", or hands you a file from docs/discovery/ and asks for feedback. The output is a structured review file with findings categorized by severity. Always use a clean context for this review — do not chain it after the discussion that produced the brief, since the value of the review depends on fresh eyes.
+description: Use this skill to review a Feature Brief produced by the Discovery phase before it advances to Design. Trigger this whenever the user says things like "review this Feature Brief", "critique this brief", "is this brief ready for design", or hands you a file from docs/features/ and asks for feedback. The output is a structured review file with findings categorized by severity. Always use a clean context for this review — do not chain it after the discussion that produced the brief, since the value of the review depends on fresh eyes.
 ---
 
 # Feature Brief Review
@@ -10,6 +10,8 @@ This skill reviews a **Feature Brief** — the artifact produced by the Discover
 The unique job of this review is to catch the failure modes specific to early-stage problem framing — things that, if not caught now, will quietly distort the design and implementation that follow.
 
 ## Setup
+
+The feature slug is a required argument. If the user did not provide one at invocation, ask for it before proceeding. Read the brief from `docs/features/<slug>/brief.md`.
 
 Before reviewing, confirm:
 
@@ -93,4 +95,4 @@ Easy-to-miss issues not named explicitly in the checks above:
 
 ## Output
 
-Save the review at `docs/reviews/feature-brief-<feature-slug>-<YYYY-MM-DD>.md` using the format defined in the shared review base. Reference specific sections of the brief. Suggest the author address findings before re-reviewing. If the verdict is Approve or Approve with comments, suggest the next step is the design skill.
+Save the review at `docs/features/<slug>/reviews/brief-<YYYY-MM-DD>.md` using the format defined in the shared review base. Reference specific sections of the brief. Suggest the author address findings before re-reviewing. If the verdict is Approve or Approve with comments, suggest the next step is the design skill.

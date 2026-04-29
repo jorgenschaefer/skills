@@ -1,6 +1,6 @@
 ---
 name: review-design-doc
-description: Use this skill to review a Design Doc (and any associated ADRs) produced by the Design phase before the work is broken into tickets. Trigger this whenever the user says things like "review this design doc", "critique the architecture", "is this design ready for tickets", or hands you a file from docs/design/ and asks for feedback. The output is a structured review file with findings categorized by severity. This is the highest-leverage review in the workflow — catching architectural problems here is far cheaper than catching them in code. Always use a clean context, separate from the conversation that produced the design.
+description: Use this skill to review a Design Doc (and any associated ADRs) produced by the Design phase before the work is broken into tickets. Trigger this whenever the user says things like "review this design doc", "critique the architecture", "is this design ready for tickets", or hands you a file from docs/features/ and asks for feedback. The output is a structured review file with findings categorized by severity. This is the highest-leverage review in the workflow — catching architectural problems here is far cheaper than catching them in code. Always use a clean context, separate from the conversation that produced the design.
 ---
 
 # Design Doc Review
@@ -10,6 +10,8 @@ This skill reviews a **Design Doc** and any associated **ADRs** — the artifact
 This is the highest-leverage review in the workflow. Architectural problems caught here cost a review's worth of effort to fix. Caught after implementation, they cost weeks. Read carefully and skeptically.
 
 ## Setup
+
+The feature slug is a required argument. If the user did not provide one at invocation, ask for it before proceeding. Read the design doc from `docs/features/<slug>/design.md`.
 
 Before reviewing, confirm:
 
@@ -120,4 +122,4 @@ To calibrate, here are the failure modes most often surfaced at this phase:
 
 ## Output
 
-Save the review at `docs/reviews/design-doc-<feature-slug>-<YYYY-MM-DD>.md` using the format from the shared review base. Reference specific sections of the design. If you reviewed ADRs, list them and review each one's consequences section in particular (Consequences are the section most often hand-waved — they reveal whether the author thought through what the decision forecloses, not just what it enables.). If the verdict is Approve or Approve with comments, suggest the next step is the planning skill.
+Save the review at `docs/features/<slug>/reviews/design-<YYYY-MM-DD>.md` using the format from the shared review base. Reference specific sections of the design. If you reviewed ADRs, list them and review each one's consequences section in particular (Consequences are the section most often hand-waved — they reveal whether the author thought through what the decision forecloses, not just what it enables.). If the verdict is Approve or Approve with comments, suggest the next step is the planning skill.

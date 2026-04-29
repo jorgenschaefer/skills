@@ -131,4 +131,4 @@ Tests are not just "did the implementer write some tests" — tests are evidence
 
 ## Output
 
-Save the review at `docs/reviews/implementation-<ticket-number>-<YYYY-MM-DD>.md` using the format from the shared review base. Reference specific files, functions, and line ranges. Include the acceptance-criteria coverage as an explicit list with each item marked verified or not. If the verdict is Approve or Approve with comments, suggest merging and creating any follow-up tickets noted in the PR description.
+Save the review at `docs/features/<slug>/reviews/implementation-<ticket-NNN>-<YYYY-MM-DD>.md` using the format from the shared review base. Reference specific files, functions, and line ranges. Include the acceptance-criteria coverage as an explicit list with each item marked verified or not. If the verdict is Approve or Approve with comments, suggest merging and creating any follow-up tickets noted in the PR description.
