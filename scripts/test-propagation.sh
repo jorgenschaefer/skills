@@ -150,6 +150,39 @@ assert_zero "planning-review/SKILL.md references architecture-principles.md" "$r
 r=0; grep -qi "should-fix" design-review/SKILL.md 2>/dev/null || r=$?
 assert_zero "design-review/SKILL.md retains should-fix review framing" "$r"
 
+echo "=== code-style.md: shared file ==="
+
+r=0; [[ -f "shared/code-style.md" ]] || r=$?
+assert_zero "shared/code-style.md exists" "$r"
+
+r=0; grep -qi "clear over clever" shared/code-style.md 2>/dev/null || r=$?
+assert_zero "shared/code-style.md covers clear over clever" "$r"
+
+r=0; grep -qi "debug print\|dead.weight\|commented.out" shared/code-style.md 2>/dev/null || r=$?
+assert_zero "shared/code-style.md covers dead-weight-free" "$r"
+
+r=0; grep -q "code-style.md" scripts/propagate.sh 2>/dev/null || r=$?
+assert_zero "propagate.sh includes code-style copy_to call" "$r"
+
+r=0; grep -q "code-style.md" scripts/pre-commit.sh 2>/dev/null || r=$?
+assert_zero "pre-commit.sh includes code-style check call" "$r"
+
+echo "=== code-style.md: propagated copies ==="
+
+r=0; diff -q shared/code-style.md code-review/code-style.md > /dev/null 2>&1 || r=$?
+assert_zero "code-review/code-style.md matches source" "$r"
+
+r=0; diff -q shared/code-style.md implementation/code-style.md > /dev/null 2>&1 || r=$?
+assert_zero "implementation/code-style.md matches source" "$r"
+
+echo "=== code-style.md: SKILL.md references ==="
+
+r=0; grep -q "code-style.md" code-review/SKILL.md 2>/dev/null || r=$?
+assert_zero "code-review/SKILL.md references code-style.md" "$r"
+
+r=0; grep -q "code-style.md" implementation/SKILL.md 2>/dev/null || r=$?
+assert_zero "implementation/SKILL.md references code-style.md" "$r"
+
 echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="
 [[ "$FAIL" -eq 0 ]]

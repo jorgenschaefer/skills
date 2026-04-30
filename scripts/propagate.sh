@@ -14,3 +14,6 @@ copy_to review-base.md \
 
 copy_to architecture-principles.md \
   code-review design design-review implementation planning planning-review refactor-project
+
+copy_to code-style.md \
+  code-review implementation
