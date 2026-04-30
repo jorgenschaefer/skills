@@ -62,7 +62,7 @@ For each ticket, verify:
 - **The "two implementers" test.** If two implementers picked up adjacent tickets in parallel, would they collide? If yes, the dependency graph is wrong, or the slicing is wrong.
 - **The "rename test."** Read each ticket title in isolation. Does the title accurately describe the work? Generic titles like "Backend changes" or "Update API" are findings.
 - **The "design smuggling" test.** Do any tickets authorize implementation choices the Design Doc didn't make? Caching strategies, library picks, structural decisions — these belong in the design, not buried in a ticket.
-- **The screaming architecture test.** Do any implementation notes reference file paths that use technical-layer organization (`services/FooService.ts`, `controllers/BarController.ts`) rather than domain-first organization (`orders/FooService.ts`)? If so, flag as a nit and note the domain-first alternative. If the codebase is already layered, the note should acknowledge the tension rather than silently perpetuating it.
+- **The screaming architecture test.** Read [architecture-principles.md](architecture-principles.md) §Screaming Architecture for the domain-first organization principle. Do any implementation notes reference file paths that use technical-layer organization (`services/FooService.ts`, `controllers/BarController.ts`) rather than domain-first organization (`orders/FooService.ts`)? If so, flag as a nit and note the domain-first alternative. If the codebase is already layered, the note should acknowledge the tension rather than silently perpetuating it.
 
 ## Common findings
 

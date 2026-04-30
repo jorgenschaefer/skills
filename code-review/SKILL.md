@@ -45,34 +45,15 @@ Check all nine dimensions. Report findings under the output format below, sorted
 
 ### 1. Architecture and organization
 
-Code should be organized by domain, not by technical layer.
-
-- **Screaming architecture** — directory names should reveal business purpose: `orders/`, `users/`, `payments/`. Generic technical directories (`services/`, `controllers/`, `models/`, `helpers/`, `utils/`) hide purpose and scatter related code.
-- Severity: **blocker** in a project with no existing layered structure. **Should-fix** when adding to an already-layered codebase (flag the tension; don't necessarily hold the change).
+Read [architecture-principles.md](architecture-principles.md) §Screaming Architecture. Severity: **blocker** in a project with no existing layered structure. **Should-fix** when adding to an already-layered codebase (flag the tension; don't necessarily hold the change).
 
 ### 2. Deep modules
 
-A module is deep when its interface is small relative to the complexity it hides; shallow when its interface is nearly as complex as its implementation. The finding is not "too small" but "the caller is worse off for this abstraction existing."
-
-Flag:
-- Pass-through methods that add no logic
-- Abstractions too thin to justify their existence
-- Interfaces that leak rather than encapsulate internal structure
-- Callers that are more complex after the abstraction than they would be without it
+Read [architecture-principles.md](architecture-principles.md) §Deep Modules. The finding is not "too small" but "the caller is worse off for this abstraction existing." Flag: pass-through methods, abstraction leakage, interfaces too thin to justify their existence, callers more complex after the abstraction.
 
 ### 3. Adapter boundaries
 
-Business logic must touch only domain objects. Three layers, three rules:
-
-- **Inbound adapter** (route handler, controller): authenticate → validate input into domain object → call logic → map to response. No domain rules.
-- **Business logic**: domain objects in, domain objects out. No HTTP types, no Zod-inferred types, no ORM entities, no DB row types.
-- **Outbound adapter** (repository, API client): translate domain ↔ external format. No domain rules.
-
-Flag:
-- Business logic importing from a validation library or ORM (should-fix)
-- Validation schemas, domain types, or DB types crossing a layer boundary (should-fix)
-- Domain rules implemented in an adapter (should-fix)
-- Even in simple CRUD, check that concerns are visibly distinct — interleaved logic is still a violation
+Read [architecture-principles.md](architecture-principles.md) §Adapter Boundaries. Flag: business logic importing from a validation library or ORM (should-fix), validation schemas / domain types / DB types crossing a layer boundary (should-fix), domain rules implemented in an adapter (should-fix). Even in simple CRUD, check that concerns are visibly distinct — interleaved logic is still a violation.
 
 ### 4. Test quality
 

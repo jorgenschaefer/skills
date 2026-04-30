@@ -34,6 +34,8 @@ Walk through these questions. Each corresponds to a common failure mode of desig
 
 ### The proposed design itself
 
+Read [architecture-principles.md](architecture-principles.md) for the canonical definitions of screaming architecture, deep modules, and adapter boundaries. The review-specific criteria below (what to flag and at what severity) apply those principles to design documents.
+
 - **Is the design specific?** "We'll add a service" is not a design. A design says what the service does, what its interface is, what data it owns, how it's deployed, how it fails. Look for hand-waving.
 - **Is the data model clear?** New tables, new columns, new types — are they specified? Is the migration story addressed (forwards and backwards)? Do existing entities need new constraints or relations?
 - **Are the API contracts specified?** New endpoints, changed endpoints, internal RPC contracts — are signatures, payloads, error shapes, and idempotency semantics specified?
