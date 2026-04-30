@@ -1,4 +1,4 @@
-Update `UBIQUITOUS_LANGUAGE.md` at the project root with any new domain terms surfaced during discovery. For each new term, add a table row to the appropriate group:
+Update `UBIQUITOUS_LANGUAGE.md` at the project root with any new terms. For each new term, add a table row to the appropriate group:
 
 ```
 | **Term** | One-sentence definition in this project's context | Other words used for this concept |

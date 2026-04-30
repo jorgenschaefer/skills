@@ -9,6 +9,12 @@ copy_to() {
   done
 }
 
+copy_to adr-format.md \
+  adr-init design
+
+copy_to ubiquitous-language-update.md \
+  design discovery
+
 copy_to review-base.md \
   design-review discovery-review implementation-review planning-review
 

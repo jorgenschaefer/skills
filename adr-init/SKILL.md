@@ -93,7 +93,7 @@ For each decision:
 - **Context field (header):** `Retrospective — extracted from codebase`
 - **Context section:** Describe what you observed in the code. Open with the standard sentence noting this is a retrospective ADR. Describe where the decision is visible in the codebase — which files, patterns, or conventions show it.
 - **Decision section:** State what the codebase does in active voice. If the user provided a rationale, include it. If not, state only the decision as fact, and append "(Reason: unknown — not evident from codebase or documentation.)"
-- **Alternatives considered:** If the user provided this, record it. Otherwise use the standard unknown statement from [adr-format.md](adr-format.md).
+- **Alternatives considered:** If the user provided this, record it. Otherwise write: "Not recorded. This ADR documents an existing decision extracted from the codebase; the alternatives considered at the time of the original decision are unknown."
 - **Consequences:** State concretely what this decision enables and what it constrains for future work. Name the modules, patterns, or conventions that must stay consistent. This is the guardrail — make it actionable.
 
 Create `docs/adr/` if it does not exist.
