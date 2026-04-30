@@ -11,3 +11,6 @@ copy_to() {
 
 copy_to review-base.md \
   design-review discovery-review implementation-review planning-review
+
+copy_to architecture-principles.md \
+  code-review design design-review implementation planning planning-review refactor-project

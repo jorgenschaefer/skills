@@ -16,6 +16,9 @@ check() {
 check review-base.md \
   design-review discovery-review implementation-review planning-review
 
+check architecture-principles.md \
+  code-review design design-review implementation planning planning-review refactor-project
+
 if [[ ${#out_of_sync[@]} -gt 0 ]]; then
   echo "Propagation updated files that are not staged. Stage them and recommit:"
   printf '  %s\n' "${out_of_sync[@]}"

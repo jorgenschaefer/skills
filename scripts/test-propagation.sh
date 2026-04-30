@@ -107,6 +107,49 @@ precommit_out=$(scripts/pre-commit.sh 2>&1) || precommit_exit=$?
 assert_nonzero "pre-commit.sh exits non-zero when propagated copies not staged" "$precommit_exit"
 assert_contains "pre-commit.sh prints git add recovery command" "$precommit_out" "git add"
 
+echo "=== architecture-principles.md: shared file ==="
+
+r=0; [[ -f "shared/architecture-principles.md" ]] || r=$?
+assert_zero "shared/architecture-principles.md exists" "$r"
+
+r=0; grep -qi "screaming architecture\|domain-first\|domain.first" shared/architecture-principles.md 2>/dev/null || r=$?
+assert_zero "shared/architecture-principles.md covers screaming architecture" "$r"
+
+r=0; grep -qi "deep module" shared/architecture-principles.md 2>/dev/null || r=$?
+assert_zero "shared/architecture-principles.md covers deep modules" "$r"
+
+r=0; grep -qi "adapter" shared/architecture-principles.md 2>/dev/null || r=$?
+assert_zero "shared/architecture-principles.md covers adapter boundaries" "$r"
+
+r=0; grep -q "architecture-principles.md" scripts/propagate.sh 2>/dev/null || r=$?
+assert_zero "propagate.sh includes architecture-principles copy_to call" "$r"
+
+r=0; grep -q "architecture-principles.md" scripts/pre-commit.sh 2>/dev/null || r=$?
+assert_zero "pre-commit.sh includes architecture-principles check call" "$r"
+
+echo "=== architecture-principles.md: propagated copies ==="
+
+for skill in code-review design design-review implementation planning planning-review refactor-project; do
+    r=0; diff -q shared/architecture-principles.md "$skill/architecture-principles.md" > /dev/null 2>&1 || r=$?
+    assert_zero "$skill/architecture-principles.md matches source" "$r"
+done
+
+echo "=== architecture-principles.md: SKILL.md references ==="
+
+for skill in implementation code-review design planning refactor-project; do
+    r=0; grep -q "architecture-principles.md" "$skill/SKILL.md" 2>/dev/null || r=$?
+    assert_zero "$skill/SKILL.md references architecture-principles.md" "$r"
+done
+
+r=0; grep -q "architecture-principles.md" design-review/SKILL.md 2>/dev/null || r=$?
+assert_zero "design-review/SKILL.md references architecture-principles.md" "$r"
+
+r=0; grep -q "architecture-principles.md" planning-review/SKILL.md 2>/dev/null || r=$?
+assert_zero "planning-review/SKILL.md references architecture-principles.md" "$r"
+
+r=0; grep -qi "should-fix" design-review/SKILL.md 2>/dev/null || r=$?
+assert_zero "design-review/SKILL.md retains should-fix review framing" "$r"
+
 echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="
 [[ "$FAIL" -eq 0 ]]
