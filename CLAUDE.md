@@ -42,3 +42,6 @@ When writing or editing a `SKILL.md`:
 - The instructions describe *role*, *inputs*, *process*, and *output format* — not just what the skill does, but how the agent should behave while doing it.
 - Cross-references between skills (e.g., `review/SKILL.md` referenced by each phase-specific review skill) are by relative path and prose convention, not by any automated mechanism.
 - After adding a skill, list it in `README.md` under "Available skills".
+- Shared content files live in `shared/`. After editing any file there, run `scripts/propagate.sh` to update skill directory copies, then stage all changed files before committing.
+- To install the pre-commit hook: `cp scripts/pre-commit.sh .git/hooks/pre-commit`. If the hook fails, run `git add <listed files> && git commit`.
+- When adding a new skill that uses shared content: add it to the relevant `copy_to` call in `scripts/propagate.sh`, run the script, and add a framing sentence to the new skill's `SKILL.md`.
