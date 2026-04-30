@@ -12,8 +12,6 @@ FAIL=0
 pass() { echo "  PASS: $1"; ((PASS++)) || true; }
 fail() { echo "  FAIL: $1"; ((FAIL++)) || true; }
 
-e() { local _r=0; "$@" 2>/dev/null || _r=$?; echo "$_r"; }
-
 assert_zero() {
     local desc="$1" val="$2"
     [[ "$val" -eq 0 ]] && pass "$desc" || fail "$desc (exit $val)"
@@ -31,7 +29,7 @@ assert_contains() {
 
 cleanup() {
     if [[ -f "$ROOT/scripts/propagate.sh" ]]; then
-        # Restore shared/review-base.md from the committed skill copy (handles untracked case)
+        # Restore shared/review-base.md from the committed skill copy
         git -C "$ROOT" show HEAD:design-review/review-base.md > "$ROOT/shared/review-base.md" 2>/dev/null \
             || git -C "$ROOT" restore "$ROOT/shared/review-base.md" 2>/dev/null || true
         "$ROOT/scripts/propagate.sh" 2>/dev/null || true
