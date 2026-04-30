@@ -16,7 +16,7 @@ Published as `jorgenschaefer/skills`. Install all skills: `npx skills add jorgen
   *.md           # Optional: reference files the skill can read
 ```
 
-The `review/SKILL.md` file contains shared base content read by each phase-specific review skill (`discovery-review`, `design-review`, `planning-review`, `implementation-review`). These are top-level skill directories, not nested sub-skills.
+The `shared/review-base.md` file contains shared base content read by each phase-specific review skill (`discovery-review`, `design-review`, `planning-review`, `implementation-review`). These are top-level skill directories, not nested sub-skills.
 
 ## The workflow these skills implement
 
