@@ -76,6 +76,14 @@ Domain terms used across this skills project and the agentic development workflo
 >
 > **Domain expert:** "Definitely not. The review sub-skills depend on clean context — a reviewer who wrote the artifact can't give it fresh eyes."
 
+## Skill authoring
+
+| Term | Definition | Aliases to avoid |
+| --- | --- | --- |
+| **Shared content file** | A canonical source file in `shared/` whose content is copied into one or more skill directories by the propagation script; the authoritative version of text that appears in multiple skills | Master file, template |
+| **Propagation** | The act of copying shared content files from `shared/` into their destination skill directories, performed by `scripts/propagate.sh` before committing | Build step, sync, deployment |
+| **Propagation script** | `scripts/propagate.sh` — the script that copies each shared content file to its configured destination skill directories | Build script, sync script |
+
 ## Flagged ambiguities
 
 - **"review"** is used for both the phase (the act of reviewing an artifact) and the review skills (`design-review`, etc.) and the output file. Canonical usage: **Review** or **review skill** for the phase/skill, **review file** for the artifact it produces.
