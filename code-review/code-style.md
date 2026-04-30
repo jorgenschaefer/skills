@@ -20,6 +20,10 @@ Concrete signals to push back on:
 - Extracted names reference the caller or context ("helper", "util", numbered variants) — scattering, not simplifying
 - Contains clearly distinct steps or concerns crammed into one unit, regardless of length
 
+## Callers Before Helpers
+
+The primary export comes first; helpers follow below the functions that call them, propagating through every level. A reader opening the file sees the entry first and drills into detail as they scroll — never encountering a helper before its context.
+
 ## Dead-Weight Free
 
 Remove dead weight before committing. Dead weight includes:
