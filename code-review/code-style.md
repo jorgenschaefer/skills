@@ -9,7 +9,7 @@ Write the simplest, most boring code that works. Bugs are ten times harder to fi
 Concrete signals to push back on:
 - Dense expressions or non-obvious idioms that hurt readability without earning their complexity
 - Deeply nested conditionals where a flatter structure would be clearer
-- Premature optimization without a measured bottleneck — the readable version is the right version
+- Optimization trades readability for speed — a worthwhile trade only when backed by measurement. Without a measured bottleneck, the readable version is correct.
 
 ## Dead-Weight Free
 
