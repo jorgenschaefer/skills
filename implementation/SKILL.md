@@ -95,12 +95,11 @@ What would you like to do?
 
 Code that ships from this phase should be:
 
-- **Clear over clever.** The next person to read this will not have your context. Write the simplest, most boring code that works. Bugs are ten times harder to find than code is to write — cleverness makes bugs invisible; obviousness makes them stand out. When tempted to optimize, ask whether you have a measured bottleneck; without one, the readable version is the right version.
+- **Code style.** Read [code-style.md](code-style.md) for the two style principles — clear over clever and dead-weight free. Adhere to both.
 - **Consistent with the existing codebase.** Follow established patterns unless you have a reason to deviate, and if you deviate, document why.
 - **Architecture principles respected.** Read [architecture-principles.md](architecture-principles.md) for the structural standards — screaming architecture (domain-first organization), deep modules, and adapter boundaries. Adhere to all three. If placing a file in a layered structure due to existing codebase conventions, note the tension in the PR description.
 - **Named from the ubiquitous language.** Identifiers should use the canonical terms from `UBIQUITOUS_LANGUAGE.md`. Don't invent synonyms for concepts the project already has names for.
 - **Well-tested at appropriate levels.** Every behavior the ticket adds is covered by at least one test. Edge cases the ticket explicitly mentions are covered.
-- **Free of dead code, debug prints, and commented-out blocks.** Clean up before committing.
 - **Documented where non-obvious.** Comments explain why, not what. The code itself should make the "what" clear.
 - **Honest about uncertainty.** If you couldn't fully verify something works in production conditions, say so in the PR description.
 
