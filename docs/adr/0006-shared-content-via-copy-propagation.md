@@ -4,6 +4,8 @@
 **Date:** 2026-04-30
 **Context:** [Design Doc — Shared Skill Content](../features/shared-skill-content/design.md)
 
+> **Decision:** Shared instructional content lives in canonical source files under `shared/` and is copied verbatim into each skill directory by `scripts/propagate.sh`. This maintains a single source of truth while keeping each installed skill self-contained — required because skills.sh installs skill directories individually, making runtime cross-skill file references unviable.
+
 ## Context
 
 Several skill files contain near-duplicate blocks of instructional content (architectural principles, code style, reviewer guidance). Updating a guideline requires editing 5–11 files, and the copies have already begun to diverge. A mechanism is needed to maintain one source of truth while keeping each installed skill directory self-contained.

@@ -4,6 +4,8 @@
 **Date:** 2026-04-30
 **Context:** Retrospective — extracted from codebase
 
+> **Decision:** We implement the workflow as a strict sequential chain of phases, each requiring the prior phase's artifact before starting. This enforces human-in-the-loop checkpoints and ensures each phase starts in a clean context, free of accumulated assumptions from prior phases.
+
 ## Context
 
 This ADR was extracted from the existing codebase. No prior design document exists for this decision.

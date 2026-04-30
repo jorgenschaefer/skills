@@ -4,6 +4,8 @@
 **Date:** 2026-04-30
 **Context:** Retrospective — extracted from codebase
 
+> **Decision:** Markdown is the universal format for both skill instructions and all workflow artifacts. It is the industry standard for human-readable technical writing, LLMs are trained on it extensively, and it requires no parser — agents read and write it natively.
+
 ## Context
 
 This ADR was extracted from the existing codebase. No prior design document exists for this decision.

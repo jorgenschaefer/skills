@@ -4,6 +4,8 @@
 **Date:** 2026-04-30
 **Context:** Retrospective — extracted from codebase
 
+> **Decision:** Review skills must always be invoked in a fresh conversation with no prior context from the producing phase. An LLM that participated in producing an artifact is primed to agree with it; only a reviewer starting from a clean context can genuinely challenge it.
+
 ## Context
 
 This ADR was extracted from the existing codebase. No prior design document exists for this decision.

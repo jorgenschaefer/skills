@@ -7,6 +7,8 @@ Brownfield ADRs use this structure:
 **Date:** <YYYY-MM-DD>
 **Context:** Retrospective — extracted from codebase
 
+> **Decision:** [One sentence stating what the codebase does.] [One sentence stating the core reason, or "(Reason: unknown — not evident from codebase or documentation.)" if the rationale cannot be determined.]
+
 ## Context
 
 This ADR was extracted from the existing codebase. No prior design document exists for this decision.

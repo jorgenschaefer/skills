@@ -4,6 +4,8 @@
 **Date:** 2026-04-30
 **Context:** Retrospective — extracted from codebase
 
+> **Decision:** Feature folders are transient working memory and are deleted once a feature ships; only ADRs and `UBIQUITOUS_LANGUAGE.md` survive permanently. Once the feature is in the code, the code is the truth — phase artifacts left behind accumulate outdated information and mislead future agents and engineers.
+
 ## Context
 
 This ADR was extracted from the existing codebase. No prior design document exists for this decision.

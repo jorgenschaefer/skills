@@ -4,6 +4,8 @@
 **Date:** 2026-04-30
 **Context:** Retrospective — extracted from codebase
 
+> **Decision:** A short kebab-case feature slug is the required identifier for every feature, and all artifacts for a feature share one parent directory named by that slug. This makes it immediately clear what belongs together, what can be deleted together, and what the team is currently working on.
+
 ## Context
 
 This ADR was extracted from the existing codebase. No prior design document exists for this decision.
