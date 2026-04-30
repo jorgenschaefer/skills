@@ -183,6 +183,9 @@ assert_zero "code-review/SKILL.md references code-style.md" "$r"
 r=0; grep -q "code-style.md" implementation/SKILL.md 2>/dev/null || r=$?
 assert_zero "implementation/SKILL.md references code-style.md" "$r"
 
+# Live skill invocation (confirming agents find and read code-style.md at runtime) is
+# manual: invoke code-review and implementation skills in a test project and observe.
+
 echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="
 [[ "$FAIL" -eq 0 ]]
