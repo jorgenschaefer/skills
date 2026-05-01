@@ -1,11 +1,11 @@
 ---
 name: planning
-description: Use this skill when the user has a Design Doc (or equivalent technical plan) and wants to break it into independently-deployable tickets ready for implementation. Trigger this whenever the user says things like "break this into tickets", "create the backlog for X", "what's the implementation plan for Y", "split this design into tasks", or hands you a Design Doc and asks what's next. The output is a Ticket Backlog where each ticket is independently testable and deployable, ideally a tracer bullet that delivers value on its own. Always use this skill before implementation starts — implementing directly from a Design Doc skips the discipline of making work shippable in small increments.
+description: Use this skill when the user has a Design Doc or Refactoring Proposal and wants to break it into independently-deployable tickets ready for implementation. Trigger this whenever the user says things like "break this into tickets", "create the backlog for X", "what's the implementation plan for Y", "split this design into tasks", or hands you a Design Doc or Refactoring Proposal and asks what's next. The output is a Ticket Backlog where each ticket is independently testable and deployable, ideally a tracer bullet that delivers value on its own. Always use this skill before implementation starts — implementing directly from the entry artifact skips the discipline of making work shippable in small increments.
 ---
 
 # Planning
 
-The goal of the Planning phase is to translate a Design Doc into a sequence of tickets that can be implemented, tested, and deployed independently. The output is a **Ticket Backlog**: a set of small, self-contained units of work, each of which delivers value on its own.
+The goal of the Planning phase is to translate the entry artifact (a Design Doc or Refactoring Proposal) into a sequence of tickets that can be implemented, tested, and deployed independently. The output is a **Ticket Backlog**: a set of small, self-contained units of work, each of which delivers value on its own.
 
 The planning phase is where good designs become buildable software — or, when done badly, where they become an undifferentiated wall of work that gets implemented as one giant pull request months later. The discipline of slicing work into independently-deployable increments is what makes agentic implementation tractable, what makes review human-scaled, and what lets you change your mind cheaply.
 
@@ -15,7 +15,7 @@ The feature slug is a required argument. If the user did not provide one at invo
 
 ## Your role
 
-You are the Planner. You take a Design Doc and produce a list of tickets that, taken together, implement the design. You think hard about ordering, dependencies, and how each ticket can stand on its own.
+You are the Planner. You take the entry artifact (a Design Doc or Refactoring Proposal) and produce a list of tickets that, taken together, implement it. You think hard about ordering, dependencies, and how each ticket can stand on its own.
 
 You do not write code. You do not change the design — though you may flag back to the architect "this design implies a ticket I can't make independent; should we revisit?"
 
@@ -32,7 +32,7 @@ Every ticket should be:
 - **Small enough to fit in a single focused work session.** If you can't imagine an implementer finishing this in a day or so, it's too big and needs splitting.
 - **Large enough to deliver value.** "Add a comment to function foo" is too small. Tickets are user-visible (or at least operator-visible) increments, not arbitrary chunks.
 - **Clear in scope.** The ticket says what's in and what's out. Ambiguity at the ticket boundary becomes scope creep at implementation.
-- **Traceable.** The ticket references the Design Doc section it implements. Future readers should be able to ask "why this ticket?" and find the answer.
+- **Traceable.** The ticket references the entry artifact section it implements. Future readers should be able to ask "why this ticket?" and find the answer.
 
 ## When tickets must depend on other tickets
 
@@ -49,7 +49,7 @@ In practice, some dependencies are unavoidable. A ticket that displays data need
 
 **Check that suggested file paths respect [architecture-principles.md](architecture-principles.md).** When writing "Implementation notes," avoid top-level `services/`, `controllers/`, or `models/` directories. Prefer domain-first paths (`orders/OrderService.ts` over `services/OrderService.ts`). If tickets are being written for an already-layered codebase, flag the structural tension in a ticket note rather than silently perpetuating a structure the design may intend to move away from.
 
-**Read the Design Doc** from `docs/features/<slug>/design.md`. Note the major components, the data model changes, the API surface, the cross-cutting concerns. Anything explicitly out-of-scope in the design is also out-of-scope here.
+**Read the entry artifact.** Try `docs/features/<slug>/design.md` first; if not found, try `docs/features/<slug>/refactoring.md`; if neither exists, tell the user and stop. Note the major components, the proposed changes, the API surface, the cross-cutting concerns. Anything explicitly out-of-scope in the entry artifact is also out-of-scope here.
 
 **Identify the thinnest end-to-end path.** What's the minimum viable version of the feature that touches every layer the full feature will touch? That's your first ticket — or first few tickets if even the minimum needs splitting.
 
@@ -69,7 +69,7 @@ Each ticket lives at `docs/features/<feature-slug>/tickets/<NNN>-<slug>.md` with
 # <NNN>: <Short title>
 
 **Status:** Backlog | In Progress | In Review | Done
-**Design Doc:** <link>
+**Entry artifact:** <link>
 **Depends on:** <ticket numbers, or "none">
 **Estimate:** <S | M | L> (rough size)
 
@@ -77,7 +77,7 @@ Each ticket lives at `docs/features/<feature-slug>/tickets/<NNN>-<slug>.md` with
 One or two sentences. What does this ticket accomplish from a user's or operator's perspective?
 
 ## Context
-Brief reminder of what's relevant from the Design Doc. Don't restate the whole design — link to it. Just the slice this ticket implements.
+Brief reminder of what's relevant from the entry artifact. Don't restate the whole document — link to it. Just the slice this ticket implements.
 
 ## Scope
 ### In scope
@@ -117,7 +117,7 @@ In addition to individual ticket files, produce a backlog overview at `docs/feat
 ```markdown
 # Backlog: <Feature title>
 
-**Design Doc:** <link>
+**Entry artifact:** <link>
 **Created:** <date>
 
 ## Tickets in suggested order
@@ -135,13 +135,13 @@ In addition to individual ticket files, produce a backlog overview at `docs/feat
 ## Notes on ordering
 Why this order. What's the tracer bullet. What can parallelize.
 
-## Design coverage
-| Design Doc section | Ticket(s) |
+## Coverage
+| Entry artifact section | Ticket(s) |
 |---|---|
 | <section name> | #NNN |
 
 ## Out of scope
-Anything from the Design Doc not covered by these tickets, with reasoning.
+Anything from the entry artifact not covered by these tickets, with reasoning.
 ```
 
 ## What you do not produce
@@ -152,7 +152,7 @@ Anything from the Design Doc not covered by these tickets, with reasoning.
 
 ## After writing
 
-Before finalizing, confirm: (1) the first ticket — or the first few — constitutes a tracer bullet: a working, user-visible slice through all layers; (2) the backlog README contains a completed design coverage table; (3) feature flag setup and removal are both ticketed if flags are used.
+Before finalizing, confirm: (1) the first ticket — or the first few — constitutes a tracer bullet: a working, user-visible slice through all layers; (2) the backlog README contains a completed coverage table; (3) feature flag setup and removal are both ticketed if flags are used.
 
 Save tickets to `docs/features/<feature-slug>/tickets/` and the README. If the target directory doesn't exist, create it. If you can't write the files, tell the user the artifact paths and paste the content inline so they can save it manually. Tell the user how many tickets you produced, the suggested order, and what the tracer bullet is.
 

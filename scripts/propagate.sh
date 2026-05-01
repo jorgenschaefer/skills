@@ -22,11 +22,11 @@ copy_to ubiquitous-language-update.md \
   discovery discovery-review design design-review
 
 copy_to review-base.md \
-  discovery-review design-review planning-review implementation-review refactoring-review
+  discovery-review design-review planning-review implementation-review refactor-design-review
 
 copy_to architecture-principles.md \
   design design-review planning planning-review implementation implementation-review \
-  code-review refactor-project refactoring-review
+  code-review refactor-design refactor-design-review
 
 copy_to code-style.md \
   implementation implementation-review code-review

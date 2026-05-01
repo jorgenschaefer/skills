@@ -23,7 +23,7 @@ The feature slug is a required argument. If the user did not provide one at invo
 
 Before starting design, make sure you have:
 
-1. **The Feature Brief (or Refactoring Proposal).** Read the entry artifact from `docs/features/<slug>/discovery.md`; if not found, try `docs/features/<slug>/refactoring.md`; if neither exists, tell the user and stop. If they want to skip discovery entirely, push back gently — at minimum get a few sentences of problem statement and goals before designing.
+1. **The Feature Brief.** Read the entry artifact from `docs/features/<slug>/discovery.md`; if not found but `refactoring.md` exists, tell the user this feature uses the refactoring path and the next step is `planning`, not `design`; if neither exists, tell the user and stop. If they want to skip discovery entirely, push back gently — at minimum get a few sentences of problem statement and goals before designing.
 2. **Access to the codebase.** Most design decisions are constrained by what already exists. You need to read the existing code, not guess at it.
 3. **Knowledge of the team's conventions.** Check `CLAUDE.md` / `AGENTS.md` at the repo root and any subdirectory equivalents. They tell you the existing patterns, the test framework, deployment model, etc.
 4. **The project's ubiquitous language.** Read `UBIQUITOUS_LANGUAGE.md` at the project root if it exists. Use the canonical terms in your design — for modules, entities, processes, and APIs. Don't introduce synonyms for concepts that already have names.

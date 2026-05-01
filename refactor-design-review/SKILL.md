@@ -1,13 +1,13 @@
 ---
-name: refactoring-review
-description: Use this skill to review a Refactoring Proposal produced by the refactor-project skill before it advances to the design phase. Trigger when the user says things like "review this refactoring proposal", "is this proposal ready for design", or hands you a refactoring.md file and asks for feedback. Always use a clean context, separate from the conversation that produced the proposal. Output is a structured review file saved at docs/features/<slug>/refactoring-review-NN.md.
+name: refactor-design-review
+description: Use this skill to review a Refactoring Proposal produced by the refactor-design skill before it advances to the planning phase. Trigger when the user says things like "review this refactoring proposal", "is this proposal ready for planning", or hands you a refactoring.md file and asks for feedback. Always use a clean context, separate from the conversation that produced the proposal. Output is a structured review file saved at docs/features/<slug>/refactor-design-review-NN.md.
 ---
 
-# Refactoring Review
+# Refactor Design Review
 
-This skill reviews a **Refactoring Proposal** — the artifact produced by the `refactor-project` skill. It builds on the shared review base; read [review-base.md](review-base.md) first for the reviewer stance, output format, and severity definitions.
+This skill reviews a **Refactoring Proposal** — the artifact produced by the `refactor-design` skill. It builds on the shared review base; read [review-base.md](review-base.md) first for the reviewer stance, output format, and severity definitions.
 
-The unique job of this review is to catch problems in the structural analysis and proposed changes before they cascade into the design and planning phases — vague friction points produce vague tickets; unacknowledged ADR conflicts produce reverting PRs.
+The unique job of this review is to catch problems in the structural analysis and proposed changes before they cascade into the planning phase — vague friction points produce vague tickets; unacknowledged ADR conflicts produce reverting PRs.
 
 ## Setup
 
@@ -15,8 +15,8 @@ The feature slug is a required argument. If the user did not provide one at invo
 
 Before reviewing, confirm:
 
-1. The artifact is a Refactoring Proposal (it should follow the `refactor-project` skill structure: Summary, Friction points found, Proposed refactorings, Suggested order, Scope decisions).
-2. You have read all ADRs in `docs/adr/`. ADR compliance is one of the highest-value checks at this phase — a proposed refactoring that would contradict an accepted architectural decision must be flagged before it reaches design. If no ADRs exist, note it in "What was checked."
+1. The artifact is a Refactoring Proposal (it should follow the `refactor-design` skill structure: Summary, Friction points found, Proposed refactorings, Suggested order, Scope decisions).
+2. You have read all ADRs in `docs/adr/`. ADR compliance is one of the highest-value checks at this phase — a proposed refactoring that would contradict an accepted architectural decision must be flagged before it reaches planning. If no ADRs exist, note it in "What was checked."
 3. You're in a clean context — you did not participate in creating this artifact. If you're unsure, treat your judgment as potentially contaminated: note it in "What was NOT checked" and flag any area where prior context might be biasing you.
 
 ## What to check
@@ -36,9 +36,9 @@ Walk through these questions. Each corresponds to a common failure mode of struc
 
 ### Refactoring actionability
 
-- **Can an engineer design a solution from each proposal?** The `design` skill will use this proposal as its entry artifact. Each proposed refactoring should give the designer enough to start: what specifically should change, where it lives, what the target state looks like. "Clean up the module" is not actionable; "merge the thin `UserMapper` class into `UserRepository`, which currently delegates every method unchanged" is.
+- **Can an engineer plan tickets from each proposal?** The `planning` skill will use this proposal as its entry artifact. Each proposed refactoring should give the planner enough to start: what specifically should change, where it lives, what the target state looks like. "Clean up the module" is not actionable; "merge the thin `UserMapper` class into `UserRepository`, which currently delegates every method unchanged" is.
 - **Is the approach field meaningful?** Each proposal should include "Approach: a starting point for implementation." If it is generic ("follow best practices", "refactor incrementally") rather than specific to the codebase, it's a should-fix.
-- **Is impact assessed?** The proposal should name how much code is affected and estimate risk. Missing impact means the designer and planner can't assess feasibility — should-fix.
+- **Is impact assessed?** The proposal should name how much code is affected and estimate risk. Missing impact means the planner can't assess feasibility — should-fix.
 
 ### Priority and ordering
 
@@ -65,7 +65,7 @@ Read the Proposed refactorings section as if you were the planner. Could you pro
 ## Common findings
 
 - Friction points named without file paths or specific patterns
-- Proposed refactorings too vague to design from ("clean up", "improve", "reorganize")
+- Proposed refactorings too vague to produce actionable tickets from ("clean up", "improve", "reorganize")
 - ADR contradictions unacknowledged
 - Suggested order that doesn't follow from stated priorities or ignores dependencies
 - Scope decisions section empty — reader can't distinguish oversight from deliberate exclusion
@@ -74,11 +74,11 @@ Read the Proposed refactorings section as if you were the planner. Could you pro
 
 ## Verdict guidance for this phase
 
-- **Block** if: a proposed refactoring contradicts an accepted ADR without acknowledgement; friction points lack specific locations; the proposal is too vague to produce a Design Doc from.
+- **Block** if: a proposed refactoring contradicts an accepted ADR without acknowledgement; friction points lack specific locations; the proposal is too vague to produce actionable tickets from.
 - **Request changes** if: priorities are unjustified; ordering contradicts priorities or ignores dependencies; obvious friction areas are missing; scope decisions are empty; refactorings lack actionable approach.
 - **Approve with comments** if: the proposal is solid, with only nit-level concerns.
 - **Approve** if: rare. Hold a high bar.
 
 ## Output
 
-Save the review at `docs/features/<slug>/refactoring-review-<NN>.md` using the format defined in [review-base.md](review-base.md). Reference specific sections of the proposal and, where possible, specific file paths from the Friction points list. If the verdict is Approve or Approve with comments, suggest the next step is the `design` skill.
+Save the review at `docs/features/<slug>/refactor-design-review-<NN>.md` using the format defined in [review-base.md](review-base.md). Reference specific sections of the proposal and, where possible, specific file paths from the Friction points list. If the verdict is Approve or Approve with comments, suggest the next step is the `planning` skill.

@@ -34,7 +34,7 @@ npx skills add jorgenschaefer/skills@<skill-name>
 - **design-review** — review a Design Doc and ADRs before breaking into tickets (highest-leverage review)
 - **planning-review** — review a Ticket Backlog before implementation begins
 - **implementation-review** — review a code change before merging; checks ticket compliance and delegates code quality to the code-review skill
-- **refactoring-review** — review a Refactoring Proposal before it advances to design
+- **refactor-design-review** — review a Refactoring Proposal before it advances to planning
 
 ### Code review
 
@@ -43,7 +43,7 @@ npx skills add jorgenschaefer/skills@<skill-name>
 ### Maintenance
 
 - **boy-scout** — triage incidental code finds: apply trivially safe fixes immediately, create tracked tickets for everything else
-- **refactor-project** — comprehensive structural review of a codebase to identify architectural friction and propose a refactoring plan
+- **refactor-design** — comprehensive structural review of a codebase to identify architectural friction and produce a Refactoring Proposal (feeds directly into planning)
 - **workflow-status** — report the current phase and artifact state of an in-progress feature
 
 ## Feature lifecycle

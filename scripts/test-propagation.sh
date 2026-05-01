@@ -129,14 +129,14 @@ assert_zero "pre-commit.sh includes architecture-principles check call" "$r"
 
 echo "=== architecture-principles.md: propagated copies ==="
 
-for skill in code-review design design-review implementation planning planning-review refactor-project; do
+for skill in code-review design design-review implementation planning planning-review refactor-design; do
     r=0; diff -q shared/architecture-principles.md "$skill/architecture-principles.md" > /dev/null 2>&1 || r=$?
     assert_zero "$skill/architecture-principles.md matches source" "$r"
 done
 
 echo "=== architecture-principles.md: SKILL.md references ==="
 
-for skill in implementation code-review design planning refactor-project; do
+for skill in implementation code-review design planning refactor-design; do
     r=0; grep -q "architecture-principles.md" "$skill/SKILL.md" 2>/dev/null || r=$?
     assert_zero "$skill/SKILL.md references architecture-principles.md" "$r"
 done

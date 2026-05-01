@@ -71,7 +71,7 @@ What should change. Not a full implementation plan — the implementer's TDD loo
 What this ticket deliberately does not fix. Prevents scope creep when the implementer picks it up.
 ```
 
-Estimates are capped at M. A finding that would be an L belongs in `refactor-project`, not here.
+Estimates are capped at M. A finding that would be an L belongs in `refactor-design`, not here.
 
 The `Noticed during` field is first-class — it closes the traceability loop so the ticket doesn't look like it appeared from nowhere.
 
@@ -81,19 +81,19 @@ A finding is worth a ticket if, left unfixed, it would cause an actual problem f
 
 ## Batching related findings
 
-If the same trivial finding appears in exactly 2 files, apply both fixes and note both in your report. If it appears in 3 or more separate places, do not create a ticket per instance — write one ticket that describes the pattern, names the locations, and notes that a `refactor-project` survey may be warranted. Batch cleanup of a systemic smell is architectural work, not boy-scout work.
+If the same trivial finding appears in exactly 2 files, apply both fixes and note both in your report. If it appears in 3 or more separate places, do not create a ticket per instance — write one ticket that describes the pattern, names the locations, and notes that a `refactor-design` survey may be warranted. Batch cleanup of a systemic smell is architectural work, not boy-scout work.
 
 ## What you do not produce
 
 - Production code beyond the trivially safe fixes defined above
 - Designs or architecture proposals — if a finding needs design, write a ticket and note that design is a prerequisite
-- Systemic refactoring proposals — use `refactor-project` for those
+- Systemic refactoring proposals — use `refactor-design` for those
 
 ## After triaging
 
 Report:
 - What trivially safe fixes were applied immediately (file and what changed), if any
 - How many tickets were written and the file paths
-- Whether any patterns were found pointing toward `refactor-project`
+- Whether any patterns were found pointing toward `refactor-design`
 
 If no findings met the quality bar for a ticket and nothing was trivially fixable, say so explicitly.

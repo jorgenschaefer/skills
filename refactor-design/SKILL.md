@@ -1,9 +1,9 @@
 ---
-name: refactor-project
-description: Use this skill when the user wants a comprehensive structural review of a codebase — not a targeted fix for a specific bug or feature, but a survey of where the architecture is creating friction. Trigger when the user says things like "the codebase is getting hard to change", "clean up the architecture", "do a structural review", "improve our module boundaries", or asks to improve maintainability project-wide. Do NOT use for feature design (use the design skill) or for reviewing a specific recent change (use implementation-review).
+name: refactor-design
+description: Use this skill when the user wants a comprehensive structural review of a codebase — not a targeted fix for a specific bug or feature, but a survey of where the architecture is creating friction. Produces a Refactoring Proposal that feeds directly into the planning phase. Trigger when the user says things like "the codebase is getting hard to change", "clean up the architecture", "do a structural review", "improve our module boundaries", or asks to improve maintainability project-wide. Do NOT use for feature design (use the design skill) or for reviewing a specific recent change (use implementation-review).
 ---
 
-# Refactor Project
+# Refactor Design
 
 ## Goal
 
@@ -74,11 +74,11 @@ Tell the user what was found and where the proposal lives.
 
 Then run an automated review in a clean context. Use the `Agent` tool with `subagent_type: "general-purpose"` so the review agent has no memory of this conversation — this gives the proposal fresh eyes. The agent's self-contained prompt should be:
 
-> Invoke the `refactoring-review` skill for feature slug `<slug>`. The Refactoring Proposal is at `docs/features/<slug>/refactoring.md`.
+> Invoke the `refactor-design-review` skill for feature slug `<slug>`. The Refactoring Proposal is at `docs/features/<slug>/refactoring.md`.
 
-After the review agent finishes, read the review file it saved at `docs/features/<slug>/refactoring-review-<NN>.md`. Update the Refactoring Proposal to address every finding:
+After the review agent finishes, read the review file it saved at `docs/features/<slug>/refactor-design-review-<NN>.md`. Update the Refactoring Proposal to address every finding:
 - **Blocker**: must be resolved before leaving this phase — revise the proposal
 - **Should-fix**: address these — they represent real quality gaps
 - **Nit**: use judgment
 
-Tell the user what the review found, what was addressed, and the final verdict. Then suggest the next step is the design phase — run the `design` skill with the same feature slug to translate the refactoring proposal into a Design Doc.
+Tell the user what the review found, what was addressed, and the final verdict. Then suggest the next step is the planning phase — run the `planning` skill with the same feature slug to break the Refactoring Proposal into tickets.

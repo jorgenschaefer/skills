@@ -18,8 +18,8 @@ Check `docs/features/<slug>/` for the following artifacts in order. Report what 
 | Artifact | Path | Produced by |
 |---|---|---|
 | Feature Brief | `discovery.md` | discovery |
-| Refactoring Proposal | `refactoring.md` | refactor-project |
-| Refactoring review(s) | `refactoring-review-NN.md` | refactoring-review |
+| Refactoring Proposal | `refactoring.md` | refactor-design |
+| Refactoring Proposal review(s) | `refactor-design-review-NN.md` | refactor-design-review |
 | Design Doc | `design.md` | design |
 | Ticket Backlog | `tickets/` directory | planning |
 | Brief review(s) | `discovery-review-NN.md` | discovery-review |
@@ -34,9 +34,9 @@ Also check `docs/adr/` for any ADRs whose filename contains the slug.
 The feature is in the phase whose primary artifact exists but is not yet complete or has not yet advanced:
 
 1. **Discovery** — `discovery.md` missing or `discovery-review-NN.md` has verdict "Block" or "Request changes"
-1a. **Refactoring** — alternative entry: `refactoring.md` exists but `refactoring-review-NN.md` is missing or has verdict "Block" or "Request changes"
-2. **Design** — entry artifact (`discovery.md` or `refactoring.md`) exists and its review approved; `design.md` missing or `design-review-NN.md` verdict not "Approve"
-3. **Planning** — `design.md` exists and approved; `tickets/` missing or `tickets-review-NN.md` verdict not "Approve"
+1a. **Refactor Design** — alternative entry: `refactoring.md` exists but `refactor-design-review-NN.md` is missing or has verdict "Block" or "Request changes"
+2. **Design** — `discovery.md` exists and its review approved; `design.md` missing or `design-review-NN.md` verdict not "Approve"
+3. **Planning** — entry artifact (`design.md` or approved `refactoring.md`) exists; `tickets/` missing or `tickets-review-NN.md` verdict not "Approve"
 4. **Implementation** — `tickets/` exists and approved; at least one ticket exists without a corresponding approved implementation review
 5. **Complete** — all tickets have approved implementation reviews
 
@@ -64,7 +64,7 @@ Report to the conversation (not a file) in this format:
 
 ### Latest review verdicts
 - Discovery review: <Approve / Request changes / Block / none>
-- Refactoring review: <Approve / Request changes / Block / none>
+- Refactoring Proposal review: <Approve / Request changes / Block / none>
 - Design review: <Approve / Request changes / Block / none>
 - Tickets review: <Approve / Request changes / Block / none>
 - Implementation reviews: <N of M tickets reviewed>

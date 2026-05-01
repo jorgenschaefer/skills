@@ -14,10 +14,10 @@ check() {
 }
 
 check review-base.md \
-  design-review discovery-review implementation-review planning-review
+  design-review discovery-review implementation-review planning-review refactor-design-review
 
 check architecture-principles.md \
-  code-review design design-review implementation planning planning-review refactor-project
+  code-review design design-review implementation planning planning-review refactor-design refactor-design-review
 
 check code-style.md \
   code-review implementation

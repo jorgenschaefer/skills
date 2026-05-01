@@ -26,7 +26,7 @@ Domain terms used across this skills project and the agentic development workflo
 | Term | Definition | Aliases to avoid |
 | --- | --- | --- |
 | **Feature Brief** | The output of the discovery phase — captures the problem, affected users, constraints, and success criteria; contains no design or implementation details | Discovery doc, requirements doc |
-| **Refactoring Proposal** | The output of refactor-project — captures architectural friction and a proposed improvement plan; serves as an alternative entry artifact when the work is driven by structural concerns rather than a new feature | Refactor doc, technical debt report |
+| **Refactoring Proposal** | The output of refactor-design — captures architectural friction and a proposed improvement plan; serves as an alternative entry artifact when the work is driven by structural concerns rather than a new feature | Refactor doc, technical debt report |
 | **Design Doc** | The output of the design phase — a concrete technical plan with alternatives considered and decisions recorded; exists to be reviewed and challenged before any code is written | Architecture doc, tech spec, RFC |
 | **ADR** | Architecture Decision Record — documents a single significant technical choice, the options considered, and the rationale; lives at `docs/adr/<NNNN>-<slug>.md` | Decision log, design decision |
 | **Ticket Backlog** | The output of the planning phase — a set of independently-deployable tickets that together implement the Design Doc | Task list, sprint backlog, work breakdown |
@@ -53,7 +53,7 @@ Domain terms used across this skills project and the agentic development workflo
 - A **Feature** has exactly one **Feature slug** and one **Feature folder**
 - A **Feature folder** holds all **Phase artifacts** for that feature across every phase
 - A **Phase** corresponds to exactly one **Skill**; a **Sub-skill** belongs to one parent **Skill**
-- An **Entry point** produces exactly one **Entry artifact** — either a **Feature Brief** (discovery) or a **Refactoring Proposal** (refactor-project)
+- An **Entry point** produces exactly one **Entry artifact** — either a **Feature Brief** (discovery) or a **Refactoring Proposal** (refactor-design)
 - A **Design Doc** is accompanied by zero or more **ADRs**; the **ADRs** are **Permanent artifacts**, the **Design Doc** is a **Phase artifact**
 - A **Ticket Backlog** contains one or more **Tickets**
 - A **Review file** is paired with the specific **Phase artifact** it reviewed
@@ -87,5 +87,5 @@ Domain terms used across this skills project and the agentic development workflo
 ## Flagged ambiguities
 
 - **"review"** is used for both the phase (the act of reviewing an artifact) and the review skills (`design-review`, etc.) and the output file. Canonical usage: **Review** or **review skill** for the phase/skill, **review file** for the artifact it produces.
-- **"entry point" vs "entry artifact"**: these are distinct. An **entry point** is a skill (discovery or refactor-project); an **entry artifact** is the document that skill produces. Don't use them interchangeably.
+- **"entry point" vs "entry artifact"**: these are distinct. An **entry point** is a skill (discovery or refactor-design); an **entry artifact** is the document that skill produces. Don't use them interchangeably.
 - **"feature"** sometimes refers to the product concept (what is being built) and sometimes the tracking context (the Feature folder and its slug). Context usually disambiguates, but when precision matters, prefer "Feature" for the concept and "Feature folder" or "Feature slug" for the tracking artifact.
