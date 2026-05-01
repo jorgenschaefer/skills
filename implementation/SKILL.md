@@ -100,6 +100,7 @@ Code that ships from this phase should be:
 - **Architecture principles respected.** Read [architecture-principles.md](architecture-principles.md) for the structural standards — screaming architecture (domain-first organization), deep modules, and adapter boundaries. Adhere to all three. If placing a file in a layered structure due to existing codebase conventions, note the tension in the PR description.
 - **Named from the ubiquitous language.** Identifiers should use the canonical terms from `UBIQUITOUS_LANGUAGE.md`. Don't invent synonyms for concepts the project already has names for.
 - **Well-tested at appropriate levels.** Every behavior the ticket adds is covered by at least one test. Edge cases the ticket explicitly mentions are covered.
+- **Correctness, security, observability, performance.** Read [code-quality-dimensions.md](code-quality-dimensions.md) §Tier 2. Address these while writing — the reviewer will check them, but that is a safety net, not a plan.
 - **Documented where non-obvious.** Comments explain why, not what. The code itself should make the "what" clear.
 - **Honest about uncertainty.** If you couldn't fully verify something works in production conditions, say so in the PR description.
 

@@ -24,7 +24,7 @@ Also confirm you're in a clean context — you did not participate in creating t
 
 ## Phase 2: Code quality
 
-Read `code-quality-dimensions.md` and apply all nine quality dimensions to the diff gathered in Phase 1.
+Read `code-quality-dimensions.md` and apply all quality dimensions to the diff gathered in Phase 1.
 
 Record your findings using Blocker/Should-fix/Nit severity. These form the Code Quality section of the combined output in Phase 4.
 
@@ -101,7 +101,7 @@ Save the combined review at `docs/features/<slug>/implementation-review-<NN>.md`
 - Feature flag added but never removed (and no follow-up ticket)
 - Silent deviation from a Design Doc decision or ADR without explanation
 
-Note: code quality findings (architecture, adapter boundaries, test quality, correctness, security, observability, performance) come from `code-quality-dimensions.md` applied in Phase 2.
+Note: code quality findings (architecture, adapter boundaries, test quality, correctness, security, observability, performance, simplicity, consistency, documentation) come from `code-quality-dimensions.md` applied in Phase 2.
 
 ## Verdict guidance
 

@@ -5,7 +5,7 @@ description: Standalone code quality review for any code changes — a branch, P
 
 # Code Review
 
-This skill reviews the quality of code changes — architecture, module design, adapter boundaries, test quality, correctness, security, observability, and performance. It is standalone: no ticket, no design doc, no workflow context required.
+This skill reviews the quality of code changes — architecture, module design, adapter boundaries, test quality, correctness, security, observability, performance, simplicity, consistency, and documentation. It is standalone: no ticket, no design doc, no workflow context required.
 
 ## Reviewer stance
 

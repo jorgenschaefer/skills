@@ -31,4 +31,4 @@ copy_to code-style.md \
   code-review implementation implementation-review
 
 copy_to code-quality-dimensions.md \
-  code-review implementation-review
+  code-review implementation implementation-review
