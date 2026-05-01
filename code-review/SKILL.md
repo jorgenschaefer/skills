@@ -41,7 +41,7 @@ Run the relevant git/gh commands first to obtain the diff and list of changed fi
 
 ## Quality dimensions
 
-Read `code-quality-dimensions.md`. Report findings under the output format below, sorted by severity.
+Read [code-quality-dimensions.md](code-quality-dimensions.md). Report findings under the output format below, sorted by severity.
 
 ## Output format
 

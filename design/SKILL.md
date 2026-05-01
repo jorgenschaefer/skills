@@ -54,7 +54,7 @@ Skip this step only if you have genuinely found no product-technical gaps **and*
 
 When uncertain about a technical choice: recommend a spike if the uncertainty could change the entire approach; record it as a risk if it's about tuning or edge cases within an already-chosen approach.
 
-**Identify the cross-cutting concerns.** Read `cross-cutting-concerns.md` and walk the list explicitly — most design failures happen because one of these was forgotten.
+**Identify the cross-cutting concerns.** Read [cross-cutting-concerns.md](cross-cutting-concerns.md) and walk the list explicitly — most design failures happen because one of these was forgotten.
 
 **Trace through a concrete user scenario end-to-end.** Pick a typical use case from the brief and walk it through your proposed design from request to response (or trigger to outcome). Where does data come from? Where does it go? What can fail at each step? This usually surfaces gaps faster than abstract reasoning.
 
@@ -66,7 +66,7 @@ When uncertain about a technical choice: recommend a spike if the uncertainty co
 
 Significant decisions get their own ADR file at `docs/adr/<NNNN>-<slug>.md`. The bar is intentionally high. An ADR exists so future engineers can understand *why* the system has the shape it has and avoid choices that would conflict with load-bearing constraints.
 
-Read `adr.md` for the threshold criteria and the two tests to apply before writing an ADR.
+Read [adr.md](adr.md) for the threshold criteria and the two tests to apply before writing an ADR.
 
 Examples of decisions that warrant an ADR:
 - Picking a database, message queue, or other major dependency

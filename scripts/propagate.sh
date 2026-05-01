@@ -10,7 +10,7 @@ copy_to() {
 }
 
 copy_to adr.md \
-  adr-init design
+  design design-review adr-init
 
 copy_to tracer-bullets.md \
   planning planning-review
@@ -19,16 +19,17 @@ copy_to cross-cutting-concerns.md \
   design design-review
 
 copy_to ubiquitous-language-update.md \
-  design discovery
+  discovery discovery-review design design-review
 
 copy_to review-base.md \
-  design-review discovery-review implementation-review planning-review
+  discovery-review design-review planning-review implementation-review
 
 copy_to architecture-principles.md \
-  code-review design design-review implementation implementation-review planning planning-review refactor-project
+  design design-review planning planning-review implementation implementation-review \
+  code-review refactor-project
 
 copy_to code-style.md \
-  code-review implementation implementation-review
+  implementation implementation-review code-review
 
 copy_to code-quality-dimensions.md \
-  code-review implementation implementation-review
+  implementation implementation-review code-review

@@ -5,7 +5,7 @@ description: Use this skill to review a Design Doc (and any associated ADRs) pro
 
 # Design Review
 
-This skill reviews a **Design Doc** and any associated **ADRs** — the artifacts produced by the Design phase. It builds on the shared review base; read `review-base.md` first for the reviewer stance, output format, and severity definitions.
+This skill reviews a **Design Doc** and any associated **ADRs** — the artifacts produced by the Design phase. It builds on the shared review base; read [review-base.md](review-base.md) first for the reviewer stance, output format, and severity definitions.
 
 This is the highest-leverage review in the workflow. Architectural problems caught here cost a review's worth of effort to fix. Caught after implementation, they cost weeks. Read carefully and skeptically.
 
@@ -45,7 +45,7 @@ Read [architecture-principles.md](architecture-principles.md) for the canonical 
 
 ### Cross-cutting concerns
 
-Read `cross-cutting-concerns.md` for the canonical list. This is where most design failures hide. Check each item explicitly — if the design doesn't mention something relevant, that's a finding. The review questions per concern:
+Read [cross-cutting-concerns.md](cross-cutting-concerns.md) for the canonical list. This is where most design failures hide. Check each item explicitly — if the design doesn't mention something relevant, that's a finding. The review questions per concern:
 
 - **Authentication and authorization.** Who can call this? What permissions are required? Are roles defined? Does the design respect existing auth patterns?
 - **Observability.** What gets logged? What metrics emitted? What traces? What alerts will operators need? Is there enough signal to debug a production issue?
@@ -69,11 +69,15 @@ Read `cross-cutting-concerns.md` for the canonical list. This is where most desi
 
 ### Architecture Decision Records
 
+Read [adr.md](adr.md) for the canonical ADR format and the criteria for when a decision warrants one.
+
 - **Are significant decisions captured in ADRs?** Each major decision in the design (database choice, sync vs async, new dependency, new pattern) should have an ADR. Designs that bury major decisions in prose are hard to revisit.
 - **Are existing ADRs respected?** Read the most recent 3–5 ADRs and verify the proposed design doesn't contradict any decision they record. If the ADR list is short, read all of them.
 - **Do ADRs follow the format?** Status, Context, Decision, Alternatives, Consequences. Check the consequences section in particular — many ADRs hand-wave it.
 
 ### Existing-code awareness
+
+Read [ubiquitous-language-update.md](ubiquitous-language-update.md) for the glossary maintenance standard. The primary check is that this design uses existing glossary terms consistently — synonyms and paraphrases for existing concepts are a should-fix. Only expect a new glossary entry when a genuinely new concept has been introduced.
 
 - **Does the design fit existing patterns?** If the codebase has an established way to add a new service, endpoint, background job, etc., the design should follow it — or explicitly say why it deviates.
 - **Does the design account for code that needs to change?** A design that proposes new modules without acknowledging the existing modules that need to be modified to integrate is incomplete.
@@ -125,4 +129,4 @@ To calibrate, here are the failure modes most often surfaced at this phase:
 
 ## Output
 
-Save the review at `docs/features/<slug>/design-review-<NN>.md` using the format from `review-base.md`. Reference specific sections of the design. If you reviewed ADRs, list them and review each one's consequences section in particular (Consequences are the section most often hand-waved — they reveal whether the author thought through what the decision forecloses, not just what it enables.). If the verdict is Approve or Approve with comments, suggest the next step is the planning skill.
+Save the review at `docs/features/<slug>/design-review-<NN>.md` using the format from [review-base.md](review-base.md). Reference specific sections of the design. If you reviewed ADRs, list them and review each one's consequences section in particular (Consequences are the section most often hand-waved — they reveal whether the author thought through what the decision forecloses, not just what it enables.). If the verdict is Approve or Approve with comments, suggest the next step is the planning skill.

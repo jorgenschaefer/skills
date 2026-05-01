@@ -5,7 +5,7 @@ description: Use this skill to review a Feature Brief produced by the Discovery 
 
 # Discovery Review
 
-This skill reviews a **Feature Brief** — the artifact produced by the Discovery phase. It builds on the shared review base; read `review-base.md` first for the reviewer stance, output format, and severity definitions.
+This skill reviews a **Feature Brief** — the artifact produced by the Discovery phase. It builds on the shared review base; read [review-base.md](review-base.md) first for the reviewer stance, output format, and severity definitions.
 
 The unique job of this review is to catch the failure modes specific to early-stage problem framing — things that, if not caught now, will quietly distort the design and implementation that follow.
 
@@ -72,6 +72,8 @@ Walk through these questions. Each one corresponds to a common failure mode at t
 
 ### Cross-cutting smell tests
 
+Read [ubiquitous-language-update.md](ubiquitous-language-update.md) for the glossary maintenance standard. The primary check is that this brief uses existing glossary terms consistently — synonyms and paraphrases for existing concepts are a should-fix. Only expect a new glossary entry when a genuinely new concept has been introduced.
+
 - **Skim test.** Can someone read the Summary alone and understand what's being proposed? If not, the Summary is doing too little work.
 - **The "future engineer" test.** If a new engineer joins the team in six months and reads only this brief, will they understand why this work was done? If they'd be confused, the brief lacks context.
 - **The ubiquitous language check.** Does the brief use terminology consistently with `UBIQUITOUS_LANGUAGE.md`? A brief that uses different words for the same concept as the rest of the project will cause drift in every downstream artifact. Terms that already have glossary entries: using synonyms or paraphrases is a **should-fix**. New terms the brief introduces that aren't in the glossary: also a **should-fix** — the discovery skill was responsible for adding them.
@@ -95,4 +97,4 @@ Easy-to-miss issues not named explicitly in the checks above:
 
 ## Output
 
-Save the review at `docs/features/<slug>/discovery-review-<NN>.md` using the format defined in `review-base.md`. Reference specific sections of the brief. Suggest the author address findings before re-reviewing. If the verdict is Approve or Approve with comments, suggest the next step is the design skill.
+Save the review at `docs/features/<slug>/discovery-review-<NN>.md` using the format defined in [review-base.md](review-base.md). Reference specific sections of the brief. Suggest the author address findings before re-reviewing. If the verdict is Approve or Approve with comments, suggest the next step is the design skill.

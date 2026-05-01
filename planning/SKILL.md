@@ -21,7 +21,7 @@ You do not write code. You do not change the design — though you may flag back
 
 ## The principle: tracer bullets
 
-Read `tracer-bullets.md` for the full explanation and examples. Watch for "set up the project" tickets that do nothing but scaffolding — fold the scaffolding into the first feature ticket as a tracer bullet instead.
+Read [tracer-bullets.md](tracer-bullets.md) for the full explanation and examples. Watch for "set up the project" tickets that do nothing but scaffolding — fold the scaffolding into the first feature ticket as a tracer bullet instead.
 
 ## Properties of a good ticket
 

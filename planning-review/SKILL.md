@@ -5,7 +5,7 @@ description: Use this skill to review a Ticket Backlog produced by the Planning 
 
 # Planning Review
 
-This skill reviews a **Ticket Backlog** — the artifact produced by the Planning phase. It builds on the shared review base; read `review-base.md` first for the reviewer stance, output format, and severity definitions.
+This skill reviews a **Ticket Backlog** — the artifact produced by the Planning phase. It builds on the shared review base; read [review-base.md](review-base.md) first for the reviewer stance, output format, and severity definitions.
 
 The unique job of this review is to verify that the work has been sliced well: each ticket can stand on its own, the ordering makes sense, and nothing from the design has been forgotten or smuggled out of scope.
 
@@ -21,7 +21,7 @@ Before reviewing, confirm:
 
 ## What to check
 
-Read `tracer-bullets.md` for the definition of tracer-bullet slicing and the layer-by-layer antipattern — the smell tests below apply those concepts.
+Read [tracer-bullets.md](tracer-bullets.md) for the definition of tracer-bullet slicing and the layer-by-layer antipattern — the smell tests below apply those concepts.
 
 Walk through these questions. Check each ticket individually, then check the backlog as a whole.
 
@@ -89,4 +89,4 @@ For each ticket, verify:
 
 ## Output
 
-Save the review at `docs/features/<slug>/tickets-review-<NN>.md` using the format from `review-base.md`. When citing findings, refer to specific ticket numbers. Include the coverage table you built during the design coverage check. If the verdict is Approve or Approve with comments, suggest the next step is the implementation skill.
+Save the review at `docs/features/<slug>/tickets-review-<NN>.md` using the format from [review-base.md](review-base.md). When citing findings, refer to specific ticket numbers. Include the coverage table you built during the design coverage check. If the verdict is Approve or Approve with comments, suggest the next step is the implementation skill.

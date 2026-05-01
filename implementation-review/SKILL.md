@@ -5,7 +5,7 @@ description: Use this skill to review a code change produced by the Implementati
 
 # Implementation Review
 
-This skill reviews a **code change** produced by the Implementation phase — the diff, tests, and related changes that satisfy a ticket. It builds on the shared review base; read `review-base.md` first for the reviewer stance, output format, and severity definitions.
+This skill reviews a **code change** produced by the Implementation phase — the diff, tests, and related changes that satisfy a ticket. It builds on the shared review base; read [review-base.md](review-base.md) first for the reviewer stance, output format, and severity definitions.
 
 The unique job of this review is to verify that the code does what the ticket says it does, that it does so correctly and well, and that it doesn't introduce problems the ticket didn't ask for. It works in four phases.
 
@@ -24,7 +24,7 @@ Also confirm you're in a clean context — you did not participate in creating t
 
 ## Phase 2: Code quality
 
-Read `code-quality-dimensions.md` and apply all quality dimensions to the diff gathered in Phase 1.
+Read [code-quality-dimensions.md](code-quality-dimensions.md) and apply all quality dimensions to the diff gathered in Phase 1.
 
 Record your findings using Blocker/Should-fix/Nit severity. These form the Code Quality section of the combined output in Phase 4.
 
@@ -67,7 +67,7 @@ The single most important check. Walk through every acceptance criterion in the 
 
 ## Phase 4: Combined verdict
 
-Merge findings from Phases 2 and 3 into a single structured output using the format from `review-base.md`. Include an explicit **Acceptance Criteria Coverage** table listing each criterion with its status (verified / not verified / partially verified) and the file/test that proves it.
+Merge findings from Phases 2 and 3 into a single structured output using the format from [review-base.md](review-base.md). Include an explicit **Acceptance Criteria Coverage** table listing each criterion with its status (verified / not verified / partially verified) and the file/test that proves it.
 
 Apply the smell tests before finalizing:
 
@@ -101,7 +101,7 @@ Save the combined review at `docs/features/<slug>/implementation-review-<NN>.md`
 - Feature flag added but never removed (and no follow-up ticket)
 - Silent deviation from a Design Doc decision or ADR without explanation
 
-Note: code quality findings (architecture, adapter boundaries, test quality, correctness, security, observability, performance, simplicity, consistency, documentation) come from `code-quality-dimensions.md` applied in Phase 2.
+Note: code quality findings (architecture, adapter boundaries, test quality, correctness, security, observability, performance, simplicity, consistency, documentation) come from [code-quality-dimensions.md](code-quality-dimensions.md) applied in Phase 2.
 
 ## Verdict guidance
 

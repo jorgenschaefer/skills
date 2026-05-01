@@ -53,7 +53,7 @@ For each category, identify what choice the codebase has already made:
 
 ## Apply the ADR threshold
 
-Not every technology choice warrants an ADR. For each candidate, apply the threshold filter in `adr.md`.
+Not every technology choice warrants an ADR. For each candidate, read [adr.md](adr.md) and apply the threshold filter.
 
 Do **not** write ADRs for:
 - Framework-enforced conventions (e.g., Rails routing, Django ORM defaults — these are constraints imposed by the framework, not team decisions)
