@@ -43,7 +43,7 @@ Tests are evidence that the code does what it claims — not just that it runs.
 
 - **Ubiquitous language.** Read `UBIQUITOUS_LANGUAGE.md` at the project root if it exists. Code that introduces synonyms for glossary terms fragments the model between documentation and code — flag as **should-fix** with the canonical term as the fix.
 - **Honest names.** A function called `validateUser` that also creates the user is misnamed. Names that lie about what they do are a finding.
-- **Code style.** Read [code-style.md](code-style.md) for the style principles: clear over clever and dead-weight free. Apply them when reviewing — flag dense or non-obvious code and dead weight as should-fix.
+- **Code style.** Read all style principles in [code-style.md](code-style.md). Apply them when reviewing — flag violations as should-fix.
 
 ## Tier 2: General code quality dimensions
 

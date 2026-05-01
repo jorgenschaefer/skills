@@ -1,6 +1,6 @@
 # Code Style Principles
 
-Two principles for agents writing or reviewing code.
+Principles for agents writing or reviewing code.
 
 ## Clear Over Clever
 
@@ -32,3 +32,7 @@ Remove dead weight before committing. Dead weight includes:
 - Unused imports
 - Leftover `TODO` comments about the current change
 - Any other artifacts that don't belong in production code
+
+## Comments Are a Last Resort
+
+Code should be readable and understandable by itself. When it is not, the first response is to write better code — clearer names, a well-named extraction, a simpler structure. A comment is only warranted when the code truly cannot speak for itself: a hidden constraint, a subtle invariant, a workaround for a specific bug. If a block seems to need a comment to be understood, that is a signal to extract it into a named function first.
