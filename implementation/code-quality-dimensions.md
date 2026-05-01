@@ -86,6 +86,8 @@ Tests are evidence that the code does what it claims — not just that it runs.
 
 Avoid unnecessary complexity. Flag: cyclomatic depth that obscures intent, abstractions added speculatively (YAGNI), logic that could be a simple function but is a class hierarchy, deeply nested conditionals that would flatten to a table. Prefer the readable version unless there is a measured reason not to.
 
+Requirements change in ways you cannot predict; code written for imagined future requirements that never arrive is waste, and often makes the code that *did* arrive harder to change. When in doubt, implement what the ticket says — not what you expect the next ticket to say.
+
 ### 11. Consistency
 
 Does the change match the surrounding codebase? Flag: naming conventions that differ from the local idiom, error handling style inconsistent with adjacent code, structural patterns that break from established conventions without a reason. A codebase that surprises readers in small ways accumulates friction.

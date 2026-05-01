@@ -2,6 +2,8 @@
 
 Principles for agents writing or reviewing code.
 
+Code is read far more often than it is written. Every principle here optimizes for the reader, not the author.
+
 ## Clear Over Clever
 
 Write the simplest, most boring code that works. Bugs are ten times harder to find than code is to write — cleverness makes bugs invisible; obviousness makes them stand out. The bar for "dumb but obvious" is high.
@@ -19,6 +21,21 @@ Concrete signals to push back on:
 - Needs "and" to describe what it does, or its contents can't be summarized without listing them
 - Extracted names reference the caller or context ("helper", "util", numbered variants) — scattering, not simplifying
 - Contains clearly distinct steps or concerns crammed into one unit, regardless of length
+
+## Naming
+
+Use descriptive, unabbreviated names — even long ones. A reader should never have to mentally expand `usr` to `user`, `cfg` to `config`, or `e` to `error`. When the name of a variable, function, or type tells you exactly what it holds and why it exists, the surrounding code becomes self-documenting.
+
+Short names are only justified when the scope is tiny and the meaning is local and unambiguous — a loop index, a mathematical symbol that matches a well-known formula. Everywhere else, the full word costs nothing and saves real cognitive effort.
+
+## Explicit Over Implicit
+
+Prefer explicit code over implicit behavior. No hidden coupling, no magic method dispatch, no action-at-a-distance. If something is true — a value is nullable, a step is required, a conversion is lossy — say so in the code. When a reader can follow the logic without knowing the framework's conventions, the code is explicit enough.
+
+Concrete signals to push back on:
+- Behavior that depends on the order of class definitions, import side-effects, or framework lifecycle hooks that aren't visible at the call site
+- Return types inferred from complex chains where the wrong type is silently accepted
+- Optional parameters with non-obvious defaults that change behavior in surprising ways
 
 ## Callers Before Helpers
 
