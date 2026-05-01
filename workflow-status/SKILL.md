@@ -40,6 +40,10 @@ The feature is in the phase whose primary artifact exists but is not yet complet
 
 Use judgment when reviews are missing (assume the phase is still in progress) or when verdicts are mixed.
 
+**Partial implementation:** If some tickets have approved implementation reviews and others don't, report as "Implementation (in progress): N of M tickets complete" and list which tickets are done vs pending.
+
+**Stuck in review:** If the latest review for a phase has a "Block" or "Request changes" verdict and no newer artifact or review exists, flag it as "Stuck in review — address findings before proceeding" rather than treating it as in progress.
+
 ## Output
 
 Report to the conversation (not a file) in this format:

@@ -11,8 +11,6 @@ The most common failure mode of this phase is jumping to solutions too early. A 
 
 ## Before starting
 
-The feature slug is a required argument. If the user did not provide one at invocation, ask for it before proceeding.
-
 Read `UBIQUITOUS_LANGUAGE.md` at the project root if it exists. It records the canonical terms the project already uses. Keep these in mind during the conversation — avoid introducing synonyms for terms that already have names.
 
 ## Your role
@@ -80,6 +78,8 @@ You have enough when all of the following are true:
 Not when you know everything — you'll never know everything — but when the residual unknowns are explicit, named, and would only affect design decisions (not the problem statement itself).
 
 ## Writing the Feature Brief
+
+**Confirm the feature slug first.** If the user provided a slug at invocation, use it. Otherwise, propose one now — a short, lowercase, hyphen-separated name derived from the core problem (e.g., `payment-retry`, `search-latency`, `draft-autosave`). Ask the user to confirm or adjust before writing.
 
 Before writing, summarize back to the user in this format and let them correct it:
 

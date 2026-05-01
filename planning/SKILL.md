@@ -57,7 +57,7 @@ In practice, some dependencies are unavoidable. A ticket that displays data need
 
 **Pull cross-cutting concerns into their own tickets when they don't fit cleanly into a feature slice.** Observability, security hardening, performance work, migration tooling — sometimes these are best as standalone tickets, sometimes they're best as part of a feature ticket. Use judgment. A rule of thumb: if a cross-cutting concern is a feature requirement, bake it into the relevant ticket; if it's general infrastructure, give it its own ticket.
 
-**Look for spikes.** If a ticket would require an implementer to research a question first ("does library X support Y?"), pull the research out into a spike ticket. Spike outputs are decisions and notes, not production code. They have a tight time-box.
+**Look for spikes.** If a ticket would require an implementer to research a question first ("does library X support Y?"), pull the research out into a spike ticket. Spike outputs are decisions and notes, not production code. They have a tight time-box. Use a spike when the answer affects the design of multiple tickets; flag uncertainty inline in implementation notes when it's isolated to one ticket's approach.
 
 **Don't forget the unglamorous work.** Migration scripts, runbook entries, monitoring config, feature flag setup, feature flag removal (if the flag has a planned sunset), deprecation of old code paths, documentation updates. These are real tickets, not afterthoughts.
 

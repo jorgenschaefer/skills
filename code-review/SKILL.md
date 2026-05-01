@@ -43,6 +43,20 @@ Run the relevant git/gh commands first to obtain the diff and list of changed fi
 
 Read [code-quality-dimensions.md](code-quality-dimensions.md). Report findings under the output format below, sorted by severity.
 
+## Common findings
+
+These failure modes appear most often in practice. Check for each explicitly before declaring a category clean:
+
+- **Missing authorization.** Auth verifies identity; authZ verifies permission. Code that checks authentication but not whether the calling user is allowed to act on the specific resource is a blocker.
+- **Business logic inside adapters.** Domain rules inside HTTP handlers or persistence logic inside domain objects. Either direction is a blocker.
+- **Untested error paths.** Code has an error branch with no test that exercises it. Especially common for external calls, validation failures, and partial writes.
+- **N+1 queries.** A loop that issues a query per iteration, or a function that fetches a collection one item at a time when a single query would do.
+- **Silent failures.** Errors caught, swallowed, and never logged or re-raised. The caller believes success; the system is corrupt.
+- **Credentials, tokens, or PII logged.** Passwords, tokens, email addresses, SSNs — if they appear in log statements, that's a blocker.
+- **Magic numbers and unexplained constants.** Literals whose meaning isn't obvious from name or context. A name or a comment on the constant is all it takes.
+- **Tests that don't assert.** Tests that call code but only assert on incidental side effects, or whose assertion can never fail. If deleting the production code doesn't make the test fail, it's not testing anything.
+- **Unbounded operations.** Queries without LIMIT, loops over user-supplied collections without size checks, operations that scale with data size without acknowledging it.
+
 ## Output format
 
 Output goes to the conversation by default. If the user asks for a file, use `code-review-<YYYY-MM-DD>.md` at the repo root, or wherever they prefer.

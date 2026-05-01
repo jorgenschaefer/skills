@@ -73,6 +73,8 @@ Then ask:
 
 **Do not write ADRs until the user has responded** (or explicitly asked you to proceed without waiting).
 
+If the user rejects a candidate — "that one doesn't need an ADR" — note it as "considered, not documented" in your internal tracking and continue with the remaining candidates. Do not re-argue rejected candidates.
+
 ## Write the ADRs
 
 Use the format in [adr.md](adr.md).

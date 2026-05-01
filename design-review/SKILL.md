@@ -19,6 +19,7 @@ Before reviewing, confirm:
 2. You can read the Feature Brief the design is based on. The design must be evaluated against the brief — a good design that solves the wrong problem is a bad design.
 3. You have access to the codebase. Many design issues only become visible when you check the design against existing code. If you don't have access, note it in "What was NOT checked."
 4. You're in a clean context — you did not participate in creating this artifact. If you're unsure, treat your judgment as potentially contaminated: note it in "What was NOT checked" and flag any area where prior context might be biasing you.
+5. You have read all ADRs in `docs/adr/`. The most important finding at this phase is a design that contradicts an accepted ADR — you can only catch it if you've read them first. If the directory doesn't exist or is empty, note it in "What was checked."
 
 ## What to check
 

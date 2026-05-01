@@ -33,6 +33,8 @@ Canonical trivially safe examples:
 - Delete a commented-out code block
 - Fix a typo in a comment or string literal
 
+Apply trivial fixes in a standalone commit before returning to the primary work. The commit message should describe what was cleaned up: `Remove unused imports from user module`, not whatever the calling skill's work is about.
+
 **If in doubt, write a ticket.** The cost of a missed trivial fix is low; the cost of a silent behavior change is high.
 
 Everything not trivially safe gets a ticket:

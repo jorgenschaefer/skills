@@ -84,9 +84,14 @@ Read [ubiquitous-language-update.md](ubiquitous-language-update.md) for the glos
 
 Easy-to-miss issues not named explicitly in the checks above:
 
-- Cross-cutting concerns (security, compliance, accessibility, observability needs) absent entirely
-- "Why now" left unstated
-- Non-user stakeholders forgotten
+- **Brief reads like a design doc.** Architecture choices, tech stack, UI layouts, or ticket-level tasks are stated as if decided — these belong in later phases, not in a brief.
+- **"Why now" left unstated.** A brief without a trigger hides priority context and misses constraints that will surface later.
+- **Non-user stakeholders forgotten.** Engineering (on-call burden), support (new ticket types), legal, compliance, sales — features often have non-user stakeholders whose needs silently constrain the design.
+- **Success criteria require launching to measure.** Criteria that depend on post-launch data collection ("NPS improves", "retention increases") can't tell the design phase whether a proposed solution will work. Push for criteria verifiable before or immediately after launch.
+- **Goals stated as constraints, constraints stated as goals.** "The system must be fast" is a constraint (not a goal); "Users can search a 10M-row table in under 200ms" is a goal. Misclassification leads to under-specified acceptance criteria.
+- **Out-of-scope boundary not defended.** A brief that says "authentication is out of scope" without explaining what handles auth is leaving a gap the design phase will trip over.
+- **Open questions with no resolution path.** A list of open questions is good; a list where none of them specifies who resolves it, how, or by when is just a list of things the author is hoping will sort themselves out.
+- **Problem statement solves a symptom.** "Support tickets are up" is a symptom; "users can't recover from payment failures without contacting support" is the cause. The design should target the cause.
 
 ## Verdict guidance for this phase
 

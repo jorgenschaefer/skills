@@ -148,6 +148,18 @@ A good Design Doc is:
 - **Aware of the existing code.** Designs that ignore existing patterns produce inconsistent codebases. Either follow the pattern or explicitly say "we're deviating because X."
 - **Skimmable.** Use headings, lists, and short paragraphs. A reviewer should be able to skim in 10 minutes and read in detail in 30.
 
+## When the design is complete
+
+Proceed to writing the Design Doc when all of the following are true:
+
+- Every goal in the Feature Brief has a corresponding section in the proposed design
+- Every open question from the brief is either resolved in the design or explicitly deferred with a reason
+- At least one user scenario has been traced end-to-end through the proposed design
+- All cross-cutting concerns from the list in [cross-cutting-concerns.md](cross-cutting-concerns.md) are either addressed or explicitly out-of-scoped
+- Any ADR-worthy decisions have been confirmed with the user
+
+If you find yourself writing "TBD" or "to be determined in implementation" repeatedly, that's a signal the design isn't done yet.
+
 ## What you do not produce
 
 - Tickets or sprint plans (Planning phase)
