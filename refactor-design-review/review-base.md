@@ -1,11 +1,12 @@
 # Review (shared base)
 
-This file defines how reviews are conducted across every phase of the agentic development workflow. It is referenced by the four phase-specific review skills:
+This file defines how reviews are conducted across every phase of the agentic development workflow. It is referenced by the five phase-specific review skills:
 
 - `discovery-review` — reviews Feature Briefs
 - `design-review` — reviews Design Docs and ADRs
 - `planning-review` — reviews ticket backlogs
 - `implementation-review` — reviews code changes
+- `refactor-design-review` — reviews Refactoring Proposals
 
 When reviewing a specific artifact, use the appropriate phase-specific skill — it includes everything here *plus* the failure modes specific to that artifact type. This base captures only what's common across all of them.
 

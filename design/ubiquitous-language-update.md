@@ -8,7 +8,7 @@ If an existing group fits the term, add the row there. If no group fits, add a n
 
 If a new term conflicts with or is easily confused with an existing glossary entry, append a bullet to the Flagged ambiguities section naming both terms and the recommended canonical choice.
 
-Do NOT update the Relationships section or the Example dialogue — those are maintained by the dedicated `ubiquitous-language` skill, which synthesises the whole file.
+Do NOT update the Relationships section or the Example dialogue during routine term additions — those sections require a full-file synthesis pass and should be updated manually only when structural changes to the workflow are significant enough to warrant it.
 
 If the file doesn't exist yet, create it with this minimal structure (no Relationships section or Example dialogue — those will be added when the dedicated skill is first invoked):
 

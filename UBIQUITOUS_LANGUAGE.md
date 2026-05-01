@@ -31,6 +31,7 @@ Domain terms used across this skills project and the agentic development workflo
 | **ADR** | Architecture Decision Record — documents a single significant technical choice, the options considered, and the rationale; lives at `docs/adr/<NNNN>-<slug>.md` | Decision log, design decision |
 | **Ticket Backlog** | The output of the planning phase — a set of independently-deployable tickets that together implement the Design Doc | Task list, sprint backlog, work breakdown |
 | **Ticket** | A single unit of work within a Ticket Backlog — independently testable, independently deployable, and ideally a tracer bullet that delivers value on its own | Story, task, issue |
+| **Tracer bullet** | An end-to-end slice of functionality — from user-facing surface to backend — that is working but minimal; the preferred shape for a Ticket, contrasted with layer-by-layer tickets that defer visible value | End-to-end slice, vertical slice |
 | **Review file** | The output of a review sub-skill — saved alongside the artifact it reviewed as `<artifact>-review-<NN>.md` | Review doc, code review (prefer "review file" to avoid confusion with the code-review skill) |
 
 ## Artifact categories
@@ -40,6 +41,12 @@ Domain terms used across this skills project and the agentic development workflo
 | **Entry artifact** | The initial document in a Feature folder — either a Feature Brief or a Refactoring Proposal — that downstream skills read to understand a feature's scope | Input artifact, starting artifact |
 | **Phase artifact** | Any document produced by a workflow skill; useful while building but treated as reference-only once its phase is complete | Intermediate artifact |
 | **Permanent artifact** | An artifact that carries forward to influence future work regardless of feature status — currently ADRs and `UBIQUITOUS_LANGUAGE.md` | Long-lived artifact |
+
+## Maintenance
+
+| Term | Definition | Aliases to avoid |
+| --- | --- | --- |
+| **Boy scout finding** | An incidental observation made during a review or implementation — a stale name, latent bug, or misleading comment — that is unrelated to the artefact under review; logged separately via the `boy-scout` skill to avoid polluting review severity levels | Cleanup finding, incidental fix |
 
 ## Phase dynamics
 

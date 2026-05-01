@@ -10,7 +10,7 @@
 
 This ADR was extracted from the existing codebase. No prior design document exists for this decision.
 
-Each of the four review skills (discovery-review, design-review, planning-review, implementation-review) includes an explicit clean-context requirement in its frontmatter description and in its setup instructions. For example, design-review's description ends: "Always use a clean context, separate from the conversation that produced the design." The instructions add: "If you're unsure, treat your judgment as potentially contaminated: note it in 'What was NOT checked'." The same language appears across all four review skills. CLAUDE.md reinforces it in the workflow description.
+Each of the five review skills (discovery-review, design-review, planning-review, implementation-review, refactor-design-review) includes an explicit clean-context requirement in its frontmatter description and in its setup instructions. For example, design-review's description ends: "Always use a clean context, separate from the conversation that produced the design." The instructions add: "If you're unsure, treat your judgment as potentially contaminated: note it in 'What was NOT checked'." The same language appears across all four review skills. CLAUDE.md reinforces it in the workflow description.
 
 ## Decision
 
