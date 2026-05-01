@@ -106,6 +106,7 @@ Read [ubiquitous-language-update.md](ubiquitous-language-update.md) for the glos
 
 - **The "implementer test."** Could a competent engineer pick up this doc and start work? If they'd need to ask 10 questions before starting, it's underspecified. If they could start without reading the doc at all, it's a no-op.
 - **The "six months later" test.** When someone debugs a production issue in this code six months from now, will the design doc help them understand why things were built this way?
+
 ## Common findings
 
 To calibrate, here are the failure modes most often surfaced at this phase:

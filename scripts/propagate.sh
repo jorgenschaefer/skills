@@ -19,7 +19,7 @@ copy_to cross-cutting-concerns.md \
   design design-review
 
 copy_to ubiquitous-language-update.md \
-  discovery discovery-review design design-review
+  discovery discovery-review design design-review refactor-design refactor-design-review
 
 copy_to review-base.md \
   discovery-review design-review planning-review implementation-review refactor-design-review

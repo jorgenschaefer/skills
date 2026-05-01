@@ -72,6 +72,8 @@ Do not implement any refactoring in this skill. The output is a proposal; implem
 
 Tell the user what was found and where the proposal lives.
 
+If this proposal introduces renamed modules, renamed entities, or new canonical names, follow the instructions in [ubiquitous-language-update.md](ubiquitous-language-update.md) to update `UBIQUITOUS_LANGUAGE.md` before running the automated review.
+
 Then run an automated review in a clean context. Use the `Agent` tool with `subagent_type: "general-purpose"` so the review agent has no memory of this conversation — this gives the proposal fresh eyes. The agent's self-contained prompt should be:
 
 > Invoke the `refactor-design-review` skill for feature slug `<slug>`. The Refactoring Proposal is at `docs/features/<slug>/refactoring.md`.

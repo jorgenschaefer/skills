@@ -57,8 +57,6 @@ Push back constructively: name the tension, explain what you see, and ask what t
 
 ## Keeping insights in the right phase
 
-During the conversation, different types of insights surface. When something belongs in a later phase, note it and flag it — don't let it derail the discovery conversation.
-
 | Insight type | Where it belongs |
 |---|---|
 | Problem clarification | Feature Brief (this phase) |
@@ -144,8 +142,6 @@ Include only what you are confident about. Uncertainty belongs in the Open Quest
 Save the Feature Brief to `docs/features/<feature-slug>/discovery.md`. If the target directory doesn't exist, create it. If you can't write the file, tell the user the artifact path and paste the content inline so they can save it manually.
 
 If new domain terms surfaced during this session, follow the instructions in [ubiquitous-language-update.md](ubiquitous-language-update.md) to update the glossary.
-
-If the conversation surfaced incidental problems in existing code (e.g., the user mentioned a known bug or inconsistency), invoke the `boy-scout` skill to triage them before ending the session.
 
 Tell the user where the brief is and what was added to the glossary.
 

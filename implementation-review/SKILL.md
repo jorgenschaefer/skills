@@ -7,30 +7,30 @@ description: Use this skill to review a code change produced by the Implementati
 
 This skill reviews a **code change** produced by the Implementation phase — the diff, tests, and related changes that satisfy a ticket. It builds on the shared review base; read [review-base.md](review-base.md) first for the reviewer stance, output format, and severity definitions.
 
-The unique job of this review is to verify that the code does what the ticket says it does, that it does so correctly and well, and that it doesn't introduce problems the ticket didn't ask for. It works in four phases.
+The unique job of this review is to verify that the code does what the ticket says it does, that it does so correctly and well, and that it doesn't introduce problems the ticket didn't ask for. It works in four sections: Gather artifacts, Code quality, Workflow compliance, and Combined verdict.
 
-## Phase 1: Gather artifacts
+## Gather artifacts
 
 Before reviewing, confirm you have:
 
 1. The **diff or changed files** in full — the actual code under review.
 2. The **ticket** the implementation is for — acceptance criteria, scope, in-scope/out-of-scope.
 3. The **Design Doc** the ticket is part of — architecture decisions, proposed approach, referenced ADRs.
-4. **CI status** — whether the test suite and linting passed. If CI is failing, record it immediately as a blocker in Phase 4 and note it in the summary — a review cannot approve code that doesn't pass CI. Proceed with Phase 2 and 3 to document other findings, but the verdict is Block regardless of other findings.
+4. **CI status** — whether the test suite and linting passed. If CI is failing, record it immediately as a blocker in Combined verdict and note it in the summary — a review cannot approve code that doesn't pass CI. Proceed with Code quality and Workflow compliance to document other findings, but the verdict is Block regardless of other findings.
 
-If the ticket or Design Doc is missing, note it. The code quality review (Phase 2) can proceed without them, but the workflow compliance review (Phase 3) will be partial. Don't silently skip Phase 3 checks — mark them as "could not verify: no ticket provided."
+If the ticket or Design Doc is missing, note it. The Code quality section can proceed without them, but the Workflow compliance section will be partial. Don't silently skip Workflow compliance checks — mark them as "could not verify: no ticket provided."
 
 Also confirm you're in a clean context — you did not participate in creating this code. If you're unsure, note it in "What was NOT checked."
 
-## Phase 2: Code quality
+## Code quality
 
-Read [code-quality-dimensions.md](code-quality-dimensions.md) and apply all quality dimensions to the diff gathered in Phase 1.
+Read [code-quality-dimensions.md](code-quality-dimensions.md) and apply all quality dimensions to the diff gathered in Gather artifacts.
 
-Record your findings using Blocker/Should-fix/Nit severity. These form the Code Quality section of the combined output in Phase 4.
+Record your findings using Blocker/Should-fix/Nit severity. These form the Code Quality section of the Combined verdict.
 
-## Phase 3: Workflow compliance
+## Workflow compliance
 
-This phase checks whether the implementation faithfully satisfies the ticket and respects the design. Code quality is already handled in Phase 2; this phase checks traceability and process concerns only.
+This section checks whether the implementation faithfully satisfies the ticket and respects the design. Code quality is already handled in Code quality; this section checks traceability and process concerns only.
 
 ### Acceptance criteria coverage
 
@@ -65,9 +65,9 @@ The single most important check. Walk through every acceptance criterion in the 
 - Did existing tests change? Updated tests can be legitimate (signature changed) or suspicious (test was loosened to make the new code pass). Review test changes carefully.
 - Did the test suite pass? If you can run it, do. If you can't, verify CI is green.
 
-## Phase 4: Combined verdict
+## Combined verdict
 
-Merge findings from Phases 2 and 3 into a single structured output using the format from [review-base.md](review-base.md). Include an explicit **Acceptance Criteria Coverage** table listing each criterion with its status (verified / not verified / partially verified) and the file/test that proves it.
+Merge findings from Code quality and Workflow compliance into a single structured output using the format from [review-base.md](review-base.md). Include an explicit **Acceptance Criteria Coverage** table listing each criterion with its status (verified / not verified / partially verified) and the file/test that proves it.
 
 Apply the smell tests before finalizing:
 
@@ -101,5 +101,5 @@ Save the combined review at `docs/features/<slug>/implementation-review-<NN>.md`
 - Feature flag added but never removed (and no follow-up ticket)
 - Silent deviation from a Design Doc decision or ADR without explanation
 
-Note: code quality findings (architecture, adapter boundaries, test quality, correctness, security, observability, performance, simplicity, consistency, documentation) come from [code-quality-dimensions.md](code-quality-dimensions.md) applied in Phase 2.
+Note: code quality findings (architecture, adapter boundaries, test quality, correctness, security, observability, performance, simplicity, consistency, documentation) come from [code-quality-dimensions.md](code-quality-dimensions.md) applied in the Code quality section.
 

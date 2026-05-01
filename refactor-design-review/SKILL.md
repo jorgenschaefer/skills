@@ -58,6 +58,13 @@ Read [architecture-principles.md](architecture-principles.md) for the canonical 
 - **Do proposed refactorings move toward these principles?** Proposals that move business logic into the domain layer, that merge thin pass-through abstractions, or that reorganize code by domain rather than by technical layer are well-aligned.
 - **Do any proposals move away from these principles?** A proposal to extract a new thin wrapper, reorganize into a `services/` directory, or add an abstraction that leaks internal structure should be flagged.
 
+### Ubiquitous language
+
+Read `UBIQUITOUS_LANGUAGE.md` at the project root if it exists. Then check:
+
+- **Does the proposal use canonical terms?** Proposed module names, entity names, and process names should match glossary entries. Synonyms or paraphrases for already-named concepts are a should-fix — the downstream tickets and code will inherit the inconsistency.
+- **Are new terms proposed without a glossary entry?** If the proposal introduces a name for a concept not yet in the glossary, check whether the proposal updated the glossary. If not, that's a should-fix — the `refactor-design` skill was responsible for adding them.
+
 ### The "can this be ticketed?" smell test
 
 Read the Proposed refactorings section as if you were the planner. Could you produce a ticket from each entry without reading the source code? If yes, the proposal is well-specified. If you'd need to go back to the codebase to understand what the ticket should do, the proposal is underspecified — should-fix.
