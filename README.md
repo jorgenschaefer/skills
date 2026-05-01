@@ -34,6 +34,7 @@ npx skills add jorgenschaefer/skills@<skill-name>
 - **design-review** — review a Design Doc and ADRs before breaking into tickets (highest-leverage review)
 - **planning-review** — review a Ticket Backlog before implementation begins
 - **implementation-review** — review a code change before merging; checks ticket compliance and delegates code quality to the code-review skill
+- **refactoring-review** — review a Refactoring Proposal before it advances to design
 
 ### Code review
 

@@ -5,8 +5,6 @@ description: Use this skill when the user wants a comprehensive structural revie
 
 # Refactor Project
 
-Code bases tend to grow over time and accumulate small areas of friction and complexity. By themselves, they are usually not a big issue, but if you do not clean up from time to time, they can accumulate to make the project hard to maintain.
-
 ## Goal
 
 Your goal is to make the code base easy to change and easy to reason about. Read [architecture-principles.md](architecture-principles.md) for the three structural principles this skill proposes improvements toward: screaming architecture (domain-first organization), deep modules (Ousterhout), and adapter boundaries (clear business logic). Use these definitions when identifying friction points and proposing refactorings.
@@ -14,6 +12,8 @@ Your goal is to make the code base easy to change and easy to reason about. Read
 ## Before starting
 
 The feature slug is a required argument. If the user did not provide one at invocation, ask for it before proceeding.
+
+Read `UBIQUITOUS_LANGUAGE.md` at the project root if it exists. Any proposed module names, entity names, or renames in the refactoring proposal should use the canonical terms — not synonyms or paraphrases.
 
 ## Process
 
@@ -23,7 +23,7 @@ Before exploring, read all ADRs in `docs/adr/` if they exist. Note any architect
 
 ### 1. Explore the codebase
 
-Use the Agent tool with subagent_type=Explore to navigate the codebase naturally. Use these questions to guide your attention — they name the patterns most likely to cause long-term friction. Don't treat them as an exhaustive checklist; if you encounter friction not on this list, note it.
+Explore the codebase directly using your read, search, and grep tools. Use these questions to guide your attention — they name the patterns most likely to cause long-term friction. Don't treat them as an exhaustive checklist; if you encounter friction not on this list, note it.
 
 - Where does understanding one concept require bouncing between many small files?
 - Where is business logic hidden behind framework or database adaption code?
@@ -33,6 +33,8 @@ Use the Agent tool with subagent_type=Explore to navigate the codebase naturally
 - Which parts of the codebase are untested, or hard to test?
 
 Document each friction point as you encounter it: note the file or module, the pattern creating friction, and why it makes the code hard to change or understand. These notes become the "Friction points found" section of the proposal.
+
+If the survey surfaced incidental code smells, bugs, or misleading names outside the scope of this refactoring, invoke the `boy-scout` skill to triage them: trivially safe fixes can be applied immediately; everything else becomes a ticket in `docs/features/boy-scout/tickets/`.
 
 ### 2. Propose a refactoring plan
 
@@ -68,4 +70,15 @@ Things examined during exploration that were deliberately not included in the pr
 
 Do not implement any refactoring in this skill. The output is a proposal; implementation follows the normal ticket workflow. If the user asks you to implement, redirect: create tickets for the highest-priority refactorings using the planning skill instead.
 
-After saving, tell the user what was found and where the proposal lives. Then suggest the next step is the design phase — run the `design` skill with the same feature slug to translate the refactoring proposal into a Design Doc.
+Tell the user what was found and where the proposal lives.
+
+Then run an automated review in a clean context. Use the `Agent` tool with `subagent_type: "general-purpose"` so the review agent has no memory of this conversation — this gives the proposal fresh eyes. The agent's self-contained prompt should be:
+
+> Invoke the `refactoring-review` skill for feature slug `<slug>`. The Refactoring Proposal is at `docs/features/<slug>/refactoring.md`.
+
+After the review agent finishes, read the review file it saved at `docs/features/<slug>/refactoring-review-<NN>.md`. Update the Refactoring Proposal to address every finding:
+- **Blocker**: must be resolved before leaving this phase — revise the proposal
+- **Should-fix**: address these — they represent real quality gaps
+- **Nit**: use judgment
+
+Tell the user what the review found, what was addressed, and the final verdict. Then suggest the next step is the design phase — run the `design` skill with the same feature slug to translate the refactoring proposal into a Design Doc.

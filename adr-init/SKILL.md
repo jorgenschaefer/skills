@@ -71,7 +71,7 @@ Then ask:
 
 > I found [N] decisions worth documenting as ADRs. Before I write them, do you know the rationale for any of these? For each one you can explain, tell me what alternatives were considered and why this approach was chosen. I'll mark everything else as "reason unknown — extracted from codebase". Reply with whatever you know, or say "write them all with unknown" to proceed immediately.
 
-**Do not write ADRs until the user has responded** (or explicitly asked you to proceed without waiting).
+**Do not write ADRs until the user has responded** (or explicitly asked you to proceed without waiting). In non-interactive or sub-agent contexts where no response arrives, proceed with "reason unknown" for all candidates and flag each assumed rationale together in a single block at the top of the first ADR written.
 
 If the user rejects a candidate — "that one doesn't need an ADR" — note it as "considered, not documented" in your internal tracking and continue with the remaining candidates. Do not re-argue rejected candidates.
 

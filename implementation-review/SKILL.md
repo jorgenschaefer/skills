@@ -103,9 +103,3 @@ Save the combined review at `docs/features/<slug>/implementation-review-<NN>.md`
 
 Note: code quality findings (architecture, adapter boundaries, test quality, correctness, security, observability, performance, simplicity, consistency, documentation) come from [code-quality-dimensions.md](code-quality-dimensions.md) applied in Phase 2.
 
-## Verdict guidance
-
-- **Block** if: an acceptance criterion is unmet, tests are missing or don't actually test the behavior, there's a security issue (missing auth, injection vulnerability, secret exposure), or there's a high-likelihood correctness bug.
-- **Request changes** if: multiple should-fix items (test gaps, code quality issues, observability gaps, performance smells, scope creep, design deviation).
-- **Approve with comments** if: the implementation is solid with only nit-level concerns.
-- **Approve** if: rare. Hold the bar.
