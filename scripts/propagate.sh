@@ -9,8 +9,8 @@ copy_to() {
   done
 }
 
-copy_to adr.md \
-  design design-review adr-init
+copy_to architecture.md \
+  design design-review architecture-init
 
 copy_to tracer-bullets.md \
   planning planning-review

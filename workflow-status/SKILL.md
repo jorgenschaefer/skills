@@ -27,8 +27,6 @@ Check `docs/features/<slug>/` for the following artifacts in order. Report what 
 | Ticket review(s) | `tickets-review-NN.md` | planning-review |
 | Implementation review(s) | `implementation-review-NN.md` | implementation-review |
 
-Also check `docs/adr/` for any ADRs whose filename contains the slug.
-
 ## Determine the current phase
 
 The feature is in the phase whose primary artifact exists but is not yet complete or has not yet advanced:
@@ -68,9 +66,6 @@ Report to the conversation (not a file) in this format:
 - Design review: <Approve / Request changes / Block / none>
 - Tickets review: <Approve / Request changes / Block / none>
 - Implementation reviews: <N of M tickets reviewed>
-
-### ADRs
-<list of ADR files for this slug, or "none found">
 ```
 
 Keep the output concise. If the user wants detail on a specific artifact or review, they can open the file.

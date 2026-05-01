@@ -27,8 +27,6 @@ Domain terms used across this skills project and the agentic development workflo
 | **Feature Brief** | The output of the discovery phase — captures the problem, affected users, constraints, and success criteria; contains no design or implementation details | Discovery doc, requirements doc |
 | **Refactoring Proposal** | The output of refactor-design — captures architectural friction and a proposed improvement plan; serves as an alternative entry artifact when the work is driven by structural concerns rather than a new feature | Refactor doc, technical debt report |
 | **Design Doc** | The output of the design phase — a concrete technical plan with alternatives considered and decisions recorded; exists to be reviewed and challenged before any code is written | Architecture doc, tech spec, RFC |
-| **ADR** | Architecture Decision Record — documents a single significant technical choice, the options considered, and the rationale; lives at `docs/adr/<NNNN>-<slug>.md` | Decision log, design decision |
-| **ADR supersession** | The act of writing a new ADR that explicitly replaces an accepted one — required when a proposed design or refactoring would contradict an existing architectural decision; the old ADR's status changes to "Superseded by ADR-XXXX" | ADR update, ADR revision |
 | **Ticket Backlog** | The output of the planning phase — a set of independently-deployable tickets that together implement the Design Doc | Task list, sprint backlog, work breakdown |
 | **Ticket** | A single unit of work within a Ticket Backlog — independently testable, independently deployable, and ideally a tracer bullet that delivers value on its own | Story, task, issue |
 | **Tracer bullet** | An end-to-end slice of functionality — from user-facing surface to backend — that is working but minimal; the preferred shape for a Ticket. The named anti-pattern is the **layer-by-layer antipattern**: structuring tickets as pure infrastructure layers (database, API, UI) that deliver no user-visible value until all layers are complete | End-to-end slice, vertical slice |
@@ -51,7 +49,7 @@ Domain terms used across this skills project and the agentic development workflo
 | --- | --- | --- |
 | **Entry artifact** | The initial document in a Feature folder — either a Feature Brief or a Refactoring Proposal — that downstream skills read to understand a feature's scope | Input artifact, starting artifact |
 | **Phase artifact** | Any document produced by a workflow skill; useful while building but treated as reference-only once its phase is complete | Intermediate artifact |
-| **Permanent artifact** | An artifact that carries forward to influence future work regardless of feature status — currently ADRs and `UBIQUITOUS_LANGUAGE.md` | Long-lived artifact |
+| **Permanent artifact** | An artifact that carries forward to influence future work regardless of feature status — currently [`ARCHITECTURE.md`](ARCHITECTURE.md) and [`UBIQUITOUS_LANGUAGE.md`](UBIQUITOUS_LANGUAGE.md) | Long-lived artifact |
 
 ## Review mechanics
 
@@ -73,7 +71,7 @@ Domain terms used across this skills project and the agentic development workflo
 | Term | Definition | Aliases to avoid |
 | --- | --- | --- |
 | **Product-technical boundary decision** | A requirement or configuration value the user already knows and has decided, which only becomes relevant once the problem is fully understood — e.g. "truncate lists at 5 items", "default timeout is 30s". Not derived through technical analysis; the user brings it. Too specific for the Feature Brief, but not a design output either. Belongs in the Design Doc, surfaced by the clarification round. | Product detail, implementation detail, design decision |
-| **Clarification round** | A step in the design phase triggered by product-technical boundary decisions not in the Feature Brief, or by any pending ADR. The agent presents both together in a single structured message before producing the Design Doc. ADR confirmations are always included — writing an ADR without user input is never acceptable. Skipped only when no gaps exist and no ADRs are planned. | Check-in, clarification pass, design questions |
+| **Clarification round** | A step in the design phase triggered by product-technical boundary decisions not in the Feature Brief, or by any pending `ARCHITECTURE.md` additions. The agent presents both together in a single structured message before producing the Design Doc. Architectural constraint confirmations are always included — adding to `ARCHITECTURE.md` without user input is never acceptable. Skipped only when no gaps exist and no new constraints are planned. | Check-in, clarification pass, design questions |
 
 ## Skill authoring
 
@@ -91,11 +89,10 @@ Domain terms used across this skills project and the agentic development workflo
 - A **Feature folder** holds all **Phase artifacts** for that feature across every phase
 - A **Phase** corresponds to exactly one **Skill**
 - An **Entry point** produces exactly one **Entry artifact** — either a **Feature Brief** (discovery) or a **Refactoring Proposal** (refactor-design)
-- A **Design Doc** is accompanied by zero or more **ADRs**; the **ADRs** are **Permanent artifacts**, the **Design Doc** is a **Phase artifact**
+- A **Design Doc** may introduce new constraints added to [`ARCHITECTURE.md`](ARCHITECTURE.md); [`ARCHITECTURE.md`](ARCHITECTURE.md) is a **Permanent artifact**, the **Design Doc** is a **Phase artifact**
 - A **Ticket Backlog** contains one or more **Tickets**; each **Ticket** should be a **Tracer bullet**; a **Spike** is a special-purpose **Ticket** whose output is a written recommendation, not production code
 - A **Refactoring Proposal** contains one or more **Friction points**
 - A **Review file** contains one or more **Findings**, each with a **Severity**, and concludes with exactly one **Verdict**
-- An **ADR supersession** produces a new **ADR** whose status is Accepted while the replaced ADR's status changes to "Superseded by ADR-XXXX"
 
 ## Example dialogue
 
@@ -105,11 +102,7 @@ Domain terms used across this skills project and the agentic development workflo
 >
 > **Dev:** "The feature is small. Can the Design Doc just be one paragraph?"
 >
-> **Domain expert:** "Yes, as long as it records the ADRs for any non-obvious choices. The design-review step is your gate — it catches hand-waving before it becomes a Ticket Backlog nobody can implement."
->
-> **Dev:** "Do the ADRs live inside the Feature folder?"
->
-> **Domain expert:** "No — `docs/adr/` at the repo root. ADRs are Permanent artifacts: once the feature is done the Design Doc is reference-only, but the ADRs carry forward to inform every future design."
+> **Domain expert:** "Yes. The design-review step is your gate — it catches hand-waving before it becomes a Ticket Backlog nobody can implement. If the design surfaces a new cross-cutting constraint, confirm it with the user and add it to `ARCHITECTURE.md` before closing the phase."
 >
 > **Dev:** "And when I run design-review, should I do it in the same conversation that produced the Design Doc?"
 >

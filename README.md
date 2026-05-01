@@ -18,20 +18,20 @@ npx skills add jorgenschaefer/skills@<skill-name>
 
 ### Project setup
 
-- **adr-init** — bootstrap ADRs in a brownfield project by excavating load-bearing design decisions from the existing codebase
+- **architecture-init** — bootstrap ARCHITECTURE.md in a brownfield project by excavating cross-cutting architectural constraints from the existing codebase
 - **ubiquitous-language-init** — bootstrap a UBIQUITOUS_LANGUAGE.md glossary in a brownfield project by excavating domain terminology from the existing codebase
 
 ### Workflow phases
 
 - **discovery** — explore a feature or problem and produce a Feature Brief before any design or code
-- **design** — translate a Feature Brief into a Design Doc and Architecture Decision Records
+- **design** — translate a Feature Brief into a Design Doc; updates ARCHITECTURE.md with any new cross-cutting constraints confirmed during design
 - **planning** — break a Design Doc into independently-deployable tickets using the tracer-bullet approach
 - **implementation** — implement one ticket at a time using TDD (red-green-refactor)
 
 ### Reviews
 
 - **discovery-review** — review a Feature Brief before it advances to design
-- **design-review** — review a Design Doc and ADRs before breaking into tickets (highest-leverage review)
+- **design-review** — review a Design Doc before breaking into tickets (highest-leverage review)
 - **planning-review** — review a Ticket Backlog before implementation begins
 - **implementation-review** — review a code change before merging; checks ticket compliance and delegates code quality to the code-review skill
 - **refactor-design-review** — review a Refactoring Proposal before it advances to planning
@@ -54,7 +54,7 @@ When a feature is fully implemented and its final review is approved, delete the
 rm -rf docs/features/<feature-slug>/
 ```
 
-The durable artifacts — ADRs in `docs/adr/` and any updates to `CLAUDE.md` — have already been written. The feature folder is working memory for the workflow; git history preserves it if you ever need to look back.
+The durable artifacts — any updates to [`ARCHITECTURE.md`](ARCHITECTURE.md), [`UBIQUITOUS_LANGUAGE.md`](UBIQUITOUS_LANGUAGE.md), and `CLAUDE.md` — have already been written. The feature folder is working memory for the workflow; git history preserves it if you ever need to look back.
 
 ## Credits
 

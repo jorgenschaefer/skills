@@ -15,7 +15,7 @@ Before reviewing, confirm you have:
 
 1. The **diff or changed files** in full — the actual code under review.
 2. The **ticket** the implementation is for — acceptance criteria, scope, in-scope/out-of-scope.
-3. The **Design Doc** the ticket is part of — architecture decisions, proposed approach, referenced ADRs.
+3. The **Design Doc** the ticket is part of — architecture decisions and proposed approach.
 4. **CI status** — whether the test suite and linting passed. If CI is failing, record it immediately as a blocker in Combined verdict and note it in the summary — a review cannot approve code that doesn't pass CI. Proceed with Code quality and Workflow compliance to document other findings, but the verdict is Block regardless of other findings.
 
 If the ticket or Design Doc is missing, note it. The Code quality section can proceed without them, but the Workflow compliance section will be partial. Don't silently skip Workflow compliance checks — mark them as "could not verify: no ticket provided."
@@ -44,7 +44,7 @@ The single most important check. Walk through every acceptance criterion in the 
 ### Design alignment
 
 - Does the implementation follow the approach proposed in the Design Doc?
-- Does it respect ADR decisions? Silent deviations from architectural decisions recorded in ADRs are a should-fix — the decision may be wrong, but that conversation should happen explicitly, not in a diff.
+- Does it respect constraints in `ARCHITECTURE.md`? Silent deviations from established architectural constraints are a should-fix — the constraint may be wrong, but that conversation should happen explicitly, not in a diff.
 - Note any places where the implementation made a different choice than the design, even if the choice seems reasonable.
 
 ### Migrations and operational concerns
@@ -99,7 +99,7 @@ Save the combined review at `docs/features/<slug>/implementation-review-<NN>.md`
 - Tests updated to match new behavior in ways that might mask bugs
 - Migration without a tested rollback path
 - Feature flag added but never removed (and no follow-up ticket)
-- Silent deviation from a Design Doc decision or ADR without explanation
+- Silent deviation from a Design Doc decision or `ARCHITECTURE.md` constraint without explanation
 
 Note: code quality findings (architecture, adapter boundaries, test quality, correctness, security, observability, performance, simplicity, consistency, documentation) come from [code-quality-dimensions.md](code-quality-dimensions.md) applied in the Code quality section.
 

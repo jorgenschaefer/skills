@@ -17,9 +17,9 @@ Read `UBIQUITOUS_LANGUAGE.md` at the project root if it exists. Any proposed mod
 
 ## Process
 
-### 0. Read existing ADRs
+### 0. Read ARCHITECTURE.md
 
-Before exploring, read all ADRs in `docs/adr/` if they exist. Note any architectural decisions that constrain what can be refactored — a proposed refactoring that would contradict an accepted ADR must either be dropped or argue explicitly for an ADR supersession.
+Before exploring, read [`ARCHITECTURE.md`](ARCHITECTURE.md) at the project root if it exists. Note any constraints that limit what can be refactored — a proposed refactoring that would contradict an established constraint must either be dropped or propose updating `ARCHITECTURE.md` with explicit reasoning confirmed by the user.
 
 ### 1. Explore the codebase
 

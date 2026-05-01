@@ -23,7 +23,7 @@ The `shared/review-base.md` file contains shared base content read by each phase
 The skills together define a phased agentic development workflow. Each skill requires the feature slug as a required argument at invocation time (e.g., `/discovery payment-retry`); all artifacts for a feature live under `docs/features/<feature-slug>/`.
 
 1. **discovery** → produces a Feature Brief at `docs/features/<feature-slug>/discovery.md`
-2. **design** → produces a Design Doc at `docs/features/<feature-slug>/design.md` + ADRs at `docs/adr/<NNNN>-<slug>.md`; reads `discovery.md` as the entry artifact
+2. **design** → produces a Design Doc at `docs/features/<feature-slug>/design.md`; may update [`ARCHITECTURE.md`](ARCHITECTURE.md) with new cross-cutting constraints; reads `discovery.md` as the entry artifact
 3. **planning** → produces a Ticket Backlog at `docs/features/<feature-slug>/tickets/` (individual ticket files + `README.md` overview); reads `design.md` or `refactoring.md` as the entry artifact
 4. **implementation** → implements one ticket at a time using TDD; incidental cleanup finds go to `docs/features/boy-scout/tickets/`
 5. **review** → five phase-specific skills (`discovery-review`, `design-review`, `planning-review`, `implementation-review`, `refactor-design-review`), all reading the shared base in `shared/review-base.md`; reviews are saved at `docs/features/<feature-slug>/<artifact>-review-<NN>.md`
@@ -34,6 +34,7 @@ The skills together define a phased agentic development workflow. Each skill req
 
 Each skill is intended to be invoked in a clean context, separate from the conversation that produced the artifact it consumes. The review skills in particular depend on "fresh eyes" — they must not share context with the producing conversation.
 
+At the start of every conversation, read [`ARCHITECTURE.md`](ARCHITECTURE.md) for cross-cutting architectural constraints and [`UBIQUITOUS_LANGUAGE.md`](UBIQUITOUS_LANGUAGE.md) for canonical domain vocabulary.
 
 ## Adding or modifying skills
 

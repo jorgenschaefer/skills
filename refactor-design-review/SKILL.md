@@ -7,7 +7,7 @@ description: Use this skill to review a Refactoring Proposal produced by the ref
 
 This skill reviews a **Refactoring Proposal** — the artifact produced by the `refactor-design` skill. It builds on the shared review base; read [review-base.md](review-base.md) first for the reviewer stance, output format, and severity definitions.
 
-The unique job of this review is to catch problems in the structural analysis and proposed changes before they cascade into the planning phase — vague friction points produce vague tickets; unacknowledged ADR conflicts produce reverting PRs.
+The unique job of this review is to catch problems in the structural analysis and proposed changes before they cascade into the planning phase — vague friction points produce vague tickets; unacknowledged constraint conflicts produce reverting PRs.
 
 ## Setup
 
@@ -16,7 +16,7 @@ The feature slug is a required argument. If the user did not provide one at invo
 Before reviewing, confirm:
 
 1. The artifact is a Refactoring Proposal (it should follow the `refactor-design` skill structure: Summary, Friction points found, Proposed refactorings, Suggested order, Scope decisions).
-2. You have read all ADRs in `docs/adr/`. ADR compliance is one of the highest-value checks at this phase — a proposed refactoring that would contradict an accepted architectural decision must be flagged before it reaches planning. If no ADRs exist, note it in "What was checked."
+2. You have read [`ARCHITECTURE.md`](ARCHITECTURE.md) at the project root if it exists. Constraint compliance is one of the highest-value checks at this phase — a proposed refactoring that would contradict an established architectural constraint must be flagged before it reaches planning. If the file doesn't exist, note it in "What was checked."
 3. You're in a clean context — you did not participate in creating this artifact. If you're unsure, treat your judgment as potentially contaminated: note it in "What was NOT checked" and flag any area where prior context might be biasing you.
 
 ## What to check
@@ -29,10 +29,10 @@ Walk through these questions. Each corresponds to a common failure mode of struc
 - **Is the consequence stated?** Each friction point should explain why it matters: what goes wrong because of it? If the consequence is missing, the implementer can't prioritize or validate the fix — nit at minimum, should-fix if the consequence isn't obvious.
 - **Are the friction points accurate?** If you have codebase access, spot-check a few: does the described pattern actually appear in the named location? A proposal built on a misidentified problem is worse than no proposal — blocker if a major proposed refactoring rests on a misread.
 
-### ADR compliance
+### Constraint compliance
 
-- **Does any proposed refactoring contradict an accepted ADR?** Read each accepted ADR and ask: would this refactoring violate the decision it records? A change that moves away from a chosen database, breaks an established pattern, or reorganizes the project against an accepted architectural decision is a blocker unless it explicitly argues for supersession.
-- **Is a contradicting proposal acknowledging the ADR?** A proposal that says "supersede ADR-0003 because..." is acceptable if the argument is sound. A proposal that silently changes an ADR-recorded decision is a blocker.
+- **Does any proposed refactoring contradict a constraint in `ARCHITECTURE.md`?** For each established constraint, ask: would this refactoring violate it? A change that breaks a layering convention, removes an enforced pattern, or reorganizes the project against an established architectural constraint is a blocker unless it explicitly proposes updating `ARCHITECTURE.md` with reasoning.
+- **Is a contradicting proposal acknowledging the constraint?** A proposal that says "propose updating ARCHITECTURE.md because..." is acceptable if the argument is sound. A proposal that silently violates an established constraint is a blocker.
 
 ### Refactoring actionability
 
@@ -73,7 +73,7 @@ Read the Proposed refactorings section as if you were the planner. Could you pro
 
 - Friction points named without file paths or specific patterns
 - Proposed refactorings too vague to produce actionable tickets from ("clean up", "improve", "reorganize")
-- ADR contradictions unacknowledged
+- Constraint contradictions unacknowledged
 - Suggested order that doesn't follow from stated priorities or ignores dependencies
 - Scope decisions section empty — reader can't distinguish oversight from deliberate exclusion
 - Friction areas named in the Summary that don't appear in the Friction points list
@@ -81,7 +81,7 @@ Read the Proposed refactorings section as if you were the planner. Could you pro
 
 ## Verdict guidance for this phase
 
-- **Block** if: a proposed refactoring contradicts an accepted ADR without acknowledgement; friction points lack specific locations; the proposal is too vague to produce actionable tickets from.
+- **Block** if: a proposed refactoring contradicts an established constraint in `ARCHITECTURE.md` without acknowledgement; friction points lack specific locations; the proposal is too vague to produce actionable tickets from.
 - **Request changes** if: priorities are unjustified; ordering contradicts priorities or ignores dependencies; obvious friction areas are missing; scope decisions are empty; refactorings lack actionable approach.
 - **Approve with comments** if: the proposal is solid, with only nit-level concerns.
 - **Approve** if: rare. Hold a high bar.

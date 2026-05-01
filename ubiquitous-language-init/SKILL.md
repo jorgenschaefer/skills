@@ -24,7 +24,7 @@ This skill operates on the **current working directory** — the brownfield proj
 Before exploring, check:
 
 1. **`UBIQUITOUS_LANGUAGE.md`** — if it already exists, read it. You are updating rather than replacing. Preserve all existing terms unless the codebase directly contradicts them.
-2. **`docs/adr/`** — if ADRs exist, skim them. They often name key decisions using domain terms you should capture.
+2. **`ARCHITECTURE.md`** — if it exists, skim it. It often names key concepts using domain terms you should capture.
 3. **`CLAUDE.md` / `AGENTS.md`** — if present at the root, read them. They may already name terms or constraints you won't need to document separately.
 
 ## Check for drift in existing terms
@@ -158,6 +158,20 @@ Absent: 2 — "Fulfillment", "Shipment" (not found as code identifiers; marked f
 ```
 Drifted definitions are only updated in the file if the user confirmed the change. Absent terms are marked in the file but not deleted.
 
-Suggest running `adr-init` next if `docs/adr/` is empty — the two tools complement each other, and ADRs can reference the canonical terms now established.
+## Check CLAUDE.md / AGENTS.md
+
+After writing `UBIQUITOUS_LANGUAGE.md`, check whether `CLAUDE.md` or `AGENTS.md` at the project root already contains a read instruction for `UBIQUITOUS_LANGUAGE.md`.
+
+- If a read instruction already exists and covers `UBIQUITOUS_LANGUAGE.md`, no change needed.
+- If a read instruction exists for `ARCHITECTURE.md` but not `UBIQUITOUS_LANGUAGE.md`, add [`UBIQUITOUS_LANGUAGE.md`](UBIQUITOUS_LANGUAGE.md) alongside it.
+- If no read instruction exists for either file, add one. A suitable instruction:
+
+  ```
+  At the start of every conversation, read [`ARCHITECTURE.md`](ARCHITECTURE.md) for cross-cutting architectural constraints and [`UBIQUITOUS_LANGUAGE.md`](UBIQUITOUS_LANGUAGE.md) for canonical domain vocabulary.
+  ```
+
+- If neither `CLAUDE.md` nor `AGENTS.md` exists, tell the user: "No `CLAUDE.md` or `AGENTS.md` found. Create one at the project root with an instruction to read `UBIQUITOUS_LANGUAGE.md` at the start of every session, so agents always have canonical vocabulary in context."
+
+Suggest running `architecture-init` next if `ARCHITECTURE.md` is absent — the two files complement each other, and architectural constraints written without a shared vocabulary produce inconsistent terminology.
 
 Note: once `UBIQUITOUS_LANGUAGE.md` exists, other workflow skills (discovery, design, planning, etc.) add to it incrementally as they encounter new domain terms. The init skill does the full-synthesis pass; subsequent per-skill additions are intentionally lightweight.

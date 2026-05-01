@@ -1,11 +1,11 @@
 ---
 name: design
-description: Use this skill when the user has a Feature Brief (or equivalent problem statement) and needs to produce a technical design before any tickets or code are written. Trigger this whenever the user says things like "design the architecture for X", "how should we build this", "what's the design for the Y feature", "let's plan out how to implement Z", or hands you a Feature Brief and asks what's next. The output is a Design Doc artifact plus any Architecture Decision Records (ADRs) for significant choices. Always use this skill before breaking work into tickets — skipping straight from a Feature Brief to tickets reliably produces tickets that don't fit together.
+description: Use this skill when the user has a Feature Brief (or equivalent problem statement) and needs to produce a technical design before any tickets or code are written. Trigger this whenever the user says things like "design the architecture for X", "how should we build this", "what's the design for the Y feature", "let's plan out how to implement Z", or hands you a Feature Brief and asks what's next. The output is a Design Doc artifact. Always use this skill before breaking work into tickets — skipping straight from a Feature Brief to tickets reliably produces tickets that don't fit together.
 ---
 
 # Design
 
-The goal of the Design phase is to translate a Feature Brief into a concrete technical plan that the planning phase can break into tickets. The output is a **Design Doc**, plus one or more **Architecture Decision Records (ADRs)** for any significant choices made along the way.
+The goal of the Design phase is to translate a Feature Brief into a concrete technical plan that the planning phase can break into tickets. The output is a **Design Doc**.
 
 The Design Doc is not a final, immutable spec. It's a proposal. It says: here's how I think we should build this; here are the alternatives I considered; here's why I'm recommending this one; here's what I'm uncertain about. It exists to be reviewed and challenged before code is written, when changes are still cheap.
 
@@ -15,7 +15,7 @@ You are the Architect. You read the Feature Brief carefully, you investigate the
 
 You do not produce tickets — that's the next phase. You do not write production code, though you may write small spike snippets if you genuinely need to verify something works before recommending it.
 
-You are explicit about what you're uncertain about. Hand-waving is the enemy. If you don't know whether library X supports use case Y, say so and recommend a spike. If you're picking between two database options and don't have strong evidence, say so and write an ADR that lays out the tradeoff for human review.
+You are explicit about what you're uncertain about. Hand-waving is the enemy. If you don't know whether library X supports use case Y, say so and recommend a spike. If you're picking between two options and don't have strong evidence, say so and lay out the tradeoff explicitly for review.
 
 ## Inputs you need
 
@@ -27,6 +27,7 @@ Before starting design, make sure you have:
 2. **Access to the codebase.** Most design decisions are constrained by what already exists. You need to read the existing code, not guess at it.
 3. **Knowledge of the team's conventions.** Check `CLAUDE.md` / `AGENTS.md` at the repo root and any subdirectory equivalents. They tell you the existing patterns, the test framework, deployment model, etc.
 4. **The project's ubiquitous language.** Read `UBIQUITOUS_LANGUAGE.md` at the project root if it exists. Use the canonical terms in your design — for modules, entities, processes, and APIs. Don't introduce synonyms for concepts that already have names.
+5. **Architectural constraints.** Read [`ARCHITECTURE.md`](ARCHITECTURE.md) at the project root if it exists. Read [architecture.md](architecture.md) for the threshold and format. Verify each relevant constraint against the current codebase before applying it — rationale drifts.
 
 If any of these are missing, get them before producing a design. A design written without knowledge of the existing code is fiction.
 
@@ -40,13 +41,13 @@ If any of these are missing, get them before producing a design. A design writte
 
 1. **Product-technical boundary decisions exist** — specific values, defaults, thresholds, or behavioral preferences the user has in mind but that the Feature Brief doesn't specify (discovery reviewers deliberately strip these as out of scope for the Feature Brief). Common examples: a list truncates at N items, a timeout is X seconds, a feature defaults to on or off. Default toward asking rather than assuming: if you are about to write a specific value or default behavior into the design without a source for it, that is a signal to ask.
 
-2. **An ADR is about to be written** — ADRs record significant, hard-to-reverse decisions. Before committing any ADR to paper, always present the decision, your recommendation, and the key alternatives to the user and ask for confirmation or redirection.
+2. **A new architectural constraint is about to be added to `ARCHITECTURE.md`** — before committing any entry, always present the proposed constraint, its rule, and the rationale to the user and ask for confirmation or redirection. Adding to `ARCHITECTURE.md` without user confirmation is never acceptable.
 
-Collect all questions from both cases and ask them together in a single structured message, grouped by type (product decisions first, ADR confirmations second), before producing any design output. Wait for the user's response, then incorporate the answers. In non-interactive or sub-agent contexts where no response arrives, proceed rather than blocking.
+Collect all questions from both cases and ask them together in a single structured message, grouped by type (product decisions first, architectural constraint confirmations second), before producing any design output. Wait for the user's response, then incorporate the answers. In non-interactive or sub-agent contexts where no response arrives, proceed rather than blocking.
 
 If the user doesn't answer some or all questions — or no response arrives — pick reasonable defaults, apply them, and flag them together in a single consolidated block at the top of the Design Doc: *"Clarification round: no response received. The following values were assumed — correct during implementation if needed: [list each assumption]."*
 
-Skip this step only if you have genuinely found no product-technical gaps **and** no ADRs are planned.
+Skip this step only if you have genuinely found no product-technical gaps **and** no new architectural constraints are planned.
 
 **Read [architecture-principles.md](architecture-principles.md)** for the three structural principles this design must respect: domain-first organization (screaming architecture), deep modules, and adapter boundaries. The Design Doc should make the proposed design's adherence to each visible. If the existing codebase is layered, note it in the Design Doc and propose a migration path or explicitly justify extending the layered structure. Call out adapter boundary placement explicitly so implementers know where each kind of code belongs.
 
@@ -62,27 +63,11 @@ When uncertain about a technical choice: recommend a spike if the uncertainty co
 
 **Think about what changes outside the new code.** Database migrations, config changes, infrastructure changes, deployment order constraints, third-party integrations, monitoring/alerting updates, runbook entries. These are often where production incidents come from.
 
-## Architecture Decision Records (ADRs)
+## Updating ARCHITECTURE.md
 
-Significant decisions get their own ADR file at `docs/adr/<NNNN>-<slug>.md`. The bar is intentionally high. An ADR exists so future engineers can understand *why* the system has the shape it has and avoid choices that would conflict with load-bearing constraints.
+When the design surfaces a cross-cutting constraint that is not already in `ARCHITECTURE.md`, add it after user confirmation in the clarification round.
 
-Read [adr.md](adr.md) for the threshold criteria and the two tests to apply before writing an ADR.
-
-Examples of decisions that warrant an ADR:
-- Picking a database, message queue, or other major dependency
-- Choosing a synchronous vs asynchronous architecture
-- Adopting a new pattern that diverges from existing code
-- Establishing a new module boundary or API contract style
-- Choosing one library over another when both are viable
-
-Examples of decisions that don't:
-- Variable names, function signatures, file layout within a single module
-- Things fully determined by existing conventions
-- UI/UX behavior localized to a single component (default expand/collapse state, sort order, button placement)
-- Configuration values that can be changed in one place without rippling through other code
-- Decisions where only one option was ever seriously considered
-
-When writing an ADR, use the structure and numbering conventions in [adr.md](adr.md).
+Read [architecture.md](architecture.md) for the threshold criteria and format. The entry belongs in `ARCHITECTURE.md` only when both conditions hold: (1) an agent working on a new feature would not naturally encounter this constraint in the files they are reading; (2) it governs choices in parts of the codebase distant from where it was first established. If it is local to one file, put a comment in that file instead.
 
 ## Writing the Design Doc
 
@@ -95,7 +80,6 @@ The Design Doc lives at `docs/features/<feature-slug>/design.md`. Use this struc
 **Author:** <name or agent>
 **Date:** <YYYY-MM-DD>
 **Feature Brief:** <link to brief>
-**Related ADRs:** <list>
 
 ## Summary
 One paragraph. What's being built and the shape of the proposed solution. A reader should be able to skip the rest if they only need the gist.
@@ -156,7 +140,7 @@ Proceed to writing the Design Doc when all of the following are true:
 - Every open question from the brief is either resolved in the design or explicitly deferred with a reason
 - At least one user scenario has been traced end-to-end through the proposed design
 - All cross-cutting concerns from the list in [cross-cutting-concerns.md](cross-cutting-concerns.md) are either addressed or explicitly out-of-scoped
-- Any ADR-worthy decisions have been confirmed with the user
+- Any new architectural constraints have been confirmed with the user
 
 If you find yourself writing "TBD" or "to be determined in implementation" repeatedly, that's a signal the design isn't done yet.
 
@@ -168,7 +152,9 @@ If you find yourself writing "TBD" or "to be determined in implementation" repea
 
 ## After writing
 
-Save the Design Doc to `docs/features/<feature-slug>/design.md` and any ADRs to `docs/adr/`. If the target directories don't exist, create them. If you can't write the files, tell the user the artifact paths and paste the content inline so they can save it manually.
+Save the Design Doc to `docs/features/<feature-slug>/design.md`. If the target directory doesn't exist, create it. If you can't write the file, tell the user the artifact path and paste the content inline so they can save it manually.
+
+If the design surfaced new cross-cutting constraints confirmed in the clarification round, add them to `ARCHITECTURE.md` at the project root now. Follow the format in [architecture.md](architecture.md).
 
 If this design introduced new technical or domain terms (module names, entity names, process names, API concepts), follow the instructions in [ubiquitous-language-update.md](ubiquitous-language-update.md) to update the glossary.
 
@@ -180,7 +166,7 @@ Then run an automated review in a clean context. Use the `Agent` tool with `suba
 
 > Invoke the `design-review` skill for feature slug `<slug>`. The Design Doc is at `docs/features/<slug>/design.md`.
 
-After the review agent finishes, read the review file it saved at `docs/features/<slug>/design-review-<NN>.md`. Update the Design Doc and any relevant ADRs to address every finding:
+After the review agent finishes, read the review file it saved at `docs/features/<slug>/design-review-<NN>.md`. Update the Design Doc to address every finding:
 - **Blocker**: must be resolved before leaving this phase — revise the design
 - **Should-fix**: address these — they represent real quality gaps
 - **Nit**: use judgment

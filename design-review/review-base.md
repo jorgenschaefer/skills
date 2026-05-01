@@ -3,7 +3,7 @@
 This file defines how reviews are conducted across every phase of the agentic development workflow. It is referenced by the five phase-specific review skills:
 
 - `discovery-review` — reviews Feature Briefs
-- `design-review` — reviews Design Docs and ADRs
+- `design-review` — reviews Design Docs
 - `planning-review` — reviews ticket backlogs
 - `implementation-review` — reviews code changes
 - `refactor-design-review` — reviews Refactoring Proposals

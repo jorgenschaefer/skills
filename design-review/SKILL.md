@@ -1,11 +1,11 @@
 ---
 name: design-review
-description: Use this skill to review a Design Doc (and any associated ADRs) produced by the Design phase before the work is broken into tickets. Trigger this whenever the user says things like "review this design doc", "critique the architecture", "is this design ready for tickets", or hands you a file from docs/features/ and asks for feedback. The output is a structured review file with findings categorized by severity. This is the highest-leverage review in the workflow — catching architectural problems here is far cheaper than catching them in code. Always use a clean context, separate from the conversation that produced the design.
+description: Use this skill to review a Design Doc produced by the Design phase before the work is broken into tickets. Trigger this whenever the user says things like "review this design doc", "critique the architecture", "is this design ready for tickets", or hands you a file from docs/features/ and asks for feedback. The output is a structured review file with findings categorized by severity. This is the highest-leverage review in the workflow — catching architectural problems here is far cheaper than catching them in code. Always use a clean context, separate from the conversation that produced the design.
 ---
 
 # Design Review
 
-This skill reviews a **Design Doc** and any associated **ADRs** — the artifacts produced by the Design phase. It builds on the shared review base; read [review-base.md](review-base.md) first for the reviewer stance, output format, and severity definitions.
+This skill reviews a **Design Doc** — the artifact produced by the Design phase. It builds on the shared review base; read [review-base.md](review-base.md) first for the reviewer stance, output format, and severity definitions.
 
 This is the highest-leverage review in the workflow. Architectural problems caught here cost a review's worth of effort to fix. Caught after implementation, they cost weeks. Read carefully and skeptically.
 
@@ -19,7 +19,7 @@ Before reviewing, confirm:
 2. You can read the Feature Brief the design is based on. The design must be evaluated against the brief — a good design that solves the wrong problem is a bad design.
 3. You have access to the codebase. Many design issues only become visible when you check the design against existing code. If you don't have access, note it in "What was NOT checked."
 4. You're in a clean context — you did not participate in creating this artifact. If you're unsure, treat your judgment as potentially contaminated: note it in "What was NOT checked" and flag any area where prior context might be biasing you.
-5. You have read all ADRs in `docs/adr/`. The most important finding at this phase is a design that contradicts an accepted ADR — you can only catch it if you've read them first. If the directory doesn't exist or is empty, note it in "What was checked."
+5. You have read [`ARCHITECTURE.md`](ARCHITECTURE.md) at the project root if it exists. The most important finding at this phase is a design that contradicts an established architectural constraint — you can only catch it if you've read them first. If the file doesn't exist, note it in "What was checked."
 
 ## What to check
 
@@ -68,13 +68,12 @@ Read [cross-cutting-concerns.md](cross-cutting-concerns.md) for the canonical li
 - **Are the right alternatives considered?** For each major choice in the design, ask: is there a simpler approach that would satisfy the brief? If yes and the doc doesn't address it, that's a finding — either the simpler path was considered and ruled out (state why), or it was missed.
 - **Is the chosen option's tradeoff named?** Every choice trades something for something. If the design only lists upsides of the chosen option, it hasn't been honestly evaluated.
 
-### Architecture Decision Records
+### Architectural constraints
 
-Read [adr.md](adr.md) for the canonical ADR format and the criteria for when a decision warrants one.
+Read [architecture.md](architecture.md) for the format and threshold criteria.
 
-- **Are significant decisions captured in ADRs?** Each major decision in the design (database choice, sync vs async, new dependency, new pattern) should have an ADR. Designs that bury major decisions in prose are hard to revisit.
-- **Are existing ADRs respected?** Read the most recent 3–5 ADRs and verify the proposed design doesn't contradict any decision they record. If the ADR list is short, read all of them.
-- **Do ADRs follow the format?** Status, Context, Decision, Alternatives, Consequences. Check the consequences section in particular — many ADRs hand-wave it.
+- **Does the design respect all constraints in `ARCHITECTURE.md`?** A design that silently contradicts an established constraint is a blocker.
+- **Does the design surface new cross-cutting constraints?** If the design introduces a constraint that is not visible at the decision point and not already in `ARCHITECTURE.md`, it should have been added during the design phase. Omitting a new constraint from `ARCHITECTURE.md` is a should-fix.
 
 ### Existing-code awareness
 
@@ -116,7 +115,7 @@ To calibrate, here are the failure modes most often surfaced at this phase:
 - API contracts hand-waved ("we'll define the schema during implementation")
 - Alternatives section listing only weak alternatives, making the chosen option look obvious by contrast
 - Design diverges from existing codebase patterns without explanation
-- ADRs missing for genuinely significant decisions
+- New cross-cutting constraints not added to `ARCHITECTURE.md`
 - Rollback story incomplete or unrealistic
 - Performance assumptions stated as facts without measurement
 - Auth and authorization treated as someone else's problem
@@ -124,11 +123,11 @@ To calibrate, here are the failure modes most often surfaced at this phase:
 
 ## Verdict guidance for this phase
 
-- **Block** if: a critical cross-cutting concern is unaddressed (auth, security, data migration, observability for a production-critical path), the design doesn't actually solve the brief's problem, or major decisions are made without ADRs.
+- **Block** if: a critical cross-cutting concern is unaddressed (auth, security, data migration, observability for a production-critical path), the design doesn't actually solve the brief's problem, or the design contradicts an established constraint in `ARCHITECTURE.md`.
 - **Request changes** if: there are several should-fix gaps (under-specified contracts, missing alternatives, weak rollback plan, incomplete cross-cutting coverage).
 - **Approve with comments** if: the design is sound, with only nit-level issues.
 - **Approve** if: rare; the bar is high here.
 
 ## Output
 
-Save the review at `docs/features/<slug>/design-review-<NN>.md` using the format from [review-base.md](review-base.md). Reference specific sections of the design. If you reviewed ADRs, list them and review each one's consequences section in particular (Consequences are the section most often hand-waved — they reveal whether the author thought through what the decision forecloses, not just what it enables.). If the verdict is Approve or Approve with comments, suggest the next step is the planning skill.
+Save the review at `docs/features/<slug>/design-review-<NN>.md` using the format from [review-base.md](review-base.md). Reference specific sections of the design. If the verdict is Approve or Approve with comments, suggest the next step is the planning skill.
