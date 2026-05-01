@@ -1,3 +1,18 @@
+# ADR Guide
+
+## When to write an ADR
+
+A decision warrants an ADR when **at least one** of the following is true:
+
+1. **Hard to reverse** — undoing it later would require rework across multiple parts of the codebase, a data migration, or a coordinated change.
+2. **Cross-cutting constraint** — the choice governs how future engineers must build adjacent things; knowing about it prevents inconsistency or conflict elsewhere.
+
+Two tests to apply before writing:
+- *"If we changed this in six months, what would break?"* — if the answer is "one component's configuration," skip it.
+- *"Does a future engineer building something new need to know about this choice to avoid an incompatible decision?"* — if no, skip it.
+
+## Format
+
 ADRs use this structure:
 
 ```markdown

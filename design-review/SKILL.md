@@ -45,7 +45,7 @@ Read [architecture-principles.md](architecture-principles.md) for the canonical 
 
 ### Cross-cutting concerns
 
-This is where most design failures hide. Check each one explicitly. If the design doesn't mention something on this list and it's relevant, that's a finding.
+Read `cross-cutting-concerns.md` for the canonical list. This is where most design failures hide. Check each item explicitly — if the design doesn't mention something relevant, that's a finding. The review questions per concern:
 
 - **Authentication and authorization.** Who can call this? What permissions are required? Are roles defined? Does the design respect existing auth patterns?
 - **Observability.** What gets logged? What metrics emitted? What traces? What alerts will operators need? Is there enough signal to debug a production issue?

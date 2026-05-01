@@ -9,8 +9,14 @@ copy_to() {
   done
 }
 
-copy_to adr-format.md \
+copy_to adr.md \
   adr-init design
+
+copy_to tracer-bullets.md \
+  planning planning-review
+
+copy_to cross-cutting-concerns.md \
+  design design-review
 
 copy_to ubiquitous-language-update.md \
   design discovery

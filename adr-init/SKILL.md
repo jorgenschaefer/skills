@@ -53,15 +53,7 @@ For each category, identify what choice the codebase has already made:
 
 ## Apply the ADR threshold
 
-Not every technology choice warrants an ADR. For each candidate, apply this filter:
-
-A decision is ADR-worthy if **at least one** of the following is true:
-1. **Hard to reverse** — undoing it would require rework across multiple parts of the codebase, a data migration, or coordinated changes.
-2. **Cross-cutting constraint** — a future engineer building something new needs to know about this choice to avoid an incompatible decision.
-
-Two quick tests:
-- *"If we changed this in six months, what would break?"* — if the answer is "one config file," skip it.
-- *"Does an agent working on a new feature need to know this to stay consistent with the rest of the codebase?"* — if no, skip it.
+Not every technology choice warrants an ADR. For each candidate, apply the threshold filter in `adr.md`.
 
 Do **not** write ADRs for:
 - Framework-enforced conventions (e.g., Rails routing, Django ORM defaults — these are constraints imposed by the framework, not team decisions)
@@ -83,7 +75,7 @@ Then ask:
 
 ## Write the ADRs
 
-Use the format in [adr-format.md](adr-format.md).
+Use the format in [adr.md](adr.md).
 
 For each decision:
 

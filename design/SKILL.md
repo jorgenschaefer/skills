@@ -54,21 +54,7 @@ Skip this step only if you have genuinely found no product-technical gaps **and*
 
 When uncertain about a technical choice: recommend a spike if the uncertainty could change the entire approach; record it as a risk if it's about tuning or edge cases within an already-chosen approach.
 
-**Identify the cross-cutting concerns.** Walk this list explicitly — most design failures happen because one of these was forgotten:
-
-- Authentication and authorization
-- Observability (logging, metrics, tracing, alerting)
-- Error handling, retries, and partial failure
-- Rate limiting and abuse prevention
-- Data migration (forwards and backwards)
-- Backwards compatibility with existing clients
-- Feature flags and rollout strategy
-- Security and PII handling
-- Performance under expected load
-- Multi-tenancy / data isolation (if applicable)
-- Internationalization / localization (if applicable)
-- Accessibility (if user-facing)
-- Cost of new cloud resources or external calls
+**Identify the cross-cutting concerns.** Read `cross-cutting-concerns.md` and walk the list explicitly — most design failures happen because one of these was forgotten.
 
 **Trace through a concrete user scenario end-to-end.** Pick a typical use case from the brief and walk it through your proposed design from request to response (or trigger to outcome). Where does data come from? Where does it go? What can fail at each step? This usually surfaces gaps faster than abstract reasoning.
 
@@ -80,13 +66,7 @@ When uncertain about a technical choice: recommend a spike if the uncertainty co
 
 Significant decisions get their own ADR file at `docs/adr/<NNNN>-<slug>.md`. The bar is intentionally high. An ADR exists so future engineers can understand *why* the system has the shape it has and avoid choices that would conflict with load-bearing constraints.
 
-A decision warrants an ADR when **at least one** of the following is true:
-1. **Hard to reverse** — undoing it later would require rework across multiple parts of the codebase, a data migration, or a coordinated change.
-2. **Cross-cutting constraint** — the choice governs how future engineers must build adjacent things; knowing about it prevents inconsistency or conflict elsewhere.
-
-Two tests to apply before writing:
-- *"If we changed this in six months, what would break?"* — if the answer is "one component's configuration," skip it.
-- *"Does a future engineer building something new need to know about this choice to avoid an incompatible decision?"* — if no, skip it.
+Read `adr.md` for the threshold criteria and the two tests to apply before writing an ADR.
 
 Examples of decisions that warrant an ADR:
 - Picking a database, message queue, or other major dependency
@@ -102,7 +82,7 @@ Examples of decisions that don't:
 - Configuration values that can be changed in one place without rippling through other code
 - Decisions where only one option was ever seriously considered
 
-When writing an ADR, use the structure and numbering conventions in [adr-format.md](adr-format.md).
+When writing an ADR, use the structure and numbering conventions in [adr.md](adr.md).
 
 ## Writing the Design Doc
 

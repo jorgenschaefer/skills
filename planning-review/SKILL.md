@@ -21,6 +21,8 @@ Before reviewing, confirm:
 
 ## What to check
 
+Read `tracer-bullets.md` for the definition of tracer-bullet slicing and the layer-by-layer antipattern — the smell tests below apply those concepts.
+
 Walk through these questions. Check each ticket individually, then check the backlog as a whole.
 
 ### Per-ticket checks
