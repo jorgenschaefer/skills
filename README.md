@@ -44,6 +44,7 @@ npx skills add jorgenschaefer/skills@<skill-name>
 
 - **boy-scout** — triage incidental code finds: apply trivially safe fixes immediately, create tracked tickets for everything else
 - **refactor-design** — comprehensive structural review of a codebase to identify architectural friction and produce a Refactoring Proposal (feeds directly into planning)
+- **repo-overview** — orient a new developer to an unfamiliar codebase: tech stack, code organization, domain model, main workflows, and where to start reading
 - **workflow-status** — report the current phase and artifact state of an in-progress feature
 
 ## Feature lifecycle
