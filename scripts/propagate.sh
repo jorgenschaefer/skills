@@ -25,7 +25,10 @@ copy_to review-base.md \
   design-review discovery-review implementation-review planning-review
 
 copy_to architecture-principles.md \
-  code-review design design-review implementation planning planning-review refactor-project
+  code-review design design-review implementation implementation-review planning planning-review refactor-project
 
 copy_to code-style.md \
-  code-review implementation
+  code-review implementation implementation-review
+
+copy_to code-quality-dimensions.md \
+  code-review implementation-review

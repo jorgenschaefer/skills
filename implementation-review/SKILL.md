@@ -1,6 +1,6 @@
 ---
 name: implementation-review
-description: Use this skill to review a code change produced by the Implementation phase before it gets merged. Checks workflow compliance (ticket adherence, acceptance criteria, design alignment, scope) and delegates code quality analysis to the code-review skill, combining both into a single verdict. Trigger whenever the user says "review this PR", "code review for ticket X", "is this implementation ready to merge", or hands you a diff and asks for feedback. Always use a clean context, separate from the conversation that produced the code, since the value of the review depends on fresh eyes that don't share the implementer's blind spots.
+description: Use this skill to review a code change produced by the Implementation phase before it gets merged. Checks workflow compliance (ticket adherence, acceptance criteria, design alignment, scope) and applies the nine code-quality dimensions, combining both into a single verdict. Trigger whenever the user says "review this PR", "code review for ticket X", "is this implementation ready to merge", or hands you a diff and asks for feedback. Always use a clean context, separate from the conversation that produced the code, since the value of the review depends on fresh eyes that don't share the implementer's blind spots.
 ---
 
 # Implementation Review
@@ -24,7 +24,7 @@ Also confirm you're in a clean context — you did not participate in creating t
 
 ## Phase 2: Code quality
 
-Read `../code-review/SKILL.md` in full. Apply all nine quality dimensions it describes to the diff gathered in Phase 1. The scope is already known — do not re-run scope-discovery from that skill's protocol.
+Read `code-quality-dimensions.md` and apply all nine quality dimensions to the diff gathered in Phase 1.
 
 Record your findings using Blocker/Should-fix/Nit severity. These form the Code Quality section of the combined output in Phase 4.
 
@@ -101,7 +101,7 @@ Save the combined review at `docs/features/<slug>/implementation-review-<NN>.md`
 - Feature flag added but never removed (and no follow-up ticket)
 - Silent deviation from a Design Doc decision or ADR without explanation
 
-Note: code quality findings (architecture, adapter boundaries, test quality, correctness, security, observability, performance) come from the code-review skill applied in Phase 2.
+Note: code quality findings (architecture, adapter boundaries, test quality, correctness, security, observability, performance) come from `code-quality-dimensions.md` applied in Phase 2.
 
 ## Verdict guidance
 
