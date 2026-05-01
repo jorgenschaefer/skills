@@ -19,7 +19,7 @@ npx skills add jorgenschaefer/skills@<skill-name>
 ### Project setup
 
 - **adr-init** — bootstrap ADRs in a brownfield project by excavating load-bearing design decisions from the existing codebase
-- **[ubiquitous-language](https://github.com/mattpocock/skills/tree/main/skills/deprecated/ubiquitous-language)** *(deprecated)* — initialize the UBIQUITOUS_LANGUAGE.md file (Matt Pocock)
+- **ubiquitous-language-init** — bootstrap a UBIQUITOUS_LANGUAGE.md glossary in a brownfield project by excavating domain terminology from the existing codebase
 
 ### Workflow phases
 

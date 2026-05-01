@@ -1,6 +1,6 @@
 ---
 name: adr-init
-description: Use this skill to bootstrap ADRs in a brownfield project that has no existing architecture decision records. Trigger when the user wants to establish architectural guardrails for agents in an existing codebase, says "document existing decisions", "create ADRs from the codebase", or is starting to use agent workflows in a project that predates them. Output is a set of ADR files at docs/adr/ covering the load-bearing design decisions already present in the code.
+description: Use this skill to bootstrap ADRs in a brownfield project that has no existing architecture decision records, or to audit and refresh existing ADRs for drift. Trigger when the user wants to establish architectural guardrails for agents in an existing codebase, says "document existing decisions", "create ADRs from the codebase", "check if our ADRs are still accurate", or is starting to use agent workflows in a project that predates them. Output is a set of ADR files at docs/adr/ covering the load-bearing design decisions already present in the code, plus a drift report if ADRs already exist.
 ---
 
 # ADR Init
@@ -24,6 +24,23 @@ Before exploring, check:
 1. **`docs/adr/`** — if ADRs already exist, read them all to understand what's already documented and find the next sequential number. If the directory doesn't exist, numbering starts at `0001`.
 2. **`CLAUDE.md` / `AGENTS.md`** — if present at the repo root, read them. They may already name conventions or constraints you won't need to re-document.
 3. **`UBIQUITOUS_LANGUAGE.md`** — if present, use its canonical terms in the ADRs you write.
+
+## Check for drift in existing ADRs
+
+If ADRs already exist, do a drift check before searching for new candidates.
+
+For each ADR with status `Accepted`:
+
+1. Read its **Decision section** to identify the concrete claim it makes (e.g., "we use PostgreSQL as the primary database").
+2. Find the code evidence that would confirm or contradict that claim — the same files listed in "How to explore the codebase" below.
+3. Classify the ADR as one of:
+   - **Confirmed** — code matches the decision; no action needed
+   - **Potentially drifted** — code shows evidence of a different or conflicting approach
+   - **Cannot verify** — the relevant code was not found or is genuinely ambiguous
+
+Do not auto-update or supersede drifted ADRs. Surface them as findings. The user decides whether to write a superseding ADR, amend the existing one, or confirm the code change was unintentional.
+
+Include drift findings in your presentation before writing anything new.
 
 ## How to explore the codebase
 
@@ -63,13 +80,17 @@ Do **not** write ADRs for:
 
 ## Present findings to the user
 
-Before writing any ADRs, present your findings. For each candidate decision, list:
+Before writing any ADRs, present your findings in two parts.
+
+**Part 1 — Drift findings** (only if ADRs already exist): For each existing ADR, report its classification. For any "Potentially drifted" ADR, quote the original decision and describe the contradicting evidence with a specific file reference. Do not present "Confirmed" ADRs individually — a single summary line is enough ("12 existing ADRs confirmed, no action needed").
+
+**Part 2 — New candidates**: For each new decision found, list:
 - What was observed in the code (the *what*, not the *why*)
 - Which ADR threshold criterion it meets (hard to reverse / cross-cutting)
 
 Then ask:
 
-> I found [N] decisions worth documenting as ADRs. Before I write them, do you know the rationale for any of these? For each one you can explain, tell me what alternatives were considered and why this approach was chosen. I'll mark everything else as "reason unknown — extracted from codebase". Reply with whatever you know, or say "write them all with unknown" to proceed immediately.
+> [If drift found:] I found [M] existing ADRs that may have drifted — listed above. Review each and let me know whether to write a superseding ADR, amend in place, or mark it as still valid. [Always:] I also found [N] new decisions worth documenting. For each new one you can explain, tell me what alternatives were considered and why this approach was chosen. I'll mark everything else as "reason unknown — extracted from codebase". Reply with whatever you know, or say "write them all with unknown" to proceed immediately.
 
 **Do not write ADRs until the user has responded** (or explicitly asked you to proceed without waiting). In non-interactive or sub-agent contexts where no response arrives, proceed with "reason unknown" for all candidates and flag each assumed rationale together in a single block at the top of the first ADR written.
 
@@ -94,12 +115,21 @@ Create `docs/adr/` if it does not exist.
 
 ## Report to the user
 
-After writing, list every ADR created with its file path and title:
+After writing, report in two sections:
 
+**New ADRs written:**
 ```
-Written:
-- docs/adr/0001-primary-database.md — PostgreSQL as primary database
-- docs/adr/0002-api-style.md — REST API with versioned endpoints
+- docs/adr/0003-api-style.md — REST API with versioned endpoints
+- docs/adr/0004-auth-approach.md — JWT authentication via middleware
 ```
-
 Note which ADRs have unknown rationale in case the user wants to amend them later with the real reasons.
+
+**Drift findings** (only if ADRs already existed):
+```
+Confirmed: 12 ADRs match the current codebase
+Potentially drifted:
+  - docs/adr/0001-primary-database.md — ADR says PostgreSQL; schema/migrations now reference SQLite
+  - docs/adr/0002-test-strategy.md — ADR says integration tests against real DB; test/setup.ts shows jest mocks for all DB calls
+Cannot verify: 1 (docs/adr/0005-deployment.md — no deployment config found in repo)
+```
+Drifted ADRs are not modified by this skill. Review each finding and either write a superseding ADR, amend the existing file, or confirm the decision is still correct.
