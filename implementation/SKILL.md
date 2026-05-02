@@ -17,7 +17,7 @@ You write tests first. Always. This is not negotiable in this skill — if the u
 
 Before starting, make sure you have:
 
-1. **The ticket.** A specific ticket file with goal, scope, and acceptance criteria. If the user gestures at "the next ticket" without specifying, ask which one.
+1. **The ticket.** A specific ticket file with goal, scope, and acceptance criteria. If the user gestures at "the next ticket" without specifying, ask which one. Once identified, immediately update its **Status** to `In Progress` before doing anything else.
 2. **The Design Doc.** The ticket should reference it. Read it for context before starting.
 3. **The codebase.** Read the relevant existing code. Understand the patterns. Run the existing test suite — if it doesn't pass, stop and report to the user before adding any changes on top of a broken baseline.
 4. **The repo's conventions.** Check `CLAUDE.md` / `AGENTS.md` for build/test/lint commands, code style, and any project-specific rules.
@@ -119,6 +119,7 @@ A ticket isn't done because the code compiles. Walk through this list:
 - [ ] No commented-out code, no `console.log`/`print` debugging artifacts, no TODOs about this ticket left behind.
 - [ ] If a migration was added, you've tested both the up and down paths (for append-only migrations where "down" is not meaningful, test the rollback procedure as described in the ticket's acceptance criteria instead).
 - [ ] New files are placed in domain-organized paths, or the structural choice is explicitly noted in the PR description.
+- [ ] Ticket status updated to `Done` in the ticket file.
 
 ## When tests are hard to write
 
@@ -173,6 +174,4 @@ After the review agent finishes, read the review file it saved at `docs/features
 
 Tell the user the ticket is done, summarize what was implemented, and report what the review found and what was addressed. The ticket is ready to proceed only after all blockers and should-fixes are resolved.
 
-Update the completed ticket's **Status** to `Done`.
-
-Then continue automatically: scan `docs/features/<slug>/tickets/` for the next ticket whose **Status** is `Backlog`, ordered by filename. If one exists, update its **Status** to `In Progress` and begin implementing it immediately — re-read it, re-examine the relevant codebase sections (the code has changed since the previous ticket), and proceed through the full TDD loop above. Repeat until all tickets are Done, then tell the user the feature is complete and ready for final merge.
+Then continue automatically: scan `docs/features/<slug>/tickets/` for the next ticket whose **Status** is `Backlog`, ordered by filename. If one exists, begin implementing it immediately following the same process from the top (starting with setting its status to `In Progress`). Repeat until all tickets are Done, then tell the user the feature is complete and ready for final merge.
