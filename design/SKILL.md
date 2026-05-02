@@ -158,7 +158,15 @@ If the design surfaced new cross-cutting constraints confirmed in the clarificat
 
 If this design introduced new technical or domain terms (module names, entity names, process names, API concepts), follow the instructions in [ubiquitous-language-update.md](ubiquitous-language-update.md) to update the glossary.
 
-If the codebase survey during design surfaced code smells or findings outside the scope of this feature, invoke the `boy-scout` skill to triage them: trivially safe fixes can be applied immediately; everything else becomes a ticket in `docs/features/boy-scout/tickets/`. Noting smells in the Design Doc is optional context; tracking them as tickets is required.
+If the codebase survey during design surfaced code smells or findings outside the scope of this feature, collect them into a list. Then use the `Agent` tool with `subagent_type: "general-purpose"` to hand them off. The agent's self-contained prompt should be:
+
+> Invoke the `boy-scout` skill. The following incidental findings were noticed during the design survey for feature slug `<slug>`:
+>
+> `<paste the list of findings here, one per line, each with file path and description>`
+>
+> Triage each finding: apply trivially safe fixes immediately; write a ticket at `docs/features/boy-scout/tickets/` for everything else. The `Noticed during` field should read: "design survey for `<slug>`".
+
+Noting smells in the Design Doc is optional context; tracking them as tickets is required.
 
 Tell the user what was written and where.
 

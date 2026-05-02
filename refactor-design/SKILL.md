@@ -34,7 +34,13 @@ Explore the codebase directly using your read, search, and grep tools. Use these
 
 Document each friction point as you encounter it: note the file or module, the pattern creating friction, and why it makes the code hard to change or understand. These notes become the "Friction points found" section of the proposal.
 
-If the survey surfaced incidental code smells, bugs, or misleading names outside the scope of this refactoring, invoke the `boy-scout` skill to triage them: trivially safe fixes can be applied immediately; everything else becomes a ticket in `docs/features/boy-scout/tickets/`.
+If the survey surfaced incidental code smells, bugs, or misleading names outside the scope of this refactoring, collect them into a list. Then use the `Agent` tool with `subagent_type: "general-purpose"` to hand them off. The agent's self-contained prompt should be:
+
+> Invoke the `boy-scout` skill. The following incidental findings were noticed during a `refactor-design` survey for feature slug `<slug>`:
+>
+> `<paste the list of findings here, one per line, each with file path and description>`
+>
+> Triage each finding: apply trivially safe fixes immediately; write a ticket at `docs/features/boy-scout/tickets/` for everything else. The `Noticed during` field should read: "refactor-design survey for `<slug>`".
 
 ### 2. Propose a refactoring plan
 

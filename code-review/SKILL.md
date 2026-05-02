@@ -106,4 +106,12 @@ A verdict is a commitment. Don't soften it pre-emptively.
 
 While reviewing, you may notice things unrelated to the code under review — stale code, latent bugs, misleading names in nearby files. Do not include these in the review findings; they pollute severity classification and distract from the code being reviewed.
 
-Instead, after completing the review, invoke the `boy-scout` skill to triage such finds: trivially safe fixes can be applied immediately; everything else becomes a tracked ticket. Note in "What was checked" that boy-scout triage was done (or explicitly that it was skipped and why).
+Instead, after completing the review, collect them into a list and use the `Agent` tool with `subagent_type: "general-purpose"` to hand them off. The agent's self-contained prompt should be:
+
+> Invoke the `boy-scout` skill. The following incidental findings were noticed during a code review:
+>
+> `<paste the list of findings here, one per line, each with file path and description>`
+>
+> Triage each finding: apply trivially safe fixes immediately; write a ticket at `docs/features/boy-scout/tickets/` for everything else. The `Noticed during` field should read: "code review".
+
+Note in "What was checked" that boy-scout triage was done (or explicitly that it was skipped and why).
