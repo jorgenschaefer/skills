@@ -171,6 +171,8 @@ After the review agent finishes, read the review file it saved at `docs/features
 - **Should-fix**: address these — they represent real quality gaps
 - **Nit**: use judgment
 
-Tell the user the ticket is done, point to the PR or branch, summarize, and report what the review found and what was addressed. The ticket is ready to merge only after all blockers and should-fixes are resolved.
+Tell the user the ticket is done, summarize what was implemented, and report what the review found and what was addressed. The ticket is ready to proceed only after all blockers and should-fixes are resolved.
 
-Then suggest the next step: if there are remaining tickets in the backlog, implement the next one using the `implementation` skill; if all tickets are done, the feature is complete and ready for final merge.
+Update the completed ticket's **Status** to `Done`.
+
+Then continue automatically: scan `docs/features/<slug>/tickets/` for the next ticket whose **Status** is `Backlog`, ordered by filename. If one exists, update its **Status** to `In Progress` and begin implementing it immediately — re-read it, re-examine the relevant codebase sections (the code has changed since the previous ticket), and proceed through the full TDD loop above. Repeat until all tickets are Done, then tell the user the feature is complete and ready for final merge.
