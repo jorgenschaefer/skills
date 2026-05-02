@@ -59,7 +59,7 @@ When uncertain about a technical choice: recommend a spike if the uncertainty co
 
 **Trace through a concrete user scenario end-to-end.** Pick a typical use case from the brief and walk it through your proposed design from request to response (or trigger to outcome). Where does data come from? Where does it go? What can fail at each step? This usually surfaces gaps faster than abstract reasoning.
 
-**Check terminology.** Does this design introduce new canonical terms — module names, entity names, process names — that aren't yet in `UBIQUITOUS_LANGUAGE.md`? Do any proposed names conflict with existing entries? Resolve conflicts before finalizing the design; inconsistent names in a design doc become inconsistent names in code. If a proposed name conflicts with a glossary entry for the same concept, defer to the glossary: rename the design element. If you believe the glossary entry is wrong, update the glossary and note the change in the Design Doc. The glossary is authoritative; the design adapts to it.
+**Check terminology.** Does this design introduce new canonical terms — module names, entity names, process names — that aren't yet in `UBIQUITOUS_LANGUAGE.md`? Do any proposed names conflict with existing entries? Resolve conflicts before finalizing the design; inconsistent names in a design doc become inconsistent names in code. If a proposed name conflicts with a glossary entry for the same concept, defer to the glossary: rename the design element. If you believe the glossary entry is wrong, note the discrepancy in the Design Doc and include the correction in the lang-update ticket (see below). The glossary is authoritative; the design adapts to it.
 
 **Think about what changes outside the new code.** Database migrations, config changes, infrastructure changes, deployment order constraints, third-party integrations, monitoring/alerting updates, runbook entries. These are often where production incidents come from.
 
@@ -154,9 +154,9 @@ If you find yourself writing "TBD" or "to be determined in implementation" repea
 
 Save the Design Doc to `docs/features/<feature-slug>/design.md`. If the target directory doesn't exist, create it. If you can't write the file, tell the user the artifact path and paste the content inline so they can save it manually.
 
-If the design surfaced new cross-cutting constraints confirmed in the clarification round, add them to `ARCHITECTURE.md` at the project root now. Follow the format in [architecture.md](architecture.md).
+If the design surfaced new cross-cutting constraints confirmed in the clarification round, create `docs/features/<feature-slug>/tickets/arch-update.md` (create the directory if needed). The ticket goal is to add the constraints to `ARCHITECTURE.md`; copy the exact constraint text into the acceptance criteria, following [architecture.md](architecture.md) for the entry format. Use these headers: **Status:** Backlog, **Entry artifact:** this design doc, **Depends on:** none, **Estimate:** S.
 
-If this design introduced new technical or domain terms (module names, entity names, process names, API concepts), follow the instructions in [ubiquitous-language-update.md](ubiquitous-language-update.md) to update the glossary.
+If this design introduced new technical or domain terms (module names, entity names, process names, API concepts) — or if any glossary corrections were identified during the terminology check — create `docs/features/<feature-slug>/tickets/lang-update.md` (create the directory if needed). The ticket goal is to update `UBIQUITOUS_LANGUAGE.md`; include each term, its definition, and any corrections in the acceptance criteria, following [ubiquitous-language-update.md](ubiquitous-language-update.md). Use the same ticket headers.
 
 If the codebase survey during design surfaced code smells or findings outside the scope of this feature, collect them into a list. Then use the `Agent` tool with `subagent_type: "general-purpose"` to hand them off. The agent's self-contained prompt should be:
 

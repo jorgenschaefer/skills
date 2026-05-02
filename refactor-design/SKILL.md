@@ -78,7 +78,7 @@ Do not implement any refactoring in this skill. The output is a proposal; implem
 
 Tell the user what was found and where the proposal lives.
 
-If this proposal introduces renamed modules, renamed entities, or new canonical names, follow the instructions in [ubiquitous-language-update.md](ubiquitous-language-update.md) to update `UBIQUITOUS_LANGUAGE.md` before running the automated review.
+If this proposal introduces renamed modules, renamed entities, or new canonical names, create `docs/features/<slug>/tickets/lang-update.md` (create the directory if needed). The ticket goal is to update `UBIQUITOUS_LANGUAGE.md` with the proposed name changes; include each name change and its definition in the acceptance criteria, following [ubiquitous-language-update.md](ubiquitous-language-update.md). Use these headers: **Status:** Backlog, **Entry artifact:** this refactoring proposal, **Depends on:** none, **Estimate:** S.
 
 Then run an automated review in a clean context. Use the `Agent` tool with `subagent_type: "general-purpose"` so the review agent has no memory of this conversation — this gives the proposal fresh eyes. The agent's self-contained prompt should be:
 

@@ -73,7 +73,7 @@ Read [cross-cutting-concerns.md](cross-cutting-concerns.md) for the canonical li
 Read [architecture.md](architecture.md) for the format and threshold criteria.
 
 - **Does the design respect all constraints in `ARCHITECTURE.md`?** A design that silently contradicts an established constraint is a blocker.
-- **Does the design surface new cross-cutting constraints?** If the design introduces a constraint that is not visible at the decision point and not already in `ARCHITECTURE.md`, it should have been added during the design phase. Omitting a new constraint from `ARCHITECTURE.md` is a should-fix.
+- **Does the design surface new cross-cutting constraints?** If the design introduces a constraint that is not visible at the decision point and not already in `ARCHITECTURE.md`, a ticket to update `ARCHITECTURE.md` should have been created during the design phase. A missing update ticket for a new constraint is a should-fix.
 
 ### Existing-code awareness
 
@@ -115,7 +115,7 @@ To calibrate, here are the failure modes most often surfaced at this phase:
 - API contracts hand-waved ("we'll define the schema during implementation")
 - Alternatives section listing only weak alternatives, making the chosen option look obvious by contrast
 - Design diverges from existing codebase patterns without explanation
-- New cross-cutting constraints not added to `ARCHITECTURE.md`
+- New cross-cutting constraints with no update ticket created
 - Rollback story incomplete or unrealistic
 - Performance assumptions stated as facts without measurement
 - Auth and authorization treated as someone else's problem

@@ -141,9 +141,9 @@ Include only what you are confident about. Uncertainty belongs in the Open Quest
 
 Save the Feature Brief to `docs/features/<feature-slug>/discovery.md`. If the target directory doesn't exist, create it. If you can't write the file, tell the user the artifact path and paste the content inline so they can save it manually.
 
-If new domain terms surfaced during this session, follow the instructions in [ubiquitous-language-update.md](ubiquitous-language-update.md) to update the glossary.
+If new domain terms surfaced during this session, create `docs/features/<feature-slug>/tickets/lang-update.md` (create the directory if needed). The ticket goal is to update `UBIQUITOUS_LANGUAGE.md` with the new terms; include each term and its definition in the acceptance criteria, following [ubiquitous-language-update.md](ubiquitous-language-update.md). Use these headers: **Status:** Backlog, **Entry artifact:** this discovery doc, **Depends on:** none, **Estimate:** S.
 
-Tell the user where the brief is and what was added to the glossary.
+Tell the user where the brief is and what tickets were created.
 
 Then run an automated review in a clean context. Use the `Agent` tool with `subagent_type: "general-purpose"` so the review agent has no memory of this conversation — this gives the brief fresh eyes. The agent's self-contained prompt should be:
 
