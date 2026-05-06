@@ -43,6 +43,14 @@ For **drifted** terms: record the conflicting evidence (specific file and usage)
 
 Include drift findings alongside new term findings before writing anything.
 
+## Detect the domain language
+
+Before exploring the codebase, determine the domain language — the language domain experts and stakeholders use when talking about the business. Look for it in: test descriptions, README files, inline comments, UI strings, and any existing documentation.
+
+The domain language is often different from the code language. Most codebases use English identifiers even when the domain is in another language (e.g., a German insurance platform where `Vertrag` is the domain term but `Contract` is the class name). When this is the case, the glossary must map domain terms to code terms explicitly — this is its primary value.
+
+Record the domain language once identified. All definitions and example dialogues in `UBIQUITOUS_LANGUAGE.md` must be written in the domain language, not in the code language.
+
 ## How to explore the codebase
 
 Read the following in order, stopping when you have enough to characterize each category. Your goal is to find terms in actual use, not to read every file.
@@ -97,7 +105,35 @@ These scenarios become the "Example dialogue" section in the output — a short 
 
 ## Write UBIQUITOUS_LANGUAGE.md
 
-Use this format:
+Use this format. The table structure depends on the domain language:
+
+**When domain language ≠ English** (e.g., German, French, Dutch), use four columns. The domain term and description are in the domain language; the code term is the English identifier used in code:
+
+```markdown
+# Ubiquitous Language
+
+## <Clustername>
+
+| Domänenbegriff | Code-Begriff | Beschreibung | Zu vermeiden |
+|----------------|--------------|--------------|--------------|
+| **Domänenterm** | `CodeTerm` | Ein-Satz-Definition was es IST. | AndererBegriff, SynonymVermeiden |
+
+## Beziehungen
+
+- Ein **TermA** gehört zu genau einem **TermB**
+- Ein **TermC** erzeugt einen oder mehrere **TermDs** wenn [Bedingung]
+
+## Beispieldialog
+
+> **Entwickler:** „Wenn ein **Kunde** eine **Bestellung** aufgibt, erstellen wir sofort die **Rechnung**?"
+> **Fachexperte:** „Nein — eine **Rechnung** wird erst erstellt, wenn eine **Lieferung** bestätigt wurde."
+
+## Offene Unklarheiten
+
+- „Konto" wurde sowohl für **Kunde** als auch für **Benutzer** verwendet — kanonische Wahl: **Kunde** für bestellende Einheiten, **Benutzer** für Authentifizierungsidentitäten.
+```
+
+**When domain language = English**, the Code-Begriff column is omitted (domain term and code term are identical):
 
 ```markdown
 # Ubiquitous Language
@@ -124,6 +160,8 @@ Use this format:
 ```
 
 Rules for writing:
+- **Write in the domain language.** Definitions, descriptions, example dialogues, and section headings must be in the domain language — not in the code language.
+- **Domain term first, code term second.** The canonical domain term (in the domain language) is the primary key; the English code identifier is metadata.
 - **Be opinionated.** When multiple words exist for the same concept, pick the best one and list the others as aliases to avoid.
 - **One sentence per definition.** Define what it IS, not what it does.
 - **Only domain terms.** Skip generic programming concepts (array, endpoint, middleware) unless they carry domain-specific meaning in this codebase.
