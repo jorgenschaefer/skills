@@ -1,11 +1,37 @@
 ---
 name: implementation
-description: Use this skill when the user wants to implement a specific ticket using TDD (test-driven development). Trigger this whenever the user says things like "implement ticket #X", "let's build #123", "work on the next ticket", "TDD this feature", or hands you a ticket file and asks you to build it. The output is working code with tests, committed in small steps, satisfying every acceptance criterion in the ticket. Always use this skill for ticket-driven implementation work — it enforces the TDD red-green-refactor discipline and the boundaries of the ticket scope.
+description: Use this skill when the user wants to implement tickets using TDD (test-driven development). Trigger this whenever the user says things like "implement ticket #X", "let's build #123", "work on the next ticket", "TDD this feature", hands you a ticket file and asks you to build it, OR says "implement all tickets for <feature>", "run the full implementation loop", or invokes the skill with a feature slug but no specific ticket. The output is working code with tests, committed in small steps, satisfying every acceptance criterion in the ticket. Always use this skill for ticket-driven implementation work — it enforces the TDD red-green-refactor discipline and the boundaries of the ticket scope.
 ---
 
 # Implementation
 
 The goal of the Implementation phase is to take a single ticket and produce working, tested, reviewable code that satisfies its acceptance criteria. The output is code, tests, and a description of what was done — all within the scope the ticket defines.
+
+## Orchestrator mode
+
+If you are invoked with a feature slug but **no specific ticket**, act as an orchestrator — not an implementer. Do not write any code yourself. Instead, run this loop:
+
+1. List `docs/features/<slug>/tickets/*.md`. Filter to files whose `**Status:**` field is `Backlog`, ordered by filename.
+2. For each Backlog ticket:
+   - Read its `**Depends on:**` field. If any listed dependency ticket does not have `Status: Done`, skip this ticket and report the blockage to the user. Do not stop the loop — continue to the next ticket.
+   - **Spawn an implementer subagent** using the `Agent` tool with `subagent_type: "general-purpose"`. Use this prompt (fill in the placeholders):
+
+     > Use the Skill tool to invoke the `implementation` skill with args `<slug>`. The ticket to implement is at `<ticket-path>`. The Design Doc is at `docs/features/<slug>/design.md`. Proceed directly without asking the user which ticket to work on. When done, clearly list all commit hashes in your final summary under the heading **Commit hashes:**.
+
+   - Wait for the subagent to finish. Extract the commit hashes from its result.
+   - **Spawn a reviewer subagent** using the `Agent` tool with `subagent_type: "general-purpose"`. Use this prompt:
+
+     > Invoke the `implementation-review` skill. The ticket is at `<ticket-path>`. The Design Doc is at `docs/features/<slug>/design.md`. The implementation commits are: `<hash1>`, `<hash2>`. Use `git show <hash>` to view each.
+
+   - Wait for the reviewer subagent to finish. Read the review file it saved at `docs/features/<slug>/implementation-review-<NN>.md`. Check the verdict.
+   - If the verdict is **Block** or **Request changes**, **spawn a fix-up subagent** using the `Agent` tool with `subagent_type: "general-purpose"`. Use this prompt:
+
+     > Address all Blocker and Should-fix findings from the review at `<review-path>` for ticket `<ticket-path>`. Read the review file, then read the relevant code. Fix each finding, run tests to confirm green. Commit any changes with descriptive messages. Report all new commit hashes when done.
+
+   - Report the ticket outcome to the user: what was implemented, the review verdict, and what (if anything) was fixed.
+3. When no Backlog tickets remain (or all remaining are blocked by unmet dependencies), report the feature complete and ready for final merge, or summarize which tickets are still blocked and why.
+
+The orchestrator never touches code directly. Every implementation, review, and fix-up runs in its own isolated subagent with a clean context.
 
 ## Your role
 
@@ -163,21 +189,10 @@ When the ticket is done, write a PR description (or summary) that includes:
 
 ## After implementation
 
-Before declaring the ticket done, run an automated review in a clean context. Always do this by spawning a subagent — even if you are yourself running as a subagent. Do not do the review inline. The reviewer must not have witnessed any of the implementation choices made in this session; that is the point of the isolation, not merely that the reviewer lacks memory of a prior conversation. Use the `Agent` tool with `subagent_type: "general-purpose"`. The agent's self-contained prompt should be:
+When the TDD loop is complete and all items on the "Things to verify" checklist are done, your job is finished. Do **not** spawn a review subagent — the orchestrator handles review and continuation. Do **not** scan for the next ticket.
 
-> Invoke the `implementation-review` skill. The ticket is at `<ticket-path>`. The Design Doc is at `docs/features/<slug>/design.md`. The implementation commits are: `<hash1>`, `<hash2>`. Use `git show <hash>` to view each.
+End your response with a summary that includes, as the final item, a clearly labeled list of every commit hash from this ticket's implementation:
 
-After the review agent finishes, read the review file it saved at `docs/features/<slug>/implementation-review-<NN>.md`. Address every finding before declaring done:
-- **Blocker**: must be fixed before merging — go back to the TDD loop
-- **Should-fix**: address these — they represent real quality gaps
-- **Nit**: use judgment
+**Commit hashes:** `<hash1>`, `<hash2>`, ...
 
-Tell the user the ticket is done, summarize what was implemented, and report what the review found and what was addressed. The ticket is ready to proceed only after all blockers and should-fixes are resolved.
-
-Then continue automatically: scan `docs/features/<slug>/tickets/` for the next ticket whose **Status** is `Backlog`, ordered by filename.
-
-If one exists, do **not** implement it in the current context. Tell the user which ticket is next, then spawn a fresh subagent for it — use the `Agent` tool with `subagent_type: "general-purpose"` and a self-contained prompt that includes the feature slug, the specific ticket path, and the design doc path. Example:
-
-> Use the Skill tool to invoke the `implementation` skill with args `<slug>`. The ticket to implement is at `<ticket-path>`. The Design Doc is at `docs/features/<slug>/design.md`. This is an automated continuation — proceed directly to implementing this ticket without asking the user which ticket to work on.
-
-Spawning a fresh subagent per ticket keeps each implementation in its own context window, preventing context exhaustion across long ticket sequences. Each subagent follows the same skill and chains to the next ticket the same way. When no Backlog tickets remain, the final subagent tells the user the feature is complete and ready for final merge.
+The orchestrator reads this summary to pass the hashes to the reviewer. Format matters — use the exact heading above.
