@@ -24,9 +24,9 @@ If you are invoked with a feature slug but **no specific ticket**, act as an orc
      > Invoke the `implementation-review` skill. The ticket is at `<ticket-path>`. The Design Doc is at `docs/features/<slug>/design.md`. The implementation commits are: `<hash1>`, `<hash2>`. Use `git show <hash>` to view each.
 
    - Wait for the reviewer subagent to finish. Read the review file it saved at `docs/features/<slug>/implementation-review-<NN>.md`. Check the verdict.
-   - If the verdict is **Block** or **Request changes**, **spawn a fix-up subagent** using the `Agent` tool with `subagent_type: "general-purpose"`. Use this prompt:
+   - If the verdict is anything but **Approve**, **spawn a fix-up subagent** using the `Agent` tool with `subagent_type: "general-purpose"`. Use this prompt:
 
-     > Address all Blocker and Should-fix findings from the review at `<review-path>` for ticket `<ticket-path>`. Read the review file, then read the relevant code. Fix each finding, run tests to confirm green. Commit any changes with descriptive messages. Report all new commit hashes when done.
+     > Address all findings from the review at `<review-path>` for ticket `<ticket-path>`. Read the review file, then read the relevant code. Fix each finding, run tests to confirm green. Commit any changes with descriptive messages. Report all new commit hashes when done.
 
    - Report the ticket outcome to the user: what was implemented, the review verdict, and what (if anything) was fixed.
 3. When no Backlog tickets remain (or all remaining are blocked by unmet dependencies), report the feature complete and ready for final merge, or summarize which tickets are still blocked and why.
@@ -109,8 +109,8 @@ Stop and ask before proceeding when:
 
 When pausing, structure your message:
 
-**Paused on:** [task or acceptance criterion]  
-**Issue:** [one sentence]  
+**Paused on:** [task or acceptance criterion]
+**Issue:** [one sentence]
 **Options:**
 1. [option A]
 2. [option B]
