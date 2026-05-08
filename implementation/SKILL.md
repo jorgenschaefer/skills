@@ -174,4 +174,10 @@ After the review agent finishes, read the review file it saved at `docs/features
 
 Tell the user the ticket is done, summarize what was implemented, and report what the review found and what was addressed. The ticket is ready to proceed only after all blockers and should-fixes are resolved.
 
-Then continue automatically: scan `docs/features/<slug>/tickets/` for the next ticket whose **Status** is `Backlog`, ordered by filename. If one exists, begin implementing it immediately following the same process from the top (starting with setting its status to `In Progress`). Repeat until all tickets are Done, then tell the user the feature is complete and ready for final merge.
+Then continue automatically: scan `docs/features/<slug>/tickets/` for the next ticket whose **Status** is `Backlog`, ordered by filename.
+
+If one exists, do **not** implement it in the current context. Tell the user which ticket is next, then spawn a fresh subagent for it — use the `Agent` tool with `subagent_type: "general-purpose"` and a self-contained prompt that includes the feature slug, the specific ticket path, and the design doc path. Example:
+
+> Use the Skill tool to invoke the `implementation` skill with args `<slug>`. The ticket to implement is at `<ticket-path>`. The Design Doc is at `docs/features/<slug>/design.md`. This is an automated continuation — proceed directly to implementing this ticket without asking the user which ticket to work on.
+
+Spawning a fresh subagent per ticket keeps each implementation in its own context window, preventing context exhaustion across long ticket sequences. Each subagent follows the same skill and chains to the next ticket the same way. When no Backlog tickets remain, the final subagent tells the user the feature is complete and ready for final merge.
