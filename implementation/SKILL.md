@@ -163,7 +163,7 @@ When the ticket is done, write a PR description (or summary) that includes:
 
 ## After implementation
 
-Before declaring the ticket done, run an automated review in a clean context. Use the `Agent` tool with `subagent_type: "general-purpose"` so the review agent has no memory of this conversation — this gives the code fresh eyes. The agent's self-contained prompt should be:
+Before declaring the ticket done, run an automated review in a clean context. Always do this by spawning a subagent — even if you are yourself running as a subagent. Do not do the review inline. The reviewer must not have witnessed any of the implementation choices made in this session; that is the point of the isolation, not merely that the reviewer lacks memory of a prior conversation. Use the `Agent` tool with `subagent_type: "general-purpose"`. The agent's self-contained prompt should be:
 
 > Invoke the `implementation-review` skill. The ticket is at `<ticket-path>`. The Design Doc is at `docs/features/<slug>/design.md`. The implementation commits are: `<hash1>`, `<hash2>`. Use `git show <hash>` to view each.
 
