@@ -33,6 +33,24 @@ Walk through these questions. Each corresponds to a common failure mode of desig
 - **Are the brief's constraints honored?** Each constraint should either be visibly addressed in the design or explicitly noted as non-applicable.
 - **Are the brief's open questions resolved?** Read the brief's open questions section. For each question, verify the design either answers it or explicitly defers it with a reason. An open question that could change the design approach and is not addressed is a should-fix.
 
+### Domain model
+
+- **Is there a domain model section?** If missing entirely, that is a blocker — the domain model is foundational to the rest of the design.
+- **Are all objects labeled new or existing (extended)?** Each domain object should explicitly state whether it is introduced by this feature or already exists and is being modified. Ambiguity here misleads implementers.
+- **Are attributes named?** "The Order has some fields" is not enough. Each attribute should be named and typed.
+- **Are invariants stated?** Both per-object rules ("an Order must have at least one line item") and cross-object rules ("an Order cannot be cancelled after it has shipped") should be listed. A domain model with no invariants has not been thought through.
+- **Are objects with state described as state machines?** If an object can be in different states (pending, confirmed, shipped), the states and their transitions should be named. An object described as having a "status" field but no state machine description is incomplete.
+- **Is each object's code location named?** Which module implements it? New objects should say where they will live; existing objects should say which file they currently live in.
+- **Is each object's persistence named?** Which table or collection? New tables should be named; existing tables should be named and the new columns or changes stated.
+- **Are all domain objects in the workflows present in the domain model?** Objects that appear in workflows but not in the domain model section are a should-fix — they were forgotten.
+
+### Workflows
+
+- **Is there a workflow for every user story?** Every story in the Feature Brief should have a corresponding workflow narration. Missing workflows are a should-fix.
+- **Is the narration at the domain level?** A workflow that says "OrderService calls PaymentAdapter" is a module trace, not a domain narration. A domain narration says "the Order transitions to confirmed and a Payment is created in authorized state." Flag module-level narration as a should-fix.
+- **Are the rules checked at each step made explicit?** The workflow should name which invariants are verified and what happens when they fail.
+- **Is the observable outcome stated?** Each workflow should end with what the user can observe as a result.
+
 ### The proposed design itself
 
 Read [architecture-principles.md](architecture-principles.md) for the canonical definitions of screaming architecture, deep modules, and adapter boundaries. The review-specific criteria below (what to flag and at what severity) apply those principles to design documents.
@@ -99,6 +117,12 @@ Read [ubiquitous-language-update.md](ubiquitous-language-update.md) for the glos
 
 To calibrate, here are the failure modes most often surfaced at this phase:
 
+- Domain model section missing entirely
+- Objects not labeled new vs. existing — implementers can't tell what already exists
+- Invariants absent — the domain model lists attributes but no rules
+- State machine missing for an object that clearly has lifecycle states
+- A domain object appears in a workflow but not in the domain model
+- Workflows written as module call graphs rather than domain narrations
 - No diagram — the architecture hasn't been externalized
 - Module names but no interfaces — what callers see is unspecified
 - External systems mentioned but not owned by any module — the adapter boundary is missing
@@ -118,7 +142,7 @@ Implementation-level items (observability config, test strategy, rollout plan, r
 
 ## Verdict guidance for this phase
 
-- **Block** if: module boundaries are undefined, external systems are unnamed, the design doesn't trace to the Feature Brief's user stories, or the design contradicts an established constraint in `ARCHITECTURE.md`.
+- **Block** if: the domain model section is missing, module boundaries are undefined, external systems are unnamed, the design doesn't trace to the Feature Brief's user stories, or the design contradicts an established constraint in `ARCHITECTURE.md`.
 - **Request changes** if: interfaces are underspecified, communication patterns are ambiguous, data model is missing, no end-to-end scenario is traced, or alternatives are absent for significant decisions.
 - **Approve with comments** if: the architecture is sound, with only nit-level issues.
 - **Approve** if: rare; the bar is high here.

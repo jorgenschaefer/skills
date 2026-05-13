@@ -37,6 +37,8 @@ If any of these are missing, get them before producing a design. A design writte
 
 **Survey the existing code.** Find the modules likely affected. Read their interfaces. Look at how similar features were built before — there's usually a pattern to follow or deliberately deviate from. Note any code smells you'll need to work around or address.
 
+**Model the domain before designing the architecture.** Before drawing module boxes, identify the domain objects this feature operates on and how the user stories play out in domain terms. The module structure should emerge from the domain model, not the other way around. A module boundary drawn before the domain is understood often ends up in the wrong place. Specifically: (1) identify the key domain objects — what they know, what they do, what rules constrain them; (2) trace each user story as a domain-level narration — which objects are created or modified, which rules are checked, what state transitions occur. Only then decide how to structure the modules.
+
 **Before designing: clarification round.** Run a clarification round whenever either of the following is true:
 
 1. **Product-technical boundary decisions exist** — specific values, defaults, thresholds, or behavioral preferences the user has in mind but that the Feature Brief doesn't specify (discovery reviewers deliberately strip these as out of scope for the Feature Brief). Common examples: a list truncates at N items, a timeout is X seconds, a feature defaults to on or off. Default toward asking rather than assuming: if you are about to write a specific value or default behavior into the design without a source for it, that is a signal to ask.
@@ -92,6 +94,31 @@ Restated from the brief, possibly refined. If you've changed scope, say so expli
 ## Background
 Write only what a reader needs to follow the design decisions. Assume familiarity with the codebase's main purpose; don't assume familiarity with its internals. One paragraph usually suffices; link to existing docs rather than reproducing them.
 
+## Domain model
+The business concepts this feature operates on. For each domain object — whether introduced by this feature or an existing object being extended — state explicitly which it is.
+
+Each entry should cover:
+
+- **New / Existing (extended)**: Is this object introduced by this feature, or does it already exist and is being modified?
+- **Identity**: Is it an entity (has a unique identifier that persists over time) or a value object (defined entirely by its attributes, no independent identity)?
+- **Attributes**: What does it know? Name and type each attribute.
+- **Relationships**: How does it relate to other domain objects?
+- **Lifecycle / state**: If it goes through distinct states, describe the state machine — states and the transitions between them.
+- **Behaviors**: What can happen to it or be done with it?
+- **Invariants**: What rules must always hold? List both per-object rules ("an Order must have at least one line item") and cross-object rules relevant to this object ("an Order cannot be cancelled after it has shipped").
+- **Code location**: Which module in the codebase implements this object (new or existing)?
+- **Persistence**: Which table or collection persists this object (new or existing)?
+
+## Workflows
+For each user story from the Feature Brief, or for a group of closely related stories, narrate what happens in the business domain when a user executes that story. This is a domain-level narration, not a module call graph — describe what happens to domain objects, not which code files are invoked. The module-level trace belongs in Proposed design.
+
+Each workflow entry should cover:
+- Which user story or stories it implements (by reference)
+- Which domain objects are created, modified, or read
+- Which invariants or rules are checked, and what happens on success or failure
+- Which state transitions occur, and what the final state is
+- The observable outcome from the user's perspective
+
 ## Proposed design
 The heart of the doc. A diagram is the ideal output — an ASCII or structured diagram showing the components, their boundaries, and the connections between them. Prose supplements the diagram; it does not replace it.
 
@@ -142,10 +169,11 @@ A good Design Doc is:
 
 Proceed to writing the Design Doc when all of the following are true:
 
-- Every user story in the Feature Brief has a corresponding path through the proposed architecture
+- Every domain object the feature operates on is named in the Domain model section, with new vs. existing stated explicitly
+- Every user story has a corresponding workflow narration in the Workflows section
 - Every open question from the brief is either resolved in the design or explicitly deferred with a reason
-- At least one user story has been traced end-to-end through the proposed architecture
 - All modules, their interfaces, and their connections to external systems are named
+- The domain model's code location and persistence entries are consistent with the module architecture
 - Any new architectural constraints have been confirmed with the user
 
 If you find yourself writing "TBD" or "to be determined in implementation" for module boundaries or interfaces, that's a signal the design isn't done yet. "TBD in implementation" for implementation details inside a module is fine.
