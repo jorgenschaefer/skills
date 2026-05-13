@@ -1,6 +1,6 @@
 ---
 name: planning
-description: Use this skill when the user has a Design Doc or Refactoring Proposal and wants to break it into independently-deployable tickets ready for implementation. Trigger this whenever the user says things like "break this into tickets", "create the backlog for X", "what's the implementation plan for Y", "split this design into tasks", or hands you a Design Doc or Refactoring Proposal and asks what's next. The output is a Ticket Backlog where each ticket is independently testable and deployable, ideally a tracer bullet that delivers value on its own. Always use this skill before implementation starts — implementing directly from the entry artifact skips the discipline of making work shippable in small increments.
+description: Use this skill when the user has a Design Doc, Refactoring Proposal, or a small feature that doesn't need a full design, and wants to break it into independently-deployable tickets ready for implementation. Trigger this whenever the user says things like "break this into tickets", "create the backlog for X", "what's the implementation plan for Y", "split this design into tasks", or hands you a Design Doc or Refactoring Proposal and asks what's next. The output is a Ticket Backlog where every ticket is independently testable and deployable — each one a tracer bullet that delivers value on its own. Always use this skill before implementation starts — implementing directly from the entry artifact skips the discipline of making work shippable in small increments.
 ---
 
 # Planning
@@ -19,9 +19,15 @@ You are the Planner. You take the entry artifact (a Design Doc or Refactoring Pr
 
 You do not write code. You do not change the design — though you may flag back to the architect "this design implies a ticket I can't make independent; should we revisit?"
 
-## The principle: tracer bullets
+## The principle: every ticket is a tracer bullet
 
-Read [tracer-bullets.md](tracer-bullets.md) for the full explanation and examples. Watch for "set up the project" tickets that do nothing but scaffolding — fold the scaffolding into the first feature ticket as a tracer bullet instead.
+Read [tracer-bullets.md](tracer-bullets.md) for the full explanation and examples.
+
+The tracer-bullet principle applies to **every** ticket, not just the first one. Each ticket must be independently shippable and deliver observable value on its own — not just "this is useful once ticket 5 also ships." If a ticket only becomes useful when combined with another ticket it doesn't depend on, the slice is wrong.
+
+**Anti-pattern to avoid:** "the first tracer bullet is ticket 4 + 5." That is not a tracer bullet — it is two tasks that were miscounted as tickets. Either ticket 4 delivers something on its own, or ticket 4 is a task inside ticket 5, not a separate ticket.
+
+Watch for "set up the project" tickets that do nothing but scaffolding — fold the scaffolding into the first feature ticket as a tracer bullet instead.
 
 ## Properties of a good ticket
 
@@ -49,11 +55,11 @@ In practice, some dependencies are unavoidable. A ticket that displays data need
 
 **Check that suggested file paths respect [architecture-principles.md](architecture-principles.md).** When writing "Implementation notes," avoid top-level `services/`, `controllers/`, or `models/` directories. Prefer domain-first paths (`orders/OrderService.ts` over `services/OrderService.ts`). If tickets are being written for an already-layered codebase, flag the structural tension in a ticket note rather than silently perpetuating a structure the design may intend to move away from.
 
-**Read the entry artifact.** Try `docs/features/<slug>/design.md` first; if not found, try `docs/features/<slug>/refactoring.md`; if neither exists, tell the user and stop. Note the major components, the proposed changes, the API surface, the cross-cutting concerns. Anything explicitly out-of-scope in the entry artifact is also out-of-scope here.
+**Read the entry artifact.** Try `docs/features/<slug>/design.md` first; if not found, try `docs/features/<slug>/refactoring.md`; if not found, try `docs/features/<slug>/discovery.md`. If none of these exist, the user may be starting planning directly for a small feature — ask for a brief problem statement and the list of user stories or interactions to cover, and proceed from that. Note the major components, the proposed changes, the module interactions, the cross-cutting concerns. Anything explicitly out-of-scope in the entry artifact is also out-of-scope here.
 
-**Identify the thinnest end-to-end path.** What's the minimum viable version of the feature that touches every layer the full feature will touch? That's your first ticket — or first few tickets if even the minimum needs splitting.
+**Slice by user story, not by layer.** For each user story or meaningful user interaction in the entry artifact, ask: what is the thinnest end-to-end implementation that makes this story demonstrably work? That's a ticket. It must touch every architectural layer it needs — it is not a database-layer ticket or a UI-layer ticket; it is a story-complete ticket that happens to need both.
 
-**Layer thickness onto the thin path.** Each subsequent ticket adds a feature, hardens an edge case, improves a UX detail, or extends a capability. Order by value and risk — high-risk pieces early so problems surface early; high-value pieces early so even partial completion ships something useful.
+Order tickets by value and risk — high-risk pieces early so problems surface early; high-value pieces early so even partial completion ships something useful. Tickets that depend on others come after their dependencies; everything else can parallelize.
 
 **Pull cross-cutting concerns into their own tickets when they don't fit cleanly into a feature slice.** Observability, security hardening, performance work, migration tooling — sometimes these are best as standalone tickets, sometimes they're best as part of a feature ticket. Use judgment. A rule of thumb: if a cross-cutting concern is a feature requirement, bake it into the relevant ticket; if it's general infrastructure, give it its own ticket.
 
@@ -152,7 +158,7 @@ Anything from the entry artifact not covered by these tickets, with reasoning.
 
 ## After writing
 
-Before finalizing, confirm: (1) the first ticket — or the first few — constitutes a tracer bullet: a working, user-visible slice through all layers; (2) the backlog README contains a completed coverage table; (3) feature flag setup and removal are both ticketed if flags are used.
+Before finalizing, apply the tracer-bullet test to every ticket: "if we shipped only this ticket and stopped, would a user have something observable and useful?" If the answer is no and the ticket has no depends-on relationship explaining why, the slice is wrong — either merge it into its dependent ticket or reslice. Also confirm: (2) the backlog README contains a completed coverage table; (3) feature flag setup and removal are both ticketed if flags are used.
 
 Save tickets to `docs/features/<feature-slug>/tickets/` and the README. If the target directory doesn't exist, create it. If you can't write the files, tell the user the artifact paths and paste the content inline so they can save it manually. Tell the user how many tickets you produced, the suggested order, and what the tracer bullet is.
 

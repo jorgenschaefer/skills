@@ -9,29 +9,22 @@ The goal of the Implementation phase is to take a single ticket and produce work
 
 ## Orchestrator mode
 
-If you are invoked with a feature slug but **no specific ticket**, act as an orchestrator — not an implementer. Do not write any code yourself. Instead, run this loop:
+If you are invoked with a feature slug but **no specific ticket**, act as an orchestrator. Run this loop directly — do not spawn a subagent to implement:
 
 1. List `docs/features/<slug>/tickets/*.md`. Filter to files whose `**Status:**` field is `Backlog`, ordered by filename.
 2. For each Backlog ticket:
    - Read its `**Depends on:**` field. If any listed dependency ticket does not have `Status: Done`, skip this ticket and report the blockage to the user. Do not stop the loop — continue to the next ticket.
-   - **Spawn an implementer subagent** using the `Agent` tool with `subagent_type: "general-purpose"`. Use this prompt (fill in the placeholders):
-
-     > Use the Skill tool to invoke the `implementation` skill with args `<slug>`. The ticket to implement is at `<ticket-path>`. The Design Doc is at `docs/features/<slug>/design.md`. Proceed directly without asking the user which ticket to work on. When done, clearly list all commit hashes in your final summary under the heading **Commit hashes:**.
-
-   - Wait for the subagent to finish. Extract the commit hashes from its result.
-   - **Spawn a reviewer subagent** using the `Agent` tool with `subagent_type: "general-purpose"`. Use this prompt:
+   - **Implement the ticket yourself** using the TDD loop described below. You are the implementer. Follow the full implementation process: set the ticket status to `In Progress`, write tests, write code, commit in small steps.
+   - After implementing, collect the commit hashes from `git log`.
+   - **Spawn a reviewer subagent** (fresh eyes) using the `Agent` tool with `subagent_type: "general-purpose"`. Use this prompt:
 
      > Invoke the `implementation-review` skill. The ticket is at `<ticket-path>`. The Design Doc is at `docs/features/<slug>/design.md`. The implementation commits are: `<hash1>`, `<hash2>`. Use `git show <hash>` to view each.
 
    - Wait for the reviewer subagent to finish. Read the review file it saved at `docs/features/<slug>/implementation-review-<NN>.md`. Check the verdict.
-   - If the verdict is anything but **Approve**, **spawn a fix-up subagent** using the `Agent` tool with `subagent_type: "general-purpose"`. Use this prompt:
-
-     > Address all findings from the review at `<review-path>` for ticket `<ticket-path>`. Read the review file, then read the relevant code. Fix each finding, run tests to confirm green. Commit any changes with descriptive messages. Report all new commit hashes when done.
-
+   - If the verdict is anything but **Approve**, address all findings yourself: read each finding, fix it, run tests, commit.
    - Report the ticket outcome to the user: what was implemented, the review verdict, and what (if anything) was fixed.
+   - **Compact context** before moving to the next ticket. Use the `/compact` command or equivalent to clear the accumulated context from this ticket's implementation, keeping only: the list of remaining tickets, the feature slug, and the current ticket's outcome summary.
 3. When no Backlog tickets remain (or all remaining are blocked by unmet dependencies), report the feature complete and ready for final merge, or summarize which tickets are still blocked and why.
-
-The orchestrator never touches code directly. Every implementation, review, and fix-up runs in its own isolated subagent with a clean context.
 
 ## Your role
 
@@ -189,10 +182,10 @@ When the ticket is done, write a PR description (or summary) that includes:
 
 ## After implementation
 
-When the TDD loop is complete and all items on the "Things to verify" checklist are done, your job is finished. Do **not** spawn a review subagent — the orchestrator handles review and continuation. Do **not** scan for the next ticket.
+When the TDD loop is complete and all items on the "Things to verify" checklist are done:
 
-End your response with a summary that includes, as the final item, a clearly labeled list of every commit hash from this ticket's implementation:
+- If you were invoked for a **single specific ticket** (not as orchestrator): your job is finished. End your response with a summary that includes, as the final item, a clearly labeled list of every commit hash from this ticket:
 
-**Commit hashes:** `<hash1>`, `<hash2>`, ...
+  **Commit hashes:** `<hash1>`, `<hash2>`, ...
 
-The orchestrator reads this summary to pass the hashes to the reviewer. Format matters — use the exact heading above.
+- If you are running as **orchestrator**: do not end — continue with the review step and then the next ticket as described in Orchestrator mode above.

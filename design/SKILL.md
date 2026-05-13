@@ -5,13 +5,13 @@ description: Use this skill when the user has a Feature Brief (or equivalent pro
 
 # Design
 
-The goal of the Design phase is to translate a Feature Brief into a concrete technical plan that the planning phase can break into tickets. The output is a **Design Doc**.
+The goal of the Design phase is to describe the software architecture of the solution. The output is a **Design Doc** that specifies which modules are created, modified, or removed; what their interfaces are; which external systems are involved; how components communicate; and what the data model looks like. It does not describe how to implement anything — that is the planning and implementation phases' job.
 
 The Design Doc is not a final, immutable spec. It's a proposal. It says: here's how I think we should build this; here are the alternatives I considered; here's why I'm recommending this one; here's what I'm uncertain about. It exists to be reviewed and challenged before code is written, when changes are still cheap.
 
 ## Your role
 
-You are the Architect. You read the Feature Brief carefully, you investigate the existing codebase to understand what's already there, and you produce a Design Doc that explains *how* to satisfy the brief.
+You are the Architect. You read the Feature Brief carefully, you investigate the existing codebase to understand what's already there, and you produce a Design Doc that describes *the architecture* needed to satisfy the brief — not how to implement it.
 
 You do not produce tickets — that's the next phase. You do not write production code, though you may write small spike snippets if you genuinely need to verify something works before recommending it.
 
@@ -91,33 +91,31 @@ Restated from the brief, possibly refined. If you've changed scope, say so expli
 Write only what a reader needs to follow the design decisions. Assume familiarity with the codebase's main purpose; don't assume familiarity with its internals. One paragraph usually suffices; link to existing docs rather than reproducing them.
 
 ## Proposed design
-The heart of the doc. Describe the design in enough detail that the planning phase can break it into tickets and the implementer can build it. This will usually include:
+The heart of the doc. A diagram is the ideal output — an ASCII or structured diagram showing the components, their boundaries, and the connections between them. Prose supplements the diagram; it does not replace it.
 
-- A high-level diagram or description of the components involved
-- Module boundaries: what's new, what changes, what's untouched — organized by domain, not by technical layer (screaming architecture)
-- Data model changes: new tables, new fields, migrations
-- API contracts: new endpoints, changed endpoints, internal service contracts
-- The flow of a representative user request or operation, end to end
-- Error handling, retry behavior, idempotency where relevant
-- Authentication, authorization, and security considerations
-- Observability: what gets logged, what metrics are emitted, what alerts might be needed
-- Performance considerations: expected load, latency targets, caching strategy
-- Backwards compatibility and migration strategy
-- Feature flags or rollout plan if applicable
+The design must address these architectural concerns:
 
-Consider each item on this list. If it's relevant, give it a heading and address it. If it's genuinely not applicable, omit it silently — but think about it first.
+- **Modules**: which modules (files, packages, services) are created, modified, or removed. Name them. State what each one is responsible for.
+- **Module interfaces**: what are the public interfaces of new or changed modules? What do callers see? What does the module hide?
+- **External systems**: which databases, queues, email services, caches, third-party APIs, or other external systems are involved? Which module owns the boundary to each one?
+- **Communication patterns**: how do components talk to each other? Direct calls? Async events? Message bus? Queue? Be explicit about which interactions are synchronous and which are asynchronous.
+- **Data model**: what tables, collections, or schemas are created, modified, or removed? What are the fields and their types? What relations exist?
+- **A representative scenario**: trace one user story from the brief end-to-end through the proposed architecture. Where does the request enter? Which modules handle it? What external systems are touched? What does the response look like?
+
+What does NOT belong in the design:
+- Rollout plans and feature flags — those belong in tickets
+- Test strategy — that belongs in tickets
+- Observability configuration (which metrics, which logs) — that belongs in tickets
+- Runbook entries — that belong in tickets
+- Backwards-compatibility migration scripts — that belongs in tickets
+
+Security and authentication: these are architectural concerns when they affect module boundaries or the choice of external systems. Note them here at the architecture level ("the inbound adapter validates the JWT; the domain layer receives only the authenticated user identity"). Implementation details go in tickets.
 
 ## Alternatives considered
-Brief summary of options you rejected, with reasoning. This is where you defend the design against the obvious "why didn't you just..." questions.
+Brief summary of architectural options you rejected, with reasoning. This is where you defend the design against the obvious "why didn't you just..." questions. Focus on structural choices (different module boundaries, different communication patterns, different external systems), not on implementation alternatives.
 
 ## Risks and open questions
-What could go wrong. What you're uncertain about. What needs human judgment or stakeholder input. It's better to flag a risk than to hide it.
-
-## Rollout plan
-How this gets deployed. Is it dark-launched behind a flag? Migrated gradually? Cut over all at once? What's the rollback story?
-
-## Testing strategy
-How will we know it works. What kinds of tests are needed (unit, integration, end-to-end, load). Are there test environments or fixtures that need to be set up?
+What could go wrong at the architectural level. What you're uncertain about. What needs human judgment or stakeholder input before the planning phase can begin. It's better to flag a risk than to hide it.
 
 ## Out of scope
 Things explicitly deferred. This protects the planning phase from scope creep.
@@ -127,28 +125,31 @@ Things explicitly deferred. This protects the planning phase from scope creep.
 
 A good Design Doc is:
 
-- **Specific.** "Add a queue" is bad. "Add a Postgres-backed job queue using `pg-boss`, processing jobs from a new `email_outbox` table, with retry-on-failure up to 5 times with exponential backoff" is good.
+- **Architectural, not implementational.** It says which modules exist and what their interfaces are — not how those modules are coded internally. The planning phase fills in the implementation details.
+- **Diagrammed.** A diagram showing components and connections is worth more than paragraphs of prose. Produce one.
+- **Specific at the boundary level.** Module interfaces, external system connections, communication patterns — these should be named precisely. "Add a queue" is bad. "Add an async task queue between the `OrderService` and the `NotificationAdapter`; the `OrderService` enqueues a `OrderConfirmed` event; the `NotificationAdapter` dequeues it and calls the email service" is good.
 - **Honest about uncertainty.** A design that pretends everything is known is fragile. Naming what you don't know lets reviewers help.
 - **Aware of the existing code.** Designs that ignore existing patterns produce inconsistent codebases. Either follow the pattern or explicitly say "we're deviating because X."
-- **Skimmable.** Use headings, lists, and short paragraphs. A reviewer should be able to skim in 10 minutes and read in detail in 30.
+- **Skimmable.** A reviewer should be able to understand the architecture from the diagram plus headings in under 10 minutes.
 
 ## When the design is complete
 
 Proceed to writing the Design Doc when all of the following are true:
 
-- Every goal in the Feature Brief has a corresponding section in the proposed design
+- Every user story in the Feature Brief has a corresponding path through the proposed architecture
 - Every open question from the brief is either resolved in the design or explicitly deferred with a reason
-- At least one user scenario has been traced end-to-end through the proposed design
-- All cross-cutting concerns from the list in [cross-cutting-concerns.md](cross-cutting-concerns.md) are either addressed or explicitly out-of-scoped
+- At least one user story has been traced end-to-end through the proposed architecture
+- All modules, their interfaces, and their connections to external systems are named
 - Any new architectural constraints have been confirmed with the user
 
-If you find yourself writing "TBD" or "to be determined in implementation" repeatedly, that's a signal the design isn't done yet.
+If you find yourself writing "TBD" or "to be determined in implementation" for module boundaries or interfaces, that's a signal the design isn't done yet. "TBD in implementation" for implementation details inside a module is fine.
 
 ## What you do not produce
 
 - Tickets or sprint plans (Planning phase)
 - Production code (Implementation phase)
-- Detailed UI mockups beyond what's needed to communicate the design
+- Rollout plans, test strategies, observability configuration, runbook entries (Planning phase — these belong in tickets)
+- Detailed UI mockups beyond what's needed to communicate module responsibilities
 
 ## After writing
 

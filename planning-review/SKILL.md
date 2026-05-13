@@ -41,7 +41,8 @@ For each ticket, verify:
 
 ### Backlog-level checks
 
-- **Is there a tracer bullet?** Look for the first ticket that delivers user-visible behavior (spike tickets don't count). Is it a thin end-to-end slice that touches every layer the full feature will touch? If the first several tickets are all "set up infrastructure" or "build the database schema" with no user-visible output, the slicing is layer-by-layer rather than tracer-bullet.
+- **Is every ticket a tracer bullet?** Apply the following test to each ticket: "if we shipped only this ticket and stopped, would a user have something observable and useful?" If the answer is no for a ticket that has no `Depends on` relationship explaining why, the slice is wrong. A ticket that is only useful once another specific ticket also ships (without that dependency being declared) is not a tracer bullet — it is a task miscounted as a ticket.
+- **Is there a tracer bullet in the first position?** Look for the first ticket that delivers user-visible behavior (spike tickets don't count). Is it a thin end-to-end slice that touches every layer the full feature will touch? If the first several tickets are all "set up infrastructure" or "build the database schema" with no user-visible output, the slicing is layer-by-layer rather than tracer-bullet.
 - **Does the design get fully covered?** Walk through the Design Doc. For every major component, contract, behavior, and cross-cutting concern, find the ticket that implements it. Anything in the design without a ticket is a coverage gap. Things the design explicitly puts out-of-scope are fine. As you do this check, build a coverage table — a list mapping each Design Doc section to the ticket(s) that implement it. You'll include this in the output.
 - **Anything in the tickets that's NOT in the design?** Tickets that introduce work not described in the design are scope creep — either the design needs updating, or the ticket is unjustified.
 - **Is the order sensible?** Dependencies should come before dependents. High-risk pieces should come early. Tickets that block many others should come early. Tracer bullets should come first.
@@ -59,7 +60,8 @@ For each ticket, verify:
 
 ### Smell tests
 
-- **The layer-by-layer test.** Are the first 2-3 tickets all infrastructure (DB schema, plumbing, scaffolding) before any user-visible behavior? That's the layer-by-layer antipattern. Tracer bullets thread through all layers in the first ticket. Run this test first — it's the most common failure mode.
+- **The layer-by-layer test.** Are the first 2-3 tickets all infrastructure (DB schema, plumbing, scaffolding) before any user-visible behavior? That's the layer-by-layer antipattern. Tracer bullets thread through all layers in every ticket. Run this test first — it's the most common failure mode.
+- **The "only ticket" test.** Pick any ticket at random. Ask: "if this were the only ticket that shipped, would a user notice something useful?" If the answer is no, and that ticket is not explicitly dependent on another ticket that supplies the missing piece, it's a finding.
 - **The "ship after ticket N" test.** For each ticket, ask: "if we shipped after this ticket and stopped, would users have something useful?" The answer should usually be yes, especially for the early tickets.
 - **The "two implementers" test.** If two implementers picked up adjacent tickets in parallel, would they collide? If yes, the dependency graph is wrong, or the slicing is wrong.
 - **The "rename test."** Read each ticket title in isolation. Does the title accurately describe the work? Generic titles like "Backend changes" or "Update API" are findings.
@@ -82,7 +84,7 @@ For each ticket, verify:
 
 ## Verdict guidance for this phase
 
-- **Block** if: tickets are not independently deployable, there's a coverage gap on a critical part of the design, or the slicing is fundamentally layer-by-layer rather than tracer-bullet.
+- **Block** if: any ticket is not independently deployable (and not explained by an explicit dependency), there's a coverage gap on a critical part of the design, or the slicing is fundamentally layer-by-layer rather than tracer-bullet throughout.
 - **Request changes** if: several should-fix items (vague acceptance criteria, hidden dependencies, missing cross-cutting tickets, ordering problems).
 - **Approve with comments** if: the backlog is solid with only nit-level issues.
 - **Approve** if: rare. The bar is high here too.

@@ -23,10 +23,10 @@ npx skills add jorgenschaefer/skills@<skill-name>
 
 ### Workflow phases
 
-- **discovery** — explore a feature or problem and produce a Feature Brief before any design or code
-- **design** — translate a Feature Brief into a Design Doc; updates ARCHITECTURE.md with any new cross-cutting constraints confirmed during design
-- **planning** — break a Design Doc into independently-deployable tickets using the tracer-bullet approach
-- **implementation** — implement one ticket at a time using TDD (red-green-refactor)
+- **discovery** — explore a feature or problem; produces a Feature Brief with a problem description and user stories
+- **design** — translate a Feature Brief into a Design Doc describing the software architecture (modules, interfaces, external systems, communication patterns, data model)
+- **planning** — break a Design Doc (or Feature Brief, or problem statement) into independently-deployable tickets; every ticket is a tracer bullet
+- **implementation** — implement tickets one at a time using TDD (red-green-refactor); orchestrator mode runs the full loop with review and context compaction between tickets
 
 ### Reviews
 
