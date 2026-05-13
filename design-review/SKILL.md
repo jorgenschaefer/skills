@@ -45,6 +45,9 @@ Read [architecture-principles.md](architecture-principles.md) for the canonical 
 - **Is the data model specified?** New tables, collections, or schemas — are they named, with fields and types? Existing entities needing new columns or relations — are they identified?
 - **Does the design trace through a real user story?** If the doc doesn't trace a scenario end-to-end through the architecture, flag that as a should-fix — a design that can't be walked hasn't been fully thought through. Do not supply the trace yourself.
 - **Are adapter boundaries specified?** The design should make clear that inbound adapters (route handlers, controllers) own authentication, input validation, and request mapping; business logic operates on domain objects only; outbound adapters (repositories, external service clients) translate domain objects to and from external formats. If the design is silent on this split, that is a should-fix.
+- **Are error propagation patterns specified?** For each module-to-module interaction, what happens when the downstream fails? Synchronous error surfacing, dead-letter queue, circuit breaker, async retry — the design should name the pattern. If the design is silent on failure modes between components, flag as a should-fix.
+- **Is the runtime topology specified?** How many distinct runtime components are deployed and where do they run? If the design describes modules without saying how they are grouped into processes or services, flag as a should-fix — especially when background workers, queues, or separate services are introduced.
+- **Are new technology introductions justified?** If the design introduces something not already in the codebase (a new database, message broker, caching layer, third-party API), is the choice named and the rationale stated? Unjustified new dependencies are a should-fix.
 
 ### Cross-cutting architectural concerns
 
@@ -100,6 +103,9 @@ To calibrate, here are the failure modes most often surfaced at this phase:
 - Module names but no interfaces — what callers see is unspecified
 - External systems mentioned but not owned by any module — the adapter boundary is missing
 - Communication patterns ambiguous — "the service calls the database" without saying whether it's sync, async, queue, event, etc.
+- Error propagation between components not addressed — what happens when a downstream module fails is left unspecified
+- Runtime topology unstated — the design adds a background worker or queue but doesn't say how many processes exist or where they run
+- New technology introduced without justification — a new database, broker, or API added with no rationale or alternatives considered
 - Data model not specified — tables or schema changes described in prose but not named with fields
 - No scenario traced end-to-end through the architecture
 - Alternatives section listing only weak alternatives, making the chosen option look obvious by contrast

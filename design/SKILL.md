@@ -59,6 +59,8 @@ When uncertain about a technical choice: recommend a spike if the uncertainty co
 
 **Trace through a concrete user scenario end-to-end.** Pick a typical use case from the brief and walk it through your proposed design from request to response (or trigger to outcome). Where does data come from? Where does it go? What can fail at each step? This usually surfaces gaps faster than abstract reasoning.
 
+**Surface NFR-driven decisions explicitly.** When a non-functional requirement from the Feature Brief (latency target, throughput, reliability) directly drives a structural decision — e.g., "we add a cache layer because the latency target rules out a database query on every request" — state that connection explicitly inline in the Proposed design, next to the decision it drives. NFRs that don't change the structure don't belong in the design doc at all.
+
 **Check terminology.** Does this design introduce new canonical terms — module names, entity names, process names — that aren't yet in `UBIQUITOUS_LANGUAGE.md`? Do any proposed names conflict with existing entries? Resolve conflicts before finalizing the design; inconsistent names in a design doc become inconsistent names in code. If a proposed name conflicts with a glossary entry for the same concept, defer to the glossary: rename the design element. If you believe the glossary entry is wrong, note the discrepancy in the Design Doc and include the correction in the lang-update ticket (see below). The glossary is authoritative; the design adapts to it.
 
 **Think about what changes outside the new code.** Database migrations, config changes, infrastructure changes, deployment order constraints, third-party integrations, monitoring/alerting updates, runbook entries. These are often where production incidents come from.
@@ -101,13 +103,17 @@ The design must address these architectural concerns:
 - **Communication patterns**: how do components talk to each other? Direct calls? Async events? Message bus? Queue? Be explicit about which interactions are synchronous and which are asynchronous.
 - **Data model**: what tables, collections, or schemas are created, modified, or removed? What are the fields and their types? What relations exist?
 - **A representative scenario**: trace one user story from the brief end-to-end through the proposed architecture. Where does the request enter? Which modules handle it? What external systems are touched? What does the response look like?
+- **Error propagation**: how do errors cross module boundaries? Is failure synchronous or asynchronous? Are there circuit breakers, dead-letter queues, or retry patterns between components? This is an architectural decision — it affects module structure. Specific retry counts and timeout values go in tickets.
+- **Runtime topology**: how many distinct runtime components exist and where do they run? (e.g. "web server + separate background worker process", "single monolith", "three microservices"). This is distinct from a rollout plan — it is the architectural shape of what gets deployed.
+- **New technology introductions**: if the design introduces a technology not already present in the codebase (a new database, a message queue, a caching layer, a third-party API), name it, justify the choice, and note what alternatives were considered. Existing stack choices need no justification.
 
 What does NOT belong in the design:
 - Rollout plans and feature flags — those belong in tickets
 - Test strategy — that belongs in tickets
-- Observability configuration (which metrics, which logs) — that belongs in tickets
+- Observability configuration (which metrics, which log fields, which alert thresholds) — that belongs in tickets
 - Runbook entries — that belong in tickets
 - Backwards-compatibility migration scripts — that belongs in tickets
+- Error handling implementation details (specific retry counts, timeout values, backoff parameters) — those belong in tickets; the error *propagation pattern* between modules belongs here
 
 Security and authentication: these are architectural concerns when they affect module boundaries or the choice of external systems. Note them here at the architecture level ("the inbound adapter validates the JWT; the domain layer receives only the authenticated user identity"). Implementation details go in tickets.
 
