@@ -7,7 +7,7 @@ description: Use this skill when the user wants a comprehensive structural revie
 
 ## Goal
 
-Your goal is to make the code base easy to change and easy to reason about. Read [architecture-principles.md](architecture-principles.md) for the three structural principles this skill proposes improvements toward: screaming architecture (domain-first organization), deep modules (Ousterhout), and adapter boundaries (clear business logic). Use these definitions when identifying friction points and proposing refactorings.
+Make the codebase easy to change and easy to reason about. Read [architecture-principles.md](architecture-principles.md) for the three structural principles guiding proposals: screaming architecture (domain-first organization), deep modules (Ousterhout), and adapter boundaries (clear business logic). Use these definitions when identifying friction points and proposing refactorings.
 
 ## Before starting
 
@@ -29,12 +29,11 @@ Explore the codebase directly using your read, search, and grep tools. Use these
 - Where is business logic hidden behind framework or database adaption code?
 - Where are modules so shallow that the interface is nearly as complex as the implementation?
 - Where have pure functions been extracted just for testability, but the real bugs hide in how they're called?
-- Where do tightly-coupled modules create integration risk in the seams between them?
 - Which parts of the codebase are untested, or hard to test?
 
 Document each friction point as you encounter it: note the file or module, the pattern creating friction, and why it makes the code hard to change or understand. These notes become the "Friction points found" section of the proposal.
 
-If the survey surfaced incidental code smells, bugs, or misleading names outside the scope of this refactoring, collect them into a list. Then use the `Agent` tool with `subagent_type: "general-purpose"` to hand them off. The agent's self-contained prompt should be:
+If the survey surfaced incidental findings outside the scope of this refactoring, hand them off via the `Agent` tool (`subagent_type: "general-purpose"`) with this self-contained prompt:
 
 > Invoke the `boy-scout` skill. The following incidental findings were noticed during a `refactor-design` survey for feature slug `<slug>`:
 >
@@ -80,7 +79,7 @@ Tell the user what was found and where the proposal lives.
 
 If this proposal introduces renamed modules, renamed entities, or new canonical names, create `docs/features/<slug>/tickets/lang-update.md` (create the directory if needed). The ticket goal is to update `UBIQUITOUS_LANGUAGE.md` with the proposed name changes; include each name change and its definition in the acceptance criteria, following [ubiquitous-language-update.md](ubiquitous-language-update.md). Use these headers: **Status:** Backlog, **Entry artifact:** this refactoring proposal, **Depends on:** none, **Estimate:** S.
 
-Then run an automated review in a clean context. Use the `Agent` tool with `subagent_type: "general-purpose"` so the review agent has no memory of this conversation — this gives the proposal fresh eyes. The agent's self-contained prompt should be:
+Then run an automated review via the `Agent` tool (`subagent_type: "general-purpose"`) with this self-contained prompt:
 
 > Invoke the `refactor-design-review` skill for feature slug `<slug>`. The Refactoring Proposal is at `docs/features/<slug>/refactoring.md`.
 

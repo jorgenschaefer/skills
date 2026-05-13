@@ -7,7 +7,7 @@ description: Use this skill when the user wants an orientation to an unfamiliar 
 
 You are a tour guide for a developer who is new to this codebase. Your job is to surface what matters fast and skip what they can discover themselves. Print a concise orientation report to the conversation — do not save it to a file.
 
-**Calibration is the core challenge.** Include things that require reading the code to discover. Exclude things that are obvious from file names, standard framework knowledge, or too fine-grained for orientation. The bar is navigation, not mastery: after reading your report, a new developer should be able to find any piece of functionality in the repo.
+**Calibration is the core challenge.** Include things that require reading the code to discover; exclude things obvious from file names or standard framework knowledge. After reading your report, a new developer should be able to find any piece of functionality in the repo.
 
 ## Before starting
 
@@ -34,35 +34,35 @@ Do not read every file in a directory. Stop each step as soon as you have enough
 
 ### Technology stack
 
-**Include:** primary language + version; frameworks that shape code structure (web framework, ORM, DI container, event bus); infrastructure clients that are architecturally significant (database driver, message broker SDK, cache client); non-obvious libraries whose presence would surprise a developer arriving from the framework docs.
+**Include:** primary language + version; frameworks that shape code structure; infrastructure clients that are architecturally significant; non-obvious libraries whose presence would surprise a developer.
 
-**Exclude:** dev and build tools (linters, bundlers, formatters, task runners); test libraries; utility packages (date helpers, string utils, lodash); transitive dependencies.
+**Exclude:** dev/build tools, test libraries, utility packages, transitive dependencies.
 
 ### Code organization
 
 **Include:** all top-level directories with a one-line annotation each; the organizing principle in one sentence (domain-first? layer-first? by feature?).
 
-**Exclude:** generated directories, vendor directories, and anything whose purpose is self-evident from the name alone.
+**Exclude:** generated/vendor directories and anything self-evident from the name.
 
 ### Domain model
 
-**Include:** 5–8 entities and aggregates that appear across module boundaries — visible in multiple layers (API, service, persistence). One row per entity: what it represents, key relationships to other entities.
+**Include:** 5–8 entities and aggregates visible in multiple layers (API, service, persistence). One row per entity: what it represents, key relationships.
 
-**Exclude:** value objects and enums (self-explanatory); DTOs and request/response shapes; configuration objects; internal data structures visible only within one module. Do not list model fields.
+**Exclude:** value objects, enums, DTOs, request/response shapes, configuration objects, single-module internals. Do not list model fields.
 
 ### Main workflows
 
-**Include:** 3–7 flows directly invoked by users or external callers (HTTP request, CLI command, queue message received); flows that are the primary stated purpose of the system; anything crossing module boundaries or involving multiple domain objects; background jobs central to the system's function.
+**Include:** 3–7 flows invoked by users or external callers (HTTP, CLI, queue); the primary stated purpose of the system; flows crossing module boundaries or involving multiple domain objects; background jobs central to the system's function.
 
-**Exclude:** pure CRUD flows with no domain logic (obvious from entity + framework); admin, debug, health-check, and monitoring endpoints; operational background jobs (cleanup, reindex); flows fully internal to one module.
+**Exclude:** pure CRUD flows with no domain logic; admin/debug/health-check endpoints; operational background jobs (cleanup, reindex); flows internal to one module.
 
 For each workflow: name, entry point as `path/to/file:function_or_handler`, one-sentence description.
 
 ### External integrations
 
-**Include:** each external system the code calls out to, the access pattern (REST, gRPC, message queue, SDK), and the directory or file where the adapter code lives.
+**Include:** each external system, the access pattern (REST, gRPC, queue, SDK), and the adapter location.
 
-**Exclude:** internal workings of the adapter; configuration details; retry/timeout parameters.
+**Exclude:** adapter internals, configuration details, retry/timeout parameters.
 
 ### Where to start
 
@@ -70,14 +70,14 @@ For each workflow: name, entry point as `path/to/file:function_or_handler`, one-
 
 ## Traps to avoid
 
-- Do not list model fields — one-liner per entity is the maximum
+- Do not list model fields
 - Do not document every endpoint — only workflow entry points
 - Do not explain self-evident CRUD flows
 - Do not enumerate every package — only non-obvious ones
-- Do not describe the full auth flow mechanics — a pointer to where auth lives is enough
-- Do not include environment variables, configuration parameters, or deployment details
+- Do not describe auth flow mechanics — a pointer to where auth lives is enough
+- Do not include env vars, configuration, or deployment details
 - Do not include historical rationale for decisions
-- Do not include code snippets — file paths and function names as pointers are enough
+- Do not include code snippets — file paths and function names are enough
 
 ## Output format
 

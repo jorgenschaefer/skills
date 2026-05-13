@@ -15,9 +15,9 @@ The feature slug is a required argument. If the user did not provide one at invo
 
 Before reviewing, confirm:
 
-1. The artifact is a Refactoring Proposal (it should follow the `refactor-design` skill structure: Summary, Friction points found, Proposed refactorings, Suggested order, Scope decisions).
-2. You have read [`ARCHITECTURE.md`](ARCHITECTURE.md) at the project root if it exists. Constraint compliance is one of the highest-value checks at this phase — a proposed refactoring that would contradict an established architectural constraint must be flagged before it reaches planning. If the file doesn't exist, note it in "What was checked."
-3. You're in a clean context — you did not participate in creating this artifact. If you're unsure, treat your judgment as potentially contaminated: note it in "What was NOT checked" and flag any area where prior context might be biasing you.
+1. The artifact follows the `refactor-design` structure: Summary, Friction points found, Proposed refactorings, Suggested order, Scope decisions.
+2. You have read [`ARCHITECTURE.md`](ARCHITECTURE.md) at the project root (if it exists; otherwise note it). Constraint compliance is one of the highest-value checks here.
+3. You're in a clean context. If unsure, note it in "What was NOT checked" and flag areas where prior context might bias you.
 
 ## What to check
 
@@ -26,7 +26,7 @@ Walk through these questions. Each corresponds to a common failure mode of struc
 ### Friction points
 
 - **Are friction points specific?** Each entry should name a concrete file or module, the pattern creating friction (e.g., "business logic lives in the route handler", "module exposes its internal DB schema to callers"), and why it makes the code hard to change or understand. An entry that names a general area ("the user module is a mess") without a specific file and pattern is not actionable — should-fix.
-- **Is the consequence stated?** Each friction point should explain why it matters: what goes wrong because of it? If the consequence is missing, the implementer can't prioritize or validate the fix — nit at minimum, should-fix if the consequence isn't obvious.
+- **Is the consequence stated?** Each friction point should explain why it matters. If missing, the implementer can't prioritize or validate the fix — should-fix unless the consequence is obvious.
 - **Are the friction points accurate?** If you have codebase access, spot-check a few: does the described pattern actually appear in the named location? A proposal built on a misidentified problem is worse than no proposal — blocker if a major proposed refactoring rests on a misread.
 
 ### Constraint compliance
@@ -55,8 +55,8 @@ Walk through these questions. Each corresponds to a common failure mode of struc
 
 Read [architecture-principles.md](architecture-principles.md) for the canonical definitions of screaming architecture, deep modules, and adapter boundaries.
 
-- **Do proposed refactorings move toward these principles?** Proposals that move business logic into the domain layer, that merge thin pass-through abstractions, or that reorganize code by domain rather than by technical layer are well-aligned.
-- **Do any proposals move away from these principles?** A proposal to extract a new thin wrapper, reorganize into a `services/` directory, or add an abstraction that leaks internal structure should be flagged.
+- **Do proposed refactorings move toward these principles?** Well-aligned: moving business logic into the domain layer, merging thin pass-through abstractions, reorganizing by domain rather than technical layer.
+- **Do any proposals move away from these principles?** Flag proposals to extract new thin wrappers, reorganize into a `services/` directory, or add abstractions that leak internal structure.
 
 ### Ubiquitous language
 
@@ -67,7 +67,7 @@ Read `UBIQUITOUS_LANGUAGE.md` at the project root if it exists. Then check:
 
 ### The "can this be ticketed?" smell test
 
-Read the Proposed refactorings section as if you were the planner. Could you produce a ticket from each entry without reading the source code? If yes, the proposal is well-specified. If you'd need to go back to the codebase to understand what the ticket should do, the proposal is underspecified — should-fix.
+Read the Proposed refactorings as if you were the planner. Could you produce a ticket from each entry without reading the source code? If not, the proposal is underspecified — should-fix.
 
 ## Common findings
 

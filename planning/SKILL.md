@@ -5,9 +5,7 @@ description: Use this skill when the user has a Design Doc, Refactoring Proposal
 
 # Planning
 
-The goal of the Planning phase is to translate the entry artifact (a Design Doc or Refactoring Proposal) into a sequence of tickets that can be implemented, tested, and deployed independently. The output is a **Ticket Backlog**: a set of small, self-contained units of work, each of which delivers value on its own.
-
-The planning phase is where good designs become buildable software — or, when done badly, where they become an undifferentiated wall of work that gets implemented as one giant pull request months later. The discipline of slicing work into independently-deployable increments is what makes agentic implementation tractable, what makes review human-scaled, and what lets you change your mind cheaply.
+Translate the entry artifact (a Design Doc or Refactoring Proposal) into a **Ticket Backlog**: a sequence of small, self-contained units of work, each independently implementable, testable, and deployable. The discipline of slicing work into independently-deployable increments is what makes agentic implementation tractable, review human-scaled, and course-correction cheap.
 
 ## Before starting
 
@@ -15,19 +13,17 @@ The feature slug is a required argument. If the user did not provide one at invo
 
 ## Your role
 
-You are the Planner. You take the entry artifact (a Design Doc or Refactoring Proposal) and produce a list of tickets that, taken together, implement it. You think hard about ordering, dependencies, and how each ticket can stand on its own.
+You are the Planner. You take the entry artifact and produce a list of tickets that, taken together, implement it, thinking hard about ordering, dependencies, and independence.
 
-You do not write code. You do not change the design — though you may flag back to the architect "this design implies a ticket I can't make independent; should we revisit?"
+You do not write code or change the design — though you may flag "this design implies a ticket I can't make independent; should we revisit?"
 
 ## The principle: every ticket is a tracer bullet
 
 Read [tracer-bullets.md](tracer-bullets.md) for the full explanation and examples.
 
-The tracer-bullet principle applies to **every** ticket, not just the first one. Each ticket must be independently shippable and deliver observable value on its own — not just "this is useful once ticket 5 also ships." If a ticket only becomes useful when combined with another ticket it doesn't depend on, the slice is wrong.
+The tracer-bullet principle applies to **every** ticket, not just the first one. Each ticket must be independently shippable and deliver observable value on its own — not just "this is useful once ticket 5 also ships."
 
-**Anti-pattern to avoid:** "the first tracer bullet is ticket 4 + 5." That is not a tracer bullet — it is two tasks that were miscounted as tickets. Either ticket 4 delivers something on its own, or ticket 4 is a task inside ticket 5, not a separate ticket.
-
-Watch for "set up the project" tickets that do nothing but scaffolding — fold the scaffolding into the first feature ticket as a tracer bullet instead.
+**Anti-pattern to avoid:** "the first tracer bullet is ticket 4 + 5." Either ticket 4 delivers something on its own, or it is a task inside ticket 5, not a separate ticket. Similarly, "set up the project" scaffolding tickets should be folded into the first feature ticket.
 
 ## Properties of a good ticket
 
@@ -51,7 +47,7 @@ In practice, some dependencies are unavoidable. A ticket that displays data need
 
 ## How to approach the work
 
-**Read `UBIQUITOUS_LANGUAGE.md`** at the project root before naming anything. Ticket titles, goal statements, and acceptance criteria should use the canonical terms. When a term from the glossary applies, use it exactly — don't paraphrase.
+**Read `UBIQUITOUS_LANGUAGE.md`** at the project root before naming anything. Use canonical terms exactly in ticket titles, goal statements, and acceptance criteria — don't paraphrase.
 
 **Check that suggested file paths respect [architecture-principles.md](architecture-principles.md).** When writing "Implementation notes," avoid top-level `services/`, `controllers/`, or `models/` directories. Prefer domain-first paths (`orders/OrderService.ts` over `services/OrderService.ts`). If tickets are being written for an already-layered codebase, flag the structural tension in a ticket note rather than silently perpetuating a structure the design may intend to move away from.
 
@@ -59,7 +55,7 @@ In practice, some dependencies are unavoidable. A ticket that displays data need
 
 **Slice by user story, not by layer.** For each user story or meaningful user interaction in the entry artifact, ask: what is the thinnest end-to-end implementation that makes this story demonstrably work? That's a ticket. It must touch every architectural layer it needs — it is not a database-layer ticket or a UI-layer ticket; it is a story-complete ticket that happens to need both.
 
-Order tickets by value and risk — high-risk pieces early so problems surface early; high-value pieces early so even partial completion ships something useful. Tickets that depend on others come after their dependencies; everything else can parallelize.
+Order tickets by value and risk — high-risk and high-value pieces first. Tickets that depend on others come after their dependencies; everything else can parallelize.
 
 **Pull cross-cutting concerns into their own tickets when they don't fit cleanly into a feature slice.** Observability, security hardening, performance work, migration tooling — sometimes these are best as standalone tickets, sometimes they're best as part of a feature ticket. Use judgment. A rule of thumb: if a cross-cutting concern is a feature requirement, bake it into the relevant ticket; if it's general infrastructure, give it its own ticket.
 
@@ -158,11 +154,11 @@ Anything from the entry artifact not covered by these tickets, with reasoning.
 
 ## After writing
 
-Before finalizing, apply the tracer-bullet test to every ticket: "if we shipped only this ticket and stopped, would a user have something observable and useful?" If the answer is no and the ticket has no depends-on relationship explaining why, the slice is wrong — either merge it into its dependent ticket or reslice. Also confirm: (2) the backlog README contains a completed coverage table; (3) feature flag setup and removal are both ticketed if flags are used.
+Before finalizing, apply the tracer-bullet test to every ticket: "if we shipped only this ticket and stopped, would a user have something observable and useful?" If no and there's no depends-on explaining why, the slice is wrong — merge or reslice. Also confirm: the backlog README has a completed coverage table; feature flag setup and removal are both ticketed if flags are used.
 
 Save tickets to `docs/features/<feature-slug>/tickets/` and the README. If the target directory doesn't exist, create it. If you can't write the files, tell the user the artifact paths and paste the content inline so they can save it manually. Tell the user how many tickets you produced, the suggested order, and what the tracer bullet is.
 
-Then run an automated review in a clean context. Use the `Agent` tool with `subagent_type: "general-purpose"` so the review agent has no memory of this conversation — this gives the backlog fresh eyes. The agent's self-contained prompt should be:
+Then run an automated review in a clean context. Use the `Agent` tool with `subagent_type: "general-purpose"`. The agent's self-contained prompt:
 
 > Invoke the `planning-review` skill for feature slug `<slug>`. The backlog is at `docs/features/<slug>/tickets/`.
 

@@ -5,8 +5,6 @@ description: Use this skill when the user wants to know where a feature is in th
 
 # Workflow Status
 
-This skill reads the artifacts for a feature and reports its current state: what exists, what phase the work is in, what reviews have been completed and what they found, and what the logical next step is.
-
 ## Before starting
 
 The feature slug is a required argument. If the user did not provide one, ask for it before proceeding.

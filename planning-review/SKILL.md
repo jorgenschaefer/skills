@@ -7,7 +7,7 @@ description: Use this skill to review a Ticket Backlog produced by the Planning 
 
 This skill reviews a **Ticket Backlog** — the artifact produced by the Planning phase. It builds on the shared review base; read [review-base.md](review-base.md) first for the reviewer stance, output format, and severity definitions.
 
-The unique job of this review is to verify that the work has been sliced well: each ticket can stand on its own, the ordering makes sense, and nothing from the design has been forgotten or smuggled out of scope.
+The unique job of this review is to verify that the work has been sliced well: each ticket stands alone, the ordering makes sense, and nothing from the design has been forgotten or smuggled out of scope.
 
 ## Setup
 
@@ -21,33 +21,31 @@ Before reviewing, confirm:
 
 ## What to check
 
-Read [tracer-bullets.md](tracer-bullets.md) for the definition of tracer-bullet slicing and the layer-by-layer antipattern — the smell tests below apply those concepts.
-
-Walk through these questions. Check each ticket individually, then check the backlog as a whole.
+Read [tracer-bullets.md](tracer-bullets.md) for the definition of tracer-bullet slicing and the layer-by-layer antipattern. Check each ticket individually, then check the backlog as a whole.
 
 ### Per-ticket checks
 
 For each ticket, verify:
 
-- **Independent deployability.** Could you ship this ticket alone, with no other ticket from the backlog, and have a working system? If no, the slice is wrong (or the dependency on a prior ticket is not made explicit).
-- **Independent testability.** Are there observable, automatable tests that would prove this ticket works? If the ticket's only "test" is "the next ticket calls this code," that's a layer-by-layer slice, not a tracer-bullet slice.
+- **Independent deployability.** Could you ship this ticket alone and have a working system? If no, the slice is wrong (or the dependency on a prior ticket is not made explicit).
+- **Independent testability.** Are there observable, automatable tests that prove this ticket works? If the only "test" is "the next ticket calls this code," that's a layer-by-layer slice.
 - **Acceptance criteria are observable.** Each acceptance criterion should be checkable by reading code, running a test, or observing system behavior. Vague criteria ("works correctly," "performs well") are findings.
 - **Scope is clear.** "In scope" and "Out of scope" are both populated. Out-of-scope items reference where the deferred work is handled (another ticket, a future iteration, an explicit non-goal).
 - **Size is plausible.** Roughly fits in a focused work session. Tickets that look like multi-week projects need splitting.
-- **Ubiquitous language.** The ticket title, goal, and acceptance criteria use the canonical terms from `UBIQUITOUS_LANGUAGE.md`. A ticket whose title paraphrases a glossary term creates ambiguity for the implementer.
-- **Traceability.** The ticket references the Design Doc section it implements. Tickets without traceability often turn out to implement something not in the design.
-- **Dependencies are explicit.** If the ticket depends on another ticket, it says so. Hidden dependencies surface as merge conflicts and "wait, you didn't tell me X needed to ship first" moments.
+- **Ubiquitous language.** The ticket title, goal, and acceptance criteria use the canonical terms from `UBIQUITOUS_LANGUAGE.md`.
+- **Traceability.** The ticket references the Design Doc section it implements.
+- **Dependencies are explicit.** If the ticket depends on another ticket, it says so.
 - **Definition of done is concrete.** Includes tests, documentation if applicable, deployment if applicable, telemetry if applicable.
 
 ### Backlog-level checks
 
-- **Is every ticket a tracer bullet?** Apply the following test to each ticket: "if we shipped only this ticket and stopped, would a user have something observable and useful?" If the answer is no for a ticket that has no `Depends on` relationship explaining why, the slice is wrong. A ticket that is only useful once another specific ticket also ships (without that dependency being declared) is not a tracer bullet — it is a task miscounted as a ticket.
-- **Is there a tracer bullet in the first position?** Look for the first ticket that delivers user-visible behavior (spike tickets don't count). Is it a thin end-to-end slice that touches every layer the full feature will touch? If the first several tickets are all "set up infrastructure" or "build the database schema" with no user-visible output, the slicing is layer-by-layer rather than tracer-bullet.
-- **Does the design get fully covered?** Walk through the Design Doc. For every major component, contract, behavior, and cross-cutting concern, find the ticket that implements it. Anything in the design without a ticket is a coverage gap. Things the design explicitly puts out-of-scope are fine. As you do this check, build a coverage table — a list mapping each Design Doc section to the ticket(s) that implement it. You'll include this in the output.
-- **Anything in the tickets that's NOT in the design?** Tickets that introduce work not described in the design are scope creep — either the design needs updating, or the ticket is unjustified.
+- **Is every ticket a tracer bullet?** For each ticket: "if we shipped only this ticket and stopped, would a user have something observable and useful?" If no, and there's no `Depends on` explaining why, the slice is wrong.
+- **Is there a tracer bullet in the first position?** The first ticket delivering user-visible behavior (spike tickets don't count) should be a thin end-to-end slice touching every layer. If the first several tickets are infrastructure with no user-visible output, the slicing is layer-by-layer.
+- **Does the design get fully covered?** For every major component, contract, behavior, and cross-cutting concern in the Design Doc, find the ticket that implements it. Anything without a ticket is a coverage gap. Build a coverage table (Design Doc section → ticket numbers) as you go — include it in the output.
+- **Anything in the tickets that's NOT in the design?** Such tickets are scope creep — either the design needs updating, or the ticket is unjustified.
 - **Is the order sensible?** Dependencies should come before dependents. High-risk pieces should come early. Tickets that block many others should come early. Tracer bullets should come first.
 - **Are cross-cutting concerns ticketed?** Observability, security review, performance testing, migration scripts, runbook updates, monitoring/alerting setup — these are commonly forgotten. Check the design for what should be there, then check the backlog for whether it is.
-- **Is the dependency graph reasonable?** A flat list of independent tickets is suspicious for a non-trivial feature — they probably depend on each other in ways the planner didn't acknowledge. A long sequential chain of dependencies is also suspicious — work likely could have been parallelized or sliced differently.
+- **Is the dependency graph reasonable?** A fully flat list is suspicious for a non-trivial feature; a long sequential chain is suspicious too — work likely could have been parallelized or sliced differently.
 - **Is the total ticket count plausible?** A 40-ticket backlog for a moderate feature suggests over-slicing; a 2-ticket backlog for a major feature suggests under-slicing. Use judgment.
 
 ### Spike and unglamorous-work checks
@@ -60,13 +58,13 @@ For each ticket, verify:
 
 ### Smell tests
 
-- **The layer-by-layer test.** Are the first 2-3 tickets all infrastructure (DB schema, plumbing, scaffolding) before any user-visible behavior? That's the layer-by-layer antipattern. Tracer bullets thread through all layers in every ticket. Run this test first — it's the most common failure mode.
-- **The "only ticket" test.** Pick any ticket at random. Ask: "if this were the only ticket that shipped, would a user notice something useful?" If the answer is no, and that ticket is not explicitly dependent on another ticket that supplies the missing piece, it's a finding.
-- **The "ship after ticket N" test.** For each ticket, ask: "if we shipped after this ticket and stopped, would users have something useful?" The answer should usually be yes, especially for the early tickets.
-- **The "two implementers" test.** If two implementers picked up adjacent tickets in parallel, would they collide? If yes, the dependency graph is wrong, or the slicing is wrong.
-- **The "rename test."** Read each ticket title in isolation. Does the title accurately describe the work? Generic titles like "Backend changes" or "Update API" are findings.
-- **The "design smuggling" test.** Do any tickets authorize implementation choices the Design Doc didn't make? Caching strategies, library picks, structural decisions — these belong in the design, not buried in a ticket.
-- **The screaming architecture test.** Read [architecture-principles.md](architecture-principles.md) §Screaming Architecture for the domain-first organization principle. Do any implementation notes reference file paths that use technical-layer organization (`services/FooService.ts`, `controllers/BarController.ts`) rather than domain-first organization (`orders/FooService.ts`)? If so, flag as a nit and note the domain-first alternative. If the codebase is already layered, the note should acknowledge the tension rather than silently perpetuating it.
+- **The layer-by-layer test.** Are the first 2-3 tickets all infrastructure (DB schema, plumbing, scaffolding) before any user-visible behavior? Run this first — it's the most common failure mode.
+- **The "only ticket" test.** Pick any ticket at random: "if this were the only ticket that shipped, would a user notice something useful?" If no, and it has no explicit dependency supplying the missing piece, it's a finding.
+- **The "ship after ticket N" test.** For each ticket: "if we shipped here and stopped, would users have something useful?" Should usually be yes, especially early.
+- **The "two implementers" test.** If two implementers picked up adjacent tickets in parallel, would they collide? If yes, the dependency graph or slicing is wrong.
+- **The "rename test."** Does each ticket title accurately describe the work in isolation? Generic titles like "Backend changes" or "Update API" are findings.
+- **The "design smuggling" test.** Do any tickets authorize implementation choices the Design Doc didn't make (caching strategy, library picks, structural decisions)? Those belong in the design.
+- **The screaming architecture test.** Read [architecture-principles.md](architecture-principles.md) §Screaming Architecture. Do implementation notes reference technical-layer paths (`services/FooService.ts`) rather than domain-first paths (`orders/FooService.ts`)? Flag as a nit with the domain-first alternative; if the codebase is already layered, acknowledge the tension.
 
 ## Common findings
 

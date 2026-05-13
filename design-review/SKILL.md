@@ -5,9 +5,9 @@ description: Use this skill to review a Design Doc produced by the Design phase 
 
 # Design Review
 
-This skill reviews a **Design Doc** — the artifact produced by the Design phase. It builds on the shared review base; read [review-base.md](review-base.md) first for the reviewer stance, output format, and severity definitions.
+This skill reviews a **Design Doc** — the artifact produced by the Design phase. Read [review-base.md](review-base.md) first for the reviewer stance, output format, and severity definitions.
 
-This is the highest-leverage review in the workflow. Architectural problems caught here cost a review's worth of effort to fix. Caught after implementation, they cost weeks. Read carefully and skeptically.
+Architectural problems caught here cost a review's worth of effort to fix; caught after implementation, they cost weeks.
 
 ## Setup
 
@@ -16,14 +16,12 @@ The feature slug is a required argument. If the user did not provide one at invo
 Before reviewing, confirm:
 
 1. The artifact is a Design Doc (it should follow the `design` skill structure: Summary, Goals/non-goals, Background, Proposed design, Alternatives considered, Risks/open questions, Out of scope).
-2. You can read the Feature Brief the design is based on. The design must be evaluated against the brief — a good design that solves the wrong problem is a bad design.
-3. You have access to the codebase. Many design issues only become visible when you check the design against existing code. If you don't have access, note it in "What was NOT checked."
-4. You're in a clean context — you did not participate in creating this artifact. If you're unsure, treat your judgment as potentially contaminated: note it in "What was NOT checked" and flag any area where prior context might be biasing you.
-5. You have read [`ARCHITECTURE.md`](ARCHITECTURE.md) at the project root if it exists. The most important finding at this phase is a design that contradicts an established architectural constraint — you can only catch it if you've read them first. If the file doesn't exist, note it in "What was checked."
+2. You can read the Feature Brief the design is based on — a good design that solves the wrong problem is a bad design.
+3. You have access to the codebase. If you don't, note it in "What was NOT checked."
+4. You're in a clean context. If unsure, note it in "What was NOT checked" and flag any area where prior context might bias you.
+5. You have read [`ARCHITECTURE.md`](ARCHITECTURE.md) at the project root if it exists; a design contradicting an established constraint is the most important finding at this phase. If the file doesn't exist, note it in "What was checked."
 
 ## What to check
-
-Walk through these questions. Each corresponds to a common failure mode of design at this stage.
 
 ### Alignment with the Feature Brief
 
@@ -69,22 +67,20 @@ Read [architecture-principles.md](architecture-principles.md) for the canonical 
 
 ### Cross-cutting architectural concerns
 
-These are architectural concerns, not implementation details. Check whether the design makes each one visible at the architecture level. Implementation details (specific log fields, exact metric names, retry counts) belong in tickets — but the architectural decision (which module is responsible, which external system handles it) belongs here.
+Check whether the design addresses each concern at the architecture level (which module is responsible, which external system handles it) — not the implementation level (specific field names, retry counts, runbook entries).
 
-- **Authentication and authorization.** Which module validates identity? What does the domain layer receive — a token or a resolved user object? Are authorization decisions made in the domain layer or at the adapter boundary?
-- **External system ownership.** For each external system (database, queue, email provider, etc.), which module owns the adapter to it? Is that boundary clearly drawn?
-- **Data migration.** If the data model changes, is the migration story described at the architectural level — which module runs it, is it safe to run alongside the old code, is rollback possible?
-- **Security and PII.** Does the design touch sensitive data? Does it introduce new trust boundaries? Encryption and audit concerns at the module-boundary level.
-- **Performance constraints.** Are there latency or throughput constraints that affect the choice of architecture? A constraint that should affect module design but isn't reflected in the design is a finding.
-- **Multi-tenancy / data isolation** if applicable. Cross-tenant leaks are a classic design oversight that needs to be addressed at the architecture level.
-
-Implementation-level concerns (specific log fields, metric names, test strategy, rollout plan, runbook entries) are NOT findings in this review. Flag only if they are absent where the architecture depends on them.
+- **Authentication and authorization.** Which module validates identity? Does the domain layer receive a token or a resolved user object? Are authorization decisions at the adapter boundary or domain layer?
+- **External system ownership.** For each external system, which module owns the adapter?
+- **Data migration.** If the data model changes, which module runs the migration, is it safe to run alongside old code, is rollback possible?
+- **Security and PII.** New trust boundaries, sensitive data, encryption or audit concerns at the module-boundary level.
+- **Performance constraints.** Latency or throughput constraints that affect architectural choices — a constraint that should influence module design but isn't reflected is a finding.
+- **Multi-tenancy / data isolation** if applicable — cross-tenant leaks are a classic design-level oversight.
 
 ### Alternatives and reasoning
 
-- **Are alternatives considered?** A design that presents one option as inevitable is hiding its reasoning. Push for at least one alternative with explicit comparison.
-- **Are the right alternatives considered?** For each major choice in the design, ask: is there a simpler approach that would satisfy the brief? If yes and the doc doesn't address it, that's a finding — either the simpler path was considered and ruled out (state why), or it was missed.
-- **Is the chosen option's tradeoff named?** Every choice trades something for something. If the design only lists upsides of the chosen option, it hasn't been honestly evaluated.
+- **Are alternatives considered?** A design presenting one option as inevitable is hiding its reasoning; expect at least one alternative with explicit comparison.
+- **Are the right alternatives considered?** For each major choice, ask: is there a simpler approach that would satisfy the brief? If yes and the doc doesn't address it, that's a finding.
+- **Is the chosen option's tradeoff named?** If the design only lists upsides, it hasn't been honestly evaluated.
 
 ### Architectural constraints
 

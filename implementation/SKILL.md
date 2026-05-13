@@ -39,9 +39,9 @@ Before starting, make sure you have:
 1. **The ticket.** A specific ticket file with goal, scope, and acceptance criteria. If the user gestures at "the next ticket" without specifying, ask which one. Once identified, immediately update its **Status** to `In Progress` before doing anything else.
 2. **The Design Doc.** The ticket should reference it. Read it for context before starting.
 3. **The codebase.** Read the relevant existing code. Understand the patterns. Run the existing test suite — if it doesn't pass, stop and report to the user before adding any changes on top of a broken baseline.
-4. **The repo's conventions.** Check `CLAUDE.md` / `AGENTS.md` for build/test/lint commands, code style, and any project-specific rules.
-5. **The project's ubiquitous language.** Read `UBIQUITOUS_LANGUAGE.md` at the project root if it exists. Use canonical terms in identifiers — class names, function names, variable names, test descriptions.
-6. **The reference files for this skill.** Read [tests.md](tests.md), [deep-modules.md](deep-modules.md), [mocking.md](mocking.md), and [refactoring.md](refactoring.md) before writing any code. They contain the patterns and guidelines this skill applies throughout the TDD loop.
+4. **The repo's conventions.** Check `CLAUDE.md` / `AGENTS.md` for build/test/lint commands, code style, and project-specific rules.
+5. **The project's ubiquitous language.** Read `UBIQUITOUS_LANGUAGE.md` at the project root if it exists. Use canonical terms in identifiers.
+6. **The reference files for this skill.** Read [tests.md](tests.md), [deep-modules.md](deep-modules.md), [mocking.md](mocking.md), and [refactoring.md](refactoring.md) before writing any code.
 
 If anything is missing or unclear, ask before writing code. Misunderstanding the ticket is the most expensive mistake at this stage.
 
@@ -65,7 +65,7 @@ RIGHT (one-cycle-at-a-time):    RED→GREEN: test1→impl1    →  RED→GREEN: 
 5. **Commit.** Commit per logical behavior or acceptance criterion — typically one commit per acceptance criterion item, sometimes fewer if criteria are tightly coupled. Multiple small commits per ticket are normal and preferred over one large one. The commit message should describe what behavior was added, not what files changed. "Add validation for empty draft titles" beats "Update DraftService.ts." After committing, note the hash (`git log -1 --format=%H`) — you will pass it to the review agent.
 6. **Repeat** until every acceptance criterion is met.
 
-The discipline matters. The order matters. Skipping the red step ("I know the test will fail, I'll just write the code") is the most common way TDD breaks down — you end up writing tests that pass on the first run, which means they're not actually testing what you think they are.
+Never skip the red step. A test that passes on first run isn't testing what you think.
 
 ## Picking the right test level
 
@@ -85,10 +85,10 @@ The ticket has an explicit scope. Stay inside it.
 
 When you find yourself wanting to:
 
-- **Fix unrelated bugs** — note them in your PR description (see 'Producing the PR description' below), but don't fix them in this PR. They're separate tickets.
-- **Refactor adjacent code** — if it's needed to make your ticket clean, do the minimum needed and call it out. If it's just "this code could be better," don't.
-- **Add features the ticket doesn't ask for** — don't. Future tickets will do that. Adding speculative features is how scope creep starts.
-- **Question the design** — if the design has a real problem, stop, surface it to the user, and let the architect revisit. Don't silently work around it.
+- **Fix unrelated bugs** — note them in your PR description, but don't fix them here.
+- **Refactor adjacent code** — if required for your ticket, do the minimum and call it out; otherwise don't.
+- **Add features the ticket doesn't ask for** — don't.
+- **Question the design** — stop, surface it to the user, and let the architect revisit. Don't silently work around it.
 
 The hardest part of scope discipline is when the ticket's acceptance criteria seem to require something the design doesn't cover. When this happens, it's a signal to pause, not to invent. Either the criteria are wrong, the design is wrong, or you're misreading something. Surface the conflict to the user.
 
@@ -114,13 +114,13 @@ What would you like to do?
 
 Code that ships from this phase should be:
 
-- **Code style.** Read [code-style.md](code-style.md) for the two style principles — clear over clever and dead-weight free. Adhere to both.
-- **Consistent with the existing codebase.** Follow established patterns unless you have a reason to deviate, and if you deviate, document why.
-- **Architecture principles respected.** Read [architecture-principles.md](architecture-principles.md) for the structural standards — screaming architecture (domain-first organization), deep modules, and adapter boundaries. Adhere to all three. If placing a file in a layered structure due to existing codebase conventions, note the tension in the PR description.
-- **Named from the ubiquitous language.** Identifiers should use the canonical terms from `UBIQUITOUS_LANGUAGE.md`. Don't invent synonyms for concepts the project already has names for.
-- **Well-tested at appropriate levels.** Every behavior the ticket adds is covered by at least one test. Edge cases the ticket explicitly mentions are covered.
-- **Correctness, security, observability, performance.** Read [code-quality-dimensions.md](code-quality-dimensions.md) §Tier 2. Address these while writing — the reviewer will check them, but that is a safety net, not a plan.
-- **Documented where non-obvious.** Comments explain why, not what. The code itself should make the "what" clear.
+- **Code style.** Read [code-style.md](code-style.md) and adhere to it.
+- **Consistent with the existing codebase.** Follow established patterns unless you have a reason to deviate; if you deviate, document why.
+- **Architecture principles respected.** Read [architecture-principles.md](architecture-principles.md) and adhere to it. If existing codebase conventions conflict, note the tension in the PR description.
+- **Named from the ubiquitous language.** Use canonical terms from `UBIQUITOUS_LANGUAGE.md`. Don't invent synonyms.
+- **Well-tested at appropriate levels.** Every behavior the ticket adds is covered; edge cases the ticket mentions are covered.
+- **Correctness, security, observability, performance.** Read [code-quality-dimensions.md](code-quality-dimensions.md) §Tier 2 and address these while writing.
+- **Documented where non-obvious.** Comments explain why, not what.
 - **Honest about uncertainty.** If you couldn't fully verify something works in production conditions, say so in the PR description.
 
 ## Things to verify before declaring done
@@ -142,14 +142,14 @@ A ticket isn't done because the code compiles. Walk through this list:
 
 ## When tests are hard to write
 
-If you can't figure out how to test something, that's usually a design signal. See [interface-design.md](interface-design.md) for testable interface patterns. Common causes:
+If you can't figure out how to test something, that's a design signal. See [interface-design.md](interface-design.md) for testable interface patterns. Common causes:
 
-- **Tight coupling** — the code under test depends on too much. Inject the dependencies, or extract the testable logic.
+- **Tight coupling** — inject the dependencies or extract the testable logic.
 - **Hidden state** — global state, singletons, time, randomness. Make these explicit and injectable.
-- **Wrong abstraction level** — you might be trying to test at the wrong granularity. Drop to a unit test or rise to an integration test.
-- **Genuinely hard things** — concurrency, network conditions, UI rendering. There are patterns for each; if you're stuck after consulting interface-design.md, surface the problem in the PR description as a blocker and stop rather than writing untested code.
+- **Wrong abstraction level** — drop to a unit test or rise to an integration test.
+- **Genuinely hard things** — concurrency, network conditions, UI rendering. If stuck after consulting interface-design.md, surface the problem in the PR description as a blocker and stop rather than writing untested code.
 
-If a piece of code resists testing entirely, that's a strong signal something is wrong with its design. Pause and surface it.
+If code resists testing entirely, something is wrong with its design. Pause and surface it.
 
 ## Working with existing tests
 
@@ -163,7 +163,7 @@ When the ticket is done, write a PR description (or summary) that includes:
 - **Acceptance criteria check.** A copy of the ticket's checklist with each item ticked off and a brief note on how it's satisfied.
 - **What was tested and how.** What level of tests, what was covered, what wasn't (if anything was deliberately excluded, say why).
 - **Anything notable.** Tradeoffs you made, surprises you encountered, things the reviewer should pay extra attention to.
-- **Things you noticed but did NOT fix.** Before adding these, collect them and use the `Agent` tool with `subagent_type: "general-purpose"` to hand them to boy-scout. The agent's self-contained prompt should be:
+- **Things you noticed but did NOT fix.** Collect them, then use the `Agent` tool with `subagent_type: "general-purpose"` and this prompt:
 
   > Invoke the `boy-scout` skill. The following incidental findings were noticed during implementation of ticket `<ticket-name>` for feature slug `<slug>`:
   >
@@ -171,7 +171,7 @@ When the ticket is done, write a PR description (or summary) that includes:
   >
   > Triage each finding: apply trivially safe fixes immediately; write a ticket at `docs/features/boy-scout/tickets/` for everything else. The `Noticed during` field should read: "implementation of `<ticket-name>` for `<slug>`".
 
-  After the subagent finishes, read `docs/features/boy-scout/tickets/` to find the ticket numbers it created. List those here by number, not as free-form observations.
+  After the subagent finishes, list the ticket numbers it created here — not free-form observations.
 - **Follow-up tickets needed.** If implementation surfaced work that should happen next, note it.
 
 ## What you do not produce
@@ -182,10 +182,7 @@ When the ticket is done, write a PR description (or summary) that includes:
 
 ## After implementation
 
-When the TDD loop is complete and all items on the "Things to verify" checklist are done:
+When the TDD loop is complete and the checklist is done:
 
-- If you were invoked for a **single specific ticket** (not as orchestrator): your job is finished. End your response with a summary that includes, as the final item, a clearly labeled list of every commit hash from this ticket:
-
-  **Commit hashes:** `<hash1>`, `<hash2>`, ...
-
-- If you are running as **orchestrator**: do not end — continue with the review step and then the next ticket as described in Orchestrator mode above.
+- **Single ticket:** your job is finished. End your response with a summary whose final item is a clearly labeled list of every commit hash: **Commit hashes:** `<hash1>`, `<hash2>`, ...
+- **Orchestrator:** continue with the review step and next ticket as described above.

@@ -7,15 +7,13 @@ description: Use this skill when the user has a Feature Brief (or equivalent pro
 
 The goal of the Design phase is to describe the software architecture of the solution. The output is a **Design Doc** that specifies which modules are created, modified, or removed; what their interfaces are; which external systems are involved; how components communicate; and what the data model looks like. It does not describe how to implement anything — that is the planning and implementation phases' job.
 
-The Design Doc is not a final, immutable spec. It's a proposal. It says: here's how I think we should build this; here are the alternatives I considered; here's why I'm recommending this one; here's what I'm uncertain about. It exists to be reviewed and challenged before code is written, when changes are still cheap.
+The Design Doc is a proposal - not an immutable spec. It says: here's how I think we should build this, here are the alternatives I considered, here's why I'm recommending this one, here's what I'm uncertain about. It exists to be reviewed and challenged before code is written, when changes are still cheap.
 
 ## Your role
 
-You are the Architect. You read the Feature Brief carefully, you investigate the existing codebase to understand what's already there, and you produce a Design Doc that describes *the architecture* needed to satisfy the brief — not how to implement it.
+You are the Architect. You investigate the existing codebase and produce a Design Doc describing *the architecture* needed to satisfy the brief - not how to implement it.
 
-You do not produce tickets — that's the next phase. You do not write production code, though you may write small spike snippets if you genuinely need to verify something works before recommending it.
-
-You are explicit about what you're uncertain about. Hand-waving is the enemy. If you don't know whether library X supports use case Y, say so and recommend a spike. If you're picking between two options and don't have strong evidence, say so and lay out the tradeoff explicitly for review.
+You do not produce tickets or production code, though you may write small spike snippets to verify something works before recommending it. Be explicit about uncertainty: if you don't know whether library X supports use case Y, say so and recommend a spike; if you're choosing between options without strong evidence, lay out the tradeoff explicitly.
 
 ## Inputs you need
 
@@ -33,11 +31,11 @@ If any of these are missing, get them before producing a design. A design writte
 
 ## How to approach the work
 
-**Read the brief with two lenses in sequence.** First for comprehension: what is being asked, what problem does the user actually have? Then for design constraints: what limits the solution space, what are the non-goals that protect you from over-building?
+**Read the brief for design constraints** — what limits the solution space, what are the non-goals that protect you from over-building?
 
-**Survey the existing code.** Find the modules likely affected. Read their interfaces. Look at how similar features were built before — there's usually a pattern to follow or deliberately deviate from. Note any code smells you'll need to work around or address.
+**Survey the existing code.** Find the modules likely affected, read their interfaces, and look at how similar features were built before — there's usually a pattern to follow or deliberately deviate from.
 
-**Model the domain before designing the architecture.** Before drawing module boxes, identify the domain objects this feature operates on and how the user stories play out in domain terms. The module structure should emerge from the domain model, not the other way around. A module boundary drawn before the domain is understood often ends up in the wrong place. Specifically: (1) identify the key domain objects — what they know, what they do, what rules constrain them; (2) trace each user story as a domain-level narration — which objects are created or modified, which rules are checked, what state transitions occur. Only then decide how to structure the modules.
+**Model the domain before designing the architecture.** The module structure should emerge from the domain model, not the other way around. Specifically: (1) identify the key domain objects — what they know, what they do, what rules constrain them; (2) trace each user story as a domain-level narration — which objects are created or modified, which rules are checked, what state transitions occur. Only then decide how to structure the modules.
 
 **Before designing: clarification round.** Run a clarification round whenever either of the following is true:
 
@@ -53,9 +51,7 @@ Skip this step only if you have genuinely found no product-technical gaps **and*
 
 **Read [architecture-principles.md](architecture-principles.md)** for the three structural principles this design must respect: domain-first organization (screaming architecture), deep modules, and adapter boundaries. The Design Doc should make the proposed design's adherence to each visible. If the existing codebase is layered, note it in the Design Doc and propose a migration path or explicitly justify extending the layered structure. Call out adapter boundary placement explicitly so implementers know where each kind of code belongs.
 
-**Generate options before committing.** For each significant decision — one that affects more than one module or would be expensive to reverse — brainstorm at least two or three approaches. The first idea is rarely the best. Write down the alternatives even if you reject them quickly.
-
-When uncertain about a technical choice: recommend a spike if the uncertainty could change the entire approach; record it as a risk if it's about tuning or edge cases within an already-chosen approach.
+**Generate options before committing.** For each significant decision — one that affects more than one module or would be expensive to reverse — brainstorm at least two or three approaches and write down the alternatives even if you reject them quickly. When uncertain: recommend a spike if the uncertainty could change the entire approach; record it as a risk if it's about tuning or edge cases within an already-chosen approach.
 
 **Identify the cross-cutting concerns.** Read [cross-cutting-concerns.md](cross-cutting-concerns.md) and walk the list explicitly — most design failures happen because one of these was forgotten.
 
@@ -156,14 +152,7 @@ Things explicitly deferred. This protects the planning phase from scope creep.
 
 ## What good looks like
 
-A good Design Doc is:
-
-- **Architectural, not implementational.** It says which modules exist and what their interfaces are — not how those modules are coded internally. The planning phase fills in the implementation details.
-- **Diagrammed.** A diagram showing components and connections is worth more than paragraphs of prose. Produce one.
-- **Specific at the boundary level.** Module interfaces, external system connections, communication patterns — these should be named precisely. "Add a queue" is bad. "Add an async task queue between the `OrderService` and the `NotificationAdapter`; the `OrderService` enqueues a `OrderConfirmed` event; the `NotificationAdapter` dequeues it and calls the email service" is good.
-- **Honest about uncertainty.** A design that pretends everything is known is fragile. Naming what you don't know lets reviewers help.
-- **Aware of the existing code.** Designs that ignore existing patterns produce inconsistent codebases. Either follow the pattern or explicitly say "we're deviating because X."
-- **Skimmable.** A reviewer should be able to understand the architecture from the diagram plus headings in under 10 minutes.
+A good Design Doc is architectural (not implementational), diagrammed, specific at boundary level ("add an async task queue between `OrderService` and `NotificationAdapter`" not "add a queue"), honest about uncertainty, aware of existing patterns (follow or explicitly deviate), and skimmable in under 10 minutes from diagram plus headings.
 
 ## When the design is complete
 
@@ -180,10 +169,7 @@ If you find yourself writing "TBD" or "to be determined in implementation" for m
 
 ## What you do not produce
 
-- Tickets or sprint plans (Planning phase)
-- Production code (Implementation phase)
-- Rollout plans, test strategies, observability configuration, runbook entries (Planning phase — these belong in tickets)
-- Detailed UI mockups beyond what's needed to communicate module responsibilities
+Tickets, production code, rollout plans, test strategies, observability configuration, runbook entries, or detailed UI mockups - see the "What does NOT belong in the design" list in the template above.
 
 ## After writing
 
@@ -193,7 +179,7 @@ If the design surfaced new cross-cutting constraints confirmed in the clarificat
 
 If this design introduced new technical or domain terms (module names, entity names, process names, API concepts) — or if any glossary corrections were identified during the terminology check — create `docs/features/<feature-slug>/tickets/lang-update.md` (create the directory if needed). The ticket goal is to update `UBIQUITOUS_LANGUAGE.md`; include each term, its definition, and any corrections in the acceptance criteria, following [ubiquitous-language-update.md](ubiquitous-language-update.md). Use the same ticket headers.
 
-If the codebase survey during design surfaced code smells or findings outside the scope of this feature, collect them into a list. Then use the `Agent` tool with `subagent_type: "general-purpose"` to hand them off. The agent's self-contained prompt should be:
+If the codebase survey surfaced code smells or findings outside this feature's scope, collect them and use the `Agent` tool with `subagent_type: "general-purpose"` to hand them off. The agent's self-contained prompt should be:
 
 > Invoke the `boy-scout` skill. The following incidental findings were noticed during the design survey for feature slug `<slug>`:
 >
@@ -201,11 +187,11 @@ If the codebase survey during design surfaced code smells or findings outside th
 >
 > Triage each finding: apply trivially safe fixes immediately; write a ticket at `docs/features/boy-scout/tickets/` for everything else. The `Noticed during` field should read: "design survey for `<slug>`".
 
-Noting smells in the Design Doc is optional context; tracking them as tickets is required.
+Tracking findings as tickets is required; noting them in the Design Doc is optional.
 
 Tell the user what was written and where.
 
-Then run an automated review in a clean context. Use the `Agent` tool with `subagent_type: "general-purpose"` so the review agent has no memory of this conversation — this gives the design fresh eyes. The agent's self-contained prompt should be:
+Then run an automated review in a clean context. Use the `Agent` tool with `subagent_type: "general-purpose"`. The agent's self-contained prompt should be:
 
 > Invoke the `design-review` skill for feature slug `<slug>`. The Design Doc is at `docs/features/<slug>/design.md`.
 

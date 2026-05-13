@@ -5,9 +5,7 @@ description: Use this skill to bootstrap an ARCHITECTURE.md file in a brownfield
 
 # Architecture Init
 
-The goal of this skill is to excavate and document the cross-cutting architectural decisions already baked into a brownfield codebase — decisions that constrain future design choices but are not visible at the point where they become relevant.
-
-The output is `ARCHITECTURE.md` at the project root. This file becomes a constraint reference for agents working in the project: it prevents agents from proposing changes that would conflict with decisions already made and already consequential.
+Excavate and document the cross-cutting architectural decisions already baked into a brownfield codebase — decisions that constrain future choices but are not visible at the point where they become relevant. The output is `ARCHITECTURE.md` at the project root, a constraint reference that prevents agents from proposing changes that conflict with already-consequential decisions.
 
 Read [architecture.md](architecture.md) for the format, threshold criteria, and update instructions. Apply them throughout this skill.
 
@@ -29,17 +27,13 @@ Before exploring, check:
 
 ## Check for drift in existing entries
 
-If `ARCHITECTURE.md` already exists, do a drift check as part of your codebase exploration.
-
-For each entry in the file, find the code evidence that would confirm or contradict the Rule:
+If `ARCHITECTURE.md` already exists, do a drift check as part of your codebase exploration. For each entry, find code evidence confirming or contradicting the Rule:
 
 - **Confirmed** — code matches the rule; no action needed
 - **Potentially drifted** — code shows evidence of a different or conflicting approach
-- **Cannot verify** — the relevant code was not found or is genuinely ambiguous
+- **Cannot verify** — relevant code not found or genuinely ambiguous
 
-Do not auto-update or remove drifted entries. Surface them as findings. The user decides whether to remove the entry, update the rule, or confirm the code change was unintentional.
-
-Include drift findings before presenting new candidates.
+Do not auto-update or remove drifted entries. Surface them as findings; the user decides how to resolve each. Include drift findings before presenting new candidates.
 
 ## How to explore the codebase
 
@@ -56,14 +50,14 @@ You do not need to read everything. You need enough to characterize each decisio
 
 ## Decisions to look for
 
-For each category, identify what cross-cutting choice the codebase has already made — and whether an agent would encounter it naturally when working on a new feature:
+For each category, identify what cross-cutting choice the codebase has already made:
 
-- **Technology stack** — primary language(s), web framework, database(s), cache, message queue. The stack itself is usually obvious; the constraints that follow from it are what matter.
-- **Layering and call conventions** — how the layers call each other (e.g., route handlers call service functions, service functions call repositories — not route handlers calling repositories directly). This is a prime candidate because it is often not enforced by the framework and not visible when starting a new feature.
-- **Data access** — ORM vs. raw SQL; migration tooling; whether repositories are the only DB touch point or whether direct queries are also acceptable.
+- **Technology stack** — primary language(s), web framework, database(s), cache, message queue. The constraints that follow from the stack are what matter, not the stack itself.
+- **Layering and call conventions** — how layers call each other (e.g., route handlers → service functions → repositories, never skipping layers). Prime candidate: often unenforced by the framework and invisible when starting a new feature.
+- **Data access** — ORM vs. raw SQL; migration tooling; whether repositories are the only DB touch point or direct queries are also acceptable.
 - **API style** — REST, GraphQL, gRPC, or mixed; whether mutations go through a specific mechanism (e.g., server actions, dedicated endpoints); versioning approach.
 - **Auth approach** — session cookies, JWT, OAuth, API keys; where enforcement lives; any intentional simplifications (e.g., hardcoded credentials for an internal tool — note these explicitly because they look like mistakes).
-- **Testing approach** — unit vs. integration emphasis; what is mocked vs. real; whether there is a real-database-only policy or a mock-friendly policy.
+- **Testing approach** — unit vs. integration emphasis; what is mocked vs. real; real-database-only policy or mock-friendly policy.
 - **External service integration** — adapter pattern vs. direct calls; whether all external I/O goes through a single layer.
 - **Build and deployment** — container vs. bare-metal; CI/CD toolchain; environment config strategy.
 
@@ -78,15 +72,15 @@ The most valuable entries are layering conventions, data-access restrictions, an
 
 ## Present findings to the user
 
-Before writing anything, present findings in two parts.
+Before writing anything, present findings in two parts:
 
-**Part 1 — Drift findings** (only if the file already exists): For each entry, report its classification. List drifted entries with the specific code evidence (file and usage). List cannot-verify entries. Skip confirmed entries — a one-line summary count is enough ("5 existing entries confirmed").
+**Part 1 — Drift findings** (only if the file already exists): List drifted entries with specific code evidence (file and usage); list cannot-verify entries; summarize confirmed entries in one line ("5 entries confirmed").
 
-**Part 2 — New constraints found**: Grouped by area, with proposed Decision, Rule, and Why for each. Flag any entry where the Why is inferred rather than explicit in the code.
+**Part 2 — New constraints found**: Grouped by area, with proposed Decision, Rule, and Why. Flag any Why that is inferred rather than explicit in the code.
 
-Then ask the user to confirm which entries to write and how to resolve any drifted ones. Do not write anything until you have confirmation.
+Ask the user to confirm which entries to write and how to resolve drifted ones. Do not write anything until confirmed.
 
-In non-interactive or sub-agent contexts, proceed with your best judgement and flag every inferred Why in the file.
+In non-interactive or sub-agent contexts, proceed with best judgement and flag every inferred Why in the file.
 
 ## Write ARCHITECTURE.md
 
