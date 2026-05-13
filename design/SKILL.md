@@ -21,7 +21,7 @@ The feature slug is a required argument. If the user did not provide one at invo
 
 Before starting design, make sure you have:
 
-1. **The Feature Brief.** Read the entry artifact from `docs/features/<slug>/discovery.md`; if not found but `refactoring.md` exists, tell the user this feature uses the refactoring path and the next step is `planning`, not `design`; if neither exists, tell the user and stop. If they want to skip discovery entirely, push back gently — at minimum get a few sentences of problem statement and goals before designing.
+1. **The Feature Brief.** Read the entry artifact from `docs/features/<slug>/discovery.md`; if not found but `refactoring.md` exists, tell the user this feature uses the refactoring path and the next step is `planning`, not `design`; if neither exists, tell the user and stop. If they want to skip discovery entirely, push back gently — at minimum get a few sentences of problem statement and goals before designing. If `docs/features/<slug>/discovery-review-*.md` exists and the most recent verdict is Block or Request changes, tell the user the discovery phase has unresolved review findings and suggest addressing them before designing. Proceed if the user explicitly confirms.
 2. **Access to the codebase.** Most design decisions are constrained by what already exists. You need to read the existing code, not guess at it.
 3. **Knowledge of the team's conventions.** Check `CLAUDE.md` / `AGENTS.md` at the repo root and any subdirectory equivalents. They tell you the existing patterns, the test framework, deployment model, etc.
 4. **The project's ubiquitous language.** Read `UBIQUITOUS_LANGUAGE.md` at the project root if it exists. Use the canonical terms in your design — for modules, entities, processes, and APIs. Don't introduce synonyms for concepts that already have names.
@@ -33,7 +33,7 @@ If any of these are missing, get them before producing a design. A design writte
 
 **Read the brief for design constraints** — what limits the solution space, what are the non-goals that protect you from over-building?
 
-**Survey the existing code.** Find the modules likely affected, read their interfaces, and look at how similar features were built before — there's usually a pattern to follow or deliberately deviate from.
+**Survey the existing code.** Find the modules likely affected, read their interfaces, and look at how similar features were built before — there's usually a pattern to follow or deliberately deviate from. During this survey, also run the terminology check: do any proposed module names, entity names, or process names conflict with entries in `UBIQUITOUS_LANGUAGE.md`? Note conflicts now — they need to be resolved before the Design Doc is written, and may surface questions for the clarification round.
 
 **Model the domain before designing the architecture.** The module structure should emerge from the domain model, not the other way around. Specifically: (1) identify the key domain objects — what they know, what they do, what rules constrain them; (2) trace each user story as a domain-level narration — which objects are created or modified, which rules are checked, what state transitions occur. Only then decide how to structure the modules.
 
@@ -43,7 +43,7 @@ If any of these are missing, get them before producing a design. A design writte
 
 2. **A new architectural constraint is about to be added to `ARCHITECTURE.md`** — before committing any entry, always present the proposed constraint, its rule, and the rationale to the user and ask for confirmation or redirection. Adding to `ARCHITECTURE.md` without user confirmation is never acceptable.
 
-Collect all questions from both cases and ask them together in a single structured message, grouped by type (product decisions first, architectural constraint confirmations second), before producing any design output. Wait for the user's response, then incorporate the answers. In non-interactive or sub-agent contexts where no response arrives, proceed rather than blocking.
+Collect all questions from both cases and ask them together in a single structured message, grouped by type (product decisions first, architectural constraint confirmations second), before producing any design output. Wait for the user's response, then incorporate the answers. In non-interactive or sub-agent contexts (invoked via the `Agent` tool, or when a response has not arrived within one conversational turn), proceed rather than blocking.
 
 If the user doesn't answer some or all questions — or no response arrives — pick reasonable defaults, apply them, and flag them together in a single consolidated block at the top of the Design Doc: *"Clarification round: no response received. The following values were assumed — correct during implementation if needed: [list each assumption]."*
 
@@ -59,7 +59,7 @@ Skip this step only if you have genuinely found no product-technical gaps **and*
 
 **Surface NFR-driven decisions explicitly.** When a non-functional requirement from the Feature Brief (latency target, throughput, reliability) directly drives a structural decision — e.g., "we add a cache layer because the latency target rules out a database query on every request" — state that connection explicitly inline in the Proposed design, next to the decision it drives. NFRs that don't change the structure don't belong in the design doc at all.
 
-**Check terminology.** Does this design introduce new canonical terms — module names, entity names, process names — that aren't yet in `UBIQUITOUS_LANGUAGE.md`? Do any proposed names conflict with existing entries? Resolve conflicts before finalizing the design; inconsistent names in a design doc become inconsistent names in code. If a proposed name conflicts with a glossary entry for the same concept, defer to the glossary: rename the design element. If you believe the glossary entry is wrong, note the discrepancy in the Design Doc and include the correction in the lang-update ticket (see below). The glossary is authoritative; the design adapts to it.
+**Finalize terminology.** After the clarification round, confirm that all module names, entity names, and process names in the design are consistent with `UBIQUITOUS_LANGUAGE.md`. If a proposed name conflicts with a glossary entry for the same concept, defer to the glossary: rename the design element. If you believe the glossary entry is wrong, note the discrepancy in the Design Doc and include the correction in the lang-update ticket (see below). The glossary is authoritative; the design adapts to it. Check also for new terms introduced by the design that should be added to the glossary (they will go in the lang-update ticket).
 
 **Think about what changes outside the new code.** Database migrations, config changes, infrastructure changes, deployment order constraints, third-party integrations, monitoring/alerting updates, runbook entries. These are often where production incidents come from.
 
@@ -193,11 +193,13 @@ Tell the user what was written and where.
 
 Then run an automated review in a clean context. Use the `Agent` tool with `subagent_type: "general-purpose"`. The agent's self-contained prompt should be:
 
-> Invoke the `design-review` skill for feature slug `<slug>`. The Design Doc is at `docs/features/<slug>/design.md`.
+> Invoke the `design-review` skill for feature slug `<slug>`. The Design Doc is at `docs/features/<slug>/design.md`. The Feature Brief is at `docs/features/<slug>/discovery.md`.
 
-After the review agent finishes, read the review file it saved at `docs/features/<slug>/design-review-<NN>.md`. Update the Design Doc to address every finding:
+After the review agent finishes, list `docs/features/<slug>/` and open the newest `design-review-*.md` file (the one just created). Update the Design Doc to address every finding:
 - **Blocker**: must be resolved before leaving this phase — revise the design
 - **Should-fix**: address these — they represent real quality gaps
 - **Nit**: use judgment
+
+If any findings were at Blocker severity, run the automated review once more after addressing them (same subagent prompt above) — a self-corrected blocker should be verified by a fresh review pass.
 
 Tell the user what the review found, what was addressed, and the final verdict. Then suggest the next step is the planning phase.

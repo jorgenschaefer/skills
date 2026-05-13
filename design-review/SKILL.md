@@ -67,7 +67,7 @@ Read [architecture-principles.md](architecture-principles.md) for the canonical 
 
 ### Cross-cutting architectural concerns
 
-Check whether the design addresses each concern at the architecture level (which module is responsible, which external system handles it) — not the implementation level (specific field names, retry counts, runbook entries).
+Read [cross-cutting-concerns.md](cross-cutting-concerns.md) and walk the full list explicitly. Check whether the design addresses each concern at the architecture level (which module is responsible, which external system handles it) — not the implementation level (specific field names, retry counts, runbook entries). Key concerns to call out explicitly:
 
 - **Authentication and authorization.** Which module validates identity? Does the domain layer receive a token or a resolved user object? Are authorization decisions at the adapter boundary or domain layer?
 - **External system ownership.** For each external system, which module owns the adapter?
@@ -75,6 +75,7 @@ Check whether the design addresses each concern at the architecture level (which
 - **Security and PII.** New trust boundaries, sensitive data, encryption or audit concerns at the module-boundary level.
 - **Performance constraints.** Latency or throughput constraints that affect architectural choices — a constraint that should influence module design but isn't reflected is a finding.
 - **Multi-tenancy / data isolation** if applicable — cross-tenant leaks are a classic design-level oversight.
+- **Idempotency, rate limiting, backwards compatibility, feature flags, cost of new external dependencies** — these are in the full list; missing any of them for a design that introduces them is a should-fix.
 
 ### Alternatives and reasoning
 

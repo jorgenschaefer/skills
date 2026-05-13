@@ -1,6 +1,6 @@
 ---
 name: refactor-design
-description: Use this skill when the user wants a comprehensive structural review of a codebase — not a targeted fix for a specific bug or feature, but a survey of where the architecture is creating friction. Produces a Refactoring Proposal that feeds directly into the planning phase. Trigger when the user says things like "the codebase is getting hard to change", "clean up the architecture", "do a structural review", "improve our module boundaries", or asks to improve maintainability project-wide. Do NOT use for feature design (use the design skill) or for reviewing a specific recent change (use implementation-review).
+description: Use this skill when the user wants a comprehensive structural review of a codebase — not a targeted fix for a specific bug or feature, but a survey of where the architecture is creating friction. Produces a Refactoring Proposal that feeds directly into the planning phase. Trigger when the user says things like "the codebase is getting hard to change", "clean up the architecture", "do a structural review", "improve our module boundaries", or asks to improve maintainability project-wide. Do NOT use for feature design (use the design skill) or for reviewing a specific recent change (use implementation-tdd-review).
 ---
 
 # Refactor Design
@@ -83,9 +83,11 @@ Then run an automated review via the `Agent` tool (`subagent_type: "general-purp
 
 > Invoke the `refactor-design-review` skill for feature slug `<slug>`. The Refactoring Proposal is at `docs/features/<slug>/refactoring.md`.
 
-After the review agent finishes, read the review file it saved at `docs/features/<slug>/refactor-design-review-<NN>.md`. Update the Refactoring Proposal to address every finding:
+After the review agent finishes, list `docs/features/<slug>/` and open the newest `refactor-design-review-*.md` file (the one just created). Update the Refactoring Proposal to address every finding:
 - **Blocker**: must be resolved before leaving this phase — revise the proposal
 - **Should-fix**: address these — they represent real quality gaps
 - **Nit**: use judgment
+
+If any findings were at Blocker severity, run the automated review once more after addressing them (same subagent prompt above) — a self-corrected blocker should be verified by a fresh review pass.
 
 Tell the user what the review found, what was addressed, and the final verdict. Then suggest the next step is the planning phase — run the `planning` skill with the same feature slug to break the Refactoring Proposal into tickets.

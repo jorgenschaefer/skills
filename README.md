@@ -26,14 +26,15 @@ npx skills add jorgenschaefer/skills@<skill-name>
 - **discovery** — explore a feature or problem; produces a Feature Brief with a problem description and user stories
 - **design** — translate a Feature Brief into a Design Doc describing the software architecture (modules, interfaces, external systems, communication patterns, data model)
 - **planning** — break a Design Doc (or Feature Brief, or problem statement) into independently-deployable tickets; every ticket is a tracer bullet
-- **implementation** — implement tickets one at a time using TDD (red-green-refactor); orchestrator mode runs the full loop with review and context compaction between tickets
+- **implementation** — orchestrates the full implementation loop for a feature slug; spawns `implementation-tdd` and `implementation-tdd-review` subagents per ticket
+- **implementation-tdd** — implement a single ticket using TDD (red-green-refactor); also the subagent used by the implementation orchestrator
 
 ### Reviews
 
 - **discovery-review** — review a Feature Brief before it advances to design
 - **design-review** — review a Design Doc before breaking into tickets (highest-leverage review)
 - **planning-review** — review a Ticket Backlog before implementation begins
-- **implementation-review** — review a code change before merging; checks ticket compliance and delegates code quality to the code-review skill
+- **implementation-tdd-review** — review a code change before merging; checks ticket compliance and applies all twelve code-quality dimensions
 - **refactor-design-review** — review a Refactoring Proposal before it advances to planning
 
 ### Code review
@@ -59,7 +60,7 @@ The durable artifacts — any updates to [`ARCHITECTURE.md`](ARCHITECTURE.md), [
 
 ## Credits
 
-The TDD reference files in `implementation/` (`tests.md`, `deep-modules.md`, `mocking.md`, `interface-design.md`, `refactoring.md`) are adapted from [Matt Pocock](https://mattpocock.com)'s TDD skill.
+The TDD reference files in `implementation-tdd/` (`tests.md`, `deep-modules.md`, `mocking.md`, `interface-design.md`, `refactoring.md`) are adapted from [Matt Pocock](https://mattpocock.com)'s TDD skill.
 
 ## Adding a new skill
 

@@ -1,11 +1,11 @@
 ---
-name: implementation-review
-description: Use this skill to review a code change produced by the Implementation phase before it gets merged. Checks workflow compliance (ticket adherence, acceptance criteria, design alignment, scope) and applies the nine code-quality dimensions, combining both into a single verdict. Trigger whenever the user says "review this PR", "code review for ticket X", "is this implementation ready to merge", or hands you a diff and asks for feedback. Always use a clean context, separate from the conversation that produced the code, since the value of the review depends on fresh eyes that don't share the implementer's blind spots.
+name: implementation-tdd-review
+description: Use this skill to review a code change produced by the Implementation phase before it gets merged. Checks workflow compliance (ticket adherence, acceptance criteria, design alignment, scope) and applies all twelve code-quality dimensions, combining both into a single verdict. Trigger whenever the user says "review this PR", "code review for ticket X", "is this implementation ready to merge", or hands you a diff and asks for feedback. Always use a clean context, separate from the conversation that produced the code, since the value of the review depends on fresh eyes that don't share the implementer's blind spots.
 ---
 
 # Implementation Review
 
-Reviews a code change produced by the Implementation phase. Read [review-base.md](review-base.md) first for reviewer stance, output format, and severity definitions. Works in four sections: Gather artifacts, Code quality, Workflow compliance, and Combined verdict.
+Reviews a code change produced by the Implementation phase. Read [review-base.md](review-base.md) first for reviewer stance, output format, and severity definitions. Read [architecture-principles.md](architecture-principles.md) for the structural principles the implementation should respect, and [code-style.md](code-style.md) for the expected code style. Works in four sections: Gather artifacts, Code quality, Workflow compliance, and Combined verdict.
 
 ## Gather artifacts
 
@@ -13,10 +13,10 @@ Before reviewing, confirm you have:
 
 1. The **diff or changed files** in full.
 2. The **ticket** — acceptance criteria, scope, in-scope/out-of-scope.
-3. The **Design Doc** — architecture decisions and proposed approach.
+3. The **Design Doc** — architecture decisions and proposed approach. If the ticket is a boy-scout ticket (path contains `docs/features/boy-scout/tickets/`), there is no Design Doc — skip all design alignment checks and note that in "What was NOT checked."
 4. **CI status** — if failing, record it as a blocker in Combined verdict immediately; proceed with Code quality and Workflow compliance to document other findings, but the verdict is Block regardless.
 
-If ticket or Design Doc is missing, note it; mark any unchecked Workflow compliance items as "could not verify: no ticket provided." Confirm you're in a clean context; if unsure, note it in "What was NOT checked."
+If ticket or Design Doc is missing (and this is not a boy-scout ticket), note it; mark any unchecked Workflow compliance items as "could not verify: no ticket/design provided." Confirm you're in a clean context; if unsure, note it in "What was NOT checked."
 
 ## Code quality
 
@@ -78,7 +78,7 @@ Determine the combined verdict:
 - **Approve with comments** if: only nits remain across both dimensions.
 - **Approve** if: rare. Hold the bar.
 
-Save the combined review at `docs/features/<slug>/implementation-review-<NN>.md`. Reference specific files, functions, and line ranges in findings. If the verdict is Approve or Approve with comments, suggest merging and note any follow-up tickets from the PR description.
+Save the combined review at `docs/features/<slug>/implementation-tdd-review-<NN>.md` (use the next available number). In the `**Artifact:**` field of the review header, put the path to the ticket file this review covers — e.g., `docs/features/<slug>/tickets/001-name.md`. This field is used by `workflow-status` to map reviews to tickets. Reference specific files, functions, and line ranges in findings. If the verdict is Approve or Approve with comments, suggest merging and note any follow-up tickets from the PR description.
 
 ## Common findings
 
@@ -98,4 +98,3 @@ Save the combined review at `docs/features/<slug>/implementation-review-<NN>.md`
 - Silent deviation from a Design Doc decision or `ARCHITECTURE.md` constraint without explanation
 
 Note: code quality findings (architecture, adapter boundaries, test quality, correctness, security, observability, performance, simplicity, consistency, documentation) come from [code-quality-dimensions.md](code-quality-dimensions.md) applied in the Code quality section.
-

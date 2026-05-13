@@ -53,6 +53,8 @@ In practice, some dependencies are unavoidable. A ticket that displays data need
 
 **Read the entry artifact.** Try `docs/features/<slug>/design.md` first; if not found, try `docs/features/<slug>/refactoring.md`; if not found, try `docs/features/<slug>/discovery.md`. If none of these exist, the user may be starting planning directly for a small feature — ask for a brief problem statement and the list of user stories or interactions to cover, and proceed from that. Note the major components, the proposed changes, the module interactions, the cross-cutting concerns. Anything explicitly out-of-scope in the entry artifact is also out-of-scope here.
 
+After reading the entry artifact, find the most recent review for it — `docs/features/<slug>/design-review-*.md` for a Design Doc, `docs/features/<slug>/refactor-design-review-*.md` for a Refactoring Proposal. If the most recent verdict is Block or Request changes, tell the user and suggest addressing those findings before planning. Proceed if the user explicitly confirms.
+
 **Slice by user story, not by layer.** For each user story or meaningful user interaction in the entry artifact, ask: what is the thinnest end-to-end implementation that makes this story demonstrably work? That's a ticket. It must touch every architectural layer it needs — it is not a database-layer ticket or a UI-layer ticket; it is a story-complete ticket that happens to need both.
 
 Order tickets by value and risk — high-risk and high-value pieces first. Tickets that depend on others come after their dependencies; everything else can parallelize.
@@ -162,9 +164,11 @@ Then run an automated review in a clean context. Use the `Agent` tool with `suba
 
 > Invoke the `planning-review` skill for feature slug `<slug>`. The backlog is at `docs/features/<slug>/tickets/`.
 
-After the review agent finishes, read the review file it saved at `docs/features/<slug>/tickets-review-<NN>.md`. Update the tickets and backlog README to address every finding:
+After the review agent finishes, list `docs/features/<slug>/` and open the newest `tickets-review-*.md` file (the one just created). Update the tickets and backlog README to address every finding:
 - **Blocker**: must be resolved before leaving this phase — revise the tickets
 - **Should-fix**: address these — they represent real quality gaps
 - **Nit**: use judgment
+
+If any findings were at Blocker severity, run the automated review once more after addressing them (same subagent prompt above) — a self-corrected blocker should be verified by a fresh review pass.
 
 Tell the user what the review found, what was addressed, and the final verdict. Then suggest the next step is implementing tickets one at a time using the `implementation` skill.

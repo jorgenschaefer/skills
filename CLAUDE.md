@@ -16,7 +16,7 @@ Published as `jorgenschaefer/skills`. Install all skills: `npx skills add jorgen
   *.md           # Optional: reference files the skill can read
 ```
 
-The `shared/review-base.md` file contains shared base content read by each phase-specific review skill (`discovery-review`, `design-review`, `planning-review`, `implementation-review`, `refactor-design-review`). These are top-level skill directories, not nested sub-skills.
+The `shared/review-base.md` file contains shared base content read by each phase-specific review skill (`discovery-review`, `design-review`, `planning-review`, `implementation-tdd-review`, `refactor-design-review`). These are top-level skill directories, not nested sub-skills.
 
 ## The workflow these skills implement
 
@@ -25,8 +25,8 @@ The skills together define a phased agentic development workflow. Each skill req
 1. **discovery** → produces a Feature Brief at `docs/features/<feature-slug>/discovery.md`
 2. **design** → produces a Design Doc at `docs/features/<feature-slug>/design.md`; may update [`ARCHITECTURE.md`](ARCHITECTURE.md) with new cross-cutting constraints; reads `discovery.md` as the entry artifact
 3. **planning** → produces a Ticket Backlog at `docs/features/<feature-slug>/tickets/` (individual ticket files + `README.md` overview); reads `design.md` or `refactoring.md` as the entry artifact
-4. **implementation** → implements one ticket at a time using TDD; incidental cleanup finds go to `docs/features/boy-scout/tickets/`
-5. **review** → five phase-specific skills (`discovery-review`, `design-review`, `planning-review`, `implementation-review`, `refactor-design-review`), all reading the shared base in `shared/review-base.md`; reviews are saved at `docs/features/<feature-slug>/<artifact>-review-<NN>.md`
+4. **implementation** → orchestrates the full loop for a feature slug; spawns `implementation-tdd` (TDD implementation) and `implementation-tdd-review` (review) subagents per ticket; incidental cleanup finds go to `docs/features/boy-scout/tickets/`
+5. **review** → five phase-specific skills (`discovery-review`, `design-review`, `planning-review`, `implementation-tdd-review`, `refactor-design-review`), all reading the shared base in `shared/review-base.md`; reviews are saved at `docs/features/<feature-slug>/<artifact>-review-<NN>.md`
 
 `refactor-design` is an alternative entry point: it produces a Refactoring Proposal at `docs/features/<feature-slug>/refactoring.md` instead of a Feature Brief. The downstream skill is `planning`, which accepts the Refactoring Proposal directly.
 

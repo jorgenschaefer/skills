@@ -36,7 +36,7 @@ cleanup() {
         git -C "$ROOT" restore --staged \
             design-review/review-base.md \
             discovery-review/review-base.md \
-            implementation-review/review-base.md \
+            implementation-tdd-review/review-base.md \
             planning-review/review-base.md 2>/dev/null || true
         git -C "$ROOT" restore --staged shared/review-base.md 2>/dev/null \
             || git -C "$ROOT" rm --cached shared/review-base.md 2>/dev/null || true
@@ -66,8 +66,8 @@ assert_zero "design-review/review-base.md matches source" "$r"
 r=0; diff -q shared/review-base.md discovery-review/review-base.md > /dev/null 2>&1 || r=$?
 assert_zero "discovery-review/review-base.md matches source" "$r"
 
-r=0; diff -q shared/review-base.md implementation-review/review-base.md > /dev/null 2>&1 || r=$?
-assert_zero "implementation-review/review-base.md matches source" "$r"
+r=0; diff -q shared/review-base.md implementation-tdd-review/review-base.md > /dev/null 2>&1 || r=$?
+assert_zero "implementation-tdd-review/review-base.md matches source" "$r"
 
 r=0; diff -q shared/review-base.md planning-review/review-base.md > /dev/null 2>&1 || r=$?
 assert_zero "planning-review/review-base.md matches source" "$r"
@@ -84,8 +84,8 @@ assert_zero "changes propagate to design-review" "$r"
 r=0; grep -q "SENTINEL_TEST" discovery-review/review-base.md || r=$?
 assert_zero "changes propagate to discovery-review" "$r"
 
-r=0; grep -q "SENTINEL_TEST" implementation-review/review-base.md || r=$?
-assert_zero "changes propagate to implementation-review" "$r"
+r=0; grep -q "SENTINEL_TEST" implementation-tdd-review/review-base.md || r=$?
+assert_zero "changes propagate to implementation-tdd-review" "$r"
 
 r=0; grep -q "SENTINEL_TEST" planning-review/review-base.md || r=$?
 assert_zero "changes propagate to planning-review" "$r"
@@ -129,14 +129,14 @@ assert_zero "pre-commit.sh includes architecture-principles check call" "$r"
 
 echo "=== architecture-principles.md: propagated copies ==="
 
-for skill in code-review design design-review implementation planning planning-review refactor-design; do
+for skill in code-review design design-review implementation-tdd implementation-tdd-review planning planning-review refactor-design; do
     r=0; diff -q shared/architecture-principles.md "$skill/architecture-principles.md" > /dev/null 2>&1 || r=$?
     assert_zero "$skill/architecture-principles.md matches source" "$r"
 done
 
 echo "=== architecture-principles.md: SKILL.md references ==="
 
-for skill in implementation code-review design planning refactor-design; do
+for skill in implementation-tdd implementation-tdd-review code-review design planning refactor-design; do
     r=0; grep -q "architecture-principles.md" "$skill/SKILL.md" 2>/dev/null || r=$?
     assert_zero "$skill/SKILL.md references architecture-principles.md" "$r"
 done
@@ -172,16 +172,22 @@ echo "=== code-style.md: propagated copies ==="
 r=0; diff -q shared/code-style.md code-review/code-style.md > /dev/null 2>&1 || r=$?
 assert_zero "code-review/code-style.md matches source" "$r"
 
-r=0; diff -q shared/code-style.md implementation/code-style.md > /dev/null 2>&1 || r=$?
-assert_zero "implementation/code-style.md matches source" "$r"
+r=0; diff -q shared/code-style.md implementation-tdd/code-style.md > /dev/null 2>&1 || r=$?
+assert_zero "implementation-tdd/code-style.md matches source" "$r"
+
+r=0; diff -q shared/code-style.md implementation-tdd-review/code-style.md > /dev/null 2>&1 || r=$?
+assert_zero "implementation-tdd-review/code-style.md matches source" "$r"
 
 echo "=== code-style.md: SKILL.md references ==="
 
 r=0; grep -q "code-style.md" code-review/SKILL.md 2>/dev/null || r=$?
 assert_zero "code-review/SKILL.md references code-style.md" "$r"
 
-r=0; grep -q "code-style.md" implementation/SKILL.md 2>/dev/null || r=$?
-assert_zero "implementation/SKILL.md references code-style.md" "$r"
+r=0; grep -q "code-style.md" implementation-tdd/SKILL.md 2>/dev/null || r=$?
+assert_zero "implementation-tdd/SKILL.md references code-style.md" "$r"
+
+r=0; grep -q "code-style.md" implementation-tdd-review/SKILL.md 2>/dev/null || r=$?
+assert_zero "implementation-tdd-review/SKILL.md references code-style.md" "$r"
 
 # Live skill invocation (confirming agents find and read code-style.md at runtime) is
 # manual: invoke code-review and implementation skills in a test project and observe.

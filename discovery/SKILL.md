@@ -156,9 +156,11 @@ Run an automated review in a clean context: use the `Agent` tool with `subagent_
 
 > Invoke the `discovery-review` skill for feature slug `<slug>`. The Feature Brief is at `docs/features/<slug>/discovery.md`.
 
-After the review agent finishes, read `docs/features/<slug>/discovery-review-<NN>.md` and update the Feature Brief to address every finding:
+After the review agent finishes, list `docs/features/<slug>/` and open the newest `discovery-review-*.md` file (the one just created). Update the Feature Brief to address every finding:
 - **Blocker**: revise the brief before leaving this phase
 - **Should-fix**: address — these are real quality gaps
 - **Nit**: incorporate if easy, skip if trivial
+
+If any findings were at Blocker severity, run the automated review once more after addressing them (same subagent prompt above) — a self-corrected blocker should be verified by a fresh review pass.
 
 Tell the user what the review found, what was addressed, and the final verdict. Then suggest the design phase as the next step.

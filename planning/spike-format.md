@@ -14,9 +14,9 @@ One sentence: what does this spike need to answer?
 Why this needs to be answered before feature work can proceed.
 
 ## Output
-The output is a written recommendation (not production code): what we should do, and why.
+The output is a written recommendation (not production code): what we should do and why. Add the recommendation as a `## Findings` section directly in this ticket file and update **Status** to Done.
 
 ## Definition of done
-- [ ] Written recommendation saved to <location>
+- [ ] `## Findings` section added to this ticket file with the recommendation: the answer to the Question, the evidence considered, and the recommended next step
 - [ ] Follow-up feature tickets created or updated based on findings
 ```

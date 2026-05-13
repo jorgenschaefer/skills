@@ -14,13 +14,13 @@ check() {
 }
 
 check review-base.md \
-  design-review discovery-review implementation-review planning-review refactor-design-review
+  design-review discovery-review implementation-tdd-review planning-review refactor-design-review
 
 check architecture-principles.md \
-  code-review design design-review implementation planning planning-review refactor-design refactor-design-review
+  code-review design design-review implementation-tdd implementation-tdd-review planning planning-review refactor-design refactor-design-review
 
 check code-style.md \
-  code-review implementation
+  code-review implementation-tdd implementation-tdd-review
 
 if [[ ${#out_of_sync[@]} -gt 0 ]]; then
   echo "Propagation updated files that are not staged. Stage them and recommit:"

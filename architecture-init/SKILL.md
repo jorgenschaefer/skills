@@ -80,7 +80,7 @@ Before writing anything, present findings in two parts:
 
 Ask the user to confirm which entries to write and how to resolve drifted ones. Do not write anything until confirmed.
 
-In non-interactive or sub-agent contexts, proceed with best judgement and flag every inferred Why in the file.
+In non-interactive or sub-agent contexts (invoked via the `Agent` tool, or when a response has not arrived within one conversational turn), proceed with best judgement and flag every inferred Why in the file.
 
 ## Write ARCHITECTURE.md
 
