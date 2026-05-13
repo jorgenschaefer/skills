@@ -40,6 +40,13 @@ For each question below, either confirm the brief handles it well or write a fin
 - **Is any meaningful user interaction missing?** Consider who uses the feature and what they'd need to do. A brief with two stories for a complex feature probably missed some.
 - **Do stories smuggle in solutions?** The "I want to" clause should describe the desired behavior, not the implementation. "I want the API to return a 202" is a design decision, not a story.
 
+### Success criteria
+
+- **Is the Success criteria section present?** The brief must have this section. Missing it entirely is a should-fix — the design phase needs to know what "solved" looks like before it can make architectural tradeoffs.
+- **Are the criteria observable and measurable?** "Users are happy" is not a criterion. "A user can complete checkout without contacting support" is. Vague criteria are a should-fix.
+- **Do the criteria connect to the problem?** A criterion that would be met even if the stated problem wasn't solved doesn't belong here.
+- **Are criteria verifiable without reading code?** A criterion like "the code handles edge cases correctly" is testing implementation, not user-visible outcome.
+
 ### Non-goals
 
 - **Are non-goals listed?** Without explicit non-goals, scope creep in design is likely.
@@ -75,11 +82,13 @@ Easy-to-miss issues not covered above:
 - **Open questions with no resolution path.** Each open question should specify who resolves it and how; otherwise it's just a list of deferred problems.
 - **Problem statement solves a symptom.** "Support tickets are up" is a symptom; "users can't recover from payment failures without contacting support" is the cause. The design should target the cause.
 - **Stories bundle multiple independent goals.** A story that says "I want to do X and Y and Z" usually needs splitting. Each story should describe one interaction.
+- **Success criteria section missing.** The brief defines what to build but not how to verify it worked. The design phase needs this to evaluate tradeoffs.
+- **Success criteria are vague or unmeasurable.** Criteria like "users are satisfied" or "the system performs well" cannot be verified and don't help the design phase understand the target state.
 
 ## Verdict guidance for this phase
 
 - **Block** if: the problem isn't a clear problem, there are no user stories, or the brief is mostly disguised design.
-- **Request changes** if: stories are missing, malformed, or don't trace to the problem; non-goals are missing; constraints are vague; or there are multiple should-fix items.
+- **Request changes** if: stories are missing, malformed, or don't trace to the problem; non-goals are missing; constraints are vague; success criteria are absent or unmeasurable; or there are multiple should-fix items.
 - **Approve with comments** if: the brief is solid, with only nit-level issues remaining.
 - **Approve** if: rare. Hold a high bar.
 

@@ -5,7 +5,7 @@ This file defines how reviews are conducted across every phase of the agentic de
 - `discovery-review` — reviews Feature Briefs
 - `design-review` — reviews Design Docs
 - `planning-review` — reviews ticket backlogs
-- `implementation-review` — reviews code changes
+- `implementation-tdd-review` — reviews code changes
 - `refactor-design-review` — reviews Refactoring Proposals
 
 When reviewing a specific artifact, use the appropriate phase-specific skill — it includes everything here *plus* the failure modes specific to that artifact type. This base captures only what's common across all of them.

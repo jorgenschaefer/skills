@@ -37,6 +37,12 @@ Orchestrates the full implementation loop for a feature: iterates the ticket bac
 
       Collect new commit hashes from the output. If the output contains `**BLOCKED:**`, surface it to the user and stop.
 
+      Then spawn a second `implementation-tdd-review` subagent to verify the fixes, using the new commit hashes:
+
+      > Invoke the `implementation-tdd-review` skill for feature slug `<slug>`. The ticket is at `<ticket-path>`. The Design Doc is at `docs/features/<slug>/design.md`. The implementation commits are: `<new-hash1>`, `<new-hash2>`. Use `git show <hash>` to view each.
+
+      Wait for the reviewer to finish. List `docs/features/<slug>/` and open the newest `implementation-tdd-review-*.md` file. If the verdict is still **Request changes** or **Block**, surface the remaining findings and the verdict to the user and stop — do not mark the ticket Done without user direction.
+
    h. Update the ticket's **Status** field to `Done` in the ticket file.
 
    i. **Boy-scout incidental findings.** Collect any findings listed in the implementation subagent output that fall outside the ticket's scope. Spawn a `general-purpose` subagent with this prompt:
@@ -48,7 +54,5 @@ Orchestrates the full implementation loop for a feature: iterates the ticket bac
       > Triage each finding: apply trivially safe fixes immediately; write a ticket at `docs/features/boy-scout/tickets/` for everything else. The `Noticed during` field should read: "implementation of `<ticket-name>` for `<slug>`".
 
    j. Report the ticket outcome to the user: what was implemented, the review verdict, what (if anything) was fixed, and any boy-scout tickets created.
-
-   k. **Compact context** before moving to the next ticket. Issue `/compact` in the conversation if available — this is a Claude Code user-side command that summarises prior context, keeping the window manageable across many tickets. If `/compact` is unavailable, note the remaining ticket list and feature slug and continue; the user can type `/compact` themselves at any time.
 
 3. When no Backlog tickets remain (or all remaining are blocked by unmet dependencies), report the feature complete and ready for final merge, or summarize which tickets are still blocked and why.

@@ -32,7 +32,7 @@ The feature is in the phase whose primary artifact exists but is not yet complet
 1. **Discovery** — `discovery.md` missing or `discovery-review-NN.md` has verdict "Block" or "Request changes"
 1a. **Refactor Design** — alternative entry: `refactoring.md` exists but `refactor-design-review-NN.md` is missing or has verdict "Block" or "Request changes"
 2. **Design** — `discovery.md` exists and its review approved; `design.md` missing or `design-review-NN.md` verdict not "Approve"
-3. **Planning** — entry artifact (`design.md` or approved `refactoring.md`) exists; `tickets/` missing or `tickets-review-NN.md` verdict not "Approve"
+3. **Planning** — entry artifact (`design.md` or approved `refactoring.md`) exists; `tickets/README.md` missing or `tickets-review-NN.md` verdict not "Approve"
 4. **Implementation** — `tickets/` exists and approved; at least one ticket exists without a corresponding approved implementation review. To determine which tickets have approved reviews: read each `implementation-tdd-review-NN.md` file in the feature folder. Each review's **Artifact** header links to the ticket it covers. Check the verdict. A ticket is complete when its most recent review is Approve or Approve with comments.
 5. **Complete** — all tickets have approved implementation reviews
 

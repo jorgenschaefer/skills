@@ -171,4 +171,4 @@ After the review agent finishes, list `docs/features/<slug>/` and open the newes
 
 If any findings were at Blocker severity, run the automated review once more after addressing them (same subagent prompt above) — a self-corrected blocker should be verified by a fresh review pass.
 
-Tell the user what the review found, what was addressed, and the final verdict. Then suggest the next step is implementing tickets one at a time using the `implementation` skill.
+Tell the user what the review found, what was addressed, and the final verdict. If the final verdict is Approve or Approve with comments, suggest the `implementation` skill as the next step. If the final verdict is Block or Request changes, surface the remaining findings and ask the user how to proceed — do not suggest advancing to implementation.

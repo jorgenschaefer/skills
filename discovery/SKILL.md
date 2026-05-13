@@ -90,6 +90,7 @@ You have enough when all of the following are true:
 - All Phase 1 dimensions are covered with concrete specifics — not just acknowledged. For each dimension, point to at least one concrete example, specific number, named person, or specific constraint. "Some users", "performance reasons", "it's slow" do not count; probe once more.
 - No open question whose answer would change the problem statement (resolve it before writing).
 - At least one user story exists for each meaningful interaction, in standard format and specific enough to imagine implementing.
+- At least one concrete, observable success criterion is agreed. If the only criteria are the user stories themselves, ask: "how would someone verify this feature is working without reading the code?"
 - **Depth check**: mentally verify each dimension and each story — "do I have something concrete here?" Pull any remaining abstract threads before writing.
 - You've confirmed the summary-back with the user.
 
@@ -105,6 +106,7 @@ Before writing, summarize back to the user in this format:
 
 **The problem:** [one sentence]  
 **User stories:** [count] stories covering [brief summary of the interactions]  
+**Success criteria:** [brief list or "to define with user"]  
 **Open questions:** [list, or "none"]
 
 Does this match what you had in mind?
@@ -129,6 +131,9 @@ What's actually wrong or missing. Describe the current state, the desired state,
 
   As a [user role],
   ...
+
+## Success criteria
+Observable, measurable conditions that confirm the feature is solving the problem. How we will know the feature worked — not *what* it does (that's User Stories) but how we verify it solved the problem. Prefer criteria that can be confirmed without reading code: "a user can complete checkout without contacting support" is good; "the system handles payment errors" is not.
 
 ## Non-goals
 Explicit list of what this feature is *not* trying to do. Future-work items go here.
@@ -163,4 +168,4 @@ After the review agent finishes, list `docs/features/<slug>/` and open the newes
 
 If any findings were at Blocker severity, run the automated review once more after addressing them (same subagent prompt above) — a self-corrected blocker should be verified by a fresh review pass.
 
-Tell the user what the review found, what was addressed, and the final verdict. Then suggest the design phase as the next step.
+Tell the user what the review found, what was addressed, and the final verdict. If the final verdict is Approve or Approve with comments, suggest the design phase as the next step. If the final verdict is Block or Request changes, surface the remaining findings and ask the user how to proceed — do not suggest advancing to design.

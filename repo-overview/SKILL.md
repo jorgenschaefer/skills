@@ -66,7 +66,7 @@ For each workflow: name, entry point as `path/to/file:function_or_handler`, one-
 
 ### Where to start
 
-3–5 files a new developer should read first, in the order that builds understanding most efficiently. One reason per file — why this specific file, what it teaches that the others don't.
+3–5 files a new developer should read first, in the order that builds understanding most efficiently. One reason per file — why this specific file, what it teaches that the others don't. If `ARCHITECTURE.md` or `UBIQUITOUS_LANGUAGE.md` exist in the repo, always include them first — they are the cross-session memory for agents and the shared domain vocabulary, and a developer (or agent) who doesn't know they exist can't benefit from them.
 
 ## Traps to avoid
 
