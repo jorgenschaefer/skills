@@ -22,7 +22,7 @@ Before starting, make sure you have:
 3. **The codebase.** Read the relevant existing code. Understand the patterns. Run the existing test suite — if it doesn't pass, stop and report to the user before adding any changes on top of a broken baseline.
 4. **The repo's conventions.** Check `CLAUDE.md` / `AGENTS.md` for build/test/lint commands, code style, and project-specific rules.
 5. **The project's ubiquitous language.** Read `UBIQUITOUS_LANGUAGE.md` at the project root if it exists. Use canonical terms in identifiers.
-6. **The reference files for this skill.** Read [tests.md](tests.md), [deep-modules.md](deep-modules.md), [mocking.md](mocking.md), [refactoring.md](refactoring.md), [architecture-principles.md](architecture-principles.md), [code-quality-dimensions.md](code-quality-dimensions.md), and [code-style.md](code-style.md) before writing any code.
+6. **The reference files for this skill.** Read [tests.md](tests.md), [deep-modules.md](deep-modules.md), [mocking.md](mocking.md), [refactoring.md](refactoring.md), [architecture-principles.md](architecture-principles.md), and [code-style.md](code-style.md) before writing any code.
 
 If anything is missing or unclear, ask before writing code. Misunderstanding the ticket is the most expensive mistake at this stage.
 
@@ -109,7 +109,7 @@ Code that ships from this phase should be:
 - **Architecture principles respected.** Read [architecture-principles.md](architecture-principles.md) and adhere to it. If existing codebase conventions conflict, note the tension in the PR description.
 - **Named from the ubiquitous language.** Use canonical terms from `UBIQUITOUS_LANGUAGE.md`. Don't invent synonyms.
 - **Well-tested at appropriate levels.** Every behavior the ticket adds is covered; edge cases the ticket mentions are covered.
-- **Correctness, security, observability, performance.** Read [code-quality-dimensions.md](code-quality-dimensions.md) §Tier 2 and address these while writing.
+- **Correctness, security, observability, performance.** Read [code-style.md](code-style.md) §Quality and address these while writing.
 - **Documented where non-obvious.** Comments explain why, not what.
 - **Honest about uncertainty.** If you couldn't fully verify something works in production conditions, say so in the PR description.
 

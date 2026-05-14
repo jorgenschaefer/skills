@@ -39,7 +39,7 @@ Run the relevant git/gh commands first to obtain the diff and list of changed fi
 
 ## Quality dimensions
 
-Read [code-quality-dimensions.md](code-quality-dimensions.md). Report findings under the output format below, sorted by severity.
+Read [code-style.md](code-style.md) and apply all dimensions. Dimensions that require project context (Architecture and organization, Deep modules, Adapter boundaries, Test quality, Code clarity) need [architecture-principles.md](architecture-principles.md) read first. Report findings sorted by severity.
 
 ## Common findings
 

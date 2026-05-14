@@ -65,7 +65,7 @@ Skip this step only if you have genuinely found no product-technical gaps **and*
 
 **Generate options before committing.** For each significant decision — one that affects more than one module or would be expensive to reverse — brainstorm at least two or three approaches and write down the alternatives even if you reject them quickly. When uncertain: recommend a spike if the uncertainty could change the entire approach; record it as a risk if it's about tuning or edge cases within an already-chosen approach.
 
-**Identify the cross-cutting concerns.** Read [cross-cutting-concerns.md](cross-cutting-concerns.md) and walk the list explicitly — most design failures happen because one of these was forgotten.
+**Identify the cross-cutting concerns.** Walk them explicitly — most design failures happen because one of these was forgotten.
 
 **Trace through a concrete user scenario end-to-end.** Pick a typical use case from the brief and walk it through your proposed design from request to response (or trigger to outcome). Where does data come from? Where does it go? What can fail at each step? This usually surfaces gaps faster than abstract reasoning.
 

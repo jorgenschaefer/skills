@@ -67,7 +67,7 @@ Read [architecture-principles.md](architecture-principles.md) for the canonical 
 
 ### Cross-cutting architectural concerns
 
-Read [cross-cutting-concerns.md](cross-cutting-concerns.md) and walk the full list explicitly. Check whether the design addresses each concern at the architecture level (which module is responsible, which external system handles it) — not the implementation level (specific field names, retry counts, runbook entries). Key concerns to call out explicitly:
+Check whether the design addresses each concern at the architecture level (which module is responsible, which external system handles it) — not the implementation level (specific field names, retry counts, runbook entries). Key concerns to call out explicitly:
 
 - **Authentication and authorization.** Which module validates identity? Does the domain layer receive a token or a resolved user object? Are authorization decisions at the adapter boundary or domain layer?
 - **External system ownership.** For each external system, which module owns the adapter?

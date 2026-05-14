@@ -20,9 +20,13 @@ If ticket or Design Doc is missing (and this is not a boy-scout ticket), note it
 
 ## Code quality
 
-Read [code-quality-dimensions.md](code-quality-dimensions.md) and apply all quality dimensions to the diff gathered in Gather artifacts.
+Read [code-style.md](code-style.md) and apply all dimensions to the diff. The dimensions split into two groups by the project context they require:
 
-Record your findings using Blocker/Should-fix/Nit severity. These form the Code Quality section of the Combined verdict.
+**Requires project files first** — read [architecture-principles.md](architecture-principles.md) before checking: Architecture and organization, Deep modules, Adapter boundaries, Test quality, Code clarity.
+
+**General — no extra files needed:** Correctness, Security, Observability, Performance, Simplicity, Command-Query Separation, Temporal Coupling, Four Rules of Simple Design, Consistency, Documentation.
+
+Record your findings using Blocker/Should-fix/Nit severity, sorted by severity. These form the Code Quality section of the Combined verdict.
 
 ## Workflow compliance
 
@@ -97,4 +101,4 @@ Save the combined review at `docs/features/<slug>/implementation-tdd-review-<NN>
 - Feature flag added but never removed (and no follow-up ticket)
 - Silent deviation from a Design Doc decision or `ARCHITECTURE.md` constraint without explanation
 
-Note: code quality findings (architecture, adapter boundaries, test quality, correctness, security, observability, performance, simplicity, consistency, documentation) come from [code-quality-dimensions.md](code-quality-dimensions.md) applied in the Code quality section.
+Note: code quality findings (architecture, adapter boundaries, test quality, correctness, security, observability, performance, simplicity, consistency, documentation) come from [code-style.md](code-style.md) applied in the Code quality section.

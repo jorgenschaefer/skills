@@ -15,8 +15,6 @@ copy_to architecture.md \
 copy_to tracer-bullets.md \
   planning planning-review
 
-copy_to cross-cutting-concerns.md \
-  design design-review planning-review
 
 copy_to ubiquitous-language-update.md \
   discovery discovery-review design design-review refactor-design refactor-design-review
@@ -29,7 +27,4 @@ copy_to architecture-principles.md \
   code-review refactor-design refactor-design-review
 
 copy_to code-style.md \
-  implementation-tdd implementation-tdd-review code-review
-
-copy_to code-quality-dimensions.md \
   implementation-tdd implementation-tdd-review code-review
