@@ -137,7 +137,7 @@ The heart of the doc. A diagram is strongly encouraged — an ASCII or structure
 The design must address these architectural concerns:
 
 - **Modules**: which modules (files, packages, services) are created, modified, or removed. Name them. State what each one is responsible for.
-- **Module interfaces**: what are the public interfaces of new or changed modules? What do callers see? What does the module hide?
+- **Module interfaces**: what are the public interfaces of new or changed modules? What do callers see? What does the module hide? Signatures are formalized in the Contracts section.
 - **External systems**: which databases, queues, email services, caches, third-party APIs, or other external systems are involved? Which module owns the boundary to each one?
 - **Communication patterns**: how do components talk to each other? Direct calls? Async events? Message bus? Queue? Be explicit about which interactions are synchronous and which are asynchronous.
 - **Data model**: what tables, collections, or schemas are created, modified, or removed? What are the fields and their types? What relations exist?
@@ -149,6 +149,19 @@ The design must address these architectural concerns:
 Does NOT belong here: rollout plans and feature flags, test strategy, observability configuration, runbook entries, backwards-compatibility migration scripts, error handling implementation details (retry counts, timeout values, backoff). The error *propagation pattern* between modules belongs here; implementation details belong in tickets.
 
 Security and authentication: these are architectural concerns when they affect module boundaries or the choice of external systems. Note them here at the architecture level ("the inbound adapter validates the JWT; the domain layer receives only the authenticated user identity"). Implementation details go in tickets.
+
+## Contracts
+
+The explicit interfaces that bound the domain from the rest of the system. Write these in the project's implementation language, or in typed pseudocode if the language is not yet fixed.
+
+**Domain service interfaces** — the public API of each domain service or use case handler introduced or modified by this feature. For each, include: method names, parameter names and types, return type, and any raised errors or result variants.
+
+**Adapter ports** — the interfaces the domain requires its infrastructure to satisfy. For each adapter (Repository, External Service client, event publisher, message consumer, etc.):
+- Port interface name and which module declares it
+- Method signatures
+- Direction: inbound (adapter drives the domain) or outbound (domain drives the adapter)
+
+These contracts are the primary artifact for verifying domain purity: if a port interface references an infrastructure type (ORM entity, HTTP response object, raw DB row), the domain boundary is leaking.
 
 ## Alternatives considered
 Brief summary of architectural options you rejected, with reasoning. This is where you defend the design against the obvious "why didn't you just..." questions. Focus on structural choices (different module boundaries, different communication patterns, different external systems), not on implementation alternatives.
@@ -172,6 +185,7 @@ Proceed to writing the Design Doc when all of the following are true:
 - Every user story has a corresponding workflow narration in the Workflows section
 - Every open question from the brief is either resolved in the design or explicitly deferred with a reason
 - All modules, their interfaces, and their connections to external systems are named
+- Every domain service and adapter port introduced by the feature has an entry in the Contracts section with typed signatures
 - The domain model's code location and persistence entries are consistent with the module architecture
 - Any new architectural constraints have been confirmed with the user
 
