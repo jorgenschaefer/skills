@@ -38,6 +38,7 @@ Before starting design, work through these inputs in order:
 
 4. **Ubiquitous language.** Read `UBIQUITOUS_LANGUAGE.md` at the project root if it exists. Use the canonical terms in your design — for modules, entities, processes, and APIs. Don't introduce synonyms for concepts that already have names.
 5. **Architectural constraints.** Read `ARCHITECTURE.md` at the project root if it exists. Read [architecture.md](architecture.md) for the threshold and entry format. Verify each relevant constraint against the current codebase before applying it — rationale drifts.
+6. **Architecture principles.** Read [architecture-principles.md](architecture-principles.md) in full. All five principles apply to this design.
 
 If any of these are missing, get them before producing a design. A design written without knowledge of the existing code is fiction.
 
@@ -55,13 +56,16 @@ If any of these are missing, get them before producing a design. A design writte
 
 2. **A new architectural constraint is about to be added to `ARCHITECTURE.md`** — before committing any entry, always present the proposed constraint, its rule, and the rationale to the user and ask for confirmation or redirection. Adding to `ARCHITECTURE.md` without user confirmation is never acceptable.
 
-Collect all questions from both cases and ask them together in a single structured message, grouped by type (product decisions first, architectural constraint confirmations second), before producing any design output. Wait for the user's response, then incorporate the answers. In non-interactive or sub-agent contexts (invoked via the `Agent` tool, or when a response has not arrived within one conversational turn), proceed rather than blocking.
-
-If the user doesn't answer some or all questions — or no response arrives — pick reasonable defaults (prefer industry-standard values first; if none exist, use values consistent with similar features already in the codebase; if neither applies, use the most conservative option), apply them, and flag them together in a single consolidated block at the top of the Design Doc: *"Clarification round: no response received. The following values were assumed — correct during implementation if needed: [list each assumption]."*
+Collect all questions from both cases and ask them together in a single structured message, grouped by type (product decisions first, architectural constraint confirmations second), before producing any design output. Wait for the user's response, then incorporate the answers. In subagent contexts or when no response arrives within one conversational turn: pick reasonable defaults (industry-standard first; failing that, consistent with similar features in the codebase; failing that, the most conservative option), apply them, and flag them in a single consolidated block at the top of the Design Doc: *"Clarification round: no response received. The following values were assumed — correct during implementation if needed: [list each assumption]."*
 
 Skip this step only if you have genuinely found no product-technical gaps **and** no new architectural constraints are planned.
 
-**Read [architecture-principles.md](architecture-principles.md)** in full — all structural principles apply to this design. The Design Doc should make the proposed design's adherence to each visible. If the existing codebase is layered, note it in the Design Doc and propose a migration path or explicitly justify extending the layered structure. Call out adapter boundary placement explicitly so implementers know where each kind of code belongs.
+**Apply architecture principles to module design.** For each module proposed:
+- **Screaming Architecture**: use domain-first naming. If the existing codebase is layered, note it explicitly in the Design Doc — propose a migration path or justify extending the layered structure.
+- **SRP**: ask "whose requirements drive this module?" If two different actors, split it.
+- **Common Closure**: ask "when this needs to change, what else changes?" Place code there, even if it looks like a shared utility.
+- **Adapter Boundaries**: state placement explicitly — inbound adapter, domain layer, outbound adapter — so implementers know where each kind of code belongs.
+- **Deep Modules**: ask "is this module earning its abstraction?" If it mostly delegates without hiding complexity, merge the layers.
 
 **Generate options before committing.** For each significant decision — one that affects more than one module or would be expensive to reverse — brainstorm at least two or three approaches and write down the alternatives even if you reject them quickly. When uncertain: recommend a spike if the uncertainty could change the entire approach; record it as a risk if it's about tuning or edge cases within an already-chosen approach.
 
@@ -128,7 +132,7 @@ Each workflow entry should cover:
 - The observable outcome from the user's perspective
 
 ## Proposed design
-The heart of the doc. A diagram is the ideal output — an ASCII or structured diagram showing the components, their boundaries, and the connections between them. Prose supplements the diagram; it does not replace it.
+The heart of the doc. A diagram is strongly encouraged — an ASCII or structured diagram showing the components, their boundaries, and the connections between them. Prose may supplement or replace it.
 
 The design must address these architectural concerns:
 
@@ -142,13 +146,7 @@ The design must address these architectural concerns:
 - **Runtime topology**: how many distinct runtime components exist and where do they run? (e.g. "web server + separate background worker process", "single monolith", "three microservices"). This is distinct from a rollout plan — it is the architectural shape of what gets deployed.
 - **New technology introductions**: if the design introduces a technology not already present in the codebase (a new database, a message queue, a caching layer, a third-party API), name it, justify the choice, and note what alternatives were considered. Existing stack choices need no justification.
 
-What does NOT belong in the design:
-- Rollout plans and feature flags — those belong in tickets
-- Test strategy — that belongs in tickets
-- Observability configuration (which metrics, which log fields, which alert thresholds) — that belongs in tickets
-- Runbook entries — that belong in tickets
-- Backwards-compatibility migration scripts — that belongs in tickets
-- Error handling implementation details (specific retry counts, timeout values, backoff parameters) — those belong in tickets; the error *propagation pattern* between modules belongs here
+Does NOT belong here: rollout plans and feature flags, test strategy, observability configuration, runbook entries, backwards-compatibility migration scripts, error handling implementation details (retry counts, timeout values, backoff). The error *propagation pattern* between modules belongs here; implementation details belong in tickets.
 
 Security and authentication: these are architectural concerns when they affect module boundaries or the choice of external systems. Note them here at the architecture level ("the inbound adapter validates the JWT; the domain layer receives only the authenticated user identity"). Implementation details go in tickets.
 
@@ -164,7 +162,7 @@ Things explicitly deferred. This protects the planning phase from scope creep.
 
 ## What good looks like
 
-A good Design Doc is architectural (not implementational), diagrammed, specific at boundary level ("add an async task queue between `OrderService` and `NotificationAdapter`" not "add a queue"), honest about uncertainty, aware of existing patterns (follow or explicitly deviate), and skimmable in under 10 minutes from diagram plus headings.
+A good Design Doc is architectural (not implementational), specific at boundary level ("add an async task queue between `OrderService` and `NotificationAdapter`" not "add a queue"), honest about uncertainty, aware of existing patterns (follow or explicitly deviate), and skimmable in under 10 minutes from diagram plus headings.
 
 ## When the design is complete
 
@@ -178,10 +176,6 @@ Proceed to writing the Design Doc when all of the following are true:
 - Any new architectural constraints have been confirmed with the user
 
 If you find yourself writing "TBD" or "to be determined in implementation" for module boundaries or interfaces, that's a signal the design isn't done yet. "TBD in implementation" for implementation details inside a module is fine.
-
-## What you do not produce
-
-Tickets, production code, rollout plans, test strategies, observability configuration, runbook entries, or detailed UI mockups - see the "What does NOT belong in the design" list in the template above.
 
 ## After writing
 
