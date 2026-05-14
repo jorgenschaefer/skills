@@ -7,7 +7,7 @@ description: Use this skill when the user wants a comprehensive structural revie
 
 ## Goal
 
-Make the codebase easy to change and easy to reason about. Read [architecture-principles.md](architecture-principles.md) for the three structural principles guiding proposals: screaming architecture (domain-first organization), deep modules (Ousterhout), and adapter boundaries (clear business logic). Use these definitions when identifying friction points and proposing refactorings.
+Make the codebase easy to change and easy to reason about. Read [architecture-principles.md](architecture-principles.md) in full — all structural principles guide proposals. Use these definitions when identifying friction points and proposing refactorings.
 
 ## Before starting
 

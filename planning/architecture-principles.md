@@ -16,23 +16,9 @@ Grouping code by business domain keeps domain logic and feature-related code tog
 
 Prefer `orders/OrderService.ts` over `services/OrderService.ts`.
 
-## Deep Modules
-
-A **deep module** (John Ousterhout, *A Philosophy of Software Design*) has a small interface hiding a large implementation. Callers get significant value from a simple interaction; internal complexity is genuinely hidden. Deep modules are more testable, more navigable, and let you test at the boundary instead of inside.
-
-A **shallow module**'s interface is nearly as complex as its implementation — it adds overhead without encapsulation.
-
-Shallow-module smells:
-- Pass-through methods that add no logic
-- Information leakage: a module exposes its internal data structures or config to callers (abstraction leakage)
-- Abstractions too small or too thin to justify their existence
-- Callers that are more complex after the abstraction than they would be without it
-
-For each proposed module boundary, ask: is this module earning its abstraction? If it mostly delegates to another layer without hiding anything, merge the layers or rethink the boundary.
-
 ## Single Responsibility
 
-A module has a single responsibility when it has only one reason to change — meaning its requirements come from only one actor. A module can be *used* by many actors; what matters is who has the authority to request changes to it. This is different from "does one thing": a module can do many things and still have a single responsibility if they all change for the same reason and at the direction of the same actor.
+A module has a single responsibility when it has only one reason to change — meaning its requirements come from only one actor. A module can be *used* by many actors; what matters is who has the authority to request changes to it. This is different from "does one thing": a module can do many things and still have a single responsibility if they all change for the same reason and at the direction of the same actor. This applies at every level — directories, files, classes, functions.
 
 The diagnostic question is not "what does this module do?" but "whose requirements drive how this module should work?" If the answer is "the billing team *and* the operations team", the module has two responsibilities and should be split — even if the code looks unified today.
 
@@ -41,8 +27,11 @@ Smells:
 - A `UserAccount` module handling both authentication rules (security/compliance team) and subscription logic (finance team) — a GDPR change should not risk breaking billing
 - An `Employee` class with `calculatePay()` (CFO), `reportHours()` (COO), and `save()` (CTO) — Uncle Bob's canonical example: three actors, three reasons to change, should be three modules
 - A service class where half the methods serve one use case and half serve another, with no shared state between them
+- Needs "and" to describe what it does, or its contents can't be summarized without listing them
+- Extracted names reference the caller or context ("helper", "util", numbered variants) — scattering, not simplifying
+- More than three or four parameters on a function — usually a sign it does too much, or that the inputs form a concept that deserves its own type
 
-When splitting: give each actor their own module, even if this introduces duplication initially. Duplication that answers to different actors is not the duplication that should be eliminated.
+When splitting: size is a symptom, not the disease — split when pieces have distinct, independently nameable purposes, not simply because something is large. Give each actor their own module, even if this introduces duplication initially. Duplication that answers to different actors is not the duplication that should be eliminated.
 
 ## Common Closure
 
@@ -70,6 +59,18 @@ Types mirror the same separation:
 - Domain types belong with the business logic
 - Database types (ORM entities, SQL row shapes) belong only in the outbound adapter
 
-Passing a Zod-inferred type or an ORM entity into the business logic is a boundary violation.
-
 For simple CRUD all three layers can live in one file — but even then, the three concerns must be visibly distinct and not tangled.
+
+## Deep Modules
+
+A **deep module** (John Ousterhout, *A Philosophy of Software Design*) has a small interface hiding a large implementation. Callers get significant value from a simple interaction; internal complexity is genuinely hidden. Deep modules are more testable, more navigable, and let you test at the boundary instead of inside.
+
+A **shallow module**'s interface is nearly as complex as its implementation — it adds overhead without encapsulation.
+
+Shallow-module smells:
+- Pass-through methods that add no logic
+- Information leakage: a module exposes its internal data structures or config to callers (abstraction leakage)
+- Abstractions too small or too thin to justify their existence
+- Callers that are more complex after the abstraction than they would be without it
+
+For each proposed module boundary, ask: is this module earning its abstraction? If it mostly delegates to another layer without hiding anything, merge the layers or rethink the boundary.

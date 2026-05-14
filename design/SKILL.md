@@ -61,7 +61,7 @@ If the user doesn't answer some or all questions — or no response arrives — 
 
 Skip this step only if you have genuinely found no product-technical gaps **and** no new architectural constraints are planned.
 
-**Read [architecture-principles.md](architecture-principles.md)** for the three structural principles this design must respect: domain-first organization (screaming architecture), deep modules, and adapter boundaries. The Design Doc should make the proposed design's adherence to each visible. If the existing codebase is layered, note it in the Design Doc and propose a migration path or explicitly justify extending the layered structure. Call out adapter boundary placement explicitly so implementers know where each kind of code belongs.
+**Read [architecture-principles.md](architecture-principles.md)** in full — all structural principles apply to this design. The Design Doc should make the proposed design's adherence to each visible. If the existing codebase is layered, note it in the Design Doc and propose a migration path or explicitly justify extending the layered structure. Call out adapter boundary placement explicitly so implementers know where each kind of code belongs.
 
 **Generate options before committing.** For each significant decision — one that affects more than one module or would be expensive to reverse — brainstorm at least two or three approaches and write down the alternatives even if you reject them quickly. When uncertain: recommend a spike if the uncertainty could change the entire approach; record it as a risk if it's about tuning or edge cases within an already-chosen approach.
 

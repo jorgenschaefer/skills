@@ -23,7 +23,7 @@ You do not write code. You do not draw architecture diagrams. You do not break w
 
 ## The conversation
 
-Discovery runs in two phases: first understand the problem, then translate it into user stories.
+Discovery runs in two phases: first understand the problem, then translate it into user stories. Phase transitions are marked with → — do not advance until the stated condition is met.
 
 ### Phase 1: Understand the problem
 
