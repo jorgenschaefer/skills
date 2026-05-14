@@ -15,7 +15,7 @@ The feature slug is a required argument. If the user did not provide one at invo
 
 Before reviewing, confirm:
 
-1. The artifact is a Design Doc (it should follow the `design` skill structure: Summary, Goals/non-goals, Background, Proposed design, Alternatives considered, Risks/open questions, Out of scope).
+1. The artifact is a Design Doc (it should follow the `design` skill structure: Summary, Goals/non-goals, Background, Domain model, Workflows, Proposed design, Contracts, Alternatives considered, Risks/open questions, Out of scope).
 2. You can read the Feature Brief the design is based on — a good design that solves the wrong problem is a bad design.
 3. You have access to the codebase. If you don't, note it in "What was NOT checked."
 4. You're in a clean context. If unsure, note it in "What was NOT checked" and flag any area where prior context might bias you.

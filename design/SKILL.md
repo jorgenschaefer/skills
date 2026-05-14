@@ -5,7 +5,7 @@ description: Use this skill when the user has a Feature Brief (or equivalent pro
 
 # Design
 
-The goal of the Design phase is to describe the software architecture of the solution. The output is a **Design Doc** that specifies which modules are created, modified, or removed; what their interfaces are; which external systems are involved; how components communicate; and what the data model looks like. It does not describe how to implement anything — that is the planning and implementation phases' job.
+The goal of the Design phase is to describe the software architecture of the solution. The output is a **Design Doc** that names the domain entities the feature operates on and the workflows that affect them; specifies which modules are created, modified, or removed; defines their interfaces; identifies which external systems are involved; and describes how components communicate and what the data model looks like. It does not describe how to implement anything — that is the planning and implementation phases' job.
 
 The Design Doc is a proposal - not an immutable spec. It says: here's how I think we should build this, here are the alternatives I considered, here's why I'm recommending this one, here's what I'm uncertain about. It exists to be reviewed and challenged before code is written, when changes are still cheap.
 
