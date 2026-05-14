@@ -55,7 +55,7 @@ In practice, some dependencies are unavoidable. A ticket that displays data need
 
 After reading the entry artifact, find the most recent review for it — `docs/features/<slug>/design-review-*.md` for a Design Doc, `docs/features/<slug>/refactor-design-review-*.md` for a Refactoring Proposal. If the most recent verdict is Block or Request changes, tell the user and suggest addressing those findings before planning. Proceed if the user explicitly confirms.
 
-**Slice by user story, not by layer.** For each user story or meaningful user interaction in the entry artifact, ask: what is the thinnest end-to-end implementation that makes this story demonstrably work? That's a ticket. It must touch every architectural layer it needs — it is not a database-layer ticket or a UI-layer ticket; it is a story-complete ticket that happens to need both.
+**Slice by user story, not by layer.** For each user story or meaningful user interaction in the entry artifact, ask: what is the thinnest end-to-end implementation that makes this story demonstrably work? That's a ticket. It must touch every architectural layer it needs — it is not a database-layer ticket or a UI-layer ticket; it is a story-complete ticket that happens to need both. If you cannot write a user story for a ticket, that is a sign the ticket has no direct stakeholder value — either fold it into a feature ticket or verify it is a legitimate infrastructure ticket (spike, migration, observability).
 
 Order tickets by value and risk — high-risk and high-value pieces first. Tickets that depend on others come after their dependencies; everything else can parallelize.
 
@@ -76,6 +76,8 @@ Each ticket lives at `docs/features/<feature-slug>/tickets/<NNN>-<slug>.md` with
 **Entry artifact:** <link>
 **Depends on:** <ticket numbers, or "none">
 **Estimate:** <S | M | L> (rough size)
+**User story:** As a <role>, I want <action>, in order to <value>.
+**Design components:** <sections or components from the entry artifact this ticket touches>
 
 ## Goal
 One or two sentences. What does this ticket accomplish from a user's or operator's perspective?
@@ -90,10 +92,10 @@ Brief reminder of what's relevant from the entry artifact. Don't restate the who
 - Bullet list of related-but-deferred work, with pointers to the tickets that handle it.
 
 ## Acceptance criteria
-A checklist of observable, testable conditions. The ticket is done when all of these are true.
+The ticket is done when all of these are true. Use Given/When/Then for behavioral conditions; use checklist bullets for structural/operational conditions (test coverage, flag setup, migration, docs).
 
-- [ ] <Specific, observable condition>
-- [ ] <Another one>
+- [ ] Given <precondition>, when <action>, then <observable outcome>
+- [ ] Given <precondition>, when <action>, then <observable outcome>
 - [ ] Tests cover the new behavior at the appropriate level (unit / integration / e2e — be specific)
 - [ ] Documentation updated (if applicable)
 - [ ] Feature flag added / changed (if applicable)
