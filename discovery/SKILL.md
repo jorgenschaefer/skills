@@ -1,6 +1,6 @@
 ---
 name: discovery
-description: Use this skill when the user wants to explore a new feature, product idea, bug investigation, or technical problem before any design or implementation work begins. Trigger this whenever the user says things like "I'm thinking about adding X", "we want to support Y", "I have an idea for Z", "let's figure out how to handle W", or asks to "explore", "discuss", "brainstorm", or "think through" a feature or problem. The output is a Feature Brief artifact containing a detailed problem description and a set of user stories - NOT a design or implementation plan. Always use this skill at the start of any non-trivial feature work, even if the user seems eager to jump straight to code.
+description: Use this skill when the user wants to explore a new feature, product idea, bug investigation, or technical problem before any design or implementation work begins. Trigger this whenever the user says phrases such as "I'm thinking about adding X", "we want to support Y", "I have an idea for Z", "let's figure out how to handle W", or asks to "explore", "discuss", "brainstorm", or "think through" a feature or problem. (These phrases are illustrative examples, not an exhaustive list — any request to understand a problem before designing or building it qualifies.) The output is a Feature Brief artifact containing a detailed problem description and a set of user stories - NOT a design or implementation plan. Always use this skill at the start of any non-trivial feature work, even if the user seems eager to jump straight to code.
 ---
 
 # Discovery
@@ -45,6 +45,8 @@ Cover these dimensions before moving to Phase 2; find a natural opening to pull 
 
 **Open questions.** What needs research, prototyping, or stakeholder input before design can proceed? A brief that ends with explicit open questions is fine — preferred over one that pretends everything is known.
 
+→ **When all Phase 1 dimensions are covered with concrete specifics, proceed to Phase 2.**
+
 ### Phase 2: User stories
 
 Once the problem is understood, translate it into user stories. A user story describes one specific interaction a user would have with the solution:
@@ -60,6 +62,8 @@ Work through the user interactions implied by the problem. Ask: who would use th
 Do not propose solutions in the stories. "I want the system to batch requests" is a solution. "I want to process a large number of items without waiting for each one" is a story.
 
 Keep returning to the problem statement to verify each story traces back to a real part of it. Stories that don't connect to the stated problem are scope creep in disguise.
+
+→ **When you have enough user stories (see "When you have enough" below), proceed to Writing the Feature Brief.**
 
 ## When to push back
 
@@ -104,9 +108,12 @@ Before writing, summarize back to the user in this format:
 
 **What we figured out**
 
-**The problem:** [one sentence]  
-**User stories:** [count] stories covering [brief summary of the interactions]  
-**Success criteria:** [brief list or "to define with user"]  
+**The problem:** [one sentence]
+
+**User stories:** [count] stories covering [brief summary of the interactions]
+
+**Success criteria:** [brief list or "to define with user"]
+
 **Open questions:** [list, or "none"]
 
 Does this match what you had in mind?

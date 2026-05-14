@@ -19,13 +19,25 @@ You do not produce tickets or production code, though you may write small spike 
 
 The feature slug is a required argument. If the user did not provide one at invocation, ask for it before proceeding.
 
-Before starting design, make sure you have:
+Before starting design, work through these inputs in order:
 
-1. **The Feature Brief.** Read the entry artifact from `docs/features/<slug>/discovery.md`; if not found but `refactoring.md` exists, tell the user this feature uses the refactoring path and the next step is `planning`, not `design`; if neither exists, tell the user and stop. If they want to skip discovery entirely, push back gently — at minimum get a few sentences of problem statement and goals before designing. If `docs/features/<slug>/discovery-review-*.md` exists and the most recent verdict is Block or Request changes, tell the user the discovery phase has unresolved review findings and suggest addressing them before designing. Proceed if the user explicitly confirms.
-2. **Access to the codebase.** Most design decisions are constrained by what already exists. You need to read the existing code, not guess at it.
-3. **Knowledge of the team's conventions.** Check `CLAUDE.md` / `AGENTS.md` at the repo root and any subdirectory equivalents. They tell you the existing patterns, the test framework, deployment model, etc.
-4. **The project's ubiquitous language.** Read `UBIQUITOUS_LANGUAGE.md` at the project root if it exists. Use the canonical terms in your design — for modules, entities, processes, and APIs. Don't introduce synonyms for concepts that already have names.
-5. **Architectural constraints.** Read [`ARCHITECTURE.md`](ARCHITECTURE.md) at the project root if it exists. Read [architecture.md](architecture.md) for the threshold and format. Verify each relevant constraint against the current codebase before applying it — rationale drifts.
+**Group A — Problem understanding**
+
+1. **The Feature Brief.** Read `docs/features/<slug>/discovery.md`.
+   - If not found but `refactoring.md` exists: tell the user this feature uses the refactoring path and the next step is `planning`, not `design`. Stop.
+   - If neither exists: tell the user and stop.
+   - If the user wants to skip discovery entirely: push back gently — at minimum get a few sentences of problem statement and goals before designing.
+   - If `docs/features/<slug>/discovery-review-*.md` exists and the most recent verdict is Block or Request changes: tell the user the discovery phase has unresolved review findings and suggest addressing them before designing. Proceed only if the user explicitly confirms.
+
+**Group B — Codebase knowledge**
+
+2. **Access to the codebase.** Most design decisions are constrained by what already exists. Read the existing code; do not guess at it.
+3. **Team conventions.** Check `CLAUDE.md` / `AGENTS.md` at the repo root and any subdirectory equivalents. They tell you the existing patterns, the test framework, deployment model, etc.
+
+**Group C — Shared constraints**
+
+4. **Ubiquitous language.** Read `UBIQUITOUS_LANGUAGE.md` at the project root if it exists. Use the canonical terms in your design — for modules, entities, processes, and APIs. Don't introduce synonyms for concepts that already have names.
+5. **Architectural constraints.** Read `ARCHITECTURE.md` at the project root if it exists. Read [architecture.md](architecture.md) for the threshold and entry format. Verify each relevant constraint against the current codebase before applying it — rationale drifts.
 
 If any of these are missing, get them before producing a design. A design written without knowledge of the existing code is fiction.
 
@@ -45,7 +57,7 @@ If any of these are missing, get them before producing a design. A design writte
 
 Collect all questions from both cases and ask them together in a single structured message, grouped by type (product decisions first, architectural constraint confirmations second), before producing any design output. Wait for the user's response, then incorporate the answers. In non-interactive or sub-agent contexts (invoked via the `Agent` tool, or when a response has not arrived within one conversational turn), proceed rather than blocking.
 
-If the user doesn't answer some or all questions — or no response arrives — pick reasonable defaults, apply them, and flag them together in a single consolidated block at the top of the Design Doc: *"Clarification round: no response received. The following values were assumed — correct during implementation if needed: [list each assumption]."*
+If the user doesn't answer some or all questions — or no response arrives — pick reasonable defaults (prefer industry-standard values first; if none exist, use values consistent with similar features already in the codebase; if neither applies, use the most conservative option), apply them, and flag them together in a single consolidated block at the top of the Design Doc: *"Clarification round: no response received. The following values were assumed — correct during implementation if needed: [list each assumption]."*
 
 Skip this step only if you have genuinely found no product-technical gaps **and** no new architectural constraints are planned.
 

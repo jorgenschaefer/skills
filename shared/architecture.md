@@ -22,6 +22,20 @@ Cross-cutting decisions that constrain future design choices. Verify each agains
 
 Area names emerge from the project. Use whatever grouping fits: Data layer, Auth, API style, Layering, Testing, Infrastructure, etc. One flat section is fine if the project is small.
 
+## Examples
+
+A good entry: cross-cutting, not obvious from the code, with a clear why.
+
+```
+| Auth token scope | JWTs must include only the user ID and role — no profile fields. | Profile fields change; embedding them caused stale-data bugs in 2024. |
+```
+
+An entry that should NOT be added — visible to any reader of the code:
+
+```
+| Use async/await | All async functions use async/await, not Promise chains. | Already universal in the codebase — visible to any reader. |
+```
+
 ## When to add an entry
 
 Add an entry when **both** conditions hold:

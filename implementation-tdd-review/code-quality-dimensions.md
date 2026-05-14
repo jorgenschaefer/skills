@@ -88,10 +88,43 @@ Avoid unnecessary complexity. Flag: cyclomatic depth that obscures intent, abstr
 
 Requirements change in ways you cannot predict; code written for imagined future requirements that never arrive is waste, and often makes the code that *did* arrive harder to change. When in doubt, implement what the ticket says — not what you expect the next ticket to say.
 
-### 11. Consistency
+### 11. Command-Query Separation
+
+A function either returns a value (query) or changes state (command) — never both.
+
+- **Query**: returns a value, produces no side effects. Safe to call multiple times; callers can reason about it in isolation.
+- **Command**: changes state, returns nothing (or only a status). Callers know calling it has an effect.
+
+Violations create subtle bugs: callers cannot tell whether calling a function has side effects, making the code hard to reason about and test. Flag: functions that both return a meaningful value *and* mutate state or produce a side effect (write to DB, emit an event, send a message). Exceptions exist (e.g., `stack.pop()` returns and removes) — flag them as intentional rather than accidental.
+
+### 12. Temporal Coupling
+
+When functions must be called in a specific order and the interface does not enforce it, callers can violate the order silently.
+
+```
+parser.init()   // must be called first
+parser.parse()  // silently broken if init() was skipped
+```
+
+Flag: initialization methods that must precede use methods, multi-step workflows where each step assumes the previous completed successfully, and any "setup before use" pattern where the constraint lives only in documentation or convention.
+
+Fixes: merge into one call, use a builder or factory that returns a ready-to-use object, or make step 1 return a typed value that step 2 requires as a parameter — so the compiler or runtime enforces the order.
+
+### 13. Four Rules of Simple Design
+
+Kent Beck's four rules, in priority order. A design is as simple as it can be when it satisfies all four:
+
+1. **Passes all tests.** Correct behavior is the baseline. A simpler design that is wrong is not simpler.
+2. **Reveals intention.** The code communicates what it does. Names, structure, and shape make the purpose clear without requiring comments to explain the what.
+3. **No duplication (DRY).** Every piece of knowledge has a single representation. Duplicated logic is a signal that an abstraction is missing — but only extract it when the duplication is real (same concept, same reason to change), not merely textual. **Prefer duplication over the wrong abstraction** (Sandi Metz): two honest parallel implementations are better than one leaky shared interface. Extract only when callers become *simpler*, not when the implementation becomes shorter. Premature unification merges things that are only accidentally similar, creating abstractions callers must work around.
+4. **Fewest elements.** No speculative classes, methods, parameters, or abstractions. Remove anything that does not serve the first three rules.
+
+The order matters: don't sacrifice correctness for elegance, don't sacrifice clarity for DRY, don't sacrifice either for brevity. When reviewing, check each rule in order — a violation of rule 2 is more serious than an unnecessary abstraction (rule 4).
+
+### 14. Consistency
 
 Does the change match the surrounding codebase? Flag: naming conventions that differ from the local idiom, error handling style inconsistent with adjacent code, structural patterns that break from established conventions without a reason. A codebase that surprises readers in small ways accumulates friction.
 
-### 12. Documentation
+### 15. Documentation
 
 Non-obvious decisions should be explained — a hidden constraint, a specific bug workaround, behavior that would surprise a reader. Flag: code doing something unusual with no explanation, public APIs with no contract stated where one is expected. Do not flag missing comments on self-explanatory code.
