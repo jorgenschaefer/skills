@@ -41,7 +41,7 @@ RIGHT (one-cycle-at-a-time):    RED→GREEN: test1→impl1    →  RED→GREEN: 
 
 1. **Read.** Before each loop iteration, read the ticket again and the relevant code. Pick the next acceptance criterion to satisfy.
 2. **Red.** Write a test that captures that acceptance criterion. Run it. Confirm it fails *for the right reason* — the assertion you care about, not a syntax error or a missing import. A test that fails for the wrong reason is no test at all.
-3. **Green.** Write the minimum code that makes the test pass. Don't anticipate future tests; don't add features the current test doesn't drive. Run the test. Confirm it passes. Run the *whole* test suite. Confirm nothing else broke.
+3. **Green.** Write the minimum code that makes the test pass. Don't anticipate future tests; don't add features the current test doesn't drive. Adhere strictly to the contracts in design.md — the interfaces and boundaries the architect defined are not suggestions. Run the test. Confirm it passes. Run the *whole* test suite. Confirm nothing else broke.
 4. **Refactor.** With tests green, look at what you wrote. Is there duplication? Is naming clear? Are abstractions at the right level? Improve the code without changing behavior. Run the tests after each refactor step to confirm green is preserved. One concrete lens: aim for *deep modules* — simple interfaces that hide significant complexity. If you find thin layers that just delegate without hiding anything (shallow modules), consider merging the layers into one module, or moving the logic down into a deeper implementation so callers interact with a simpler interface. The refactor step is the right moment to deepen abstractions; the test suite makes it safe. See [deep-modules.md](deep-modules.md) and [refactoring.md](refactoring.md).
 5. **Commit.** Commit per logical behavior or acceptance criterion — typically one commit per acceptance criterion item, sometimes fewer if criteria are tightly coupled. Multiple small commits per ticket are normal and preferred over one large one. The commit message should describe what behavior was added, not what files changed. "Add validation for empty draft titles" beats "Update DraftService.ts." After committing, note the hash (`git log -1 --format=%H`) — you will pass it to the review agent.
 6. **Repeat** until every acceptance criterion is met.
@@ -118,6 +118,7 @@ Code that ships from this phase should be:
 A ticket isn't done because the code compiles. Walk through this list:
 
 - [ ] Every acceptance criterion in the ticket is met. Read them again — don't trust your memory.
+- [ ] The implementation serves the original user goals in discovery.md, not just the letter of the ticket. If the ticket was slightly off, that tension belongs in the PR description.
 - [ ] Tests cover the new behavior at the levels specified.
 - [ ] The whole test suite passes, not just the new tests.
 - [ ] Lint and type-check pass.
