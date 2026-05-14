@@ -1,8 +1,8 @@
 # Code Quality Dimensions
 
-These dimensions are organized in two tiers. **Tier 1** covers project-specific quality preferences — check these with the detailed guidance below. **Tier 2** covers general code quality dimensions — the elaborated ones have specific pitfalls worth naming; the brief ones are well-known and just need to be checked. Report all findings sorted by severity.
+These dimensions are organized in two tiers. **Tier 1** covers dimensions that require reading project-specific files to apply correctly. **Tier 2** covers general quality dimensions — the elaborated ones have specific pitfalls worth naming; the brief ones are well-known and just need to be checked. Report all findings sorted by severity.
 
-## Tier 1: Project-specific preferences
+## Tier 1: Requires project context
 
 ### 1. Architecture and organization
 
@@ -35,6 +35,8 @@ Tests are evidence that the code does what it claims — not just that it runs.
 - **Negative tests.** Code has rules about what it rejects. Those rejection paths need tests.
 - **Would catch a regression?** Mentally try to remove the new code and see whether the tests would fail. A test that passes before *and* after the bug is reintroduced is not a test.
 - **Mocking at system boundaries only.** Mock external APIs, databases, time, the filesystem, and randomness. Never mock your own code — your own classes, modules, and internal collaborators. If mocking your own code seems necessary, the interface is wrong. Red flags: mocking the system under test into oblivion, asserting on call counts or call order.
+- **Tests are independent.** Each test must be able to run alone, in any order, and in parallel without affecting others. Tests that share mutable in-memory state, rely on database rows from a previous test, or depend on filesystem artifacts left by another test are a finding.
+- **No timing-dependent tests.** `sleep(100)` to wait for an async operation, or assertions that assume an operation completes within a time bound, are flaky by design. Use explicit synchronization, event-driven signaling, or fake clocks instead.
 - **Test code is clear.** Tests are documentation of behavior. Unclear names, opaque arrange/act/assert structure, magic numbers — all reduce test value over time.
 
 ### 5. Code clarity
@@ -45,17 +47,21 @@ Tests are evidence that the code does what it claims — not just that it runs.
 - **Honest names.** A function called `validateUser` that also creates the user is misnamed. Names that lie about what they do are a finding.
 - **Code style.** Read all style principles in [code-style.md](code-style.md). Apply them when reviewing — flag violations as should-fix.
 
-## Tier 2: General code quality dimensions
+## Tier 2: General quality dimensions
 
 ### 6. Correctness
 
 *Covers the general dimensions: Correctness, Error handling*
 
 - **Error paths.** What happens when the network call fails, the row isn't there, the input is malformed, the API returns 500? Every external call has a failure mode.
+- **Fail-fast for programmer errors, graceful for expected failures.** An illegal argument or broken invariant should fail immediately and loudly. A network timeout or missing row is an expected failure and should be handled explicitly — not swallowed, not propagated as a raw exception.
+- **Errors carry context.** An error that reaches a log or a caller should include enough to diagnose the problem without reading the code: what was being attempted, what failed, and the relevant identifiers. Wrapping errors with context (rather than re-throwing bare) is the expected pattern.
+- **No silent swallows.** An empty catch block, or a function that returns `null`/`undefined`/`None` to signal an error when the caller asked for a value, is a finding. The caller cannot distinguish "not found" from "silently failed."
 - **Concurrency.** Shared state: race conditions, double-submits, cache stampedes, deadlocks.
 - **State machines.** Stateful entities: illegal states reachable? Transitions atomic where needed?
 - **External dependency robustness.** Timeouts, retries with backoff, circuit breakers. A blocking external call with no timeout is a finding.
 - **Time and randomness.** Hardcoded `now()` or `random()` inside business logic: correctness bug and testing pain. Inject them.
+- **Resources are explicitly released.** Every resource that must be closed — file handles, database connections, transactions, HTTP client sessions — must be released in a `finally` block, a `using`/`with` statement, or an RAII guard. Relying on garbage collection is a correctness bug for connections and a latency bug for files. Flag: resource acquisition without a corresponding release in all code paths.
 
 ### 7. Security
 

@@ -13,6 +13,12 @@ Concrete signals to push back on:
 - Deeply nested conditionals where a flatter structure would be clearer
 - Optimization trades readability for speed — a worthwhile trade only when backed by measurement. Without a measured bottleneck, the readable version is correct.
 
+**Return early.** Eliminate nesting by returning (or throwing) for the failure cases first, leaving the happy path unindented. The deepest nesting level should be the normal case, not the error case.
+
+**Avoid boolean parameters.** A call like `renderButton(true)` or `process(item, false)` forces the reader to look up the signature. Use named alternatives: an enum, a separate function, or a named options object. A boolean parameter almost always signals the function does two things.
+
+**Name complex conditions.** A condition with more than two terms, or any negation on a compound expression, should be extracted into a named variable or predicate function. `if (!isExpired && hasPermission && !isSuspended)` is harder to read than `if (canAccess(user, resource))`.
+
 ## Single Responsibility Principle: One Thing, Nameable
 
 The same coherence rule applies at every level — directories, files, classes, functions, methods: a unit should do one thing you can name without referencing its context. Size is a symptom, not the disease; split when pieces have distinct, independently nameable purposes; keep together what changes for the same reason — not just because something is long.
@@ -21,12 +27,15 @@ Concrete signals to push back on:
 - Needs "and" to describe what it does, or its contents can't be summarized without listing them
 - Extracted names reference the caller or context ("helper", "util", numbered variants) — scattering, not simplifying
 - Contains clearly distinct steps or concerns crammed into one unit, regardless of length
+- More than three or four parameters — usually a sign the function does too much, or that the inputs form a concept that deserves its own type. Consider whether grouping them into a struct or options object would make the signature and the call site clearer.
 
 ## Naming
 
 Use descriptive, unabbreviated names — even long ones. A reader should never have to mentally expand `usr` to `user`, `cfg` to `config`, or `e` to `error`. When the name of a variable, function, or type tells you exactly what it holds and why it exists, the surrounding code becomes self-documenting.
 
 Short names are only justified when the scope is tiny and the meaning is local and unambiguous — a loop index, a mathematical symbol that matches a well-known formula. Everywhere else, the full word costs nothing and saves real cognitive effort.
+
+**No unexplained literals.** A number like `86400`, a status string like `"PROC"`, or an HTTP code like `403` embedded without a name forces the reader to know what it means. Extract named constants for any literal whose meaning is not immediately obvious at the call site.
 
 ## Explicit Over Implicit
 
