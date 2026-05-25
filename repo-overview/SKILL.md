@@ -15,6 +15,18 @@ No arguments are required. Explore the current working directory.
 
 If `ARCHITECTURE.md` or `UBIQUITOUS_LANGUAGE.md` already exist, read them first — they may contain exactly what you need and save significant exploration time.
 
+## Parallelize the reads
+
+Spawn up to 3 `Explore` subagents in parallel for steps 1-7 below. Suggested split:
+
+- **Agent A:** tech stack (step 1), directory tree (step 2), entry docs (step 3).
+- **Agent B:** existing architecture/language docs (step 4), domain/model layer (step 5).
+- **Agent C:** service/application layer (step 6), entry points (step 7).
+
+Each agent returns a short structured summary; the main loop synthesizes them into the report. Step 8 (one representative test file) stays in the main loop - it's small and confirms the understanding the agents have already surfaced.
+
+The numbered list below is the contract for what each agent should look for, even though steps 1-7 no longer run sequentially in the main loop.
+
 ## Exploration sequence
 
 Work through these in order, stopping each step once you have enough for that section:
