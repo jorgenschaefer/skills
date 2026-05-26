@@ -31,9 +31,9 @@ Follow this process step by step.
 
 ### Using TDD
 
-Follow Kent Beck's red/green/refactor loop in the smallest possible steps.
+Follow Kent Beck's red/green/refactor loop in the smallest possible steps. Each phase is a separate test run. Bundling "write the test and implementation together, then run once green" is not TDD, even when the final artifacts look identical - the RED run is what proves the test actually exercises the behavior. Skip it and a passing test is evidence of nothing.
 
-1. **RED.** Write one trivially small failing test for the next bit of behavior - and "behavior" includes wiring, placement, conditional rendering, and prop pass-through (if the spec says "X appears above Y but not above Z," that placement needs a test). Run it; confirm it fails for the right reason. If it passes immediately, you wrote the production code first: revert the production code, confirm the test fails, then re-implement.
+1. **RED.** Write one trivially small failing test for the next bit of behavior - including wiring, placement, conditional rendering, and prop pass-through (if the spec says "X appears above Y but not above Z," that placement needs a test). Run the test before writing any production code for that behavior, and confirm **the assertion itself fires and reports an expected/actual mismatch**. "Module not found", import errors, missing files, or syntax errors do not count as RED - they only prove the test couldn't run. If you hit one of those, add the minimal scaffolding (empty function, stub file, fixed import) until the assertion actually runs and fails, then proceed. If the test passes immediately, you wrote the production code first: revert it, confirm the test fails properly, then re-implement.
 2. **GREEN.** Make it pass with the simplest change that could possibly work. Faking the answer with a constant is fine - the next test will force a real implementation. If you cannot see how to make GREEN pass with a small, obvious change, the test is too big or too ambitious: revert it and write a smaller test, or add a second test that triangulates toward the general solution.
 3. **REFACTOR.** With tests green, remove duplication and improve the design. No new behavior. Re-run the tests.
 
