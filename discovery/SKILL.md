@@ -53,7 +53,13 @@ Any project has its own language. Use it precisely.
 
 ## When to stop
 
-You have enough when you can fill every section of the summary template below from what the conversation established - whether the user said it first, or you proposed it and the user accepted.
+Discovery is done when every domain decision and every architectural decision has been tied down - by the user, by reading the codebase, or by you with the user's accepted proposal.
+
+**Domain decisions** name the entities, their attributes, and the range of values each attribute can take. If the summary references a status, a role, a type, a kind, or any other named concept without saying what it actually is, that is an open decision, not an implementation detail.
+
+**Architectural decisions** are the choices that are hard to undo once code exists: language, framework, persistence, deployment target, and the libraries that shape everything downstream. Read them from the codebase when the code shows them; otherwise - greenfield, or an aspect the code hasn't settled - ask the user. "We'll decide in implementation" is not a valid answer for these.
+
+Choices that are cheap to change at implementation time (function names, file layout, minor utilities) can be deferred.
 
 When you reach that point, summarize back in 3-5 lines (the problem, success criteria, any open questions) and ask "does this match what you had in mind?" Only emit the structured summary below after the user confirms.
 
