@@ -21,7 +21,9 @@ The topics in "What to cover" are a floor, not a ceiling.
 
 ## How to ask
 
-Ask a single question at a time - no multiple questions disguised as one. Before asking about existing terminology, patterns, or system state, check whether the codebase answers it - only ask the user about things the code can't tell you. When an answer is vague, hand-wavy, or assumes shared context, push back with a concrete follow-up or an example to confirm.
+Ask one question per turn, and only one. Wait for the answer before asking the next. Do not bundle questions - not as a numbered list, not as "and also", not as a main question with sub-questions, not as "a couple of things". The user should be able to reply on a single topic without labeling which part of their answer addresses which question - their reply may be long, but it should not need to be split. If you catch yourself drafting a second question in the same turn, hold it back for next turn.
+
+Before asking about existing terminology, patterns, or system state, check whether the codebase answers it - only ask the user about things the code can't tell you. When an answer is vague, hand-wavy, or assumes shared context, push back with a concrete follow-up or an example to confirm.
 
 Never silently assume. If you find yourself inferring something the user didn't say, voice it as a proposal and check - don't bake it in unverified.
 
