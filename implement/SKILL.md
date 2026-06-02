@@ -39,11 +39,25 @@ Follow Kent Beck's red/green/refactor loop in the smallest possible steps. Each 
 
 Commit after each successful green or refactor step.
 
+### Untestable boundaries
+
+The call into a third-party SDK or the network/IO edge can't be driven by a unit test - but that never excuses leaving the feature unfinished. Wrap the dependency in the thinnest possible adapter (just the calls you need, no logic), mock that adapter to test everything behind it, and accept the adapter itself going untested. Prefer this to either an elaborate fake that holds coverage at 100% while the real integration goes unbuilt, or dropping the dependency at the cost of untested code.
+
+Do not stop at the seam: "you just need to implement the wrapper I created" is not a finished feature. Wire the real dependency in and confirm it works.
+
+### Dependency versions
+
+When adding a dependency, look up its current latest stable release (or latest LTS line, where the ecosystem distinguishes one) and use that. Do not rely on a version from memory - it is almost always stale.
+
 ### Code Quality
 
 These rules are for *you, the implementing agent, while writing*. The final code review at step 4 applies the same rules independently.
 
 Good, maintainable code is optimized for readability. The intent should always be obvious.
+
+Order definitions top-down: the high-level, abstract code first, with helpers below the code that calls them. A reader meets a function before its details, and the file grows more detailed as they read down.
+
+Co-locate a test with the file it tests rather than in a separate `tests/` tree (things that change together stay together), unless the project's existing layout clearly says otherwise.
 
 Code should be in the simplest, most boring version that works.
 
