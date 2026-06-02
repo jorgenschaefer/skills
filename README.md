@@ -16,6 +16,7 @@ npx skills add jorgenschaefer/skills@<skill-name>
 
 ## Available skills
 
+- **critique** - review code against a focused set of quality standards (correctness, maintainability, security), over either a branch diff or a whole project; supplements rather than replaces Claude's own judgment
 - **discovery** - interview the user about a feature idea; produces an inline summary covering why, success criteria, non-goals, domain, and open questions
 - **discovery-design** - optional depth pass over a ready-to-implement spec: design the UI by reacting to throwaway HTML mockups, then enrich the spec in place with the visual and interaction decisions
 - **discovery-implementation** - optional depth pass over a ready-to-implement spec: walk it TDD top-to-bottom, resolve the technical decisions an implementer would otherwise pick blind, and enrich the spec in place
