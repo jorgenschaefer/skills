@@ -61,6 +61,8 @@ Discovery is done when every domain decision and every architectural decision ha
 
 Choices that are cheap to change at implementation time (function names, file layout, minor utilities) can be deferred.
 
+An optional `/discovery-design` pass may run later to resolve fine-grained implementation decisions, but never hold a question back because it "belongs" there. Ask whatever surfaces here; that pass exists only to catch what fell outside discovery's focus, not to receive work you chose to skip.
+
 When you reach that point, summarize back in 3-5 lines (the problem, success criteria, any open questions) and ask "does this match what you had in mind?" Only emit the structured summary below after the user confirms.
 
 If the resulting feature looks large (many distinct workflows, a long story list), flag this in your check-back: "this feels large enough that splitting into milestones before implementing might help." Do not split it yourself - use the `discovery-increment` skill once the user confirms the summary.

@@ -17,6 +17,7 @@ npx skills add jorgenschaefer/skills@<skill-name>
 ## Available skills
 
 - **discovery** - interview the user about a feature idea; produces an inline summary covering why, success criteria, non-goals, domain, and open questions
+- **discovery-design** - optional depth pass over a ready-to-implement spec: walk it TDD top-to-bottom, resolve the implementation decisions an implementer would otherwise pick blind, and enrich the spec in place
 - **discovery-increment** - carve the next vertical-slice `INCREMENT-NN.md` from a large `/discovery`-shaped source spec, ready for /implement to consume
 - **implement** - implement a feature end-to-end from a description: planned task list, TDD red/green/refactor, then code review and a traceability check against intent
 - **repo-overview** - orient a new developer to an unfamiliar codebase: tech stack, code organization, domain model, main workflows, and where to start reading
