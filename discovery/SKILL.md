@@ -61,7 +61,7 @@ Discovery is done when every domain decision and every architectural decision ha
 
 Choices that are cheap to change at implementation time (function names, file layout, minor utilities) can be deferred.
 
-An optional `/discovery-design` pass may run later to resolve fine-grained implementation decisions, but never hold a question back because it "belongs" there. Ask whatever surfaces here; that pass exists only to catch what fell outside discovery's focus, not to receive work you chose to skip.
+Optional later passes may run to resolve fine-grained detail - `/discovery-implementation` for how it's built, `/discovery-design` for how it looks - but never hold a question back because it "belongs" to one of them. Ask whatever surfaces here; those passes exist only to catch what fell outside discovery's focus, not to receive work you chose to skip.
 
 When you reach that point, summarize back in 3-5 lines (the problem, success criteria, any open questions) and ask "does this match what you had in mind?" Only emit the structured summary below after the user confirms.
 
