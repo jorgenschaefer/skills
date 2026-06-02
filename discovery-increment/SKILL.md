@@ -20,6 +20,7 @@ The common case is no split needed - a `/discovery` output that fits one `/imple
 
 - **Vertical, not horizontal.** The slice traverses the full stack for at least one use case. After it ships, some real user's workflow works end-to-end. Never "db layer / backend layer / API layer / frontend layer" - those are useful only when the last layer lands.
 - **Substantive enough to justify its own cycle.** Each slice incurs implementation, code review, and traceability-check overhead. A slice should justify those costs by what's learned, decided, or validated from it. If a candidate piece has no design decisions to make and lands naturally in the same area as the next meaningful slice, bundle it into that slice rather than carving it off alone.
+- **As large as a single `/implement` cycle can carry.** The point of splitting is to make a large spec implementable in separate passes - not to atomize it into the smallest testable units. Individual testability is never a reason to split. Group closely-related stories into one slice; only separate them when the combined slice would overflow a single cycle or span unrelated areas of the product. A spec should yield a handful of meaningful slices, not dozens of tiny ones.
 
 Ask yourself: "what would we learn from shipping this alone?" If the answer is "nothing significant", bundle.
 
@@ -30,7 +31,7 @@ Ask yourself: "what would we learn from shipping this alone?" If the answer is "
    - The source spec is already small enough to act as one INCREMENT.
    - All stories in the source spec are already claimed by existing INCREMENT siblings.
    - The unclaimed stories can't be carved into a vertical, substantive slice (e.g., everything left is interlocked).
-3. **Choose the next slice.** From the unclaimed stories, pick the smallest substantive vertical chunk. Bundle any trivial pieces that fit naturally with this slice. A slice may cover one story, several closely-related stories, or part of one story when a story is itself too large for a single slice.
+3. **Choose the next slice.** From the unclaimed stories, take the largest coherent vertical chunk that still fits one `/implement` cycle, grouping closely-related stories together rather than emitting each alone. A slice may cover several related stories, one story, or part of one story when that story alone is too large for a single slice.
 4. **Anchor to current code.** When the slice references existing structures - names, file paths, current shape - draw those references from the codebase, not from prior INCREMENT prose. Drift between earlier slices and what was actually built does not propagate forward.
 5. **Write the slice file.** Name it `INCREMENT-NN.md` with the next zero-padded sequence number after the highest existing INCREMENT sibling. Place it next to the input. The slice file stands alone - it does not link or refer to EPIC.md, so `/implement` can consume it directly.
 
