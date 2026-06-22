@@ -21,7 +21,7 @@ Follow this process step by step.
 
    **Identify modules and boundaries:** Which modules are touched by the change? Do you need to create new modules, files, classes, functions? Which existing modules will the new code interact with? This informs the task breakdown and helps ensure you don't miss necessary integration work. Where do those modules live in the file structure?
 
-   **Verifieable goals:** Transform imperative tasks into verifiable goals. Instead of "add validation", use "given/when/then" to specify the expected behavior and its test. This makes it easier to know when a task is done, and to verify the implementation in step 5.
+   **Verifiable goals:** Transform imperative tasks into verifiable goals. Instead of "add validation", use "given/when/then" to specify the expected behavior and its test. This makes it easier to know when a task is done, and to verify the implementation in step 5.
 
    **Sizing implementation tasks:**
    - One user-visible change per task - typically one user story.
@@ -34,7 +34,7 @@ Follow this process step by step.
    If a task cannot be made green for a reason TDD can't resolve - a genuine blocker like missing information, a spec contradiction, or an external dependency that doesn't behave as specified - stop and surface it to the user. Do not fake a passing test or expand scope to work around it.
 
    When every task is complete, run the full test suite and confirm it is green before moving to review. Per-step runs don't prove the whole feature still holds together.
-4. **Code review.** Spawn a `general-purpose` subagent to code-review the entire feature once all tasks are complete. Address blockers and should-fixes. For Nits, use your own judgement. If the code review raises a non-nit issue that requires a code change, fix it and re-run the code review until it passes with only nits remaining.
+4. **Code review.** Spawn a `general-purpose` subagent to code-review the entire feature once all tasks are complete. Address blockers and should-fixes. For Nits, use your own judgement. If the code review raises a non-nit issue that requires a code change, fix it and re-run the code review until it passes with only nits remaining. A fix that changes behavior follows the same RED-first loop as step 3 - write the failing test, watch it fail, then fix; only pure refactors skip it. This applies to step 5 as well.
 5. **Quality review.** Spawn a `general-purpose` subagent for a traceability check. Pass it the written feature description from step 1 and the final code. Ask it to verify the implementation delivers the stated intent: success criteria met, non-goals respected, every user story and its acceptance criteria traceable to a test that would fail if the behavior were removed. This is not a code review - it is a check that the right thing was built. Address gaps before telling the user you are done.
 
 ### Using TDD
@@ -45,7 +45,7 @@ Follow Kent Beck's red/green/refactor loop in the smallest possible steps. Each 
 2. **GREEN.** Make it pass with the simplest change that could possibly work. Faking the answer with a constant is fine - the next test will force a real implementation. If you cannot see how to make GREEN pass with a small, obvious change, the test is too big or too ambitious: revert it and write a smaller test, or add a second test that triangulates toward the general solution.
 3. **REFACTOR.** With tests green, remove duplication and improve the design. No new behavior. Re-run the tests.
 
-Commit after each successful green or refactor step.
+Commit once per completed task, after its tests are green and any refactor is done - run the red/green/refactor cycles internally and bundle them into a single clean commit. Don't commit at each individual green step.
 
 ### Untestable boundaries
 
