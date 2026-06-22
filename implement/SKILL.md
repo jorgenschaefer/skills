@@ -5,11 +5,7 @@ description: Use when the user says "implement this feature", "build X", "let's 
 
 # Implement
 
-Your goal is to implement a feature end to end so it achieves what the user intended, using high-quality, maintainable code.
-
-## Role
-
-You are a senior software developer. Your goal is to implement the provided feature spec with high quality.
+You are a senior software developer. Your goal is to implement a feature end to end so it achieves what the user intended, using high-quality, maintainable code.
 
 ## Before starting
 
@@ -34,6 +30,10 @@ Follow this process step by step.
 
    **Tail entries:** Append two fixed tail entries to the list: `Code review` and `Quality review` (steps 4 and 5). The verb-phrase rule does not apply to these.
 3. **Implement each task in turn.** You MUST use the TDD red/green/refactor loop described in "Using TDD" below. A task is complete only when every behavior change you made traces to a test that failed first. If you can't name that test for some piece of the change, the task isn't done - write the missing red tests, watch them fail, then re-verify the implementation still satisfies them. Pure refactor steps within a task are exempt: they add no new behavior, and the existing green tests prove it's preserved.
+
+   If a task cannot be made green for a reason TDD can't resolve - a genuine blocker like missing information, a spec contradiction, or an external dependency that doesn't behave as specified - stop and surface it to the user. Do not fake a passing test or expand scope to work around it.
+
+   When every task is complete, run the full test suite and confirm it is green before moving to review. Per-step runs don't prove the whole feature still holds together.
 4. **Code review.** Spawn a `general-purpose` subagent to code-review the entire feature once all tasks are complete. Address blockers and should-fixes. For Nits, use your own judgement. If the code review raises a non-nit issue that requires a code change, fix it and re-run the code review until it passes with only nits remaining.
 5. **Quality review.** Spawn a `general-purpose` subagent for a traceability check. Pass it the written feature description from step 1 and the final code. Ask it to verify the implementation delivers the stated intent: success criteria met, non-goals respected, every user story and its acceptance criteria traceable to a test that would fail if the behavior were removed. This is not a code review - it is a check that the right thing was built. Address gaps before telling the user you are done.
 
@@ -52,20 +52,6 @@ Commit after each successful green or refactor step.
 The call into a third-party SDK or the network/IO edge can't be driven by a unit test - but that never excuses leaving the feature unfinished. Wrap the dependency in the thinnest possible adapter (just the calls you need, no logic), mock that adapter to test everything behind it, and accept the adapter itself going untested. Prefer this to either an elaborate fake that holds coverage at 100% while the real integration goes unbuilt, or dropping the dependency at the cost of untested code.
 
 Do not stop at the seam: "you just need to implement the wrapper I created" is not a finished feature. Wire the real dependency in and confirm it works.
-
-### Simplicity First
-
-Minimum code that solves the problem. Nothing speculative.
-
-Combat the tendency toward overengineering:
-
-- No features beyond what was asked
-- No abstractions for single-use code
-- No "flexibility" or "configurability" that wasn't requested
-- No error handling for impossible scenarios
-- If 200 lines could be 50, rewrite it
-
-**The test:** Would a senior engineer say this is overcomplicated? If yes, simplify.
 
 ### Surgical Changes
 
@@ -91,21 +77,23 @@ When adding a dependency, look up its current latest stable release (or latest L
 
 ### Code Quality
 
-Good, maintainable code is optimized for readability. The intent should always be obvious.
-
-Code should be in the simplest, most boring version that works.
-
-Follow YAGNI religiously - in production code. Tests of spec-mandated behavior are not YAGNI candidates; write them even when the production logic looks trivial.
-
-Code that changes together should live together. In particular, combine code belonging to a single feature into the same module. Do not split file by type (all controllers of unrelated features in one directory, all models in another), use feature-based modularization: each feature's code in its own directory or file.
-
-Co-locate a test with the file it tests rather than in a separate `tests/` tree, unless the project's existing layout clearly says otherwise.
-
-Order definitions top-down: the high-level, abstract code first, with helpers below the code that calls them. A reader meets a function before its details, and the file grows more detailed as they read down.
-
 Apply Kent Beck's four rules of simple design, in priority order:
 
 1. **Passes the tests.** Correct behavior comes first.
 2. **Reveals intention.** Names and structure make the purpose obvious to the next reader.
 3. **No duplication.** Each piece of knowledge has one representation.
 4. **Fewest elements.** No classes, methods, or abstractions beyond what the first three rules require.
+
+Follow YAGNI religiously in production code: minimum code that solves the problem, nothing speculative, in the simplest and most boring version that works - prefer the conventional solution over the clever one. Tests of spec-mandated behavior are not YAGNI candidates; write them even when the production logic looks trivial.
+
+Combat the tendency toward overengineering:
+
+- No features beyond what was asked
+- No abstractions for single-use code
+- No "flexibility" or "configurability" that wasn't requested
+- No error handling for impossible scenarios
+- If 200 lines could be 50, rewrite it
+
+**The test:** Would a senior engineer say this is overcomplicated? If yes, simplify.
+
+Keep related code together: combine a feature's code into the same module, and use feature-based modularization (each feature in its own directory or file) rather than splitting by type (all controllers in one directory, all models in another). Co-locate a test with the file it tests rather than in a separate `tests/` tree, unless the project's existing layout clearly says otherwise. Order definitions top-down: high-level code first, helpers below the code that calls them, so a reader meets a function before its details.
