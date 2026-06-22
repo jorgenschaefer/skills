@@ -45,4 +45,3 @@ The output is a complete `/discovery`-shaped document (see `discovery/SKILL.md` 
 - **Domain (Ubiquitous language).** Only terms this slice actually touches.
 - **Roles.** Only roles this slice actually touches.
 - **User Stories.** Only stories in this slice, with their acceptance criteria. When a story spans multiple slices, include only the partial scope for this one.
-- **Open questions.** Only those bearing on this slice's stories. Open questions unrelated to this slice stay in the source spec.

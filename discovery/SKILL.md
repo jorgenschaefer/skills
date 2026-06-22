@@ -75,11 +75,11 @@ Any project has its own language. Use it precisely.
 
 Discovery is done when every decision a wrong default could hurt has an answer - from the codebase, a confirmed recommendation, or the user - and nothing the feature forces is left for the implementer to guess. Pay closest attention to the decisions that are hard to reverse: language, frameworks, data models, anything code commits you to.
 
-Before you write the summary, do the assumption sweep: list what you defaulted and confirm none of it actually needed the user.
+Before you write the summary, confirm the running list of defaults from the mechanic above and verify none of it actually needed the user. Any question still genuinely open is not finished work - resolve it now. A spec never carries an open-questions section: if a question survives, discovery isn't over.
 
 ## Summary
 
-Present the summary inline in the conversation, in this shape:
+Write the summary to a markdown spec file in the repo - propose a path and confirm it with the user - and present the same content inline so they can react. Revise from their feedback until they're satisfied; the file is the artifact `/implement` builds and traces against, so it must match what you've agreed. Use this shape:
 
 ```markdown
 # Feature: <name>
@@ -113,6 +113,6 @@ Present the summary inline in the conversation, in this shape:
 - <Each decision and its resolution if a wrong default would hurt, with an inline _Why: ..._ when the rationale was load-bearing.>
 ```
 
-Omit sections that don't apply; add subsections where the domain warrants. The goal is that a fresh implementing agent can build the feature from this summary plus the codebase, without coming back to the user for clarification.
+Omit sections that don't apply; add subsections where the domain warrants. User stories should be exhaustive - one for each distinct workflow, including edge variations - while the nested bullets stay optional, as the inline template notes mark.
 
-User stories should be exhaustive - one for each distinct workflow, including edge variations. Nested bullets under a user story are optional: most stories will have neither, some will carry one or two acceptance criteria, a few will carry an inline `_Why: ..._` note. The same `_Why: ..._` notation can sit under a ubiquitous-language entry, a role, or a success criterion when its rationale is load-bearing.
+If the finished spec is too large for a single `/implement` cycle, say so and point the user to `/discovery-increment`, which carves it into vertical slices. Either way, the goal is that a fresh implementing agent can build from the spec plus the codebase without coming back to the user.
