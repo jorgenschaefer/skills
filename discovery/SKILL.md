@@ -25,39 +25,39 @@ You are a discussion partner, not a stenographer. Discovery is a conversation - 
 
 ## Process
 
-Identify the user journey (or journeys) and the user tasks that compose it. The user journey is the high-level workflow the user wants to enable; user tasks are the distinct steps within that workflow. User stories should be written for each user task, and acceptance criteria should be written for any user story where the behavior isn't obvious or has a non-obvious edge case.
+Identify the user journey (or journeys) and the user tasks that compose it. The user journey is the high-level workflow the user wants to enable; user tasks are the distinct steps within that workflow. Write a user story for each user task, and acceptance criteria for any story whose behavior isn't obvious or has a non-obvious edge case.
+
+### The mechanic: sort every decision
+
+A feature forces dozens of decisions. Your whole job is to sort each one into a bucket:
+
+- **The codebase answers it.** Resolve it silently and move on. Always check the code before asking.
+- **A wrong default would hurt, but there's a defensible best answer** - a technical choice like how to wrap a dependency, where a seam sits, a data shape. Decide it yourself, then surface the choice for a veto: state the decision, your recommendation, and the key alternatives. Don't make the user originate it; do let them overrule it.
+- **A wrong default would hurt, and the answer is genuinely the user's** - a business rule, a priority, a product tradeoff the code cannot imply. You cannot default this. Ask.
+
+"Would a wrong default hurt" is the test throughout: a default hurts when it changes behavior the user would notice, costs money, risks data, or is hard to reverse. Everything else - local names, file layout, cheap reversible choices - stays with the implementer. The goal is that no decision a wrong default could hurt is left for the implementer to guess, not that every detail becomes a question.
+
+**Surface your assumptions; don't just avoid them.** The defaults that hurt are the ones you pick confidently, so they never feel like a question. Keep a running list of what you're defaulting and confirm it ("I'm assuming X and Y unless you say otherwise") rather than trusting that nothing slipped in unexamined.
+
+### Finding the decisions
+
+Walk the feature as a sequence of red/green steps - "to write this test and make it pass, what would I have to decide that the spec doesn't tell me?" That catches the decisions the stated stories imply. The ones that hurt most are the ones no story names; two sweeps catch those:
+
+- **Lifecycle.** For each entity the feature touches, walk create, read, update, delete, and who can see it. A feature that adds a create path and is silent on edit, delete, visibility, or what happens to dependents is hiding decisions, not omitting them.
+- **Actors and authorization.** Who is allowed to do each action, who else touches the same data, what is sensitive. Assuming an action is unrestricted is a wrong default that hurts.
+
+Beyond those, let the feature's actual shape say which of the usual hiding spots apply - don't force a checklist onto a feature that has no use for it:
+
+- **UI:** the states a happy path omits (empty, loading, error, partial, disabled); what confirms an action and what a destructive one warns; layout hierarchy and responsive reflow; accessibility (focus order, labels, contrast, keyboard paths).
+- **Behavior:** error, timeout, and retry at each external seam, and idempotency; validation rules and where they apply; migration of existing data; ordering, concurrency, and partial failure; non-functional limits (scale, volume, performance budget).
 
 ### How to ask
 
 Ask one question per turn, and only one. The user should be able to reply on a single topic without labeling which part of their answer addresses which question. If you catch yourself drafting a second question in the same turn, hold it back for the next turn.
 
-Before asking about terminology, patterns, or system state, check whether the codebase answers it - only ask the user about things the code can't tell you.
-
-Never silently assume. If you find yourself inferring something the user didn't say, voice it as a proposal and check - don't bake it in unverified.
-
-For any decision that is significant or hard to reverse - the design language, a new core component, a navigation model, a persistence choice, an external seam - present your recommendation and the key alternatives, and wait for confirmation. Never settle one of these silently.
-
-### What to surface
-
-A floor, not a ceiling - follow the feature's actual shape. Surface a decision only where a plausible-but-wrong default would hurt: it changes behavior the user would notice, costs money, risks data, or is hard to reverse. Decide and record the rest yourself; cheap, reversible, obvious choices (local names, file layout) stay with the implementer. The goal is that no decision is left for the implementer to make blind, not that every detail becomes a question.
-
-For user-facing stories, walk what the user sees and does at each step:
-
-- **States.** Empty, loading, error, partial, disabled - the states a happy-path mockup omits.
-- **Interaction and feedback.** What confirms an action, what a destructive action warns, how validation surfaces.
-- **Layout and hierarchy.** What is primary, how a screen reflows responsively.
-- **Accessibility basics.** Focus order, labels, contrast, keyboard paths - where a wrong default excludes users.
-
-For how it's built:
-
-- **Boundaries with the outside.** How each external dependency (SDK, network, IO) is wrapped and where the seam sits; error, timeout, and retry behavior; idempotency.
-- **Data.** Validation rules and where they apply; persistence shape and migration of existing rows; defaults for sort, filter, and pagination.
-- **State and flow.** Legal and illegal state transitions; ordering and concurrency; what happens on partial failure.
-- **Contracts.** Request/response shapes, error formats, and the edge cases of each.
-
 ### Show, don't tell
 
-When asking questions about the user interface of some aspect of the user journey, create an HTML mockup for the user to look at wherever appropriate. Use the `frontend-design` skill to create them. Propose at least two alternatives each. These mockups are a communication device, not a deliverable: keep them in a scratch directory and delete them once the decision is recorded in the spec.
+When a UI decision is genuinely open, don't ask the user to picture it from prose - build a small throwaway HTML mockup with the `frontend-design` skill and have them react to something real. Show alternatives side by side when the choice is open; when one reused pattern obviously fits, just show that. These mockups are a communication device, not a deliverable: keep them in a scratch directory and delete them once the decision is recorded in the spec.
 
 **Reuse before invent.** Prefer an existing component over a new one; an existing pattern over a new arrangement. Introduce something new only when nothing existing fits, and when you do, keep it consistent with the design language. Greenfield, there is no language yet - establishing it (tokens, type scale, spacing, the core interaction patterns) is a foundational decision; settle it with the user before building on it.
 
@@ -73,9 +73,9 @@ Any project has its own language. Use it precisely.
 
 ## When to stop
 
-Discovery is done only when there are no more open questions and a resulting spec is exhaustive enough that an implementor could implement it without asking the user any questions, and without guessing an answer. Pay especially close attention to decisions that would be hard to change later, e.g. language, frameworks, data models, etc.
+Discovery is done when every decision a wrong default could hurt has an answer - from the codebase, a confirmed recommendation, or the user - and nothing the feature forces is left for the implementer to guess. Pay closest attention to the decisions that are hard to reverse: language, frameworks, data models, anything code commits you to.
 
-Walk the spec as a sequence of red/green steps. At each step ask: "to write this test and make it pass, what would I have to decide that the spec doesn't tell me - and would a plausible-but-wrong choice cause harm?"
+Before you write the summary, do the assumption sweep: list what you defaulted and confirm none of it actually needed the user.
 
 ## Summary
 
