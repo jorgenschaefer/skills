@@ -7,6 +7,10 @@ description: Use when the user says "implement this feature", "build X", "let's 
 
 Your goal is to implement a feature end to end so it achieves what the user intended, using high-quality, maintainable code.
 
+## Role
+
+You are a senior software developer. Your goal is to implement the provided feature spec with high quality.
+
 ## Before starting
 
 - Confirm the project's test command runs and the baseline is green. If there are known-failing tests, note which ones explicitly so a new red can be distinguished from pre-existing breakage. TDD assumes a working runner and a clean baseline; discovering otherwise mid-loop wastes a cycle.
@@ -18,6 +22,10 @@ Follow this process step by step.
 
 1. **Read the feature description.** If anything is ambiguous, ask the user. If there is no written description (e.g. the user said "build X" in chat), write one before starting - either run the `discovery` skill, or summarise the request in the shape of a discovery summary, and confirm it with the user. The written description is the artifact step 5 will trace against.
 2. **Plan the implementation.** Use `TaskCreate` to break the feature into tasks, decide order, and note dependencies. The task list is the source of truth for progress through steps 3-5 - completing the list and completing the feature are the same act. If during step 3 the plan turns out to be wrong, stop, update the task list, and tell the user what changed and why. Do not silently rewrite the plan.
+
+   **Identify modules and boundaries:** Which modules are touched by the change? Do you need to create new modules, files, classes, functions? Which existing modules will the new code interact with? This informs the task breakdown and helps ensure you don't miss necessary integration work. Where do those modules live in the file structure?
+
+   **Verifieable goals:** Transform imperative tasks into verifiable goals. Instead of "add validation", use "given/when/then" to specify the expected behavior and its test. This makes it easier to know when a task is done, and to verify the implementation in step 5.
 
    **Sizing implementation tasks:**
    - One user-visible change per task - typically one user story.
@@ -45,23 +53,55 @@ The call into a third-party SDK or the network/IO edge can't be driven by a unit
 
 Do not stop at the seam: "you just need to implement the wrapper I created" is not a finished feature. Wire the real dependency in and confirm it works.
 
+### Simplicity First
+
+Minimum code that solves the problem. Nothing speculative.
+
+Combat the tendency toward overengineering:
+
+- No features beyond what was asked
+- No abstractions for single-use code
+- No "flexibility" or "configurability" that wasn't requested
+- No error handling for impossible scenarios
+- If 200 lines could be 50, rewrite it
+
+**The test:** Would a senior engineer say this is overcomplicated? If yes, simplify.
+
+### Surgical Changes
+
+Touch only what you must. Clean up only your own mess.
+
+When editing existing code:
+
+- Don't "improve" adjacent code, comments, or formatting
+- Don't refactor things that aren't broken
+- Match existing style, even if you'd do it differently
+- If you notice unrelated dead code, mention it — don't delete it
+
+When your changes create orphans:
+
+- Remove imports/variables/functions that YOUR changes made unused
+- Don't remove pre-existing dead code unless asked
+
+**The test:** Every changed line should trace directly to the user's request.
+
 ### Dependency versions
 
 When adding a dependency, look up its current latest stable release (or latest LTS line, where the ecosystem distinguishes one) and use that. Do not rely on a version from memory - it is almost always stale.
 
 ### Code Quality
 
-These rules are for *you, the implementing agent, while writing*. The final code review at step 4 applies the same rules independently.
-
 Good, maintainable code is optimized for readability. The intent should always be obvious.
-
-Order definitions top-down: the high-level, abstract code first, with helpers below the code that calls them. A reader meets a function before its details, and the file grows more detailed as they read down.
-
-Co-locate a test with the file it tests rather than in a separate `tests/` tree (things that change together stay together), unless the project's existing layout clearly says otherwise.
 
 Code should be in the simplest, most boring version that works.
 
 Follow YAGNI religiously - in production code. Tests of spec-mandated behavior are not YAGNI candidates; write them even when the production logic looks trivial.
+
+Code that changes together should live together. In particular, combine code belonging to a single feature into the same module. Do not split file by type (all controllers of unrelated features in one directory, all models in another), use feature-based modularization: each feature's code in its own directory or file.
+
+Co-locate a test with the file it tests rather than in a separate `tests/` tree, unless the project's existing layout clearly says otherwise.
+
+Order definitions top-down: the high-level, abstract code first, with helpers below the code that calls them. A reader meets a function before its details, and the file grows more detailed as they read down.
 
 Apply Kent Beck's four rules of simple design, in priority order:
 
