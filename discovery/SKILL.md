@@ -7,7 +7,9 @@ description: Use when designing a new feature with the user - fired explicitly v
 
 Work with the user to develop a feature specification so thoroughly that you can describe it exhaustively in a structured summary, and an implementer could build it from that summary plus the codebase without needing to ask the user any questions.
 
-Begin by skimming the codebase for what the new feature will sit next to: existing terminology, conventions, and adjacent features it must integrate with. For a feature with UI, also note the existing design language - component library, design tokens, spacing and type scale, styling conventions - so new screens stay consistent with it. If the project has a `UBIQUITOUS_LANGUAGE.md`, read it and use those terms when referring to concepts defined there. The code answers "what exists"; the user answers "what's new".
+Thoroughness is a property of the spec, not the conversation: scale the interview to the feature. A small feature may warrant two questions and a half-page spec; a large one warrants many. The bar is that every decision a wrong default could hurt is settled - not that you ask a fixed number of questions.
+
+Begin by skimming the codebase for what the new feature will sit next to: existing terminology, conventions, and adjacent features it must integrate with. For a feature with UI, also note the existing design language - component library, design tokens, spacing and type scale, styling conventions - so new screens stay consistent with it. If the project has a `UBIQUITOUS_LANGUAGE.md`, read it and use those terms when referring to concepts defined there. The code answers "what exists"; the user answers "what's new". Once you've skimmed, open the conversation by reflecting back what the user is asking for and digging for the underlying problem it's meant to solve - users often arrive with a solution, so don't assume the stated request is the problem (see Goal).
 
 ## Goal
 
@@ -25,7 +27,7 @@ You are a discussion partner, not a stenographer. Discovery is a conversation - 
 
 ## Process
 
-Identify the user journey (or journeys) and the user tasks that compose it. The user journey is the high-level workflow the user wants to enable; user tasks are the distinct steps within that workflow. Write a user story for each user task, and acceptance criteria for any story whose behavior isn't obvious or has a non-obvious edge case.
+Identify the user journey (or journeys) and the user tasks that compose it. The user journey is the high-level workflow the user wants to enable; user tasks are the distinct steps within that workflow. Write a user story for each user task, and acceptance criteria for any story whose behavior isn't obvious or has a non-obvious edge case. Phrase those criteria as concrete given/when/then conditions where it fits, so they translate directly into failing tests.
 
 ### The mechanic: sort every decision
 
@@ -53,7 +55,7 @@ Beyond those, let the feature's actual shape say which of the usual hiding spots
 
 ### How to ask
 
-Ask one question per turn, and only one. The user should be able to reply on a single topic without labeling which part of their answer addresses which question. If you catch yourself drafting a second question in the same turn, hold it back for the next turn.
+Ask one question per turn, and only one. The user should be able to reply on a single topic without labeling which part of their answer addresses which question. If you catch yourself drafting a second question in the same turn, hold it back for the next turn. Batch-confirming assumptions for veto - "I'm assuming X and Y unless you say otherwise" - is not an originating question and is exempt from this rule.
 
 ### Show, don't tell
 
@@ -103,7 +105,7 @@ Write the summary to a markdown spec file in the repo - propose a path and confi
 
 ## User Stories
 - **As a** <role>, **I want to** <action>, **so that** <outcome>.
-  - <acceptance criterion - include only when behavior has a wrong default>
+  - <acceptance criterion, as given/when/then where it fits - include only when behavior has a wrong default>
   - _Why: <rationale - include only when omitting it would let an implementer take a wrong turn>_
 
 ## Design
