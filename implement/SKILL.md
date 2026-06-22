@@ -1,6 +1,6 @@
 ---
 name: implement
-description: Use when the user says "implement this feature", "build X", "let's start coding", or hands you a discovery summary / spec and asks to build it. Expects: a feature description (preferably the output of the discovery skill). Produces: committed code, all tests green, reviewed.
+description: Use when the user says "implement this feature", "build X", "let's start coding", or hands you a spec and asks to build it. Expects: a feature description (ideally a written spec). Produces: committed code, all tests green, reviewed.
 ---
 
 # Implement
@@ -14,12 +14,12 @@ You are a senior software developer. Your goal is to implement a feature end to 
 
 ## Process
 
-Follow this process step by step.
+Follow this process step by step. Scale it to the feature: for a single-story change, the plan may be one task and the code and quality reviews may collapse into a single pass; a larger feature uses the full breakdown and both reviews.
 
-1. **Read the feature description.** If anything is ambiguous, ask the user. If there is no written description (e.g. the user said "build X" in chat), write one before starting - either run the `discovery` skill, or summarise the request in the shape of a discovery summary, and confirm it with the user. The written description is the artifact step 5 will trace against.
+1. **Read the feature description.** If anything is ambiguous, ask the user. If there is no written description (e.g. the user said "build X" in chat), write one before starting - a short spec covering intent, success criteria, non-goals, and the user stories with their acceptance criteria - and confirm it with the user. The written description is the artifact step 5 will trace against.
 2. **Plan the implementation.** Use `TaskCreate` to break the feature into tasks, decide order, and note dependencies. The task list is the source of truth for progress through steps 3-5 - completing the list and completing the feature are the same act. If during step 3 the plan turns out to be wrong, stop, update the task list, and tell the user what changed and why. Do not silently rewrite the plan.
 
-   **Identify modules and boundaries:** Which modules are touched by the change? Do you need to create new modules, files, classes, functions? Which existing modules will the new code interact with? This informs the task breakdown and helps ensure you don't miss necessary integration work. Where do those modules live in the file structure?
+   **Identify modules and boundaries:** Note which modules the change touches, what new files or functions it needs, and where they live, so integration work isn't missed.
 
    **Verifiable goals:** Transform imperative tasks into verifiable goals. Instead of "add validation", use "given/when/then" to specify the expected behavior and its test. This makes it easier to know when a task is done, and to verify the implementation in step 5.
 
@@ -29,7 +29,7 @@ Follow this process step by step.
    - If a task can't be named as a verb-phrase about user-visible behavior, the slice is wrong.
 
    **Tail entries:** Append two fixed tail entries to the list: `Code review` and `Quality review` (steps 4 and 5). The verb-phrase rule does not apply to these.
-3. **Implement each task in turn.** You MUST use the TDD red/green/refactor loop described in "Using TDD" below. A task is complete only when every behavior change you made traces to a test that failed first. If you can't name that test for some piece of the change, the task isn't done - write the missing red tests, watch them fail, then re-verify the implementation still satisfies them. Pure refactor steps within a task are exempt: they add no new behavior, and the existing green tests prove it's preserved.
+3. **Implement each task in turn.** You MUST use the TDD red/green/refactor loop described in "Using TDD" below. A task is complete only when every behavior change traces to a test that failed first; if you can't name that test, the task isn't done. Pure refactor steps within a task are exempt: they add no new behavior, and the existing green tests prove it's preserved.
 
    If a task cannot be made green for a reason TDD can't resolve - a genuine blocker like missing information, a spec contradiction, or an external dependency that doesn't behave as specified - stop and surface it to the user. Do not fake a passing test or expand scope to work around it.
 
@@ -53,24 +53,6 @@ The call into a third-party SDK or the network/IO edge can't be driven by a unit
 
 Do not stop at the seam: "you just need to implement the wrapper I created" is not a finished feature. Wire the real dependency in and confirm it works.
 
-### Surgical Changes
-
-Touch only what you must. Clean up only your own mess.
-
-When editing existing code:
-
-- Don't "improve" adjacent code, comments, or formatting
-- Don't refactor things that aren't broken
-- Match existing style, even if you'd do it differently
-- If you notice unrelated dead code, mention it — don't delete it
-
-When your changes create orphans:
-
-- Remove imports/variables/functions that YOUR changes made unused
-- Don't remove pre-existing dead code unless asked
-
-**The test:** Every changed line should trace directly to the user's request.
-
 ### Dependency versions
 
 When adding a dependency, look up its current latest stable release (or latest LTS line, where the ecosystem distinguishes one) and use that. Do not rely on a version from memory - it is almost always stale.
@@ -85,15 +67,5 @@ Apply Kent Beck's four rules of simple design, in priority order:
 4. **Fewest elements.** No classes, methods, or abstractions beyond what the first three rules require.
 
 Follow YAGNI religiously in production code: minimum code that solves the problem, nothing speculative, in the simplest and most boring version that works - prefer the conventional solution over the clever one. Tests of spec-mandated behavior are not YAGNI candidates; write them even when the production logic looks trivial.
-
-Combat the tendency toward overengineering:
-
-- No features beyond what was asked
-- No abstractions for single-use code
-- No "flexibility" or "configurability" that wasn't requested
-- No error handling for impossible scenarios
-- If 200 lines could be 50, rewrite it
-
-**The test:** Would a senior engineer say this is overcomplicated? If yes, simplify.
 
 Keep related code together: combine a feature's code into the same module, and use feature-based modularization (each feature in its own directory or file) rather than splitting by type (all controllers in one directory, all models in another). Co-locate a test with the file it tests rather than in a separate `tests/` tree, unless the project's existing layout clearly says otherwise. Order definitions top-down: high-level code first, helpers below the code that calls them, so a reader meets a function before its details.
