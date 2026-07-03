@@ -5,16 +5,18 @@ description: Use when a /discovery output is too large to implement in one cycle
 
 # Discovery Increment
 
-Given a path to a `/discovery`-shaped spec too large to implement as one chunk (the "source spec" - any filename is fine), produce the next vertical-slice `INCREMENT-NN.md` next to it - a self-contained doc in the same shape, scoped to a slice that delivers real value on its own. No user interaction beyond getting the path; everything else you need is in the source spec, its sibling INCREMENT files, and the codebase.
+Given a path to a complete `/discovery` master spec too large to implement in one chunk (the "source spec" - any filename is fine), project the next vertical-slice `INCREMENT-NN.md` next to it - a self-contained doc in the same shape, scoped to a slice that delivers real value on its own.
 
-The common case is no split needed - a `/discovery` output that fits one `/implement` pass is already an INCREMENT in shape. Only invoke this skill when the source spec is large enough to need carving.
+The master is already complete: its criteria are hardened to given/when/then, its baseline decisions bound to real code. So this skill projects, it does not re-derive - it reproduces the master's criteria and decisions for the stories it selects, verbatim, and adds only what slicing itself creates: which stories are in the slice, which earlier slices it depends on, and how its references resolve against code those slices actually built. Everything you need is in the source spec, its sibling INCREMENT files, and the codebase - no user interaction beyond getting the path, save the stop conditions below.
+
+The common case is no split needed - a complete master that fits one `/implement` pass is consumed by `/implement` directly. Only invoke this skill when the master is large enough to need carving.
 
 ## Before starting
 
 - The input is a path to the source spec. If the user didn't supply one, ask where the spec lives before doing anything else.
-- Confirm the file at that path is recognizably a `/discovery`-shaped spec (at minimum: Why and User Stories sections). If not, stop and tell the user.
+- Confirm the file is a complete `/discovery` master, not a draft: User Stories present, and every behavior a wrong default could hurt already carrying a given/when/then criterion. If criteria are missing or decisions are left open, it isn't finished - stop and send the user back to `/discovery` rather than inventing the gaps here.
 - Skim the codebase for current shape - names, file paths, existing structures the new slice will reference.
-- Identify any `INCREMENT-NN.md` siblings in the same directory. From each, extract only the User Stories it claimed. Do not trust their prose about code shape - that may have drifted from what was actually built.
+- Identify any `INCREMENT-NN.md` siblings in the same directory. From each, extract only the User Stories it claimed - they tell you what's taken, nothing more. The master, not the siblings, is the source of truth for stories, criteria, and decisions; don't trust sibling prose about code shape, which may have drifted from what was actually built.
 
 ## What is a vertical slice
 
@@ -28,20 +30,22 @@ Ask yourself: "what would we learn from shipping this alone?" If the answer is "
 
 1. **Determine claimed stories.** From sibling `INCREMENT-NN.md` files, story-level only.
 2. **Check refusal cases.** Stop and tell the user, do not emit a file, if:
-   - The source spec is already small enough to act as one INCREMENT.
-   - All stories in the source spec are already claimed by existing INCREMENT siblings.
+   - The master is already small enough to act as one INCREMENT - `/implement` consumes it directly.
+   - All stories in the master are already claimed by existing INCREMENT siblings.
    - The unclaimed stories can't be carved into a vertical, substantive slice (e.g., everything left is interlocked).
-3. **Choose the next slice.** From the unclaimed stories, take the largest coherent vertical chunk that still fits one `/implement` cycle, grouping closely-related stories together rather than emitting each alone. A slice may cover several related stories, one story, or part of one story when that story alone is too large for a single slice.
-4. **Anchor to current code.** When the slice references existing structures - names, file paths, current shape - draw those references from the codebase, not from prior INCREMENT prose. Drift between earlier slices and what was actually built does not propagate forward.
-5. **Write the slice file.** Name it `INCREMENT-NN.md` with the next zero-padded sequence number after the highest existing INCREMENT sibling. Place it next to the input. The slice file stands alone - it does not link or refer to EPIC.md, so `/implement` can consume it directly.
+3. **Choose the next slice.** From the unclaimed stories, take the largest coherent vertical chunk that still fits one `/implement` cycle, cutting along the dependencies the master mapped and grouping closely-related stories rather than emitting each alone. A slice may cover several related stories, one story, or part of one story when that story alone is too large for a single slice.
+4. **Reproduce the slice's criteria and decisions from the master, verbatim.** The master is complete; project it, don't re-derive it. Don't reword a criterion or re-make a decision - copy them across for the stories you selected.
+5. **Anchor and state preconditions.** Baseline anchors carry over from the master unchanged. For references that point at feature-internal code an earlier slice built, resolve them against what that slice actually built - read the current codebase, not prior INCREMENT prose. Record which earlier slices this one depends on as Preconditions. If a built earlier slice turns out to contradict a master decision - the master was wrong, not merely unbound - stop and send the user back to `/discovery`; never silently patch a master decision here.
+6. **Write the slice file.** Name it `INCREMENT-NN.md` with the next zero-padded sequence number after the highest existing INCREMENT sibling. Place it next to the input. The slice file stands alone - it does not link or refer to the source spec, so `/implement` can consume it directly.
 
 ## Output shape
 
-The output is a complete `/discovery`-shaped document (see `discovery/SKILL.md` for the full template), scoped to this slice:
+The output is a complete document in the shared spec format (see `discovery/SPEC_FORMAT.md`), scoped to this slice:
 
-- **Why.** Inherited from the source spec.
+- **Why.** Inherited from the master.
 - **Success criteria.** Scoped to what this slice achieves.
-- **Non-goals.** Relevant inherited non-goals, plus the stories from the source spec explicitly deferred to future slices. Calling these out keeps an implementer from accidentally pulling deferred work back in.
+- **Non-goals.** Relevant inherited non-goals, plus the master stories explicitly deferred to future slices. Calling these out keeps an implementer from pulling deferred work back in.
+- **Preconditions.** What earlier slices must have built for this one to stand. This is the one section the master doesn't supply - it's a property of the slice ordering you chose.
 - **Domain (Ubiquitous language).** Only terms this slice actually touches.
 - **Roles.** Only roles this slice actually touches.
-- **User Stories.** Only stories in this slice, with their acceptance criteria. When a story spans multiple slices, include only the partial scope for this one.
+- **User Stories.** Only stories in this slice, their acceptance criteria copied from the master verbatim. When a story spans multiple slices, include only the partial scope for this one.

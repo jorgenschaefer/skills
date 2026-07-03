@@ -1,6 +1,6 @@
 # Feature spec format
 
-The shape of the feature specification the `discovery` skill writes. `/implement` builds from it and traces against it: every unit of work maps back to a story or decision in the spec, and nothing in the spec is left unbuilt. Omit sections that don't apply; add subsections where the domain warrants.
+The shape of the feature specification `discovery` writes and `/implement` consumes. It is a complete contract: `/implement` builds from it and traces against it - every unit of work maps back to a story or decision, and nothing in it is left unbuilt. `/discovery-increment` emits this same shape scoped to one vertical slice. Omit sections that don't apply; add subsections where the domain warrants.
 
 ```markdown
 # Feature: <name>
@@ -13,6 +13,9 @@ The shape of the feature specification the `discovery` skill writes. `/implement
 
 ## Non-goals
 - <Explicitly out of scope>
+
+## Preconditions
+- <What must already exist for this to build - the baseline. In a slice, the prior slices it depends on. Omit for a whole-feature spec with nothing beyond the baseline.>
 
 ## Domain
 
@@ -33,14 +36,14 @@ The shape of the feature specification the `discovery` skill writes. `/implement
 
 ## User Stories
 - **As a** <role>, **I want to** <action>, **so that** <outcome>.
-  - <acceptance criterion, as given/when/then where it fits - include only when behavior has a wrong default>
+  - <acceptance criterion as given/when/then - required for every behavior a wrong default could hurt; each one becomes a test written RED first>
   - _Why: <rationale - include only when omitting it would let an implementer take a wrong turn>_
 
 ## Design
 - <For each screen: layout and components (reused vs new), states, and an inline _Why: ..._ when a wrong turn was the risk. Greenfield, record the established design language here.>
 
 ## Implementation decisions
-- <Each decision and its resolution if a wrong default would hurt, with an inline _Why: ..._ when the rationale was load-bearing.>
+- <Each decision and its resolution where a wrong default would hurt, with an inline _Why: ..._ when the rationale was load-bearing. A decision that touches existing code names the real structure it reuses or extends as a durable choice - "extend the existing `ApplicationForm`, following the profile form's validation" - not a `file:line` reference that drift will invalidate.>
 ```
 
 ## Worked example
@@ -58,4 +61,4 @@ A fragment showing the intended granularity - terse entries, `_Why:_` only where
 - Rejection reasons are free text, not a fixed enum. _Why: the categories aren't stable yet; an enum would force a migration on every change._
 ```
 
-User stories should be exhaustive - one per distinct workflow, including edge variations - while the nested bullets stay optional, as the template notes mark. A spec never carries an open-questions section.
+User stories should be exhaustive - one per distinct workflow, including edge variations - and every behavior a wrong default could hurt carries a given/when/then criterion, since each criterion becomes a test `/implement` writes RED first. The `_Why:_` line stays optional. A spec never carries an open-questions section.

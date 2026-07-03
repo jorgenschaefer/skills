@@ -95,6 +95,14 @@ Discovery is done when every decision a wrong default could hurt has an answer -
 
 Before writing the summary, confirm your running list of defaults and verify none actually needed the user. Resolve any question still open now - a spec never carries an open-questions section. If a question survives, discovery isn't over.
 
+Then harden the spec into a contract an implementer can build without improvising - a closing sweep across the whole feature, now that its shape is settled:
+
+- **Complete the criteria.** Every behavior a wrong default could hurt gets a given/when/then criterion; each one becomes a test `/implement` writes RED first. A story left with no criteria is where the implementer invents behavior - close it here. During the interview criteria stay loose; this is where they harden.
+- **Bind the decisions.** Every decision that touches existing code names the real structure it reuses or extends, drawn from the codebase - a durable choice, not a `file:line` that drift will invalidate.
+- **Map the dependencies.** Make the dependencies between stories explicit, so a later split can slice along them.
+
+The result is the complete master `/implement` consumes directly, or that `/discovery-increment` carves into slices.
+
 ## Summary
 
 Write the summary to a markdown spec file in the repo - propose a path and confirm it - and present the same content inline so the user can react. Follow the shape in `SPEC_FORMAT.md`, and revise from feedback until they're satisfied; the file is the artifact `/implement` builds and traces against, so it must match what you've agreed.
