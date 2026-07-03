@@ -7,9 +7,7 @@ description: Use when a /discovery output is too large to implement in one cycle
 
 Given a path to a complete `/discovery` master spec too large to implement in one chunk (the "source spec" - any filename is fine), project the next vertical-slice `INCREMENT-NN.md` next to it - a self-contained doc in the same shape, scoped to a slice that delivers real value on its own.
 
-The master is already complete: its criteria are hardened to given/when/then, its baseline decisions bound to real code. So this skill projects, it does not re-derive - it reproduces the master's criteria and decisions for the stories it selects, verbatim, and adds only what slicing itself creates: which stories are in the slice, which earlier slices it depends on, and how its references resolve against code those slices actually built. Everything you need is in the source spec, its sibling INCREMENT files, and the codebase - no user interaction beyond getting the path, save the stop conditions below.
-
-The common case is no split needed - a complete master that fits one `/implement` pass is consumed by `/implement` directly. Only invoke this skill when the master is large enough to need carving.
+The master is already complete: its criteria are hardened to given/when/then, its baseline decisions bound to real code. So this skill projects, it does not re-derive - it adds only what slicing itself creates: which stories are in the slice, which earlier slices it depends on, and how its references resolve against code those slices actually built. Everything you need is in the source spec, its sibling INCREMENT files, and the codebase - no user interaction beyond getting the path, save the stop conditions below.
 
 ## Before starting
 
@@ -23,8 +21,6 @@ The common case is no split needed - a complete master that fits one `/implement
 - **Vertical, not horizontal.** The slice traverses the full stack for at least one use case. After it ships, some real user's workflow works end-to-end. Never "db layer / backend layer / API layer / frontend layer" - those are useful only when the last layer lands.
 - **Substantive enough to justify its own cycle.** Each slice incurs implementation, code review, and traceability-check overhead. A slice should justify those costs by what's learned, decided, or validated from it. If a candidate piece has no design decisions to make and lands naturally in the same area as the next meaningful slice, bundle it into that slice rather than carving it off alone.
 - **As large as a single `/implement` cycle can carry.** The point of splitting is to make a large spec implementable in separate passes - not to atomize it into the smallest testable units. Individual testability is never a reason to split. Group closely-related stories into one slice; only separate them when the combined slice would overflow a single cycle or span unrelated areas of the product. A spec should yield a handful of meaningful slices, not dozens of tiny ones.
-
-Ask yourself: "what would we learn from shipping this alone?" If the answer is "nothing significant", bundle.
 
 ## Process
 
@@ -40,7 +36,7 @@ Ask yourself: "what would we learn from shipping this alone?" If the answer is "
 
 ## Output shape
 
-The output is a complete document in the shared spec format (see `discovery/SPEC_FORMAT.md`), scoped to this slice:
+The output is a complete document in the shared spec format (see `SPEC_FORMAT.md`), scoped to this slice:
 
 - **Why.** Inherited from the master.
 - **Success criteria.** Scoped to what this slice achieves.
