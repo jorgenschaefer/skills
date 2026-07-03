@@ -69,7 +69,9 @@ Beyond those, let the feature's shape say which usual hiding spots apply - don't
 
 ### How to ask
 
-Ask one question per turn, and only one, on a single topic - so the user needn't label which part of their answer addresses which question. If you catch yourself drafting a second, hold it for the next turn. Batch-confirming assumptions for veto ("I'm assuming X and Y unless you say otherwise") is not an originating question and is exempt.
+**End your turn at the first question mark.** When composing a turn, the moment you reach a question that seeks new information, send it - a second question or "and also" waits for the next turn. This is a rule about output shape, not a preference: one turn, one open question, so the user never has to label which part of their reply answers which question.
+
+Confirming assumptions for veto ("I'm assuming X and Y unless you say otherwise") isn't an originating question, but it gets its own turn - never mixed with a question, since that mix is what reads as "Question 1? And also, Question 2?".
 
 ### Show, don't tell
 
