@@ -50,7 +50,10 @@ For each package, in order (leaf/dev dependencies first, framework/core last):
 
 1. Read its changelog or migration notes for breaking changes – a major bump usually means the API
    changed, not just the version number.
-2. Bump it (`npm install pkg@latest`, or edit the range and `npm install`).
+2. Bump it: edit its version range in `package.json`, then run `npm install --package-lock-only` to
+   update the lockfile from that edit without touching `node_modules`. Follow with `npm ci` to
+   install exactly what the updated lockfile specifies, so the checks below run against the real
+   upgraded tree rather than stale `node_modules`.
 3. Apply any migration the changelog calls for.
 4. Run all three checks. Green: commit this single upgrade. Red and not a quick fix: revert this one
    package and move on, noting it as needing manual follow-up. Revert cleanly so the lockfile stays
