@@ -1,12 +1,12 @@
 ---
 name: propose-change
-description: Use when the user proposes a small change or bugfix to existing behavior - fired explicitly via /propose-change, or whenever a stated tweak or fix needs evaluating and turning into a plan an implementer can follow. For a new capability, use /discovery instead.
+description: Use when the user proposes a small change or bugfix to existing behavior and it needs evaluating and turning into a plan an implementer can follow. Fired explicitly via /propose-change. For a new capability, use /discovery instead.
 disable-model-invocation: true
 ---
 
 # Propose Change
 
-The user has proposed a change or reported a bug. Your job is to turn it into a plan `/implement` can follow - while guarding against bad ideas. Guard against bad ideas, but allow good ones through: the goal is a change that addresses the real need while keeping the project usable and its code clean, not a rubber stamp.
+The user has proposed a change or reported a bug. Your job is to turn it into a plan `/implement` can follow - guarding against bad ideas while letting good ones through. The goal is a change that addresses the real need while keeping the project usable and its code clean, not a rubber stamp.
 
 Unlike `/discovery`, the change is already stated. The uncertainty is not "what does the user want" but "where does this thread through the code" and "is it worth doing, and done this way". So the weight is on investigation and judgment, not on interviewing. Keep the ceremony light - a small change should not feel like a feature.
 
@@ -20,9 +20,11 @@ The boundary is easy to miss because a request can arrive dressed as a small cha
 
 Scale it to the change. A one-line fix may need one investigative pass and three sentences of plan; a cross-cutting tweak, more. Run the steps in order, but let a trivial change collapse the small ones.
 
+**End your turn at the first question mark.** When a turn reaches a question that seeks new information, send it - a second question waits for the next turn, so the user never has to untangle which reply answers which question. Confirming assumptions for veto ("I'm assuming X unless you say otherwise") gets its own turn, never mixed with a question. This holds across every step below, not just the last.
+
 ### 1. Understand the real problem
 
-Reflect the request back and find the problem beneath it. Users often arrive with a solution already chosen; the stated change may not be the best way to get what they actually need (the XY problem - they ask for X because they think it solves Y; address Y). Ask only what the codebase can't answer and a wrong guess would get wrong - the motivation, the expected behavior where it's genuinely ambiguous. For an obvious change with an obvious motive, don't manufacture questions.
+Reflect the request back and find the problem beneath it. Users often arrive with a solution already chosen; the stated change may not be the best way to get what they actually need (the XY problem - they ask for X because they think it solves Y; address Y). Investigate first (step 2 often answers the question); ask only what the codebase can't answer and a wrong guess would get wrong - the motivation, the expected behavior where it's genuinely ambiguous. For an obvious change with an obvious motive, don't manufacture questions.
 
 For a **bug**, the "why" is usually settled - a bug is self-justifying. Spend the effort on the "what" instead: pin down the actual vs. expected behavior and a concrete case that reproduces it.
 
@@ -52,8 +54,6 @@ The honest verdicts are: worth it as proposed; worth it done differently (a chea
 ### 4. Discuss and decide
 
 Push back where you have reason to. When the change is weak, the cost outsized, or a better path exists, say so with your reasoning and propose the alternative - the user picks or redirects. When you're choosing an implementation approach a wrong default would get wrong, state the decision and your recommendation and let the user veto; don't make them originate it. Scope and the go/no-go stay the user's call, not a default you back into.
-
-**End your turn at the first question mark.** When a turn reaches a question that seeks new information, send it - a second question waits for the next turn, so the user never has to untangle which reply answers which question. Confirming assumptions for veto ("I'm assuming X unless you say otherwise") gets its own turn, never mixed with a question.
 
 ## Output
 
