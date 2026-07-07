@@ -18,12 +18,12 @@ default branch – never commit these upgrades straight to `main`.
 
 The three checks referenced throughout are the project's **tests**, **type check** (`tsc` /
 `tsc --noEmit`), and **lint**. Find the actual commands in `package.json` scripts and use those; if
-any is missing, say so and run the ones that exist. If the project uses pnpm or yarn instead of npm,
-use the equivalent commands – detect this from the lockfile.
+any is missing, say so and run the ones that exist.
 
 ## 1. Baseline
 
-Run all three checks before touching anything. Everything must be green.
+Make sure dependencies are installed first (`npm ci`), then run all three checks before touching
+anything. Everything must be green.
 
 If something is already red, stop and report it. A pre-existing failure is not yours to fix here,
 but you must not start on top of it – otherwise you can't tell an upgrade regression from noise. Note
@@ -54,8 +54,7 @@ For each package, in order (leaf/dev dependencies first, framework/core last):
 3. Apply any migration the changelog calls for.
 4. Run all three checks. Green: commit this single upgrade. Red and not a quick fix: revert this one
    package and move on, noting it as needing manual follow-up. Revert cleanly so the lockfile stays
-   consistent: `git checkout package.json package-lock.json && npm install` (adjust for the
-   detected package manager).
+   consistent: `git checkout package.json package-lock.json && npm install`.
 
 If the bump fails to install with a peer-dependency conflict (npm's `ERESOLVE`), read which peer is
 unsatisfied and upgrade the conflicting packages together as one coherent step (still committed as a
@@ -78,8 +77,13 @@ Check and reconcile:
 - the `@types/node` major version
 
 If these disagree (e.g. `.nvmrc` says 20 but the Dockerfile is on `node:18`), that's a finding –
-point it out and propose aligning them all on one current LTS rather than silently picking one.
-Bump `@types/node` to the matching major as part of pass 3.
+point it out and propose aligning them all on one current LTS (verify which release that currently
+is rather than assuming from memory) rather than silently picking one.
+
+As part of pass 3, bump `@types/node` to match the Node major the project actually runs on **today**
+– not a higher LTS you have only proposed moving to. Types ahead of the runtime let `tsc` pass code
+that fails at runtime, which defeats the point of the checks. `@types/node` moves up only in lockstep
+with an approved runtime bump.
 
 ## Output
 
