@@ -20,6 +20,7 @@ npx skills add jorgenschaefer/skills@<skill-name>
 - **critique** - review code against a focused set of quality standards (correctness, maintainability, security), over either a branch diff or a whole project; supplements rather than replaces Claude's own judgment
 - **discovery** - interview the user about a feature idea, reacting to throwaway HTML mockups for UI decisions; produces an inline summary covering why, success criteria, non-goals, domain, user stories, design, and implementation decisions
 - **discovery-increment** - carve the next vertical-slice `INCREMENT-NN.md` from a large `/discovery`-shaped source spec, ready for /implement to consume
+- **improve-skill** - improve an existing agent skill (make it more effective, more concise, and clearer for an LLM to follow) without changing what it does: applies safe wording edits directly and surfaces behavior-changing edits as decisions for the author
 - **implement** - implement a feature end-to-end from a description: planned task list, TDD red/green/refactor, then code review and a traceability check against intent
 - **propose-change** - evaluate a proposed small change or bugfix to existing behavior and turn it into a plan `/implement` can follow: investigate where it lands in the code, weigh cost against benefit, push back on weak ideas, and produce a light written plan (or a reasoned no)
 - **repo-overview** - orient a new developer to an unfamiliar codebase: tech stack, code organization, domain model, main workflows, and where to start reading
