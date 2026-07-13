@@ -29,8 +29,8 @@ In addition to your own standards, focus on these.
 ### Maintainability
 - **Intent is obvious.** No gap between what the code says and what it does. Names are descriptive, and the wider a name's scope the more descriptive it should be (`i` is fine for a loop index, not for a function).
 - **Names reuse the established vocabulary.** Use the term already in use for a concept rather than coining a synonym. If `UBIQUITOUS_LANGUAGE.md` exists at the repo root, names in code, tests, and comments should match its terms; a fresh name for a concept the glossary already defines is a finding.
-- **Reads top to bottom.** Files open with the abstract idea and grow concrete; a helper sits below its caller. Needing to jump between files to follow the logic is a smell.
-- **What changes together lives together** – same file or folder; tests co-located with the code they test.
+- **Reads top to bottom** (the stepdown rule / newspaper metaphor). Files open with the abstract idea and grow concrete; a helper sits below its caller. Needing to jump between files to follow the logic is a smell.
+- **What changes together lives together** (Common Closure Principle; connascence locality) – same file or folder; tests co-located with the code they test.
 - **Duplication is justified or removed.** Two copies that will change for the same reason belong in one place – flag from the second copy on. Duplication is acceptable only when the copies will change for *different* reasons; then prefer it over the wrong abstraction.
 - **Business logic talks to external systems through intention-revealing functions, not raw framework calls.** It calls domain-named queries like `getActiveFoo()` or `getFooByCompanyId()`: the wrapper names the intent in domain terms and keeps framework/ORM detail out of the logic.
   - A passthrough that just relays a framework query object (`getFoo(prismaWhereClause)` → `prisma.foo.findMany(...)`) does not count: it leaks the composable ORM query through a thin disguise.
