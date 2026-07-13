@@ -42,6 +42,15 @@ In addition to your own standards, focus on these.
 - Every internet-reachable endpoint enforces authentication and authorization.
 - All user input is validated and sanitized.
 
+## Verify before reporting
+
+Treat every first-pass finding as a hypothesis, not a fact, and try to refute it before it reaches the report – a review loses trust faster to confident false positives than to anything else. Report only what survives.
+
+- **Correctness and security: construct the trigger.** Name the concrete input or state that drives the code to the wrong result, a crash, or the breach. If you can't construct one, you don't have a finding – drop it. Keep the surviving scenario with the finding; it is both the proof and the reader's reproduction.
+- **Everything else: confirm it holds here.** Check the finding against the actual code rather than a misread of it, and that it's a real problem rather than a stylistic preference or something the surrounding code already justifies. In diff mode, a problem that is pre-existing and untouched by the change is out of scope (in whole-project mode it isn't – see Scope).
+
+Refuted or unconstructable findings don't get reported, softened, or filed as nits – they're dropped.
+
 ## Output
 
 Critique reports findings to the conversation; it does not modify code. Group findings by severity:
@@ -49,4 +58,4 @@ Critique reports findings to the conversation; it does not modify code. Group fi
 - **Should-fix** – real problems worth addressing.
 - **Nits** – minor.
 
-For each: location (`file:line`), what's wrong, and why it matters. If an area is clean, say so in a line rather than padding. Don't invent findings to fill a section.
+For each: location (`file:line`), what's wrong, and why it matters; for a correctness or security finding, the concrete failure scenario that survived verification (the input or state and the wrong result it produces). If an area is clean, say so in a line rather than padding. Don't invent findings to fill a section.
