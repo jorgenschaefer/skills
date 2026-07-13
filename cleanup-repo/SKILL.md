@@ -39,10 +39,12 @@ For a sizeable project, spawn parallel `Explore` subagents across different area
   reappearance of that code would be a real regression (a security or correctness guarantee); keep
   those.
 
-Before proposing any deletion, verify it is actually unreferenced. Account for non-obvious use:
-dynamic/reflective access, DI registration, string-referenced routes/config/env, framework entry
-points, and public API consumed from outside this repo (an exported symbol with no internal caller
-is not dead). If you cannot prove it is safe, mark it **needs confirmation**, not **delete**.
+Before proposing any deletion, actively try to find a use that proves the code is still live –
+don't settle for the absence of an obvious caller. Hunt the non-obvious paths: dynamic/reflective
+access, DI registration, string-referenced routes/config/env, framework entry points, and public
+API consumed from outside this repo (an exported symbol with no internal caller is not dead).
+Conclude it is dead only when that search comes up empty; if you cannot prove it is safe, mark it
+**needs confirmation**, not **delete**.
 
 ## Tier 2 – code suitable for behavior-preserving refactor (safe)
 
