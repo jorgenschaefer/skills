@@ -36,6 +36,7 @@ In addition to your own standards, focus on these.
   - A passthrough that just relays a framework query object (`getFoo(prismaWhereClause)` → `prisma.foo.findMany(...)`) does not count: it leaks the composable ORM query through a thin disguise.
   - Ideally the wrapper returns a domain type rather than a framework type (same shape is fine). This is about abstraction, not dependency injection: don't expect injected dependencies, and don't over-abstract – a named query returning a domain type is enough (YAGNI).
 - **YAGNI.** Flag speculative generality – code added for an imagined future need.
+- **KISS.** Prefer the simplest thing that works. Flag needless complexity – an abstraction where a function would do, convoluted control flow, a clever construct where plain code reads better – even when nothing is speculative.
 - **No dead code.** Code that is unreachable or never referenced is a finding. Before flagging, rule out non-obvious use: dynamic/reflective access, DI registration, string-referenced routes/config/env, framework entry points, and exported API consumed from outside this repo (an exported symbol with no internal caller is not dead).
 
 ### Security
