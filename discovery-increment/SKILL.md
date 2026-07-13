@@ -40,7 +40,7 @@ The output is a complete document in the shared spec format (see `SPEC_FORMAT.md
 - **Why.** Inherited from the master.
 - **Success criteria.** Scoped to what this slice achieves.
 - **Non-goals.** Relevant inherited non-goals, plus the master stories explicitly deferred to future slices. Calling these out keeps an implementer from pulling deferred work back in.
-- **Preconditions.** What earlier slices must have built for this one to stand. This is the one section the master doesn't supply - it's a property of the slice ordering you chose.
+- **Preconditions.** What earlier slices must have built for this one to stand - name the earlier slice and the stories (`US-N`) it provides. This is the one section the master doesn't supply - it's a property of the slice ordering you chose.
 - **Domain (Ubiquitous language).** Only terms this slice actually touches.
 - **Roles.** Only roles this slice actually touches.
-- **User Stories.** Only stories in this slice, their acceptance criteria copied from the master verbatim. When a story spans multiple slices, include only the partial scope for this one.
+- **User Stories.** Only stories in this slice, their acceptance criteria copied from the master verbatim. Keep each story's master `US-N` id so the slice traces back to the master. When a story spans multiple slices, include only the partial scope for this one.

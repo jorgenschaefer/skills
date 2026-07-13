@@ -2,6 +2,8 @@
 
 The shape of the feature specification `discovery` writes and `/implement` consumes. It is a complete contract: `/implement` builds from it and traces against it - every unit of work maps back to a story or decision, and nothing in it is left unbuilt. `/discovery-increment` emits this same shape scoped to one vertical slice. Omit sections that don't apply; add subsections where the domain warrants.
 
+Number user stories `US-1`, `US-2`… once the spec is large enough that `/discovery-increment` will slice it, so slices and dependency notes have a stable anchor to point at. A small spec `/implement` consumes whole can leave them as plain bullets.
+
 ```markdown
 # Feature: <name>
 
@@ -13,6 +15,9 @@ The shape of the feature specification `discovery` writes and `/implement` consu
 
 ## Non-goals
 - <Explicitly out of scope>
+
+## Constraints
+- <Non-functional limits the build must hold that no single story's acceptance criteria capture: performance budgets, scale/volume ceilings, and behavior at an external seam (timeout, retry, idempotency). Phrase each so it can still become a test where possible. Omit when the feature imposes none.>
 
 ## Preconditions
 - <What must already exist for this to build - the baseline. In a slice, the prior slices it depends on. Omit for a whole-feature spec with nothing beyond the baseline.>
@@ -35,15 +40,16 @@ The shape of the feature specification `discovery` writes and `/implement` consu
 - **<Event>** - <when it fires and what reacts to it - include only when an occurrence has downstream consequences an implementer must wire up.>
 
 ## User Stories
-- **As a** <role>, **I want to** <action>, **so that** <outcome>.
+- **US-1 · As a** <role>, **I want to** <action>, **so that** <outcome>.
+  - _Depends on: US-2 — <what this story needs in place first>. Omit when the story stands alone; record only real build-order dependencies, so a later split can slice along them._
   - <acceptance criterion as given/when/then - required for every behavior a wrong default could hurt; each one becomes a test written RED first>
   - _Why: <rationale - include only when omitting it would let an implementer take a wrong turn>_
 
 ## Design
-- <For each screen: layout and components (reused vs new), states, and an inline _Why: ..._ when a wrong turn was the risk. Greenfield, record the established design language here.>
+- <For each screen: layout and components (reused vs new), states, and an inline _Why: ..._ when a wrong turn was the risk. Greenfield, record the established design language here. When a mockup was load-bearing to the decision and prose can't carry the layout, keep that mockup in the repo and link it here instead of describing it.>
 
 ## Implementation decisions
-- <Each decision and its resolution where a wrong default would hurt, with an inline _Why: ..._ when the rationale was load-bearing. A decision that touches existing code names the real structure it reuses or extends as a durable choice - "extend the existing `ApplicationForm`, following the profile form's validation" - not a `file:line` reference that drift will invalidate.>
+- <Each decision and its resolution where a wrong default would hurt, with an inline _Why: ..._ when the rationale was load-bearing. A decision that touches existing code names the real structure it reuses or extends as a durable choice - "extend the existing `ApplicationForm`, following the profile form's validation" - not a `file:line` reference that drift will invalidate. When a decision was the user's to make - a business rule, not a reversible default - say so in its _Why:_ so a later reader or reviewer knows it's settled, not open to challenge.>
 ```
 
 ## Worked example

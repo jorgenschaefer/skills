@@ -75,7 +75,7 @@ Confirming assumptions for veto ("I'm assuming X and Y unless you say otherwise"
 
 ### Show, don't tell
 
-When a UI decision is genuinely open, don't ask the user to picture it from prose - build a small throwaway HTML mockup with the `frontend-design` skill and have them react to something real. Show alternatives side by side when the choice is open; when one reused pattern obviously fits, just show that. Mockups are a communication device, not a deliverable: keep them in a scratch directory and delete them once the decision is recorded.
+When a UI decision is genuinely open, don't ask the user to picture it from prose - build a small throwaway HTML mockup with the `frontend-design` skill and have them react to something real. Show alternatives side by side when the choice is open; when one reused pattern obviously fits, just show that. Mockups are a communication device, not a deliverable: keep them in a scratch directory and delete them once the decision is recorded - unless the visual itself is the record and prose can't replace it, in which case keep it in the repo and link it from the spec's Design section.
 
 **Reuse before invent.** Prefer an existing component over a new one, an existing pattern over a new arrangement. Introduce something new only when nothing existing fits, and keep it consistent with the design language. Greenfield, there is no language yet - establishing it (tokens, type scale, spacing, core interaction patterns) is a foundational decision; settle it with the user before building on it.
 
@@ -99,7 +99,7 @@ Then harden the spec into a contract an implementer can build without improvisin
 
 - **Complete the criteria.** Every behavior a wrong default could hurt gets a given/when/then criterion; each one becomes a test `/implement` writes RED first. A story left with no criteria is where the implementer invents behavior - close it here. During the interview criteria stay loose; this is where they harden.
 - **Bind the decisions.** Every decision that touches existing code names the real structure it reuses or extends, drawn from the codebase - a durable choice, not a `file:line` that drift will invalidate.
-- **Map the dependencies.** Make the dependencies between stories explicit, so a later split can slice along them.
+- **Map the dependencies.** Record them as the `Depends on` notes in User Stories, so a later split can slice along them.
 
 The result is the complete master `/implement` consumes directly, or that `/discovery-increment` carves into slices.
 
