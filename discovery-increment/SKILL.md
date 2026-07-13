@@ -24,15 +24,14 @@ The master is already complete: its criteria are hardened to given/when/then, it
 
 ## Process
 
-1. **Determine claimed stories.** From sibling `INCREMENT-NN.md` files, story-level only.
-2. **Check refusal cases.** Stop and tell the user, do not emit a file, if:
+1. **Check refusal cases.** Stop and tell the user, do not emit a file, if:
    - The master is already small enough to act as one INCREMENT - `/implement` consumes it directly.
    - All stories in the master are already claimed by existing INCREMENT siblings.
    - The unclaimed stories can't be carved into a vertical, substantive slice (e.g., everything left is interlocked).
-3. **Choose the next slice.** From the unclaimed stories, take the largest coherent vertical chunk that both fits one `/implement` cycle and stays small enough to review in one sitting, cutting along the dependencies the master mapped and grouping closely-related stories rather than emitting each alone. A slice may cover several related stories, one story, or part of one story when that story alone is too large for a single slice.
-4. **Reproduce the slice's criteria and decisions from the master, verbatim.** The master is complete; project it, don't re-derive it. Don't reword a criterion or re-make a decision - copy them across for the stories you selected.
-5. **Anchor and state preconditions.** Baseline anchors carry over from the master unchanged. For references that point at feature-internal code an earlier slice built, resolve them against what that slice actually built - read the current codebase, not prior INCREMENT prose. Record which earlier slices this one depends on as Preconditions. If a built earlier slice turns out to contradict a master decision - the master was wrong, not merely unbound - stop and send the user back to `/discovery`; never silently patch a master decision here.
-6. **Write the slice file.** Name it `INCREMENT-NN.md` with the next zero-padded sequence number after the highest existing INCREMENT sibling. Place it next to the input. The slice file stands alone - it does not link or refer to the source spec, so `/implement` can consume it directly.
+2. **Choose the next slice.** From the unclaimed stories, take the largest coherent vertical chunk that both fits one `/implement` cycle and stays small enough to review in one sitting, cutting along the dependencies the master mapped and grouping closely-related stories rather than emitting each alone. A slice may cover several related stories, one story, or part of one story when that story alone is too large for a single slice.
+3. **Reproduce the slice's criteria and decisions from the master, verbatim.** The master is complete; project it, don't re-derive it. Don't reword a criterion or re-make a decision - copy them across for the stories you selected.
+4. **Anchor and state preconditions.** Baseline anchors carry over from the master unchanged. For references that point at feature-internal code an earlier slice built, resolve them against what that slice actually built - read the current codebase, not prior INCREMENT prose. Record which earlier slices this one depends on as Preconditions. If a built earlier slice turns out to contradict a master decision - the master was wrong, not merely unbound - stop and send the user back to `/discovery`; never silently patch a master decision here.
+5. **Write the slice file.** Name it `INCREMENT-NN.md` with the next zero-padded sequence number after the highest existing INCREMENT sibling. Place it next to the input. The slice file stands alone - it does not link or refer to the source spec, so `/implement` can consume it directly.
 
 ## Output shape
 
