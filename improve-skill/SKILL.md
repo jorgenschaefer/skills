@@ -24,6 +24,17 @@ Apply everything you know about good prompts; these sharpen focus on what is eas
 - **Concision.** Cut motherhood statements a competent agent already does, plus padding, hedging, and repetition. Every sentence must change behavior or go. Use progressive disclosure: keep `SKILL.md` lean and move long templates, examples, or reference material into separate files the agent loads only when it needs them.
 - **Single source of truth.** A rule stated in three places drifts into three versions. State each rule once, in the place it belongs, and reference it rather than restating it.
 
+## Match the form to the failure
+
+When you change guidance to fix an effectiveness problem, first name the failure it's meant to fix, then pick the form that fits it – the form that bulletproofs one failure backfires on another:
+
+- **Violates a known rule under pressure** (knows better, does it anyway) → a firm prohibition with the rationalizations named and countered.
+- **Produces wrong-shaped output** (bloated, buried, restates the input) → a positive recipe stating what the output *is*, and in what order. A prohibition ("don't restate") backfires here: under a competing pull the agent negotiates with "don't", and testing shows the prohibition arm produces *more* of the unwanted content than a recipe – often more than no guidance at all.
+- **Omits a required element it otherwise produces** → a structural slot: a REQUIRED field in the template it fills, not a prose reminder.
+- **Should behave differently by condition** → a conditional keyed to something observable ("if a brief exists, reference it"), not an unconditional rule plus exemptions.
+
+Avoid nuance and exemption clauses whichever form you pick: "don't X unless it matters" reopens the negotiation, and "this doesn't apply to code blocks" still suppresses code blocks. Express a real exception as its own conditional.
+
 ## Separate safe edits from behavior-changing ones
 
 Sort every proposed edit into one of two buckets and treat them differently:
@@ -31,9 +42,20 @@ Sort every proposed edit into one of two buckets and treat them differently:
 - **Safe** – same behavior, better wording: tightening prose, cutting redundancy, fixing an ambiguous referent, reordering for readability. Apply these directly.
 - **Behavior-changing** – alters what the skill does, its scope, a judgment call, its output format, or its triggering. Do not apply these. Surface each as a decision, with the reasoning and your recommendation, and let the author choose. When you are unsure which bucket an edit falls in, treat it as behavior-changing – the cost of a wrong guess is asymmetric.
 
+## Verify behavior-affecting edits
+
+A wording change meant to change how the agent behaves – to make it comply with a rule, or to reshape its output – is a hypothesis, not a fact; a rewrite that reads better can bind behavior worse. Before you trust one, micro-test it. (Purely cosmetic edits – a typo, a redundant sentence, a reorder that can't change meaning – need no test.)
+
+- **Sample fresh contexts.** Run the edit as it will actually live – the whole skill or the relevant section as context, and a task that tempts the failure – across several fresh subagent samples (5+; single samples lie).
+- **Always include a no-guidance control.** Run the same task with the guidance removed. If the control doesn't exhibit the failure, there's nothing to fix – drop the edit rather than add words for a problem that isn't there.
+- **Read every flagged sample by hand.** Template echoes and quoted counter-examples masquerade as hits; a raw count mis-states both failure and success.
+- **Treat variance as the signal.** When the wording binds, samples converge on one shape. Five different readings across five samples means it isn't binding – tighten the form before adding words.
+
+Keep the guidance only if the tested version beats the control. An edit that doesn't move behavior against the baseline is words for their own sake – cut it.
+
 ## Process and output
 
-Apply the safe edits, then report both buckets together so the author sees the full picture:
+Apply the safe edits – any meant to change behavior only after they beat the baseline (see Verify behavior-affecting edits) – then report both buckets together so the author sees the full picture:
 
 - **Applied** – the safe edits you made, grouped so they're easy to scan, not a line-by-line diff dump.
 - **Needs your call** – each behavior-changing edit as: what it changes, why it would help, and your recommendation. The author approves, adjusts, or rejects; apply the approved ones.
