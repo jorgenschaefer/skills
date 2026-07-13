@@ -36,6 +36,8 @@ This is the center of the skill. Before evaluating or planning, find how the cha
 - **Trace the blast radius** - what else calls this, depends on this, or shares the behavior. A change that looks local often isn't; the callers and the shared state are where a "small" change grows teeth.
 - **Find the existing mechanism.** Prefer extending a pattern already in the codebase over introducing a new one. Often the cleanest change is the one that reuses what's there, and finding it changes the plan.
 
+If `UBIQUITOUS_LANGUAGE.md` exists at the repo root, read it and reuse its terms for anything you name in the plan, so it matches the vocabulary `/implement` traces against.
+
 For a **bug**, this step is a diagnosis: trace to the root cause, not the symptom. A fix at the symptom (clamping a bad value, swallowing an error) leaves the real defect live; name the root cause and fix there unless there's a stated reason not to. If the root cause doesn't yield to inspection, use `/debug` to find it before planning the fix.
 
 Delegate breadth here when it helps - a search agent can map callers and usages faster than reading serially - but you own the conclusion.
