@@ -57,7 +57,7 @@ Push back where you have reason to. When the change is weak, the cost outsized, 
 
 ## Output
 
-When the change is agreed and worth doing, write the plan to a short markdown file in the repo - propose a path and confirm it - and present the same content inline so the user can react. Revise from feedback until they're satisfied; the file is what `/implement` builds and traces against, so it must match what you agreed and leave nothing for the implementer to guess. Resolve every open question before writing it - the plan carries no open-questions section.
+When the change is agreed and worth doing, write the plan to a short markdown file in the repo - propose a path and confirm it. Before presenting, unless the change is genuinely small (a one-liner, a single acceptance criterion), dispatch a fresh `general-purpose` subagent to read the written plan cold and report where it fights itself - an acceptance criterion the approach can't satisfy, two criteria that can't both hold, a verdict the approach contradicts, or a requirement a reader could take two ways; a fresh reader catches these because your own context can't forget the intent that silently reconciles them. Resolve what it finds and pin the reading you mean, then present the same content inline so the user can react. Run it once on the settled plan; targeted revisions from later feedback you can recheck yourself. Revise from feedback until they're satisfied; the file is what `/implement` builds and traces against, so it must match what you agreed and leave nothing for the implementer to guess. Resolve every open question before writing it - the plan carries no open-questions section.
 
 Keep it to the shape below; drop any section a given change doesn't need.
 
