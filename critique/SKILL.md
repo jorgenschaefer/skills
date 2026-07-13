@@ -1,6 +1,6 @@
 ---
 name: critique
-description: Review code against a focused set of quality standards – either a set of changes (a branch diff vs main, a PR) or a whole project. Triggers on "/critique", "critique this", "review the branch/PR/changes", "review this codebase". Supplements Claude's own code judgment, never replaces it.
+description: Use when reviewing code for quality – either a set of changes (a branch diff vs main, a PR) or a whole project. Triggers on "/critique", "critique this", "review the branch/PR/changes", "review this codebase".
 ---
 
 # Critique

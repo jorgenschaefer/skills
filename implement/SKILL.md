@@ -1,6 +1,6 @@
 ---
 name: implement
-description: Use when the user says "implement this feature", "build X", "let's start coding", or hands you a spec and asks to build it. Expects: a feature description (ideally a written spec). Produces: committed code, all tests green, reviewed.
+description: Use when the user says "implement this feature", "build X", "let's start coding", or hands you a spec and asks to build it. Expects a feature description, ideally a written spec.
 ---
 
 # Implement

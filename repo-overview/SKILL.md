@@ -1,6 +1,6 @@
 ---
 name: repo-overview
-description: Use this skill when the user wants an orientation to an unfamiliar repository — what it does, how it's organized, what the main domain objects are, which workflows it implements, and where to start reading. Trigger on phrases like "give me an overview of this repo", "I'm new to this codebase", "what does this repo do", "onboard me to this project", or when the user has just arrived at a repo they haven't seen before.
+description: Use when the user wants an orientation to an unfamiliar repository. Trigger on phrases like "give me an overview of this repo", "I'm new to this codebase", "what does this repo do", "onboard me to this project", or when the user has just arrived at a repo they haven't seen before.
 ---
 
 # Repo Overview

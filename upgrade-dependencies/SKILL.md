@@ -1,9 +1,6 @@
 ---
 name: upgrade-dependencies
-description: Upgrade a project's npm dependencies safely and incrementally – green
-  baseline, then the easy updates, then the remaining major bumps one at a time,
-  running tests/tsc/lint at every step so any breakage is isolated. Triggers on
-  "/upgrade-dependencies", "update the dependencies", "bump our packages".
+description: Use when a project's npm dependencies need upgrading safely, without breakage slipping in unattributed. Triggers on "/upgrade-dependencies", "update the dependencies", "bump our packages".
 disable-model-invocation: true
 ---
 

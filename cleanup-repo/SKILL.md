@@ -1,10 +1,6 @@
 ---
 name: cleanup-repo
-description: Clean up the current project by finding code to delete (dead code,
-  unrequired code, absence-asserting tests), code to refactor (YAGNI and KISS
-  violations), and code whose complexity outweighs its value, then producing a
-  reviewable plan. Triggers on "/cleanup-repo", "clean up this project", "find
-  dead code", "what can we delete", "simplify this codebase".
+description: Use when a project needs cleaning up – finding what can be safely deleted or simplified, and what carries more complexity than it's worth. Triggers on "/cleanup-repo", "clean up this project", "find dead code", "what can we delete", "simplify this codebase".
 disable-model-invocation: true
 ---
 
