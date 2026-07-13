@@ -105,6 +105,6 @@ The result is the complete master `/implement` consumes directly, or that `/disc
 
 ## Summary
 
-Write the summary to a markdown spec file in the repo - propose a path and confirm it - and present the same content inline so the user can react. Follow the shape in `SPEC_FORMAT.md`, and revise from feedback until they're satisfied; the file is the artifact `/implement` builds and traces against, so it must match what you've agreed.
+Write the summary to a markdown spec file in the repo - propose a path and confirm it - and present the same content inline so the user can react. Before presenting, dispatch a fresh `general-purpose` subagent to read the written spec cold and report where it fights itself - a success criterion a non-goal rules out, an acceptance criterion that contradicts a domain decision, two decisions that can't both hold, or a requirement a reader could take two ways; a fresh reader catches these because your own context can't forget the intent that silently reconciles them. Resolve what it finds and pin the reading you mean, then present. Run it once on the settled spec; targeted revisions from later feedback you can recheck yourself. Follow the shape in `SPEC_FORMAT.md`, and revise from feedback until they're satisfied; the file is the artifact `/implement` builds and traces against, so it must match what you've agreed.
 
 If the finished spec is too large for a single `/implement` cycle, say so and point the user to `/discovery-increment`, which carves it into vertical slices.
