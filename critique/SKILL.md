@@ -28,6 +28,7 @@ In addition to your own standards, focus on these.
 
 ### Maintainability
 - **Intent is obvious.** No gap between what the code says and what it does. Names are descriptive, and the wider a name's scope the more descriptive it should be (`i` is fine for a loop index, not for a function).
+- **Least astonishment.** Behavior matches the contract a caller infers from the name, signature, and type – *before* reading the body. Flag hidden surprises: a query that mutates (a `get`/`is`/pure-looking call with side effects), error handling that diverges from its siblings (one throws where the next returns null for the same condition), a parameter or default whose effect contradicts its name. Constructable test, not taste – name the wrong assumption a caller would make and how it breaks; "I'd have written it differently" is not a finding.
 - **Names reuse the established vocabulary.** Use the term already in use for a concept rather than coining a synonym. If `UBIQUITOUS_LANGUAGE.md` exists at the repo root, names in code, tests, and comments should match its terms; a fresh name for a concept the glossary already defines is a finding.
 - **Reads top to bottom** (the stepdown rule / newspaper metaphor). Files open with the abstract idea and grow concrete; a helper sits below its caller. Needing to jump between files to follow the logic is a smell.
 - **What changes together lives together** (Common Closure Principle; connascence locality) – same file or folder; tests co-located with the code they test.
