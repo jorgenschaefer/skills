@@ -1,6 +1,6 @@
 ---
 name: implement
-description: Use when the user says "implement this feature", "build X", "let's start coding", or hands you a spec and asks to build it. Expects a feature description, ideally a written spec.
+description: Use for implementation work that changes behavior - building a feature, adding or altering functionality, or fixing a bug - whether or not the user names it ("implement X", "build X", "add X", "fix X", or a handed-over spec). Skip it for trivial or mechanical edits (a typo, rename, formatting, or config tweak) with no behavior to test. Expects or writes a short spec first.
 ---
 
 # Implement
