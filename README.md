@@ -17,7 +17,8 @@ npx skills add jorgenschaefer/skills@<skill-name>
 ## Available skills
 
 - **cleanup-repo** - clean up the current project in two passes: find code to delete (dead code, code unrequired by tests/spec, absence-asserting tests) and code to refactor (YAGNI and KISS violations), then produce a reviewable plan and stop for approval before changing anything
-- **critique** - review code against a focused set of quality standards (correctness, maintainability, security), over either a branch diff or a whole project; supplements rather than replaces Claude's own judgment
+- **coding-conventions** - the single source of truth for this project's code-quality standards (simple design, structure and locality, domain layering, validation at the boundary, test coverage, security); read by `/implement` when writing code and `/critique` when reviewing it, so the rules live in one place instead of drifting across skills
+- **critique** - review code for quality against the shared `coding-conventions` standard, over either a branch diff or a whole project; verifies each finding before reporting and supplements rather than replaces Claude's own judgment
 - **debug** - investigate a bug, test failure, or unexpected behavior to root cause before fixing: reproduce it, instrument component boundaries to find where it breaks, test one hypothesis at a time, and question the architecture after repeated failed fixes
 - **discovery** - interview the user about a feature idea, reacting to throwaway HTML mockups for UI decisions; produces a feature spec file (written to the repo and presented inline) covering why, success criteria, non-goals, domain, user stories, design, and implementation decisions
 - **discovery-increment** - carve the next vertical-slice `INCREMENT-NN.md` from a large `/discovery`-shaped source spec, ready for /implement to consume
