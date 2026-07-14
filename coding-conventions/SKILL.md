@@ -7,7 +7,9 @@ description: The single source of truth for this project's code-quality standard
 
 These are the standards this project holds code to. They apply at every moment code is shaped - planning, writing, and reviewing - and both `/implement` and `/critique` read this file rather than restating the rules.
 
-**They supplement your own judgment; they do not bound it.** Apply everything you already know about good code. The rules below sharpen focus on things that are easy to miss or where this project has a specific preference. Never excuse or downgrade a problem you would otherwise flag just because no rule here names it.
+**They supplement your own judgment; they do not bound it.** Apply everything you already know about good code. The rules below sharpen focus on things that are easy to miss or where this project has a specific preference. Never excuse a problem you would otherwise catch just because no rule here names it.
+
+Each rule states a property the code should have. Whoever reads it supplies the verb: when writing, build to the property; when reviewing, treat code that lacks it as a problem to raise (verifying first, per `/critique`'s own discipline).
 
 ## Simple design
 
@@ -18,10 +20,10 @@ Apply Kent Beck's four rules of simple design, in priority order:
 3. **No duplication.** Each piece of knowledge has one representation.
 4. **Fewest elements.** No classes, methods, or abstractions beyond what the first three rules require.
 
-- **YAGNI.** Minimum code that solves the problem, nothing speculative, in the simplest and most boring version that works - prefer the conventional solution over the clever one. Flag speculative generality: code added for an imagined future need. (Tests of spec-mandated behavior are not YAGNI candidates - write them even when the production logic looks trivial.)
-- **KISS.** Prefer the simplest thing that works. Flag needless complexity - an abstraction where a function would do, convoluted control flow, a clever construct where plain code reads better - even when nothing is speculative.
-- **Duplication is justified or removed.** Two copies that will change for the same reason belong in one place; flag from the second copy on. Duplication is acceptable only when the copies will change for *different* reasons - then prefer it over the wrong abstraction.
-- **No dead code.** Code that is unreachable or never referenced is a finding. Before flagging, rule out non-obvious use: dynamic/reflective access, DI registration, string-referenced routes/config/env, framework entry points, and exported API consumed from outside this repo (an exported symbol with no internal caller is not dead).
+- **YAGNI.** Minimum code that solves the problem, nothing speculative, in the simplest and most boring version that works - prefer the conventional solution over the clever one. Speculative generality - code added for an imagined future need - does not belong in the codebase. (Tests of spec-mandated behavior are not YAGNI candidates - write them even when the production logic looks trivial.)
+- **KISS.** Prefer the simplest thing that works. Needless complexity does not belong even when nothing is speculative - an abstraction where a function would do, convoluted control flow, a clever construct where plain code reads better.
+- **Duplication is justified or removed.** Two copies that will change for the same reason belong in one place. Duplication is acceptable only when the copies will change for *different* reasons - then prefer it over the wrong abstraction.
+- **No dead code.** Unreachable or unreferenced code should not exist. Note what only *looks* dead but is live: dynamic/reflective access, DI registration, string-referenced routes/config/env, framework entry points, and exported API consumed from outside this repo (an exported symbol with no internal caller is not dead).
 
 ## Structure and locality
 
@@ -30,7 +32,7 @@ Code that changes together should live close together - same file, then same mod
 - **Feature-based modules.** Combine a feature's code into the same module, each feature in its own directory or file, rather than splitting by type (all controllers in one directory, all models in another).
 - **Co-locate tests.** Put a test next to the file it tests, not in a separate `tests/` tree - unless the project's existing layout clearly says otherwise.
 - **Reads top to bottom** (the stepdown rule / newspaper metaphor). Files open with the abstract idea and grow concrete; a helper sits below its caller, so a reader meets a function before its details.
-- **Indirection pays for itself** (deep modules, not shallow ones). Test a boundary by whether a caller can use it correctly without understanding what's behind it. Flag the boundary you have to see through anyway: a wrapper that relays the same vocabulary and shape it received, a delegate-only class, a hop that adds a name but no meaning. Thinness isn't the defect; a boundary that spares the caller nothing is.
+- **Indirection pays for itself** (deep modules, not shallow ones). A boundary earns its place only if a caller can use it correctly without understanding what's behind it. A boundary you have to see through anyway does not - a wrapper that relays the same vocabulary and shape it received, a delegate-only class, a hop that adds a name but no meaning. Thinness isn't the defect; a boundary that spares the caller nothing is.
 
 ## Domain layering
 
@@ -73,7 +75,7 @@ Responsibilities along the path:
 - **Business logic** - the domain rules. Lives in its own functions, not in the hook or the controller. Many are async because they talk to the backend; logic that works only on already-loaded frontend data may be synchronous. **Business logic never touches the database directly** - it goes through an async function that calls the DB layer.
 - **DB layer** - the only place that knows the persistence representation.
 
-**Reach external systems through intention-revealing functions.** These seams are how business logic talks to the outside: it calls domain-named queries (`getActiveFoo()`, `getFooByCompanyId()`) that name the intent and keep framework/ORM detail out of the logic, ideally returning a domain type (same shape is fine). A passthrough that just relays a framework query object (`getFoo(prismaWhereClause)` → `prisma.foo.findMany(...)`) does not count - it leaks the composable ORM query through a thin disguise. This is abstraction, not dependency injection; don't over-abstract (YAGNI). A one-line `getActiveFoo()` is not a shallow-module finding: its payment is isolating the ORM, so the caller thinks "active foos," not "this where-clause."
+**Reach external systems through intention-revealing functions.** These seams are how business logic talks to the outside: it calls domain-named queries (`getActiveFoo()`, `getFooByCompanyId()`) that name the intent and keep framework/ORM detail out of the logic, ideally returning a domain type (same shape is fine). A passthrough that just relays a framework query object (`getFoo(prismaWhereClause)` → `prisma.foo.findMany(...)`) does not count - it leaks the composable ORM query through a thin disguise. This is abstraction, not dependency injection; don't over-abstract (YAGNI). A one-line `getActiveFoo()` is not a shallow module: its payment is isolating the ORM, so the caller thinks "active foos," not "this where-clause."
 
 ### Domain objects across the seams
 
@@ -96,8 +98,8 @@ The layers above describe *conceptual* granularity - the boundaries at which you
 ## Clarity and least astonishment
 
 - **Intent is obvious.** No gap between what the code says and what it does. Names are descriptive, and the wider a name's scope the more descriptive it should be (`i` is fine for a loop index, not for a function).
-- **Least astonishment.** Behavior matches the contract a caller infers from the name, signature, and type *before* reading the body. Flag hidden surprises: a query that mutates (a `get`/`is`/pure-looking call with side effects), error handling that diverges from its siblings (one throws where the next returns null for the same condition), a parameter or default whose effect contradicts its name. Constructable test, not taste - name the wrong assumption a caller would make and how it breaks; "I'd have written it differently" is not a finding.
-- **Reuse the established vocabulary.** Use the term already in use for a concept rather than coining a synonym. If `UBIQUITOUS_LANGUAGE.md` exists at the repo root, names in code, tests, and comments should match its terms; a fresh name for a concept the glossary already defines is a finding.
+- **Least astonishment.** Behavior matches the contract a caller infers from the name, signature, and type *before* reading the body. Hidden surprises break this: a query that mutates (a `get`/`is`/pure-looking call with side effects), error handling that diverges from its siblings (one throws where the next returns null for the same condition), a parameter or default whose effect contradicts its name. The test is a wrong assumption a caller would make and how it breaks, not a matter of taste.
+- **Reuse the established vocabulary.** Use the term already in use for a concept rather than coining a synonym. If `UBIQUITOUS_LANGUAGE.md` exists at the repo root, names in code, tests, and comments should match its terms; coining a synonym for a concept the glossary already defines violates this.
 
 ## Test coverage
 
