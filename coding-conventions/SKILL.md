@@ -69,7 +69,7 @@ client component → (custom) hook → business logic → API function → contr
 server component → business logic → data-access function → DB layer
 ```
 
-Note that two nodes each appear twice in the write path, and the pairs are distinct - do not conflate them. The two **async functions**: the API function on the client (wraps the network call) and the data-access function on the server (wraps the database). And **business logic** appears client-side (working on frontend data, often synchronous) and server-side (the authoritative domain rules); the server never assumes the client ran its copy.
+Two concerns straddle the client/server split, and their halves are distinct - do not conflate them. The **async functions** carry different names at each end: the API function on the client (wraps the network call) and the data-access function on the server (wraps the database). **Business logic** appears under that one label at both ends: client-side (working on frontend data, often synchronous) and server-side (the authoritative domain rules); the server never assumes the client ran its copy.
 
 Responsibilities along the path:
 
@@ -122,4 +122,4 @@ These hold even when the spec doesn't name them.
 
 ## Dependency versions
 
-When adding a dependency, look up its current latest stable release (or latest LTS line, where the ecosystem distinguishes one) and use that. Do not rely on a version from memory - it is almost always stale.
+A newly added dependency is at its current latest stable release (or latest LTS line, where the ecosystem distinguishes one). Look the version up rather than relying on memory - memory is almost always stale.

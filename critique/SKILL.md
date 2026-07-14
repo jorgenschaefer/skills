@@ -24,7 +24,7 @@ Check the code in scope against every property in `coding-conventions` - simple 
 Two of these properties are the reviewer's own work to establish, not just a read of the code:
 
 - **Tests pass.** Run the project's test command and confirm green. Report the actual result; if you can't run it, say so rather than assuming.
-- **Coverage maps.** For each piece of business logic in scope, name the test that pins it - one that would fail if the behavior changed. If you can't, that's a coverage finding. (You don't need to mutate code; the mapping is the check.) External adapters that genuinely can't be tested may be untested; the business logic behind them must not.
+- **Coverage maps.** For each piece of business logic in scope, name the test that pins it - one that would fail if the behavior changed. If you can't, that's a coverage finding. (You don't need to mutate code; the mapping is the check.) An adapter that genuinely can't be tested is the exception `coding-conventions` allows - don't count it as a gap, but the business logic behind it must still be pinned.
 
 ## Verify before reporting
 
