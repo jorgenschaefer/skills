@@ -11,6 +11,7 @@ You are a senior software developer. Your goal is to implement a feature end to 
 
 - Confirm the project's test command runs and the baseline is green. If there are known-failing tests, note which ones explicitly so a new red can be distinguished from pre-existing breakage. TDD assumes a working runner and a clean baseline; discovering otherwise mid-loop wastes a cycle.
 - If `UBIQUITOUS_LANGUAGE.md` exists at the repo root, read it and use those terms for any names introduced in code, tests, or commit messages.
+- Read the `coding-conventions` skill (`coding-conventions/SKILL.md`) - the quality standard you build to, and the rubric the code reviews (the per-task gate in step 3 and the code review in step 5) apply.
 
 ## Process
 
@@ -42,13 +43,13 @@ Four rules govern every review step – the task-scoped gate in step 3 and the t
 
    If a task cannot be made green for a reason TDD can't resolve – a genuine blocker like missing information, a spec contradiction, or an external dependency that doesn't behave as specified – stop and surface it to the user. Do not fake a passing test or expand scope to work around it. If instead a task won't go green because behavior is failing in a way you don't understand – a defect or mystery, not a missing-information blocker – use `/debug` to find the root cause before thrashing on fixes.
 
-   **Task-scoped review before the next task.** After a task's commit, and before starting the next, dispatch a fresh `general-purpose` subagent to review just that task's diff (from the commit before the task to its latest commit). Set its stance to adversarial, as the end reviews do: it should try to break the diff rather than confirm it. Give it two jobs: spec compliance for *this task's* requirements – for each, try to find where it is unmet, and count it satisfied only when that attempt fails (nothing missing, nothing extra, the right thing built) – and code quality of the diff. Keep it task-scoped: the whole-feature Quality and Code reviews still run once at the end; this gate only stops a task's defect from compounding into the tasks built on top of it. Group findings as Blockers / Should-fix / Nits; fix Blockers and Should-fixes RED-first as in this step and re-review until only Nits remain, then move on – judgement on Nits.
+   **Task-scoped review before the next task.** After a task's commit, and before starting the next, dispatch a fresh `general-purpose` subagent to review just that task's diff (from the commit before the task to its latest commit). Set its stance to adversarial, as the end reviews do: it should try to break the diff rather than confirm it. Give it two jobs: spec compliance for *this task's* requirements – for each, try to find where it is unmet, and count it satisfied only when that attempt fails (nothing missing, nothing extra, the right thing built) – and code quality of the diff against `coding-conventions`. Keep it task-scoped: the whole-feature Quality and Code reviews still run once at the end; this gate only stops a task's defect from compounding into the tasks built on top of it. Group findings as Blockers / Should-fix / Nits; fix Blockers and Should-fixes RED-first as in this step and re-review until only Nits remain, then move on – judgement on Nits.
 
    When every task is complete, run the full test suite and confirm it is green before moving to review. Per-step runs don't prove the whole feature still holds together.
 4. **Quality review.** Spawn a `general-purpose` subagent for a traceability check. Pass it the written feature description from step 1 and the final code. Set its stance to falsification, not confirmation: for each success criterion and each acceptance criterion the spec states – in a `/propose-change` plan these are its `Done when` list – ask it to try to find a case where the implementation does not satisfy it, or a test that would still pass if the behavior were deleted; treat a criterion as met only when that attempt fails. It should also confirm any non-goals are respected. This is not a code review – it is a check that the right thing was built. Run it first of the two: a gap here means new behavior to implement, and that new code should then pass under the code review that follows rather than escaping it. Address gaps before continuing.
 
    **Collect the discretionary decisions.** The same pass yields a second output for free. Every behavior that traces to no acceptance criterion is either something extra that shouldn't be there (a gap, flagged above) or a fork the spec left silent and the implementation had to settle anyway. Ask the subagent to read the diff with fresh eyes and list every spec-silent fork it finds, *independent of the decision log*, then reconcile the two: the log is your self-report of the choices you noticed making; the subagent's list catches the forks you never recognized as decisions – the blind spot a self-kept log cannot cover on its own. Together they give the discretionary list you hand the user at step 5's close: the spec-silent forks you logged, plus those the subagent caught that you didn't. A log entry that instead records a *deviation* from something the spec did say is not a discretionary call – it is a compliance question the traceability check above already owns. Do not adjudicate these against the spec – by definition it is silent, so whether each default matches intent is the user's call, not the reviewer's.
-5. **Code review.** Spawn a `general-purpose` subagent to code-review the whole feature with fresh context. Set its stance to adversarial: it should approach the feature assuming it has at least one blocker and its job is to find it, trying to break each behavior change rather than confirm it. Give it an explicit rubric: the **Code Quality** standards below (Beck's four rules, YAGNI, the structure rules, external-system wrappers, and the security checks), applied on top of its own judgement, plus a check that every behavior change is pinned by a test that would fail if the behavior were removed. Ask it to group findings as **Blockers** (must fix before this is acceptable), **Should-fix** (real problems worth addressing), and **Nits** (minor), each with a `file:line` and why it matters. Address blockers and should-fixes; for nits, use your own judgement. If the review raises a non-nit issue that requires a code change, fix it and re-run the review until it passes with only nits remaining. Because no review follows this one, if a fix here changes behavior, confirm it still satisfies the spec's acceptance criteria before telling the user you are done.
+5. **Code review.** Spawn a `general-purpose` subagent to code-review the whole feature with fresh context. Set its stance to adversarial: it should approach the feature assuming it has at least one blocker and its job is to find it, trying to break each behavior change rather than confirm it. Give it an explicit rubric: the standards in `coding-conventions`, applied on top of its own judgement, plus a check that every behavior change is pinned by a test that would fail if the behavior were removed. Ask it to group findings as **Blockers** (must fix before this is acceptable), **Should-fix** (real problems worth addressing), and **Nits** (minor), each with a `file:line` and why it matters. Address blockers and should-fixes; for nits, use your own judgement. If the review raises a non-nit issue that requires a code change, fix it and re-run the review until it passes with only nits remaining. Because no review follows this one, if a fix here changes behavior, confirm it still satisfies the spec's acceptance criteria before telling the user you are done.
 
    **Hand-off: sign off the discretionary calls.** Close by presenting the discretionary list from step 4 to the user – each spec-silent fork with the choice you made and why, anchored to a `file:line`. This is the one thing neither review can settle for you: where the spec is silent, whether the default matches intent is the user's call, and a different answer means rework, so surface it now rather than after they discover it. If the list came out empty, say so rather than omitting it silently.
 
@@ -79,13 +80,9 @@ Append each entry the moment you make the decision, not reconstructed at the end
 
 ### Untestable boundaries
 
-The call into a third-party SDK or the network/IO edge can't be driven by a unit test – but that never excuses leaving the feature unfinished. Wrap the dependency in the thinnest possible adapter (just the calls you need, no logic), mock that adapter to test everything behind it, and accept the adapter itself going untested. Prefer this to either an elaborate fake that holds coverage at 100% while the real integration goes unbuilt, or dropping the dependency at the cost of untested code.
+The call into a third-party SDK or the network/IO edge can't be driven by a unit test. Handle it as `coding-conventions` prescribes – thinnest possible adapter, mock it to test everything behind it, accept the adapter itself going untested – not an elaborate fake that holds coverage at 100% while the real integration goes unbuilt.
 
-Do not stop at the seam: "you just need to implement the wrapper I created" is not a finished feature. Wire the real dependency in and confirm it works.
-
-### Dependency versions
-
-When adding a dependency, look up its current latest stable release (or latest LTS line, where the ecosystem distinguishes one) and use that. Do not rely on a version from memory – it is almost always stale.
+But that never excuses leaving the feature unfinished. Do not stop at the seam: "you just need to implement the wrapper I created" is not a finished feature. Wire the real dependency in and confirm it works.
 
 ### Acting on review findings
 
@@ -99,21 +96,4 @@ Don't perform agreement. No "you're absolutely right," no reflexive thanks – s
 
 ### Code Quality
 
-Apply Kent Beck's four rules of simple design, in priority order:
-
-1. **Passes the tests.** Correct behavior comes first.
-2. **Reveals intention.** Names and structure make the purpose obvious to the next reader.
-3. **No duplication.** Each piece of knowledge has one representation.
-4. **Fewest elements.** No classes, methods, or abstractions beyond what the first three rules require.
-
-Follow YAGNI religiously in production code: minimum code that solves the problem, nothing speculative, in the simplest and most boring version that works – prefer the conventional solution over the clever one. Tests of spec-mandated behavior are not YAGNI candidates; write them even when the production logic looks trivial.
-
-Keep related code together. Code that changes together should live close together – same file, then same module, then same directory. Having to jump between distant locations to follow one piece of logic is a smell; the further the jump, the worse it is. Not a bug, but something to reduce. Concrete applications:
-
-- **Feature-based modules.** Combine a feature's code into the same module, each feature in its own directory or file, rather than splitting by type (all controllers in one directory, all models in another).
-- **Co-locate tests.** Put a test next to the file it tests, not in a separate `tests/` tree – unless the project's existing layout clearly says otherwise.
-- **Top-down order.** High-level code first, helpers below the code that calls them, so a reader meets a function before its details.
-
-**Reach external systems through intention-revealing functions.** Business logic calls domain-named queries (`getActiveFoo()`, `getFooByCompanyId()`) that name the intent and keep framework/ORM detail out of the logic – ideally returning a domain type. A passthrough that just relays a framework query object doesn't count. This is abstraction, not dependency injection; don't over-abstract (YAGNI).
-
-**Security.** Every internet-reachable endpoint the feature adds enforces authentication and authorization; all user input is validated and sanitized. These hold even when the spec doesn't name them.
+Build to the standards in the `coding-conventions` skill (`coding-conventions/SKILL.md`) - simple design, structure and locality, domain layering, clarity, test coverage, and security - on top of your own judgement. It is the single source of truth for what good code is here, and the rubric the per-task gate (step 3) and the code review (step 5) apply.
