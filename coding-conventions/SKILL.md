@@ -5,11 +5,11 @@ description: The single source of truth for this project's code-quality standard
 
 # Coding Conventions
 
-These are the standards this project holds code to. They apply at every moment code is shaped - planning, writing, and reviewing - and both `/implement` and `/critique` read this file rather than restating the rules.
+These are the standards this project holds code to. They apply both when writing code and when reviewing it, and both `/implement` and `/critique` read this file rather than restating the rules.
 
 **They supplement your own judgment; they do not bound it.** Apply everything you already know about good code. The rules below sharpen focus on things that are easy to miss or where this project has a specific preference. Never excuse a problem you would otherwise catch just because no rule here names it.
 
-Each rule states a property the code should have. Whoever reads it supplies the verb: when writing, build to the property; when reviewing, treat code that lacks it as a problem to raise (verifying first, per `/critique`'s own discipline).
+Each rule states a property the code should have. Whoever reads it supplies the verb: when writing, build to the property; when reviewing, treat code that lacks it as a problem to raise.
 
 ## Simple design
 
@@ -45,7 +45,7 @@ Two things follow: the layers are a small number of **deep seams** (not a stack 
 Name after the *fachliche Handlung* (the domain action), never after the technical operation.
 
 - Publishing and later archiving a blog post are `publishPost` / `archivePost` - not `updatePost`, even though both end as a database `UPDATE`.
-- Changing an article's category is `updateCategory` if that is the domain action. If the category is just one of several editable fields, the action is `updateDetails`, and category is one value inside it. Let the domain decide the granularity, not the schema.
+- Changing an article's category is `updateCategory` when category is a thing the user sets on its own. If it is one of several fields edited together in a single act, that act is `updateDetails` and category is one value inside it. The test is the granularity at which the user performs the action, with the term in `UBIQUITOUS_LANGUAGE.md` as the tie-breaker - not the schema: one `updateDetails` may write several columns, and one column may be written by several distinct actions.
 - The source of truth for these names is `UBIQUITOUS_LANGUAGE.md` if it exists. Use the terms documented there; if you coin a new domain term while working, it belongs in that glossary.
 
 The rule holds even at the leaf: an async function may call `fetch`/`axios` or issue a query, but it is still named `archivePost`, never `postPatch` or `updatePostRow`.
@@ -57,33 +57,36 @@ There are a small number of boundaries. Each is a real translation point; everyt
 **Write path** (and any client-initiated read):
 
 ```
-client component → (custom) hook → async function / server action → business logic → async function → DB layer
+client component → (custom) hook → API function → controller → business logic → data-access function → DB layer
 ```
 
-**Read path from a server component** is leaner - no hook, no controller:
+**Read path from a server component** is leaner - no hook, no API function, no controller:
 
 ```
-server component → async function → DB layer
+server component → data-access function → DB layer
 ```
+
+Note the two distinct async functions in the write path: the **API function** on the client (wraps the network call) and the **data-access function** on the server (wraps the database). They are different seams; do not conflate them.
 
 Responsibilities along the path:
 
 - **Client component** - presentation only. Uses (custom) hooks; never calls `fetch`/`axios` directly.
-- **Custom hook** - encapsulates presentation logic (e.g. TanStack Query for reads). Calls async functions; holds no business logic.
-- **Async function** - encapsulates the actual `fetch`/`axios` (client side) or the DB access (server side). This is the seam named "API". **In Next.js, Server Actions already are these encapsulated functions** - the hook calls the action, so you rarely write `fetch`/`axios` by hand.
-- **Controller** (the server-receiving function: a Server Action or route handler) - does only the minimal translation between the interface and the business logic, then calls a business-logic function. No business rules live here.
-- **Business logic** - the domain rules. Lives in its own functions, not in the hook or the controller. Many are async because they talk to the backend; logic that works only on already-loaded frontend data may be synchronous. **Business logic never touches the database directly** - it goes through an async function that calls the DB layer.
+- **Custom hook** - encapsulates presentation logic (e.g. TanStack Query for reads). Calls the API function; holds no business logic.
+- **API function** - the client-side async function that performs the actual `fetch`/`axios`. This is the seam named "API"; it is named after the domain action (`archivePost`), not the transport.
+- **Controller** - the server-receiving function that does only the minimal translation between the interface and the business logic, then calls a business-logic function. No business rules live here. **In Next.js a Server Action fills both roles at once** - the hook calls it like the API function, and it runs on the server as the controller, so you rarely write `fetch`/`axios` by hand.
+- **Business logic** - the domain rules. Lives in its own functions, not in the hook or the controller. Many are async because they talk to the backend; logic that works only on already-loaded frontend data may be synchronous. **Business logic never touches the database directly** - it goes through a data-access function.
+- **Data-access function** - the server-side async function, and the only caller of the DB layer (see the intention-revealing rule below).
 - **DB layer** - the only place that knows the persistence representation.
 
-**Reach external systems through intention-revealing functions.** These seams are how business logic talks to the outside: it calls domain-named queries (`getActiveFoo()`, `getFooByCompanyId()`) that name the intent and keep framework/ORM detail out of the logic, ideally returning a domain type (same shape is fine). A passthrough that just relays a framework query object (`getFoo(prismaWhereClause)` → `prisma.foo.findMany(...)`) does not count - it leaks the composable ORM query through a thin disguise. This is abstraction, not dependency injection; don't over-abstract (YAGNI). A one-line `getActiveFoo()` is not a shallow module: its payment is isolating the ORM, so the caller thinks "active foos," not "this where-clause."
+**The data-access function reaches external systems through an intention-revealing name.** It is a domain-named query (`getActiveFoo()`, `getFooByCompanyId()`) that names the intent and keeps framework/ORM detail out of the business logic, ideally returning a domain type - structurally identical to the row is fine, but it must be your own domain type, not the imported `Prisma` type (that is the coupling the "define domain types early" rule below forbids). A passthrough that just relays a framework query object (`getFoo(prismaWhereClause)` → `prisma.foo.findMany(...)`) does not count - it leaks the composable ORM query through a thin disguise. This is abstraction, not dependency injection; don't over-abstract (YAGNI). A one-line `getActiveFoo()` is not a shallow module: its payment is isolating the ORM, so the caller thinks "active foos," not "this where-clause."
 
 ### Domain objects across the seams
 
-Domain objects are what flow between the seams, and each seam translates:
+Domain objects are what flow between the seams. Translation happens at two ends:
 
-- **Component / hook** translate presentation data into domain objects.
-- **The API boundary** (Server Actions, route handlers) is where incoming data is **validated once** - e.g. with Zod - and from there on only domain objects are passed inward.
-- **Parse, don't validate.** Validation happens exactly once, at that boundary. Inside the domain, trust the type rather than re-checking it. This is what makes the boundary worth having.
+- **On the way in (writes):** the component/hook assemble the user's presentation input into a domain-shaped object, but it is not yet trusted. The controller **validates it once** - e.g. with Zod - and only from there inward is it a trusted domain object.
+- **On the way out (reads):** the DB layer produces domain objects; they flow outward unchanged, and the component renders them.
+- **Parse, don't validate.** That boundary validation is the only check. Inside the domain, trust the type rather than re-checking it. This is what makes the boundary worth having.
 - **The DB layer** is the only place that translates a domain object to and from its database representation.
 - **Define domain types early**, from the domain analysis, and use them throughout. Do not drag `Prisma` (or other ORM) types through the whole application - that couples every layer to storage and defeats the seams.
 
