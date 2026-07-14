@@ -15,7 +15,7 @@ Each rule states a property the code should have. Whoever reads it supplies the 
 
 Apply Kent Beck's four rules of simple design, in priority order:
 
-1. **Passes the tests.** Correct behavior comes first.
+1. **Correct behavior comes first** (Beck's "passes the tests"). The code must actually do what it is meant to - that is paramount. Tests are how you verify it and must exist, but a green suite is evidence, not the goal: a test can pass while it, or the code, pins the wrong behavior.
 2. **Reveals intention.** Names and structure make the purpose obvious to the next reader.
 3. **No duplication.** Each piece of knowledge has one representation.
 4. **Fewest elements.** No classes, methods, or abstractions beyond what the first three rules require.
