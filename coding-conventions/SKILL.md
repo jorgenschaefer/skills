@@ -1,6 +1,6 @@
 ---
 name: coding-conventions
-description: The single source of truth for this project's code-quality standards - the criteria used both when writing code (/implement) and when reviewing it (/critique). Covers simple design, structure and locality, naming after the domain, layering across deep seams, validation at the boundary, test coverage, and security. Read it before writing or reviewing feature code; it supplements your own judgment, it does not bound it.
+description: This project's shared code-quality standard - the rubric /implement builds to and /critique reviews against. Read it before writing or reviewing any feature code, or when the user asks what the project's conventions are: naming, structure, layering, validation, testing, security. It is the standard, not the act of building or reviewing.
 ---
 
 # Coding Conventions
@@ -100,7 +100,7 @@ The layers above describe *conceptual* granularity - the boundaries at which you
 
 - **Inline the trivial.** A pass-through that does nothing but forward its argument, or a 1:1 domain-to-storage mapping, can stay inline. Do not manufacture a seam for it.
 - **Abstract when it gets complex.** The moment a responsibility grows past trivial - real translation, real rules, more than one caller - pull it out along exactly these boundaries.
-- **Few, deep seams.** Prefer a small number of boundaries that each hide real substance over many thin layers that only relay calls. Indirection has to earn its place.
+- **Few, deep seams.** Prefer a small number of boundaries that each hide real substance over many thin layers that only relay calls.
 
 ## Clarity and least astonishment
 
