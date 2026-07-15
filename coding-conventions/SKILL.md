@@ -104,9 +104,10 @@ The layers above describe *conceptual* granularity - the boundaries at which you
 
 ## Clarity and least astonishment
 
-- **Intent is obvious.** No gap between what the code says and what it does. Names are descriptive, and the wider a name's scope the more descriptive it should be (`i` is fine for a loop index, not for a function).
+- **Intent is obvious.** No gap between what the code says and what it does. Names are descriptive, and the wider a name's scope the more descriptive it should be (`i` is fine for a loop index, not for a function). A name should also be distinct enough to search on - avoid generic identifiers (`data`, `info`, `handle`, `process`, `manager`, `util`) for anything with wider scope, so grepping the name finds the concept and little else.
 - **Least astonishment.** Behavior matches the contract a caller infers from the name, signature, and type *before* reading the body. Hidden surprises break this: a query that mutates (a `get`/`is`/pure-looking call with side effects), error handling that diverges from its siblings (one throws where the next returns null for the same condition), a parameter or default whose effect contradicts its name. The test is a wrong assumption a caller would make and how it breaks, not a matter of taste.
 - **Reuse the established vocabulary.** Use the term already in use for a concept rather than coining a synonym. If `UBIQUITOUS_LANGUAGE.md` exists at the repo root, names in code, tests, and comments should match its terms; coining a synonym for a concept the glossary already defines violates this.
+- **Fail loud, not silent.** When a broken invariant is first detectable, prefer an explicit error or assertion over a silent fallback that masks it. A wrong result that looks fine is worse than a loud failure.
 
 ## Test coverage
 
