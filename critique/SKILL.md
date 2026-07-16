@@ -1,6 +1,6 @@
 ---
 name: critique
-description: Use when reviewing code for quality – either a set of changes (a branch diff vs main, a PR) or a whole project. Triggers on "/critique", "critique this", "review the branch/PR/changes", "review this codebase".
+description: Use when reviewing code for quality – a set of changes or a whole project. Triggers on "/critique", "critique this", "review the branch/PR/changes", "review this codebase".
 ---
 
 # Critique
@@ -19,7 +19,7 @@ If `UBIQUITOUS_LANGUAGE.md` exists at the repo root, read it first so vocabulary
 
 ## What to check
 
-Check the code in scope against every property in `coding-conventions` - simple design, structure and locality, domain layering, clarity and least astonishment, test coverage, and security. A property the code lacks is a candidate finding (verify it before reporting - see below). Apply your own standards on top; the file focuses attention, it doesn't limit it.
+Check the code in scope against every property in `coding-conventions`. A property the code lacks is a candidate finding (verify it before reporting - see below).
 
 Two of these properties are the reviewer's own work to establish, not just a read of the code:
 
