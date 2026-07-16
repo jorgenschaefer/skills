@@ -1,12 +1,12 @@
 ---
 name: cleanup-repo
-description: Use when a project needs cleaning up – finding what can be safely deleted or simplified, and what carries more complexity than it's worth. Triggers on "/cleanup-repo", "clean up this project", "find dead code", "what can we delete", "simplify this codebase".
+description: Find what a project can safely delete or simplify, and what carries more complexity than it's worth. Produces a tiered, reviewable cleanup plan.
 disable-model-invocation: true
 ---
 
 # Cleanup Repo
 
-You are a senior software developer. Your job is to clean up the current project (directory).
+Your job is to clean up the current project (directory).
 Work in two passes – find, then plan – and stop at the plan for approval before changing anything.
 
 The findings fall into three tiers by safety, and you must keep them apart. Tiers 1 and 2 are
@@ -79,7 +79,7 @@ Because these items can reduce functionality, they carry strict handling:
 Produce a reviewable plan, organized by tier in order – tier 1, then tier 2, then tier 3 – so the
 safe, provable work is visibly separated from the judgment calls. For each item give `file:line`,
 why it is safe or warranted, and its confidence (**delete** / **needs confirmation**); tier-3 items
-are always **needs confirmation** and additionally state the value-vs-cost tradeoff and what is lost.
+additionally state the value-vs-cost tradeoff and what is lost.
 
 Do not delete or refactor before the plan is approved. Once tiers 1 and 2 are approved, apply them
 in small steps, deletions leaf-first so each step leaves the suite green, running the tests after
