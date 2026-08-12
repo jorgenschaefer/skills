@@ -16,6 +16,7 @@ npx skills add jorgenschaefer/skills@<skill-name>
 
 ## Available skills
 
+- **architektur-auswirkungen** - turn a user story into a high-level analysis of its architecture impact before any code is written (German output): affected components, contract and data-flow changes, only genuinely significant tensions, and proposed ADRs; drafted in chat and written to files only after explicit approval
 - **cleanup-repo** - clean up the current project in two passes: find code to delete (dead code, code unrequired by tests/spec, absence-asserting tests) and code to refactor (YAGNI and KISS violations), then produce a reviewable plan and stop for approval before changing anything
 - **coding-conventions** - the single source of truth for this project's code-quality standards (simple design, structure and locality, domain layering, validation at the boundary, test coverage, security); read by `/implement` when writing code and `/critique` when reviewing it, so the rules live in one place instead of drifting across skills
 - **critique** - review code for quality against the shared `coding-conventions` standard, over either a branch diff or a whole project; verifies each finding before reporting and supplements rather than replaces Claude's own judgment
