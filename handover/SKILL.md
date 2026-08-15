@@ -34,7 +34,7 @@ Rank by stakes and stop where the rest is clearly ratifiable. Twelve tickets can
 
 ## Promote before deleting
 
-The spec, the tickets, and the briefs are deleted when the run is accepted. Whatever must outlive them has to be moved somewhere durable first, deliberately - nothing survives by being left where it is.
+The spec and the tickets are deleted when the run is accepted. Whatever must outlive them has to be moved somewhere durable first, deliberately - nothing survives by being left where it is. The briefs need no deleting; they are presented inline and never written down, since a brief is spent the moment its reader decides.
 
 Three destinations, and each is a proposal for the user, not a change you make and mention:
 
@@ -47,7 +47,7 @@ Three destinations, and each is a proposal for the user, not a change you make a
 Only once the user says so. Acceptance is the deletion:
 
 1. Make the promotions they approved.
-2. Delete the spec, the `tickets/` directory, and the briefs.
+2. Delete the spec and the `tickets/` directory.
 3. Commit, staging only those paths. Never `git add -A`.
 
 Git history keeps every deleted artifact, so nothing is lost and the deletion commit is what marks the feature accepted. If they send the work back instead, delete nothing - the tickets are the input to the next run, and a rejected run needs them intact.

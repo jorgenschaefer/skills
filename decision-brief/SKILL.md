@@ -54,4 +54,4 @@ One ranked list, not two: a load-bearing assumption is a decision the plan made 
 
 ## Deliver
 
-Present the brief inline. If the source is on disk, also write the brief to a markdown file beside it – beside the file, or beside the directory when the source is a set – proposing a path and confirming it, so the reviewer can forward it to whoever makes the call.
+Present the brief inline and leave it there. Don't write it to a file. It is read once, at the moment the reader decides, and it is spent the moment they do – so a copy on disk is only an artifact somebody has to keep current or remember to delete.

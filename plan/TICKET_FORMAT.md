@@ -8,7 +8,7 @@ A ticket carries what to build, what it may rely on, and what it must not touch.
 
 `tickets/NN-slug.md`, beside the spec they derive from, committed with the code. `/implement` writes its outcome back into the ticket as it finishes or halts.
 
-Tickets are scaffolding, not documentation - they are deleted when the run is accepted, along with the spec and the briefs. The code and its tests are the source of truth; a finished ticket describing intent the code has since moved past is worse than no ticket. Committing them first is what makes deleting them safe: git history keeps every ticket and its `Record`, so nothing is lost, and the deletion commit marks the feature as accepted. Anything that must outlive the run is promoted somewhere durable before deletion, never left in the paper to age.
+Tickets are scaffolding, not documentation - they are deleted along with the spec when the run is accepted. The code and its tests are the source of truth; a finished ticket describing intent the code has since moved past is worse than no ticket. Committing them first is what makes deleting them safe: git history keeps every ticket and its `Record`, so nothing is lost, and the deletion commit marks the feature as accepted. Anything that must outlive the run is promoted somewhere durable before deletion, never left in the paper to age.
 
 Deletion belongs to accepting the work, not to finishing it. A run that completes but is rejected still needs its tickets to re-run, and a `blocked` ticket survives until whatever blocked it is resolved.
 
