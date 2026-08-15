@@ -11,6 +11,12 @@ One run, one ticket, no questions. There may be no human present, and behaving a
 
 The whole-feature checks are not yours. Traceability against the spec and code review across all commits run once, after the loop finishes. Your reviews are ticket-scoped, and their job is to stop this ticket's defect from compounding into the tickets built on it.
 
+## Say what you are doing
+
+A ticket takes a long time to build and your narration is the only progress anyone watching can see. Silence is indistinguishable from a hang, so as you enter each phase, say so in one short plain line: reconciling the ticket, writing the RED test for a given criterion, running the verification command, dispatching each review, committing.
+
+Put it on the **first line** of the message – that is the part that reaches the screen. And keep it to phases, not a running commentary on tool calls: roughly a dozen lines across a whole ticket is right.
+
 ## Before starting
 
 - Read the ticket. `TICKET_FORMAT.md` describes its shape.

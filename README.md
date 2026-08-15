@@ -35,6 +35,8 @@ A small change or bugfix:
   /propose-change ──→ one ticket ──→ /implement
 ```
 
+`loop.sh` runs unattended for hours, so it prints only each step's narration - one line per phase - plus position, duration and cost. Every step's full JSON transcript is kept under a log directory it names at startup, so a halt tells you exactly which file to open.
+
 The split test routes between them: *could you ship this on its own, and would that be worth shipping?* Yes means a feature; no, but someone outside the code can see the difference, means a change; no difference at all means it doesn't want a ticket.
 
 The ticket is the unit both lanes produce and the only thing `/implement` builds. A run has nobody to ask, so it never guesses - it halts, records why in the ticket, and the loop stops for a human. Everything requiring code is a ticket, including what the end-of-run reviews find: `/trace` files its gaps, and the loop turns `/critique`'s blockers into tickets too, so a late fix is built and re-verified rather than patched in behind the checks. `/critique` itself stays a generic review skill - the caller knows about tickets, the reviewer doesn't. Spec and tickets are deleted once the work is accepted; git history keeps them, and anything that must outlive the run is promoted into the glossary, a comment, or an ADR first. Decision briefs are never written down at all - they are read once, at the moment someone decides.
