@@ -22,9 +22,12 @@ Most of these skills compose into one flow with two front doors and a single imp
 A feature - one change worth shipping on its own:
 
   /discovery ──→ SPEC.md ──→ /plan ──→ tickets/ ──→ ./loop.sh
-                                                      ├─ /implement × N   unattended
-                                                      ├─ /trace           gaps become tickets
-                                                      ├─ /critique
+                                                      │
+                                                      │  ┌─ /implement × N   unattended
+                                                      ├──┤  /trace           gaps → tickets
+                                                      │  └─ /critique        blockers → tickets
+                                                      │     (repeat until both come back clean)
+                                                      │
                                                       └─ /handover        promote, then delete
 
 A small change or bugfix:
@@ -34,7 +37,7 @@ A small change or bugfix:
 
 The split test routes between them: *could you ship this on its own, and would that be worth shipping?* Yes means a feature; no, but someone outside the code can see the difference, means a change; no difference at all means it doesn't want a ticket.
 
-The ticket is the unit both lanes produce and the only thing `/implement` builds. A run has nobody to ask, so it never guesses - it halts, records why in the ticket, and the loop stops for a human. Spec, tickets and briefs are deleted once the work is accepted; git history keeps them, and anything that must outlive the run is promoted into the glossary, a comment, or an ADR first.
+The ticket is the unit both lanes produce and the only thing `/implement` builds. A run has nobody to ask, so it never guesses - it halts, records why in the ticket, and the loop stops for a human. Everything requiring code is a ticket, including what the end-of-run reviews find: `/trace` files its gaps, and the loop turns `/critique`'s blockers into tickets too, so a late fix is built and re-verified rather than patched in behind the checks. `/critique` itself stays a generic review skill - the caller knows about tickets, the reviewer doesn't. Spec, tickets and briefs are deleted once the work is accepted; git history keeps them, and anything that must outlive the run is promoted into the glossary, a comment, or an ADR first.
 
 ## Available skills
 

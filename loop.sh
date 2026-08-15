@@ -69,29 +69,39 @@ drain() {
   done
 }
 
-# /trace files a ticket for each spec gap it finds, so a gap re-enters the same
-# loop with the same TDD and review discipline instead of being patched by hand.
-# Bounded, because a spec the loop cannot satisfy should reach a human.
+# Both end-of-run checks feed findings back as tickets, so a fix re-enters the
+# same loop with the same TDD and review discipline instead of being patched by
+# hand after everything else has been verified. /trace runs first: a gap it finds
+# becomes code, and that code should pass under /critique rather than land behind
+# it. /critique stays a generic review skill - the prompt here, not the skill,
+# knows this pipeline files tickets.
+CRITIQUE_PROMPT="Run /critique over the diff from this branch's start.
+For each Blocker and Should-fix, file a remediation ticket in $TICKETS,
+following TICKET_FORMAT.md as documented in the /implement skill.
+Do not file nits - leave those in your report for /handover to triage."
+
+# Bounded, because work the loop cannot converge on should reach a human.
 for pass in $(seq "$MAX_PASSES"); do
   drain || exit 1
 
   echo "==> trace (pass $pass)"
   claude -p "/trace $SPEC_DIR"
+  drain || exit 1
+
+  echo "==> critique (pass $pass)"
+  claude -p "$CRITIQUE_PROMPT"
 
   if ! next_ticket >/dev/null; then
-    traced_clean=1
+    reviews_clean=1
     break
   fi
-  echo "==> trace filed gaps; draining again"
+  echo "==> reviews filed work; draining again"
 done
 
-if [ -z "${traced_clean:-}" ]; then
-  echo "!! /trace still finding gaps after $MAX_PASSES passes - stopping for a human" >&2
+if [ -z "${reviews_clean:-}" ]; then
+  echo "!! reviews still filing work after $MAX_PASSES passes - stopping for a human" >&2
   exit 1
 fi
-
-echo "==> critique"
-claude -p "/critique"
 
 echo "==> handover"
 claude -p "/handover $SPEC_DIR"

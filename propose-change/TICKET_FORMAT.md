@@ -59,6 +59,14 @@ spec_hash: a3f2c81d09e4
 
 "Let a reviewer reject an application", not "add the rejection service". If you cannot name the ticket that way, the decomposition has gone horizontal - and horizontal tickets invite interfaces nothing calls, which is the failure an unattended run is least likely to catch on itself. Allow it only where a real dependency forces it, and say in `Out of scope` what must *not* be built out speculatively.
 
+### Remediation tickets are the exception
+
+Most tickets add behavior and the rule above governs them. A **remediation ticket** comes from a review instead - a `/trace` gap where the behavior works but no test pins it, a `/critique` blocker like three tickets each inventing their own validator - and its job is to repair something already built.
+
+It names the defect, because there is no new behavior to name. Its `Satisfies` is the finding it resolves, quoted, with where the finding came from. Its contract is fixed and identical every time: **the finding is resolved and every existing test still passes.** That is checkable, which is what the naming rule was protecting in the first place - so the exception costs nothing.
+
+Everything else holds. `Out of scope` still bounds it, since a consolidation ticket that drifts into redesign is the same failure as a feature ticket that scope-creeps, and the `Record` still carries what it decided and what it left `Unresolved`.
+
 ### Satisfies cites, it does not copy
 
 Every ticket traces to numbered criteria in the spec (`US-3.1`). The text beside each id is a locator so the ticket reads on its own - enough to know which criterion is meant, not enough to be a second copy of it that can disagree with the first. `/implement` reads the spec alongside the ticket; one extra file costs an agent nothing, and one source of truth costs a refresh a great deal less.

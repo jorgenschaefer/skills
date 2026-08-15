@@ -21,11 +21,12 @@ Open with what the system can do now that it couldn't before, in the user's term
 
 Inherit `/decision-brief`'s stance wholesale: surface decisions rather than defects, rank them by stakes, never recommend accept or reject. The goal the work serves lives in the reader's head, not on this page. What differs is only the input - a built thing rather than a proposed one - and one extra source.
 
-Three streams feed it:
+Two streams feed the ranked list:
 
 - **Every ticket's `Record`.** The spec-silent forks each run logged. These are the core of the page: by definition the spec did not say, so nobody but the user can judge whether the default matches intent, and a different answer means rework.
 - **Every `Unresolved` finding.** A review raised it and the implementer argued it down. That adjudication happened with no human present and deserves one now.
-- **`/critique`'s findings.** Whole-feature code quality, which is judgment rather than fact - much of it nits, some of it wrong. Triage it here rather than filing it as work. Anything the user accepts as real becomes a ticket and the loop runs again.
+
+Review findings that mattered are not a third stream - `/trace` and `/critique` filed their gaps and blockers as tickets, and those were built and reviewed like everything else before the run reached you. What survives is `/critique`'s nits, which nobody acted on. Put them in a short appendix below the ranked list, not in it. They are not decisions, and mixing forty nits into the list is how the one item that needed a veto gets skimmed past.
 
 De-spin each item the way a decision brief does: what it committed to, what that gained, and what it gave up. A `Record` entry written by the agent that made the choice arrives already justified - find the cost it is paying and name that too.
 

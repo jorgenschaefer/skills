@@ -51,7 +51,7 @@ Read surviving mutants as evidence, not as a score to chase:
 
 Name the ticket for the behavior that is missing, not for the failure: "Let a reviewer see the rejection reason", not "fix US-3.2 gap".
 
-Where the gap is a missing *test* over working behavior, say so in the ticket - the implementer still writes it RED first, which means deliberately breaking the behavior to watch the test fail, then restoring it. A test written green against code that already works proves nothing.
+Where the gap is a missing *test* over working behavior, file it as a **remediation ticket** - the format's second kind, which names the defect because there is no new behavior to name. Say in it that the behavior already works: the implementer still writes the test RED first, which here means deliberately breaking the behavior to watch the test fail, then restoring it. A test written green against code that already works proves nothing.
 
 **Report what you found**, whether or not you filed tickets. Name the criteria you checked and how, so a clean result is evidence rather than an assertion. A silent pass and a pass with nothing to show look identical to whoever reads it next, and only one of them means anything.
 
