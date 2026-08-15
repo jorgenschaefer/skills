@@ -17,7 +17,9 @@ This is a decision aid, not a review. A flaw – a self-contradiction, a step th
 
 ## Input
 
-Read the source as prose describing a proposed approach – a `/discovery` spec, plan-mode plan, `/propose-change` doc, or PRD – and assume no section structure, so the brief holds up whatever shape the source takes.
+Read the source as prose describing a proposed approach – a `/discovery` spec, a `/plan` ticket set, a plan-mode plan, `/propose-change` doc, or PRD – and assume no section structure, so the brief holds up whatever shape the source takes.
+
+A source may be several files rather than one. A `tickets/` directory and the spec its tickets cite is a single proposed approach, not many – read the set whole and brief it as one plan, since the decisions worth vetoing live in how the pieces fit as much as in any one file.
 
 ## What earns a place: the veto test
 
@@ -52,4 +54,4 @@ One ranked list, not two: a load-bearing assumption is a decision the plan made 
 
 ## Deliver
 
-Present the brief inline. If the source is a file, also write the brief to a markdown file beside it – propose a path and confirm – so the reviewer can forward it to whoever makes the call.
+Present the brief inline. If the source is on disk, also write the brief to a markdown file beside it – beside the file, or beside the directory when the source is a set – proposing a path and confirming it, so the reviewer can forward it to whoever makes the call.
