@@ -11,11 +11,28 @@ Thoroughness is a property of the spec, not the conversation: scale the intervie
 
 Before interviewing, skim the codebase for what the feature will sit next to: terminology, conventions, and adjacent features it must integrate with. For UI, note the existing design language - component library, design tokens, spacing and type scale, styling conventions - so new screens stay consistent. If `UBIQUITOUS_LANGUAGE.md` exists, read it and reuse its terms. The code answers "what exists"; the user answers "what's new". Then open by reflecting the request back and digging for the problem beneath it (see Goal).
 
+Read `IDEAS.md` too, if one exists where the specs live. It holds what earlier features parked, and something in it may belong in this one. Raise what fits - a parking lot nobody revisits is just a slower way of forgetting.
+
 ## Goal
 
 Identify the problem before the solution. Users often arrive with a solution; understand the underlying problem well enough to judge whether that solution fits, and propose alternatives if it doesn't. Only once the problem is clear, help find the best solution - confirming the user's is best, or surfacing tradeoffs and alternatives they haven't considered.
 
 Settle the boundary too - what the feature explicitly won't do, and how you'll both know it works. Scope is the user's call, not a default the implementer backs into; these become the spec's Non-goals and Success criteria.
+
+## One feature
+
+A spec describes **one** feature: a single change someone outside the code can observe, substantial enough to be worth shipping on its own. Not three changes. Not polish nobody would notice.
+
+Nothing downstream will save you from getting this wrong. There is no slicing step any more - `/plan` decomposes the spec into tickets and an unattended loop builds all of them, so an oversized spec becomes a long run whose result nobody can review in one sitting. `/plan` re-applies this test cold and will send an oversized spec back, but that costs a whole discovery cycle. Hold the line here instead.
+
+State what the feature delivers as a release note: one line a user would care about, no bullets, no "and". Then try to break it - **could you ship half of this, and would that half still be worth shipping?** If yes, it is two features, and the honest move is to pick one.
+
+This is a move you make continuously, not a check at the end. Scope grows a sentence at a time, and every "while we're at it" gets the split test on the spot:
+
+- **It passes as its own improvement** - park it. Append it to `IDEAS.md` where the specs live, with enough context to resurrect: the problem it solves, why it was deferred, what it would touch. Then return to the feature at hand. Parking is not refusing, and saying so keeps it from feeling like one.
+- **It doesn't stand alone** - it belongs in this feature. Absorb it.
+
+One case you flag rather than split: a feature that passes the split test and is still plainly large. Splitting it would produce halves that aren't independently shippable, and that tradeoff is the user's to make. Say what you see and offer the choice - one long run with a big review at the end, or two runs where the first doesn't stand on its own.
 
 ## Role
 
@@ -27,7 +44,9 @@ You are a discussion partner, not a stenographer. So:
 
 ## Process
 
-Identify the user journey (or journeys) and the tasks that compose it - the journey is the high-level workflow, the tasks its distinct steps. Write a user story per task, and acceptance criteria for any story whose behavior isn't obvious or has a non-obvious edge case. Phrase criteria as concrete given/when/then conditions where it fits, so they translate directly into failing tests.
+Identify the user journey (or journeys) and the tasks that compose it - the journey is the high-level workflow, the tasks its distinct steps. Write a user story per task, and acceptance criteria for any story whose behavior isn't obvious or has a non-obvious edge case. Phrase criteria as concrete given/when/then conditions, so they translate directly into failing tests.
+
+Where the behavior is a standing invariant rather than an event - a rule that holds while some state is true, a threshold, a security or performance property - write it in EARS instead (`WHILE <state> the system shall …`, `IF <condition> THEN the system shall …`). Gherkin needs a scenario per case to say what EARS says in a line, and three near-identical scenarios hide the one rule underneath them. Non-functional limits go to the spec's `Constraints` section rather than under a story, and each says how it is verified.
 
 ### Model the domain
 
@@ -97,14 +116,17 @@ Before writing the summary, confirm your running list of defaults and verify non
 
 Then harden the spec into a contract an implementer can build without improvising - a closing sweep across the whole feature, now that its shape is settled:
 
-- **Complete the criteria.** Every behavior a wrong default could hurt gets a given/when/then criterion; each one becomes a test `/implement` writes RED first. A story left with no criteria is where the implementer invents behavior - close it here. During the interview criteria stay loose; this is where they harden.
+- **Complete the criteria.** Every behavior a wrong default could hurt gets a criterion, given/when/then or EARS; each one becomes a test `/implement` writes RED first. A story left with no criteria is where the implementer invents behavior - close it here. During the interview criteria stay loose; this is where they harden.
+- **Number everything.** Stories `US-1`, criteria `US-1.1`, constraints `C-1`. Tickets cite criteria rather than copying them, so an unnumbered criterion is one no ticket can claim and no review can check off. This is not optional at any spec size.
 - **Bind the decisions.** Every decision that touches existing code names the real structure it reuses or extends, drawn from the codebase - a durable choice, not a `file:line` that drift will invalidate.
-- **Map the dependencies.** Record them as the `Depends on` notes in User Stories, so a later split can slice along them.
+- **Map the dependencies.** Record them as the `Depends on` notes in User Stories, so `/plan` can decompose along them.
 
-The result is the complete master `/implement` consumes directly, or that `/discovery-increment` carves into slices.
+The result is the complete spec `/plan` decomposes into tickets.
 
 ## Summary
 
-Write the summary to a markdown spec file in the repo - propose a path and confirm it - and present the same content inline so the user can react. Before presenting, dispatch a fresh `general-purpose` subagent to read the written spec cold and report where it fights itself - a success criterion a non-goal rules out, an acceptance criterion that contradicts a domain decision, two decisions that can't both hold, or a requirement a reader could take two ways; a fresh reader catches these because your own context can't forget the intent that silently reconciles them. Resolve what it finds and pin the reading you mean, then present. Run it once on the settled spec; targeted revisions from later feedback you can recheck yourself. Follow the shape in `SPEC_FORMAT.md`, and revise from feedback until they're satisfied; the file is the artifact `/implement` builds and traces against, so it must match what you've agreed.
+Write the summary to a markdown spec file in the repo - propose a path and confirm it - and present the same content inline so the user can react. Before presenting, dispatch a fresh `general-purpose` subagent to read the written spec cold and report where it fights itself - a success criterion a non-goal rules out, an acceptance criterion that contradicts a domain decision, two decisions that can't both hold, or a requirement a reader could take two ways; a fresh reader catches these because your own context can't forget the intent that silently reconciles them. Resolve what it finds and pin the reading you mean, then present. Run it once on the settled spec; targeted revisions from later feedback you can recheck yourself. Follow the shape in `SPEC_FORMAT.md`, and revise from feedback until they're satisfied; the file is what `/plan` decomposes and `/implement` is checked against, so it must match what you've agreed.
 
-If the finished spec is too large for a single `/implement` cycle, say so and point the user to `/discovery-increment`, which carves it into vertical slices.
+Then close with `/decision-brief` over the spec. The interview is long and the spec is dense, so the decisions that most deserve a veto are the easiest to lose in it - the brief ranks them by stakes and hands the call back to the user. Where a decision was theirs to make rather than yours, the spec already says so in its `_Why:_`, and the brief inherits that.
+
+Once they ratify it, point them at `/plan`, which decomposes the spec into tickets. From that point the spec is frozen: each ticket carries its hash, and an edit halts the loop.

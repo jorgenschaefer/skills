@@ -1,58 +1,57 @@
 ---
 name: implement
-description: Use for implementation work that changes behavior - building a feature, adding or altering functionality, or fixing a bug - whether or not the user names it ("implement X", "build X", "add X", "fix X", or a handed-over spec). Skip it for trivial or mechanical edits (a typo, rename, formatting, or config tweak) with no behavior to test. Expects or writes a short spec first.
+description: Use to build one ticket from a `tickets/` directory – the unit `/plan` and `/propose-change` emit. Fired by the loop driver, or directly on a single ticket. Not for work without a ticket: for a feature use `/discovery`, for a small change or bugfix use `/propose-change`.
 ---
 
 # Implement
 
-You are a senior software developer. Your goal is to implement a feature end to end so it achieves what the user intended, using high-quality, maintainable code.
+You are a senior software developer. Build exactly one ticket, end to end, to the standard in `coding-conventions`.
+
+One run, one ticket, no questions. There may be no human present, and behaving as though there is – guessing past an ambiguity because asking is impossible – is the failure this pipeline exists to prevent. When you cannot proceed honestly, you halt. **Halting is a normal outcome, not a failure**, and it is always better than a plausible invention, because nobody is watching the next ticket build on top of it.
+
+The whole-feature checks are not yours. Traceability against the spec and code review across all commits run once, after the loop finishes. Your reviews are ticket-scoped, and their job is to stop this ticket's defect from compounding into the tickets built on it.
 
 ## Before starting
 
-- Confirm the project's test command runs and the baseline is green. If there are known-failing tests, note which ones explicitly so a new red can be distinguished from pre-existing breakage. TDD assumes a working runner and a clean baseline; discovering otherwise mid-loop wastes a cycle.
-- If `UBIQUITOUS_LANGUAGE.md` exists at the repo root, read it and use those terms for any names introduced in code, tests, or commit messages.
-- Read the `coding-conventions` skill (`coding-conventions/SKILL.md`) - the quality standard you build to, and the rubric the code reviews (the per-task gate in step 3 and the code review in step 5) apply.
+- Read the ticket. `TICKET_FORMAT.md` describes its shape.
+- Recompute `sha256sum` over the spec named in the ticket's frontmatter and compare the first 12 characters against `spec_hash`. On a mismatch, halt `stale-spec`: the requirements moved under the ticket, so every criterion it cites may now say something else.
+- Read the spec and the criteria the ticket's `Satisfies` cites. Those criteria are what you build and what you are checked against. The ticket locates them; it does not restate them, and where the two seem to differ the spec wins.
+- Confirm the test command runs and the baseline is green. A red baseline is a halt (`blocked`), not something to work around – TDD needs a clean baseline to tell your red from someone else's.
+- If `UBIQUITOUS_LANGUAGE.md` exists at the repo root, read it and use those terms for names in code, tests, and commit messages.
+- Read `coding-conventions/SKILL.md` – the standard you build to, and the rubric both reviews apply.
 
-## Process
+## Reconcile before building
 
-Follow this process step by step. Scale the plan to the feature: a single-story change may be one task, while a larger feature uses the full breakdown.
+The ticket was written before this code existed. Check its `Preconditions` and `Touches` against the codebase as it actually is: the structures it names exist, under those names, doing what it assumes.
 
-Five rules govern every review step – the task-scoped gate in step 3 and the two end reviews in steps 4 and 5:
+Where reality contradicts the ticket, halt `drift`. Do not adapt around it. Other unbuilt tickets were written against the same expectation, so a discrepancy you quietly absorb is one they all still carry.
 
-- **Reviews run separately.** The quality review and code review always run as their own steps; never fold them together or skip them.
-- **Reviews are adversarial.** Every review subagent takes a falsification stance: it assumes the work is broken, tries to break it, and counts a requirement satisfied only when an honest attempt to break it fails. Never a confirmation pass. Each step below names only what that review targets – this task's diff, the spec's criteria, the whole feature – and inherits the stance from here.
-- **A review fix is normal work.** A fix arising from any review step follows the same RED-first loop as step 3 (write the failing test, watch it fail, then fix; only pure refactors skip it) and is logged like any implementation work.
-- **Verify the review happened.** Treat every review subagent's verdict as a claim to verify, not proof: a clean or approved result counts only when the report shows the review actually happened – findings, or the checks it ran, cited to `file:line`, and the requirements it covered named. A bare 'looks good' with no such evidence is not a completed review; re-dispatch it. You don't redo the review yourself – you refuse to accept one that didn't demonstrably occur.
-- **Don't pre-judge the reviewer.** When you construct a reviewer's prompt, don't pre-judge its findings – don't tell it what to conclude, what not to flag, or that a choice was already settled so it should accept it. Hand it the requirements and let it judge; adjudicate any false positive in the review loop, not by steering the reviewer before it starts.
+A difference in shape that leaves the substance intact is not drift. Contracts are written as durable intent precisely so the implementer can choose the shape – a method that took different arguments than you imagined is not a contradiction; a confirmation path that turns out not to enforce the invariant the ticket relies on is.
 
-1. **Read the feature description.** The ideal input is a complete contract – a `/discovery` master, a `/discovery-increment` slice, or a `/propose-change` plan – where every behavior a wrong default could hurt already carries a given/when/then criterion; build to those criteria, and if one is missing send it back to `/discovery` rather than inventing it. If anything else is ambiguous, ask the user. If there is no written description (e.g. the user said "build X" in chat), write one before starting – a short spec covering intent, success criteria, non-goals, and the user stories with their acceptance criteria – and confirm it with the user. The written description is the artifact step 4 will trace against.
-2. **Plan the implementation.** Use `TaskCreate` to break the feature into tasks, decide order, and note dependencies. The task list is the source of truth for progress through steps 3-5 – completing the list and completing the feature are the same act. If during step 3 the plan turns out to be wrong, stop, update the task list, and tell the user what changed and why. Do not silently rewrite the plan.
+## Halting
 
-   **Identify modules and boundaries:** Note which modules the change touches, what new files or functions it needs, and where they live, so integration work isn't missed.
+| Reason | When |
+|---|---|
+| `stale-spec` | `spec_hash` does not match the spec file. |
+| `drift` | `Preconditions` or `Touches` contradict the codebase. |
+| `blocked` | The spec contradicts itself, a cited criterion cannot be met as written, the baseline is red, or the reviews will not converge. |
+| `mystery` | A test will not go green and you do not know why, after the bounded attempts below. |
 
-   **Verifiable goals:** Transform imperative tasks into verifiable goals. Instead of "add validation", use "given/when/then" to specify the expected behavior and its test. This makes it easier to know when a task is done, and to verify the implementation in step 4.
+To halt: set `status: blocked` in the ticket's frontmatter, append the `## Halt` section `TICKET_FORMAT.md` specifies – the reason, what happened, and what the human needs to decide – then commit **the ticket alone** and stop. Stage nothing else. Leave partial work uncommitted in the working tree so whoever picks this up can see how far you got.
 
-   **Sizing implementation tasks:**
-   - One user-visible change per task – typically one user story.
-   - Combine trivial stories that share code; split a story that introduces multiple independent user-visible changes.
-   - If a task can't be named as a verb-phrase about user-visible behavior, the slice is wrong.
+The driver reads `status` from the ticket to decide whether to continue, so setting it is what makes a halt visible. A run that stops without setting it looks like a crash.
 
-   **Tail entries:** Append two fixed tail entries to the list: `Quality review` and `Code review` (steps 4 and 5). The verb-phrase rule does not apply to these.
-3. **Implement each task in turn.** You MUST use the TDD red/green/refactor loop described in "Using TDD" below. A task is complete only when every behavior change traces to a test that failed first and now pins it: the test would fail if that behavior were removed. If you can't name that test, the task isn't done. Pure refactor steps within a task are exempt: they add no new behavior, and the existing green tests prove it's preserved.
+**Bounded attempts.** Three, in two places: three tries to get a failing test green before halting `mystery`, and three review-and-fix rounds before halting `blocked` with the standing findings recorded. Unattended, an unbounded loop does not converge – it thrashes, and each round of fixes leaves the code worse. Three rounds without convergence means something is wrong that another round will not find.
 
-   As you work, keep the **decision log** described below: append an entry the moment you make a non-obvious implementation-level design decision, while the reasoning is still fresh.
+## Build it
 
-   If a task cannot be made green for a reason TDD can't resolve – a genuine blocker like missing information, a spec contradiction, or an external dependency that doesn't behave as specified – stop and surface it to the user. Do not fake a passing test or expand scope to work around it. If instead a task won't go green because behavior is failing in a way you don't understand – a defect or mystery, not a missing-information blocker – use `/debug` to find the root cause before thrashing on fixes.
+Implement the ticket with the TDD loop below. The ticket is complete only when every behavior it adds traces to a test that failed first and now pins it: the test would fail if that behavior were removed. If you cannot name that test, you are not done.
 
-   **Task-scoped review before the next task.** After a task's commit, and before starting the next, dispatch a fresh `general-purpose` subagent to review just that task's diff (from the commit before the task to its latest commit). Give it two jobs: spec compliance for *this task's* requirements – for each, try to find where it is unmet (nothing missing, nothing extra, the right thing built) – and code quality of the diff, judged against `coding-conventions/SKILL.md`, which it must read for the rubric. Keep it task-scoped: the whole-feature Quality and Code reviews still run once at the end; this gate only stops a task's defect from compounding into the tasks built on top of it. Group findings as Blockers / Should-fix / Nits; fix Blockers and Should-fixes RED-first as in this step and re-review until only Nits remain, then move on – judgement on Nits.
+Build what the ticket claims and nothing else. Its `Out of scope` names what you will be tempted by – the adjacent case another ticket owns, the abstraction that is premature until a third caller exists. No human sees the diff before the next ticket starts, so scope creep here is unchecked.
 
-   When every task is complete, run the full test suite and confirm it is green before moving to review. Per-step runs don't prove the whole feature still holds together.
-4. **Quality review.** Spawn a `general-purpose` subagent for a traceability check. Pass it the written feature description from step 1 and the final code. For each success criterion and each acceptance criterion the spec states – in a `/propose-change` plan these are its `Done when` list – have it try to find a case where the implementation does not satisfy it, or a test that would still pass if the behavior were deleted. It should also confirm any non-goals are respected. This is not a code review – it is a check that the right thing was built. Run it first of the two: a gap here means new behavior to implement, and that new code should then pass under the code review that follows rather than escaping it. Address gaps before continuing.
+As you work, keep the **decision log** described below: append an entry the moment you make a non-obvious implementation-level design decision, while the reasoning is still fresh.
 
-   **Collect the discretionary decisions.** The same pass yields a second output for free. Every behavior that traces to no acceptance criterion is either something extra that shouldn't be there (a gap, flagged above) or a fork the spec left silent and the implementation had to settle anyway. Ask the subagent to read the diff with fresh eyes and list every spec-silent fork it finds, *independent of the decision log*, then reconcile the two: the log is your self-report of the choices you noticed making; the subagent's list catches the forks you never recognized as decisions – the blind spot a self-kept log cannot cover on its own. Together they give the discretionary list you hand the user at step 5's close: the spec-silent forks you logged, plus those the subagent caught that you didn't. A log entry that instead records a *deviation* from something the spec did say is not a discretionary call – it is a compliance question the traceability check above already owns. Do not adjudicate these against the spec – by definition it is silent, so whether each default matches intent is the user's call, not the reviewer's.
-5. **Code review.** Spawn a `general-purpose` subagent to code-review the whole feature with fresh context. Give it an explicit rubric: have it read `coding-conventions/SKILL.md` and apply those standards on top of its own judgement, plus a check that every behavior change is pinned by a test that would fail if the behavior were removed. Ask it to group findings as **Blockers** (must fix before this is acceptable), **Should-fix** (real problems worth addressing), and **Nits** (minor), each with a `file:line` and why it matters. Address blockers and should-fixes; for nits, use your own judgement. If the review raises a non-nit issue that requires a code change, fix it and re-run the review until it passes with only nits remaining. Because no review follows this one, if a fix here changes behavior, confirm it still satisfies the spec's acceptance criteria before telling the user you are done.
-
-   **Hand-off: sign off the discretionary calls.** Close by presenting the discretionary list from step 4 to the user – each spec-silent fork with the choice you made and why, anchored to a `file:line`. This is the one thing neither review can settle for you: where the spec is silent, whether the default matches intent is the user's call, and a different answer means rework, so surface it now rather than after they discover it. If the list came out empty, say so rather than omitting it silently.
+If a test will not go green because behavior is failing in a way you do not understand, that is a `mystery` halt after three attempts – not a licence to thrash. `/debug` is a human's response to that halt, not yours to invoke.
 
 ### Using TDD
 
@@ -62,39 +61,65 @@ Follow Kent Beck's red/green/refactor loop in the smallest possible steps. Each 
 2. **GREEN.** Make it pass with the simplest change that could possibly work. Faking the answer with a constant is fine – the next test will force a real implementation. If you cannot see how to make GREEN pass with a small, obvious change, the test is too big or too ambitious: revert it and write a smaller test, or add a second test that triangulates toward the general solution.
 3. **REFACTOR.** With tests green, remove duplication and improve the design. No new behavior. Re-run the tests.
 
-Commit once per completed task, after its tests are green and any refactor is done – run the red/green/refactor cycles internally and bundle them into a single clean commit. Don't commit at each individual green step.
-
-### Decision log
-
-The log has one job: to carry the design choices you make while implementing – the ones that leave no trace in the finished code, like a rejected alternative or a default picked under silence – into step 4's reconciliation, where they join the forks a fresh reviewer finds and go to the user for sign-off. Writing an entry also forces you to state the tradeoff while you are in it, which sometimes catches a bad default at the moment of choice. It is not audited or re-judged on its own; a self-report cannot be its own check.
-
-Implementing a feature means making many micro-decisions. Most are trivial or forced and must stay out of the log. Append an entry only when one of these objective triggers holds – not when a decision merely *felt* uncertain, since the ones that most need a second look are often the ones you were wrongly sure of (those you will miss, which is exactly why step 4's fresh-eyes audit is the backstop and not this log):
-
-- the spec or plan was silent or ambiguous here and you chose a default;
-- you rejected a plausible alternative;
-- the choice deviates from the plan or spec;
-- the choice has cross-cutting consequences – a data shape, an API or contract, a name other code depends on.
-
-Do not log TDD process (which test to write next, faking a constant with the next test in mind); that is rhythm, not design. And never use the log to invent past a spec-level ambiguity – those are not yours to settle: ask the user or send it back to `/discovery`, exactly as step 1 requires. The log is for implementation-level design choices that legitimately belong to you.
-
-Append each entry the moment you make the decision, not reconstructed at the end – late reconstruction is rationalisation, and what matters is the reasoning you actually had at the time. One line per entry, anchored to a `file:line` or task: *facing A, chose B because C; rejected D because E.* Let relevance, not a length limit, bound the log – a good trigger filter keeps it short on its own.
+Run the red/green/refactor cycles internally and bundle them into one commit for the ticket, after its tests are green and any refactor is done. Don't commit at each individual green step.
 
 ### Untestable boundaries
 
 The call into a third-party SDK or the network/IO edge can't be driven by a unit test. Handle it the way `coding-conventions` prescribes for untestable boundaries, rather than an elaborate fake that holds coverage at 100% while the real integration goes unbuilt.
 
-But that never excuses leaving the feature unfinished. Do not stop at the seam: "you just need to implement the wrapper I created" is not a finished feature. Wire the real dependency in and confirm it works.
+But that never excuses leaving the ticket unfinished. Do not stop at the seam: "you just need to implement the wrapper I created" is not finished work. Wire the real dependency in and confirm it works.
+
+### Decision log
+
+The log has one job: to carry the design choices you make while implementing – the ones that leave no trace in the finished code, like a rejected alternative or a default picked under silence – into the ticket's `Record`, where they reach the human who accepts the run. Writing an entry also forces you to state the tradeoff while you are in it, which sometimes catches a bad default at the moment of choice.
+
+Implementing means making many micro-decisions. Most are trivial or forced and must stay out of the log. Append an entry only when one of these objective triggers holds – not when a decision merely *felt* uncertain, since the ones that most need a second look are often the ones you were wrongly sure of:
+
+- the spec or ticket was silent or ambiguous here and you chose a default;
+- you rejected a plausible alternative;
+- the choice deviates from the ticket;
+- the choice has cross-cutting consequences – a data shape, an API or contract, a name other code depends on.
+
+Do not log TDD process (which test to write next, faking a constant with the next test in mind); that is rhythm, not design. And never use the log to invent past a spec-level ambiguity – those are not yours to settle, they are a `blocked` halt.
+
+Append each entry the moment you make the decision, not reconstructed at the end – late reconstruction is rationalisation, and what matters is the reasoning you actually had at the time. One line per entry, anchored to a `file:line`: *facing A, chose B because C; rejected D because E.*
+
+## Review it
+
+Two reviews, in this order, each a fresh `general-purpose` subagent. Five rules govern both:
+
+- **They run separately.** Never fold them together or skip one.
+- **They are adversarial.** Each assumes the work is broken, tries to break it, and counts a requirement satisfied only when an honest attempt to break it fails. Never a confirmation pass.
+- **A review fix is normal work.** It follows the same RED-first loop as the build; only pure refactors skip it.
+- **Verify the review happened.** Treat every verdict as a claim: a clean result counts only when the report shows the review occurred – findings, or the checks it ran, cited to `file:line`, and the criteria it covered named. A bare "looks good" is not a completed review; re-dispatch it. You don't redo the review yourself – you refuse to accept one that didn't demonstrably occur.
+- **Don't pre-judge the reviewer.** Don't tell it what to conclude, what not to flag, or that a choice was already settled so it should accept it. Hand it the requirements and let it judge; adjudicate false positives afterwards, not by steering it beforehand.
+
+**1. Quality review.** Pass it the ticket, the criteria its `Satisfies` cites, and the diff. For each criterion, have it try to find a case where the implementation does not satisfy it, or a test that would still pass if the behavior were deleted. Have it check the ticket's `Out of scope` was respected – something built here that another ticket owns is as much a defect as something missing. This is not a code review; it is a check that the right thing was built. It runs first because a gap means new behavior, and that new code should then pass under the code review rather than escaping it.
+
+**2. Code review.** Have it read `coding-conventions/SKILL.md` and apply that rubric on top of its own judgement over the ticket's diff, plus a check that every behavior change is pinned by a test that would fail if the behavior were removed. Ask for findings grouped as **Blockers** (must fix), **Should-fix** (real problems worth addressing), and **Nits** (minor), each with a `file:line` and why it matters.
+
+Fix blockers and should-fixes; use your judgement on nits. Re-run the review after fixing, up to three rounds. If blockers survive three rounds, halt `blocked` and record the standing findings – a defect you cannot resolve in three passes needs a human, not a fourth.
 
 ### Acting on review findings
 
-A finding – from the per-task gate, the end reviews, or the user – is a claim to evaluate, not an order to execute. Before you change code for it:
+A finding is a claim to evaluate, not an order to execute. Before you change code for it:
 
-- **Verify it's right for this code.** Confirm the finding actually holds here before fixing. If it's wrong – it misreads the code, breaks something that must keep working, or doesn't apply to this stack – push back with technical reasoning instead of complying. A reviewer, yours or human, can be wrong; adjudicate, don't obey.
+- **Verify it's right for this code.** If it's wrong – it misreads the code, breaks something that must keep working, or doesn't apply to this stack – push back in your reply to the finding with technical reasoning instead of complying, and record it under `Unresolved`. A reviewer can be wrong; adjudicate, don't obey.
 - **YAGNI-check "do it properly."** When a finding asks you to build something out more fully, confirm it's actually needed – if nothing uses it, say so and don't add it.
-- **Clarify before you start.** If any finding in a batch is unclear, resolve that first; a partial understanding produces the wrong fix. Don't fix half the batch and guess at the rest.
+- **Clarify before you start.** If any finding in a batch is unclear, resolve that first; a partial understanding produces the wrong fix.
 
-Don't perform agreement. No "you're absolutely right," no reflexive thanks – state the fix you're making, or the reasoned pushback, and move on. The code and the test are the acknowledgement.
+Don't perform agreement. No "you're absolutely right," no reflexive thanks – state the fix, or the reasoned pushback, and move on. The code and the test are the acknowledgement.
 
-### Code Quality
+## Finish
 
-Build to the standards in the `coding-conventions` skill (`coding-conventions/SKILL.md`) - simple design, structure and locality, domain layering, clarity, test coverage, and security - on top of your own judgement. It is the single source of truth for what good code is here, and the rubric the per-task gate (step 3) and the code review (step 5) apply.
+Both reviews clean, full suite green:
+
+1. Commit the code, staging only the files this ticket touched. Never `git add -A`.
+2. Append the ticket's `## Record` – the commit sha, the decision log entries that survived as genuine spec-silent forks, and any finding left `Unresolved` with why. Omit a section rather than writing "none".
+3. Set `status: done` and commit the ticket.
+
+The `Record` is the only channel between this run and the human who accepts the work. A fork you noticed and didn't write down is one they will discover in the code instead.
+
+## Code quality
+
+Build to the standards in `coding-conventions/SKILL.md` – simple design, structure and locality, domain layering, clarity, test coverage, and security – on top of your own judgement. It is the single source of truth for what good code is here, and the rubric both reviews apply.
