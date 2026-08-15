@@ -16,9 +16,17 @@ The whole-feature checks are not yours. Traceability against the spec and code r
 - Read the ticket. `TICKET_FORMAT.md` describes its shape.
 - Recompute `sha256sum` over the spec named in the ticket's frontmatter and compare the first 12 characters against `spec_hash`. On a mismatch, halt `stale-spec`: the requirements moved under the ticket, so every criterion it cites may now say something else.
 - Read the spec and the criteria the ticket's `Satisfies` cites. Those criteria are what you build and what you are checked against. The ticket locates them; it does not restate them, and where the two seem to differ the spec wins.
-- Confirm the test command runs and the baseline is green. A red baseline is a halt (`blocked`), not something to work around – TDD needs a clean baseline to tell your red from someone else's.
+- Establish the project's verification command (below) and confirm the baseline is green. A red baseline is a halt (`blocked`), not something to work around – TDD needs a clean baseline to tell your red from someone else's.
 - If `UBIQUITOUS_LANGUAGE.md` exists at the repo root, read it and use those terms for names in code, tests, and commit messages.
 - Read `coding-conventions/SKILL.md` – the standard you build to, and the rubric both reviews apply.
+
+### Verification commands
+
+**Prefer one combined command over assembling the pieces yourself.** `npm run check`, `make check`, `just check` and their kin exist so nobody has to remember the list, and a project that has one keeps it current. Running typecheck and lint separately alongside it duplicates work and still risks missing a step it includes.
+
+Look in `package.json` scripts, a `Makefile` or `justfile`, `CONTRIBUTING`, and the CI workflow – CI is the authoritative statement of what the project actually gates on, so a command it runs and you don't is a check you are skipping.
+
+Only when there is no combined command do you assemble one: typecheck, lint, tests. Note what you assembled so the same set runs at the baseline and at the end, and don't invent checks the project doesn't use.
 
 ## Reconcile before building
 
@@ -86,7 +94,9 @@ Append each entry the moment you make the decision, not reconstructed at the end
 
 ## Review it
 
-Two reviews, in this order, each a fresh `general-purpose` subagent. Five rules govern both:
+**Run the verification command first and fix what it reports.** It is deterministic, fast, and independent of the model that wrote the code – three things no review below is – so it goes ahead of them. A review round spent on something a typechecker would have caught is a round wasted, and a type error means the code is broken no matter what a reviewer concludes about it.
+
+Then two reviews, in this order, each a fresh `general-purpose` subagent. Five rules govern both:
 
 - **They run separately.** Never fold them together or skip one.
 - **They are adversarial.** Each assumes the work is broken, tries to break it, and counts a requirement satisfied only when an honest attempt to break it fails. Never a confirmation pass.

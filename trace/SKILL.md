@@ -29,6 +29,22 @@ Read the spec and the full diff of the run - every commit from the branch point.
 
 Delegate breadth where the spec is large - a subagent per story, each hunting for the way its criteria fail - but you own the verdict, and a subagent's clean report counts only when it shows what it checked and where.
 
+## Check the tests mechanically, not by reading
+
+The second failure mode - behavior that works with nothing pinning it - is the one you should not judge by eye. Deciding whether a test would notice a deletion means simulating that deletion, and a tool does it by execution instead of prediction. Every review before this one, including your own, is a model judging work a model produced; this is the one check in the pipeline that isn't.
+
+**If the project already has a mutation testing tool configured**, run it over this run's diff - Stryker's `--since`, `mutmut`, PIT's incremental mode, `cargo-mutants`, Infection. Scope it to what changed: a whole-suite run is slow enough to be worth avoiding, and untouched code is not what you are checking.
+
+Read surviving mutants as evidence, not as a score to chase:
+
+- A survivor on behavior a criterion names means that criterion is unpinned. File a ticket - the gap is objective.
+- A survivor anywhere else goes to handover as a finding, for a human to weigh.
+- Never chase a score. Equivalent mutants cannot be killed by definition, and a loop trying to kill one writes absurd tests until something stops it.
+
+**Where no such tool is configured**, fall back to the crude version: revert the non-test files in the run's diff, run the suite, confirm the new tests fail, then restore. It proves less - removing everything at once tends to produce import errors rather than assertion failures, which is exactly the evidence `/implement` refuses to accept as RED - but a suite that stays green with the feature deleted is damning however it was measured.
+
+**Don't install tooling to satisfy this.** Adding a mutation framework is a change to the project, not a check on it, and that is not a decision to make from inside a review. Say in your report that the check was unavailable, so a clean result is never mistaken for a verified one.
+
 ## Output
 
 **File a ticket for each gap.** Write it to `tickets/NN-slug.md` in the shape `TICKET_FORMAT.md` specifies, numbered after the highest existing ticket, `status: todo`, `depends_on: []`. `Satisfies` cites the criterion that failed. The gap is objective - a criterion is met or it isn't - so it goes back through the same loop that built everything else, with the same TDD and review discipline, rather than being patched by hand at the end.
