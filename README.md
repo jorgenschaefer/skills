@@ -26,7 +26,7 @@ A feature - one change worth shipping on its own:
                                                       │  ┌─ /implement × N   unattended
                                                       ├──┤  /trace           gaps → tickets
                                                       │  └─ /critique        blockers → tickets
-                                                      │     (repeat until both come back clean)
+                                                      │     (second pass covers only what they filed)
                                                       │
                                                       └─ /handover        promote, then delete
 

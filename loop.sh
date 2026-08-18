@@ -17,7 +17,7 @@
 set -uo pipefail
 
 TICKETS="${1:-tickets}"
-MAX_PASSES=3
+MAX_PASSES=2
 TICK_MINUTES=3
 
 [ -d "$TICKETS" ] || { echo "no ticket directory: $TICKETS" >&2; exit 2; }
@@ -165,10 +165,39 @@ drain() {
 # becomes code, and that code should pass under /critique rather than land behind
 # it. /critique stays a generic review skill - the prompt here, not the skill,
 # knows this pipeline files tickets.
-CRITIQUE_PROMPT="Run /critique over the diff from this branch's start.
+#
+# Pass 1 checks the whole run; a later pass checks only what the previous pass's
+# findings added. Re-reading twelve tickets' code to check three fixes is the
+# same review over again, and it is what makes a second pass cost as much as the
+# first. Narrowing is safe because pass 1 is the check that proves every
+# criterion is pinned by a test that fails without it - once that holds, the
+# green suite is what guards the old criteria, not another read of them.
+#
+# Set to HEAD once a pass's checks are done, so the next pass's baseline is
+# every commit built after them.
+CHECKED_AT=""
+
+trace_prompt() {
+  [ -n "$CHECKED_AT" ] || { printf '/trace %s\n' "$SPEC_DIR"; return; }
+  cat <<EOF
+/trace $SPEC_DIR
+Scope this to the commits since $CHECKED_AT - the tickets the last pass's
+reviews filed. Everything up to that commit traced clean and its criteria are
+pinned by tests the suite still runs, so check the criteria these commits claim
+and whether they broke anything built earlier.
+EOF
+}
+
+critique_prompt() {
+  local since="this branch's start"
+  [ -z "$CHECKED_AT" ] || since="$CHECKED_AT"
+  cat <<EOF
+Run /critique over the diff from $since.
 For each Blocker and Should-fix, file a remediation ticket in $TICKETS,
 following TICKET_FORMAT.md as documented in the /implement skill.
-Do not file nits - leave those in your report for /handover to triage."
+Do not file nits - leave those in your report for /handover to triage.
+EOF
+}
 
 echo "logs: $LOG_DIR"
 
@@ -177,16 +206,17 @@ for pass in $(seq "$MAX_PASSES"); do
   drain || exit 1
 
   echo "==> trace (pass $pass)"
-  run_step "trace-$pass" "/trace $SPEC_DIR" || exit 1
+  run_step "trace-$pass" "$(trace_prompt)" || exit 1
   drain || exit 1
 
   echo "==> critique (pass $pass)"
-  run_step "critique-$pass" "$CRITIQUE_PROMPT" || exit 1
+  run_step "critique-$pass" "$(critique_prompt)" || exit 1
 
   if ! next_ticket >/dev/null; then
     reviews_clean=1
     break
   fi
+  CHECKED_AT="$(git rev-parse HEAD)"
   echo "==> reviews filed work; draining again"
 done
 
