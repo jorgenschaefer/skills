@@ -55,7 +55,7 @@ To halt: set `status: blocked` in the ticket's frontmatter, append the `## Halt`
 
 The driver reads `status` from the ticket to decide whether to continue, so setting it is what makes a halt visible. A run that stops without setting it looks like a crash.
 
-**Bounded attempts.** Three, in two places: three tries to get a failing test green before halting `mystery`, and three review-and-fix rounds before halting `blocked` with the standing findings recorded. Unattended, an unbounded loop does not converge – it thrashes, and each round of fixes leaves the code worse. Three rounds without convergence means something is wrong that another round will not find.
+**Bounded attempts.** Three tries to get a failing test green before halting `mystery`; two review-and-fix rounds before halting `blocked` with the standing findings recorded. Unattended, an unbounded loop does not converge – it thrashes, and each round of fixes leaves the code worse. A round that doesn't converge means something is wrong that another round will not find, and reviews are the expensive place to learn that twice over.
 
 ## Build it
 
@@ -107,14 +107,14 @@ Then two reviews, in this order, each a fresh `general-purpose` subagent. Five r
 - **They run separately.** Never fold them together or skip one.
 - **They are adversarial.** Each assumes the work is broken, tries to break it, and counts a requirement satisfied only when an honest attempt to break it fails. Never a confirmation pass.
 - **A review fix is normal work.** It follows the same RED-first loop as the build; only pure refactors skip it.
-- **Verify the review happened.** Treat every verdict as a claim: a clean result counts only when the report shows the review occurred – findings, or the checks it ran, cited to `file:line`, and the criteria it covered named. A bare "looks good" is not a completed review; re-dispatch it. You don't redo the review yourself – you refuse to accept one that didn't demonstrably occur.
+- **Verify the review happened.** Treat every verdict as a claim: a clean result counts only when the report shows the review occurred – findings, or the checks it ran, cited to `file:line`, and the criteria it covered named. A bare "looks good" is not a completed review; re-dispatch it once. You don't redo the review yourself – you refuse to accept one that didn't demonstrably occur. A reviewer that fails to show its work twice is broken, not strict: halt `blocked` rather than dispatch a third.
 - **Don't pre-judge the reviewer.** Don't tell it what to conclude, what not to flag, or that a choice was already settled so it should accept it. Hand it the requirements and let it judge; adjudicate false positives afterwards, not by steering it beforehand.
 
 **1. Quality review.** Pass it the ticket, the criteria its `Satisfies` cites, and the diff. For each criterion, have it try to find a case where the implementation does not satisfy it, or a test that would still pass if the behavior were deleted. Have it check the ticket's `Out of scope` was respected – something built here that another ticket owns is as much a defect as something missing. This is not a code review; it is a check that the right thing was built. It runs first because a gap means new behavior, and that new code should then pass under the code review rather than escaping it.
 
 **2. Code review.** Have it read `coding-conventions/SKILL.md` and apply that rubric on top of its own judgement over the ticket's diff, plus a check that every behavior change is pinned by a test that would fail if the behavior were removed. Ask for findings grouped as **Blockers** (must fix), **Should-fix** (real problems worth addressing), and **Nits** (minor), each with a `file:line` and why it matters.
 
-Fix blockers and should-fixes; use your judgement on nits. Re-run the review after fixing, up to three rounds. If blockers survive three rounds, halt `blocked` and record the standing findings – a defect you cannot resolve in three passes needs a human, not a fourth.
+Fix blockers and should-fixes; use your judgement on nits. Then re-dispatch only the review that raised them – a code-review fix does not need a fresh quality review of criteria it never touched, and the pair only runs together on the first round. Two rounds per review is the ceiling. If blockers survive the second, halt `blocked` and record the standing findings – a defect you cannot resolve in two passes needs a human, not a third.
 
 ### Acting on review findings
 

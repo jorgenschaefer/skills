@@ -76,7 +76,7 @@ Give it the tickets, the spec, and the codebase, and this framing: *you are abou
 
 Have it check three things beyond that: every spec criterion claimed by exactly one ticket and every constraint by at least one; every `Provides` entry actually consumed by a later ticket, and every `Preconditions` entry actually provided by an earlier one; and every ticket nameable as observable behavior.
 
-Treat the verdict as a claim to verify. A clean result counts only when the report shows the review happened - the guesses it hunted for and where it looked, cited to specific tickets. Fix what it finds and re-dispatch until it comes back with nothing to guess.
+Treat the verdict as a claim to verify. A clean result counts only when the report shows the review happened - the guesses it hunted for and where it looked, cited to specific tickets. Fix what it finds and re-dispatch once. Two rounds is the ceiling: a ticket set still leaving things to guess after a second pass has a problem the decomposition can't fix by iterating, so stop and take the standing findings to the user with the brief below.
 
 ## Hand off
 
