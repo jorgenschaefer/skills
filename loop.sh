@@ -11,7 +11,12 @@
 # Exit codes say what kind of stop it was, because they want opposite responses:
 #   1  an agent halted, or the reviews would not converge - a human is needed
 #   2  bad invocation - no ticket directory, not a repo, on main
-#   3  a session died mid-run - nothing was decided, re-running resumes
+#   3  a session died in a way the driver could not wait out - re-running resumes
+#
+# Running out of usage is not one of those stops: the window reopens at a time
+# the stream names to the second, so the driver sleeps until then and picks the
+# same step back up. It waits only for a reset within MAX_WAIT_HOURS (6), which
+# covers a five-hour window and leaves a weekly one to a human.
 #
 # A run takes hours, so progress on screen is the model's own narration - one
 # short line per phase - and nothing else. Every step's full transcript is kept
@@ -32,6 +37,15 @@ TICK_MINUTES=3
 REVIEWS="${REVIEWS:-full}"
 case "$REVIEWS" in full|code) ;;
   *) echo "REVIEWS must be 'full' or 'code', not '$REVIEWS'" >&2; exit 2 ;;
+esac
+
+# How long a run may sit idle waiting for a usage window to reopen. Six hours
+# covers any five-hour window; a weekly limit can be days off, and a terminal
+# blocked for days is worse than a human reading a message in the morning.
+MAX_WAIT_HOURS="${MAX_WAIT_HOURS:-6}"
+case "$MAX_WAIT_HOURS" in
+  '' | *[!0-9]*)
+    echo "MAX_WAIT_HOURS must be whole hours, not '$MAX_WAIT_HOURS'" >&2; exit 2 ;;
 esac
 
 [ -d "$TICKETS" ] || { echo "no ticket directory: $TICKETS" >&2; exit 2; }
@@ -124,17 +138,64 @@ session_died() {
   return 1
 }
 
+# The stream announces a usage limit as a record of its own, carrying the second
+# the window reopens. The same record reports utilization on the way up, so only
+# `rejected` counts: `allowed_warning` is a session still working.
+limit_reset_at() {
+  jq -r 'select(.type == "rate_limit_event" and .rate_limit_info.status == "rejected")
+         | .rate_limit_info.resetsAt' "$LOG_DIR/$1.jsonl" 2>/dev/null | tail -1
+}
+
+# Sleeps to a minute past the reset - starting on the second it reopens only
+# invites a second rejection - keeping the ticker's beat so a long wait still
+# looks alive.
+wait_until() {
+  local until=$(( $1 + 60 )) left nap
+  while :; do
+    left=$(( until - $(date +%s) ))
+    [ "$left" -gt 0 ] || break
+    nap=$(( TICK_MINUTES * 60 ))
+    [ "$left" -lt "$nap" ] && nap="$left"
+    sleep "$nap"
+    left=$(( until - $(date +%s) ))
+    [ "$left" -gt 0 ] && printf '  … %dm to go\n' $(( (left + 59) / 60 ))
+  done
+}
+
 # $1 = log basename, $2 = prompt. Non-zero means the session died, which is
 # never a decision about the work - it leaves everything exactly where it was.
+#
+# Which is exactly why a usage limit can be waited out here rather than handed
+# back: the step decided nothing, so running it again resumes it, and the stream
+# said when that will work. The limited attempt's transcript is kept beside the
+# retry's - it holds real work and real cost, and the run's total should still
+# say so. Retries are not counted, because each one needs a fresh rejection from
+# the API and so cannot spin on its own.
 run_step() {
-  local rc why
-  ticker_start
-  claude -p --output-format stream-json --verbose "$2" \
-    | tee "$LOG_DIR/$1.jsonl" \
-    | jq --unbuffered -r "$PROGRESS_FILTER"
-  rc=${PIPESTATUS[0]}
-  ticker_stop
-  why="$(session_died "$rc" "$1")" || return 0
+  local rc why reset attempt=0
+  while :; do
+    ticker_start
+    claude -p --output-format stream-json --verbose "$2" \
+      | tee "$LOG_DIR/$1.jsonl" \
+      | jq --unbuffered -r "$PROGRESS_FILTER"
+    rc=${PIPESTATUS[0]}
+    ticker_stop
+    why="$(session_died "$rc" "$1")" || return 0
+
+    reset="$(limit_reset_at "$1")"
+    if [ -z "$reset" ] || [ $(( reset - $(date +%s) )) -gt $(( MAX_WAIT_HOURS * 3600 )) ]; then
+      break
+    fi
+
+    attempt=$((attempt + 1))
+    mv "$LOG_DIR/$1.jsonl" "$LOG_DIR/$1.limited-$attempt.jsonl"
+    echo
+    echo "!! $why"
+    printf '   waiting until %s, then picking %s back up\n' \
+      "$(date -d "@$((reset + 60))" +%H:%M)" "$1"
+    wait_until "$reset"
+    echo "==> $1 (attempt $((attempt + 1)))"
+  done
   {
     echo
     echo "!! session died on $1 - $why"

@@ -6,8 +6,8 @@
 #
 #   <fixture> <exit-code> <done|->
 #
-# and replays that fixture on stdout - real records, cut from the transcripts of
-# runs on disk - exits with that code, and, when the third field says `done`,
+# and replays that fixture on stdout - real records, captured from runs that hit
+# the real limit - exits with that code, and, when the third field says `done`,
 # marks the ticket named in the prompt done, the way a finished /implement would.
 # A call the plan did not expect is an error, not a repeat: the test wanted to
 # know how often the driver calls out, so an extra call has to be visible.
@@ -22,7 +22,7 @@ line="$(sed -n "${n}p" "$STUB_PLAN")"
 [ -n "$line" ] || { echo "stub-claude: no plan line $n for: $prompt" >&2; exit 99; }
 read -r fixture rc action <<< "$line"
 
-cat "$STUB_FIXTURES/$fixture"
+sed "s/__RESETS_AT__/${STUB_RESETS_AT:-0}/" "$STUB_FIXTURES/$fixture"
 
 if [ "$action" = "done" ]; then
   ticket="$(printf '%s\n' "$prompt" | sed -n 's#^/implement \(.*\.md\).*#\1#p' | head -1)"
