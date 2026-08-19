@@ -101,6 +101,15 @@ expect_out "stopped mid-message" "a cut stream says so"
 
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
+errored.jsonl 0 -
+EOF
+drive
+expect_rc 3 "a session that ended on an error is dead, not halted"
+expect_no_out "halted on" "an errored session is never reported as a halt"
+expect_out "Connection error" "an errored session reports what the session said"
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 -
 EOF
 drive

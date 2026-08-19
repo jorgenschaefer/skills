@@ -107,13 +107,18 @@ finish() {
 trap finish EXIT
 trap 'exit 130' INT TERM
 
-# A session that never reached its end - a crash, an auth problem, a rate-limit
-# window running out - is not an agent decision. The exit code alone does not
-# catch it: the stream can be cut mid-message and still exit 0, so the closing
-# `result` record is what proves the session ran to completion. Echoes what went
-# wrong, or nothing if the session finished.
+# A session that never reached its end - a crash, an auth problem, a usage
+# window running out - is not an agent decision. Three things can say so, and the
+# best of them comes first: the closing `result` record carries the session's own
+# account of what went wrong ("You've hit your session limit - resets 2:30pm"),
+# which beats anything composed here. Failing that, a non-zero exit. Failing
+# that, a missing `result` record, because a stream cut mid-message still exits
+# 0. Echoes what went wrong, or nothing if the session finished.
 session_died() {
-  local rc="$1" log="$LOG_DIR/$2.jsonl"
+  local rc="$1" log="$LOG_DIR/$2.jsonl" said
+  said="$(jq -r 'select(.type == "result" and .is_error)
+                 | .result // "the session ended on an error"' "$log" 2>/dev/null | tail -1)"
+  [ -z "$said" ] || { echo "$said"; return 0; }
   [ "$rc" -eq 0 ] || { echo "claude exited $rc"; return 0; }
   grep -q '"type":"result"' "$log" || { echo "the stream stopped mid-message"; return 0; }
   return 1
