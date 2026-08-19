@@ -102,8 +102,9 @@ Append each entry the moment you make the decision, not reconstructed at the end
 
 **Run the verification command first and fix what it reports.** It is deterministic, fast, and independent of the model that wrote the code – three things no review below is – so it goes ahead of them. A review round spent on something a typechecker would have caught is a round wasted, and a type error means the code is broken no matter what a reviewer concludes about it.
 
-Then two reviews, in this order, each a fresh `general-purpose` subagent. Five rules govern both:
+Then two reviews, in this order, each a fresh `general-purpose` subagent. Six rules govern both:
 
+- **They block.** Dispatch with `run_in_background: false`. The default detaches the reviewer and hands you an `agentId` instead of a report – and there is nothing useful to do while a reviewer reads a tree you must not disturb, so the run idles, narrating that it is waiting, until the session exits and takes the unfinished review with it. An `agentId` is not a review.
 - **They run separately.** Never fold them together or skip one.
 - **They are adversarial.** Each assumes the work is broken, tries to break it, and counts a requirement satisfied only when an honest attempt to break it fails. Never a confirmation pass.
 - **A review fix is normal work.** It follows the same RED-first loop as the build; only pure refactors skip it.

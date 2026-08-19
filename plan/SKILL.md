@@ -70,7 +70,7 @@ Fill `Out of scope` with real restraint, not a formality. No human sees the diff
 
 ## Review the tickets
 
-Dispatch a fresh `general-purpose` subagent over the written tickets. It takes a falsification stance: assume the set is unbuildable and try to prove it. Never a confirmation pass.
+Dispatch a fresh `general-purpose` subagent over the written tickets, with `run_in_background: false` so it blocks - a detached reviewer hands back an `agentId` and nothing else, and there is no useful work to do while it reads. It takes a falsification stance: assume the set is unbuildable and try to prove it. Never a confirmation pass.
 
 Give it the tickets, the spec, and the codebase, and this framing: *you are about to build these tickets one at a time, with no human available, no access to the conversation that produced them, and nothing to read but the ticket, the spec, and the code. For each ticket, find the first thing you would have to guess.* Anything it has to guess is a question this skill failed to settle.
 
