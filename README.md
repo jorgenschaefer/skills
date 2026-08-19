@@ -35,7 +35,7 @@ A small change or bugfix:
   /propose-change ──→ one ticket ──→ /implement
 ```
 
-`loop.sh` runs unattended for hours, so it prints only each step's narration - one line per phase - plus position, duration and cost. Every step's full JSON transcript is kept under a log directory it names at startup, so a halt tells you exactly which file to open. Running out of usage does not end a run: the stream names the second the window reopens, so the driver sleeps until then and picks the same step back up - it waits up to six hours by default, `MAX_WAIT_HOURS` for a weekly limit. The driver has tests of its own in `tests/run.sh`, plain bash against transcripts recorded from real runs.
+`loop.sh` runs unattended for hours, so it prints only each step's narration - one line per phase - plus position, duration and cost. Every step's full JSON transcript is kept under a log directory it names at startup, so a halt tells you exactly which file to open. A session that dies does not end a run: running out of usage is waited out - the stream names the second the window reopens, and `MAX_WAIT_HOURS` caps how long that may take - and any other death is tried again after a pause, seven of them over about three hours (`RETRY_DELAYS`). Only an agent's own halt, or an error no delay can fix, stops the loop for a human. The driver has tests of its own in `tests/run.sh`, plain bash against transcripts recorded from real runs.
 
 The split test routes between them: *could you ship this on its own, and would that be worth shipping?* Yes means a feature; no, but someone outside the code can see the difference, means a change; no difference at all means it doesn't want a ticket.
 

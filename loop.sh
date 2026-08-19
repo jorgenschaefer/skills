@@ -11,12 +11,15 @@
 # Exit codes say what kind of stop it was, because they want opposite responses:
 #   1  an agent halted, or the reviews would not converge - a human is needed
 #   2  bad invocation - no ticket directory, not a repo, on main
-#   3  a session died in a way the driver could not wait out - re-running resumes
+#   3  a session died in a way the driver could neither wait out nor retry
 #
-# Running out of usage is not one of those stops: the window reopens at a time
-# the stream names to the second, so the driver sleeps until then and picks the
-# same step back up. It waits only for a reset within MAX_WAIT_HOURS (6), which
-# covers a five-hour window and leaves a weekly one to a human.
+# Neither of those is an agent decision, so neither ends a run. Running out of
+# usage is waited out: the window reopens at a time the stream names to the
+# second, and the driver sleeps until then, for a reset within MAX_WAIT_HOURS
+# (6) - a five-hour window, not a weekly one. Any other death - a dropped
+# connection, a crash, a stream cut short - is tried again after a pause, seven
+# of them over about three hours (RETRY_DELAYS). Only an error no delay can fix,
+# a bad key or an empty balance, stops the run where it stands.
 #
 # A run takes hours, so progress on screen is the model's own narration - one
 # short line per phase - and nothing else. Every step's full transcript is kept
@@ -47,6 +50,19 @@ case "$MAX_WAIT_HOURS" in
   '' | *[!0-9]*)
     echo "MAX_WAIT_HOURS must be whole hours, not '$MAX_WAIT_HOURS'" >&2; exit 2 ;;
 esac
+
+# How long to pause before trying a step again after it died on something other
+# than a usage limit. The pauses are the backoff and how many there are is the
+# budget: eight attempts over about three hours, patient enough to sit out an
+# incident and short of spending a whole night on a failure that will not clear.
+# Empty never retries.
+RETRY_DELAYS="${RETRY_DELAYS-60 120 300 600 1800 3600 3600}"
+for pause in $RETRY_DELAYS; do
+  case "$pause" in
+    *[!0-9]*)
+      echo "RETRY_DELAYS must be whole seconds, not '$pause'" >&2; exit 2 ;;
+  esac
+done
 
 [ -d "$TICKETS" ] || { echo "no ticket directory: $TICKETS" >&2; exit 2; }
 SPEC_DIR="$(cd "$(dirname "$TICKETS")" && pwd)"
@@ -146,18 +162,23 @@ limit_reset_at() {
          | .rate_limit_info.resetsAt' "$LOG_DIR/$1.jsonl" 2>/dev/null | tail -1
 }
 
-# Sleeps to a minute past the reset - starting on the second it reopens only
-# invites a second rejection - keeping the ticker's beat so a long wait still
-# looks alive.
-wait_until() {
-  local until=$(( $1 + 60 )) left nap
-  while :; do
-    left=$(( until - $(date +%s) ))
-    [ "$left" -gt 0 ] || break
+# Some deaths no pause can fix, and a morning message should say which rather
+# than hide under eight identical failures. The list is the one the CLI itself
+# uses: a login that expired, a key that is not valid, nothing left to spend.
+unrecoverable() {
+  local fatal='not logged in|please run /login|authentication failed|credit balance'
+  fatal="$fatal|invalid api key|oauth token (expired|revoked)|401 unauthorized"
+  grep -qiE "$fatal|403 forbidden" <<< "$1"
+}
+
+# Sleeps, keeping the ticker's beat so a long pause still looks alive.
+wait_for() {
+  local left="$1" nap
+  while [ "$left" -gt 0 ]; do
     nap=$(( TICK_MINUTES * 60 ))
     [ "$left" -lt "$nap" ] && nap="$left"
     sleep "$nap"
-    left=$(( until - $(date +%s) ))
+    left=$(( left - nap ))
     [ "$left" -gt 0 ] && printf '  … %dm to go\n' $(( (left + 59) / 60 ))
   done
 }
@@ -165,15 +186,18 @@ wait_until() {
 # $1 = log basename, $2 = prompt. Non-zero means the session died, which is
 # never a decision about the work - it leaves everything exactly where it was.
 #
-# Which is exactly why a usage limit can be waited out here rather than handed
-# back: the step decided nothing, so running it again resumes it, and the stream
-# said when that will work. The limited attempt's transcript is kept beside the
-# retry's - it holds real work and real cost, and the run's total should still
-# say so. Retries are not counted, because each one needs a fresh rejection from
-# the API and so cannot spin on its own.
+# Which is exactly why a death is answered here rather than handed back: the
+# step decided nothing, so running it again resumes it. A usage limit even says
+# when that will work, and waiting for a window is not a failure, so it does not
+# spend a retry. Everything else gets the next pause off the ladder, and a run
+# ends only once the ladder does. Each attempt's transcript is kept beside the
+# next one's - they hold real work and real cost, and the run's total should
+# still say so.
 run_step() {
-  local rc why reset attempt=0
+  local rc why reset attempt=0 retries=0 pause note
+  local -a pauses=($RETRY_DELAYS)
   while :; do
+    attempt=$((attempt + 1))
     ticker_start
     claude -p --output-format stream-json --verbose "$2" \
       | tee "$LOG_DIR/$1.jsonl" \
@@ -183,22 +207,33 @@ run_step() {
     why="$(session_died "$rc" "$1")" || return 0
 
     reset="$(limit_reset_at "$1")"
-    if [ -z "$reset" ] || [ $(( reset - $(date +%s) )) -gt $(( MAX_WAIT_HOURS * 3600 )) ]; then
+    if [ -n "$reset" ] && [ $(( reset - $(date +%s) )) -le $(( MAX_WAIT_HOURS * 3600 )) ]; then
+      pause=$(( reset + 60 - $(date +%s) ))
+      note="$(printf 'waiting until %s, then picking %s back up' \
+        "$(date -d "@$((reset + 60))" +%H:%M)" "$1")"
+    elif unrecoverable "$why"; then
+      break
+    elif [ -n "${pauses[retries]-}" ]; then
+      pause="${pauses[retries]}"
+      retries=$((retries + 1))
+      note="$(printf 'trying %s again in %dm (attempt %d of %d)' \
+        "$1" $(( pause / 60 )) $((attempt + 1)) $(( ${#pauses[@]} + 1 )))"
+    else
       break
     fi
 
-    attempt=$((attempt + 1))
-    mv "$LOG_DIR/$1.jsonl" "$LOG_DIR/$1.limited-$attempt.jsonl"
+    mv "$LOG_DIR/$1.jsonl" "$LOG_DIR/$1.attempt-$attempt.jsonl"
     echo
     echo "!! $why"
-    printf '   waiting until %s, then picking %s back up\n' \
-      "$(date -d "@$((reset + 60))" +%H:%M)" "$1"
-    wait_until "$reset"
+    echo "   $note"
+    wait_for "$pause"
     echo "==> $1 (attempt $((attempt + 1)))"
   done
   {
     echo
     echo "!! session died on $1 - $why"
+    [ "$attempt" -eq 1 ] || echo "   gave up after $attempt attempts"
+    ! unrecoverable "$why" || echo "   No delay fixes this one, so nothing was retried."
     echo "   Nothing was halted and no ticket changed, so re-running resumes here:"
     echo "     $0 $TICKETS"
     echo "   transcript: $LOG_DIR/$1.jsonl"

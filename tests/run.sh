@@ -16,6 +16,11 @@
 
 set -uo pipefail
 
+# The pauses between retries are the driver's, not the suite's: a case that
+# expects a stop should reach it at once, and a case about retrying passes its
+# own ladder of zeroes.
+export RETRY_DELAYS=""
+
 HERE="$(cd "$(dirname "$0")" && pwd)"
 LOOP="$HERE/../loop.sh"
 passed=0 failed=0
@@ -114,7 +119,7 @@ drive "$(just_reset)"
 expect_rc 0 "a session limit is waited out and the run finishes"
 expect_out "waiting until" "the wait says when it will pick up again"
 expect_calls 5 "the limited step is retried, not skipped"
-expect_log "01-thing.limited-1.jsonl" "the limited attempt's transcript is kept"
+expect_log "01-thing.attempt-1.jsonl" "the limited attempt's transcript is kept"
 expect_out '\$34.25' "the limited attempt's cost stays in the run total"
 
 workspace 01-thing
@@ -139,6 +144,19 @@ EOF
 drive "$(hours_off 1)"
 expect_rc 0 "a utilization warning is not a limit"
 expect_no_out "waiting until" "a warned run never waits"
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+rate-limited-session.jsonl 1 -
+errored.jsonl 0 -
+clean.jsonl 0 done
+clean.jsonl 0 -
+clean.jsonl 0 -
+clean.jsonl 0 -
+EOF
+drive "$(just_reset)" RETRY_DELAYS=0
+expect_rc 0 "waiting for a window does not spend the one retry a failure needs"
+expect_calls 6 "the limit is waited out and the failure after it still retried"
 
 # --- a limit too far off to wait for ------------------------------------------
 
@@ -166,6 +184,10 @@ expect_rc 2 "a MAX_WAIT_HOURS that is not hours is a bad invocation"
 expect_out "whole hours" "a bad MAX_WAIT_HOURS says what it wanted"
 expect_calls 0 "a bad MAX_WAIT_HOURS never starts a step"
 
+drive 0 RETRY_DELAYS="soon"
+expect_rc 2 "a RETRY_DELAYS that is not seconds is a bad invocation"
+expect_calls 0 "a bad RETRY_DELAYS never starts a step"
+
 # --- stops that are not limits ------------------------------------------------
 
 workspace 01-thing
@@ -187,11 +209,46 @@ expect_out "Connection error" "an errored session reports what the session said"
 
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
+errored.jsonl 0 -
+clean.jsonl 0 done
+clean.jsonl 0 -
+clean.jsonl 0 -
 clean.jsonl 0 -
 EOF
-drive 0
+drive 0 RETRY_DELAYS="0 0"
+expect_rc 0 "a dropped connection is retried and the run finishes"
+expect_out "trying 01-thing again" "a retry says what it is about to do"
+expect_calls 5 "the step is run again, not skipped"
+expect_log "01-thing.attempt-1.jsonl" "the failed attempt's transcript is kept"
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+errored.jsonl 0 -
+errored.jsonl 0 -
+errored.jsonl 0 -
+EOF
+drive 0 RETRY_DELAYS="0 0"
+expect_rc 3 "a failure that will not clear stops once the pauses run out"
+expect_calls 3 "the run is tried as often as there are pauses, and no more"
+expect_out "gave up after 3 attempts" "giving up says how often it tried"
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+unauthorized.jsonl 0 -
+EOF
+drive 0 RETRY_DELAYS="0 0"
+expect_rc 3 "an error no delay can fix is not retried"
+expect_calls 1 "a bad key is not tried again"
+expect_out "No delay fixes" "a bad key says why nothing was retried"
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 -
+EOF
+drive 0 RETRY_DELAYS="0 0"
 expect_rc 1 "a ticket left unfinished by a whole session is a halt"
 expect_out "halted on 01-thing" "a halt names the ticket"
+expect_calls 1 "a halt is a decision, so it is never retried"
 
 # ------------------------------------------------------------------------------
 
