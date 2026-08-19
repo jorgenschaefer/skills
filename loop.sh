@@ -6,8 +6,12 @@
 #
 # Builds every ready ticket in dependency order, then checks the result against
 # the spec, reviews it, and hands it back. Stops at the first halt: /implement
-# records the reason in the ticket rather than guessing past it, so a stopped
-# loop means a human is needed, not that something crashed.
+# records the reason in the ticket rather than guessing past it.
+#
+# Exit codes say what kind of stop it was, because they want opposite responses:
+#   1  an agent halted, or the reviews would not converge - a human is needed
+#   2  bad invocation - no ticket directory, not a repo, on main
+#   3  a session died mid-run - nothing was decided, re-running resumes
 #
 # A run takes hours, so progress on screen is the model's own narration - one
 # short line per phase - and nothing else. Every step's full transcript is kept
@@ -93,18 +97,37 @@ finish() {
 trap finish EXIT
 trap 'exit 130' INT TERM
 
-# $1 = log basename, $2 = prompt. A non-zero exit here is a session failure -
-# a crash or an auth problem - not an agent decision, so it stops the run.
+# A session that never reached its end - a crash, an auth problem, a rate-limit
+# window running out - is not an agent decision. The exit code alone does not
+# catch it: the stream can be cut mid-message and still exit 0, so the closing
+# `result` record is what proves the session ran to completion. Echoes what went
+# wrong, or nothing if the session finished.
+session_died() {
+  local rc="$1" log="$LOG_DIR/$2.jsonl"
+  [ "$rc" -eq 0 ] || { echo "claude exited $rc"; return 0; }
+  grep -q '"type":"result"' "$log" || { echo "the stream stopped mid-message"; return 0; }
+  return 1
+}
+
+# $1 = log basename, $2 = prompt. Non-zero means the session died, which is
+# never a decision about the work - it leaves everything exactly where it was.
 run_step() {
-  local rc
+  local rc why
   ticker_start
   claude -p --output-format stream-json --verbose "$2" \
     | tee "$LOG_DIR/$1.jsonl" \
     | jq --unbuffered -r "$PROGRESS_FILTER"
   rc=${PIPESTATUS[0]}
   ticker_stop
-  [ "$rc" -eq 0 ] || echo "!! claude exited $rc on $1 - see $LOG_DIR/$1.jsonl" >&2
-  return "$rc"
+  why="$(session_died "$rc" "$1")" || return 0
+  {
+    echo
+    echo "!! session died on $1 - $why"
+    echo "   Nothing was halted and no ticket changed, so re-running resumes here:"
+    echo "     $0 $TICKETS"
+    echo "   transcript: $LOG_DIR/$1.jsonl"
+  } >&2
+  return 1
 }
 
 # --- ticket frontmatter -------------------------------------------------------
@@ -143,21 +166,29 @@ position() {
 
 # --- the loop -----------------------------------------------------------------
 
-# /implement sets `status` in the ticket before it finishes. That, not the exit
-# code, is the signal: a session that dies without setting it reads as a halt
-# rather than passing silently.
+# /implement sets `status` in the ticket before it finishes, and that is the
+# signal - not the exit code, since a session can end without deciding anything.
+# So an unfinished ticket means one of two things, and they want opposite
+# responses: a dead session leaves work to resume, a halt leaves work to read.
 drain() {
   local ticket name
   while ticket="$(next_ticket)"; do
     name="$(basename "$ticket" .md)"
     echo "==> [$(position)] $name"
-    run_step "$name" "/implement $ticket"
-    if [ "$(status_of "$ticket")" != "done" ]; then
-      echo
-      echo "!! halted on $name - transcript: $LOG_DIR/$name.jsonl"
+    run_step "$name" "/implement $ticket" || return 3
+    [ "$(status_of "$ticket")" = "done" ] && continue
+
+    echo
+    echo "!! halted on $name - transcript: $LOG_DIR/$name.jsonl"
+    # The session ran to the end, so it had every chance to say why it stopped.
+    # If it didn't, the ticket cannot tell you and the transcript has to.
+    if grep -q '^## Halt' "$ticket"; then
       sed -n '/^## Halt/,$p' "$ticket"
-      return 1
+    else
+      echo "   It left status '$(status_of "$ticket")' and wrote no ## Halt section,"
+      echo "   so why it stopped is in the transcript and nowhere else."
     fi
+    return 1
   done
 }
 
@@ -205,14 +236,14 @@ echo "logs: $LOG_DIR"
 
 # Bounded, because work the loop cannot converge on should reach a human.
 for pass in $(seq "$MAX_PASSES"); do
-  drain || exit 1
+  drain || exit $?
 
   echo "==> trace (pass $pass)"
-  run_step "trace-$pass" "$(trace_prompt)" || exit 1
-  drain || exit 1
+  run_step "trace-$pass" "$(trace_prompt)" || exit 3
+  drain || exit $?
 
   echo "==> critique (pass $pass)"
-  run_step "critique-$pass" "$(critique_prompt)" || exit 1
+  run_step "critique-$pass" "$(critique_prompt)" || exit 3
 
   if ! next_ticket >/dev/null; then
     reviews_clean=1
@@ -228,4 +259,4 @@ if [ -z "${reviews_clean:-}" ]; then
 fi
 
 echo "==> handover"
-run_step "handover" "/handover $SPEC_DIR" || exit 1
+run_step "handover" "/handover $SPEC_DIR" || exit 3
