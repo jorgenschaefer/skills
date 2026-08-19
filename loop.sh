@@ -58,12 +58,15 @@ else empty end'
 
 # Proof of life for the stretches the model works without narrating - a long
 # review can be silent for many minutes, and silence is what a hang looks like.
+# The subshell's stderr is discarded because it announces "Terminated" when its
+# sleep is killed, which is a line of noise per step on a deliberately quiet
+# screen; the ticks themselves go to stdout and survive.
 TICKER_PID=""
 ticker_start() {
   ( m=0
     while sleep $((TICK_MINUTES * 60)); do
       m=$((m + TICK_MINUTES)); printf '  … %dm\n' "$m"
-    done ) &
+    done ) 2>/dev/null &
   TICKER_PID=$!
 }
 ticker_stop() {
@@ -72,7 +75,6 @@ ticker_stop() {
   # its parent, so take the child first - otherwise every step leaves an orphan.
   pkill -P "$TICKER_PID" 2>/dev/null
   kill "$TICKER_PID" 2>/dev/null
-  wait "$TICKER_PID" 2>/dev/null
   TICKER_PID=""
 }
 
