@@ -55,7 +55,7 @@ To halt: set `status: blocked` in the ticket's frontmatter, append the `## Halt`
 
 The driver reads `status` from the ticket to decide whether to continue, so setting it is what makes a halt visible. A run that stops without setting it looks like a crash.
 
-**Bounded attempts.** Three tries to get a failing test green before halting `mystery`; two review-and-fix rounds before halting `blocked` with the standing findings recorded. Unattended, an unbounded loop does not converge – it thrashes, and each round of fixes leaves the code worse. A round that doesn't converge means something is wrong that another round will not find, and reviews are the expensive place to learn that twice over.
+**Bounded attempts.** Three tries to get a failing test green before halting `mystery`; two code-review rounds before halting `blocked` with the standing findings recorded. Unattended, an unbounded loop does not converge – it thrashes, and each round of fixes leaves the code worse. A round that doesn't converge means something is wrong that another round will not find, and reviews are the expensive place to learn that twice over.
 
 ## Build it
 
@@ -114,7 +114,11 @@ Then two reviews, in this order, each a fresh `general-purpose` subagent. Five r
 
 **2. Code review.** Have it read `coding-conventions/SKILL.md` and apply that rubric on top of its own judgement over the ticket's diff, plus a check that every behavior change is pinned by a test that would fail if the behavior were removed. Ask for findings grouped as **Blockers** (must fix), **Should-fix** (real problems worth addressing), and **Nits** (minor), each with a `file:line` and why it matters.
 
-Fix blockers and should-fixes; use your judgement on nits. Then re-dispatch only the review that raised them – a code-review fix does not need a fresh quality review of criteria it never touched, and the pair only runs together on the first round. Two rounds per review is the ceiling. If blockers survive the second, halt `blocked` and record the standing findings – a defect you cannot resolve in two passes needs a human, not a third.
+Fix each review's findings before dispatching the next – blockers and should-fixes, with your judgement on nits. The quality review's fixes have to land first, which is the whole reason it goes first: they are new behavior, and the code review should see them.
+
+**Only the code review runs twice.** Re-dispatch it once over the fixes, then stop: a fix is new code written late and under pressure to satisfy a finding, and it is the one part of the diff no reviewer has seen. If blockers survive that second round, halt `blocked` and record the standing findings – a defect you cannot resolve in two passes needs a human, not a third.
+
+**The quality review runs once and is never repeated.** Its fixes are already checked twice over without it: each follows the RED-first loop, so a failing-then-passing test re-verifies the criterion mechanically, and the code review runs afterwards over a diff that now contains them. A second quality review re-reads criteria the suite already pins and reliably finds nothing.
 
 ### Acting on review findings
 
