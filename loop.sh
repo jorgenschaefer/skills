@@ -24,6 +24,16 @@ TICKETS="${1:-tickets}"
 MAX_PASSES=2
 TICK_MINUTES=3
 
+# REVIEWS=code drops the quality review and the code review's second round.
+# Reviews are about half a ticket's wall clock, so this roughly halves it - a
+# trade worth making against a deadline and not otherwise. The skill keeps its
+# full discipline as the default; the driver asks for less, the same way it asks
+# /critique to file tickets.
+REVIEWS="${REVIEWS:-full}"
+case "$REVIEWS" in full|code) ;;
+  *) echo "REVIEWS must be 'full' or 'code', not '$REVIEWS'" >&2; exit 2 ;;
+esac
+
 [ -d "$TICKETS" ] || { echo "no ticket directory: $TICKETS" >&2; exit 2; }
 SPEC_DIR="$(cd "$(dirname "$TICKETS")" && pwd)"
 
@@ -170,12 +180,23 @@ position() {
 # signal - not the exit code, since a session can end without deciding anything.
 # So an unfinished ticket means one of two things, and they want opposite
 # responses: a dead session leaves work to resume, a halt leaves work to read.
+implement_prompt() {
+  [ "$REVIEWS" = "code" ] || { printf '/implement %s\n' "$1"; return; }
+  cat <<EOF
+/implement $1
+Run the code review only - once, no second round - and skip the quality review
+entirely. Everything else in the skill stands: the RED-first loop, the halt
+rules, the Record. This is a deliberate trade against a deadline, so note in the
+Record that the ticket shipped without a quality review.
+EOF
+}
+
 drain() {
   local ticket name
   while ticket="$(next_ticket)"; do
     name="$(basename "$ticket" .md)"
     echo "==> [$(position)] $name"
-    run_step "$name" "/implement $ticket" || return 3
+    run_step "$name" "$(implement_prompt "$ticket")" || return 3
     [ "$(status_of "$ticket")" = "done" ] && continue
 
     echo
@@ -233,6 +254,7 @@ EOF
 }
 
 echo "logs: $LOG_DIR"
+[ "$REVIEWS" = "full" ] || echo "reviews: $REVIEWS (quality review skipped)"
 
 # Bounded, because work the loop cannot converge on should reach a human.
 for pass in $(seq "$MAX_PASSES"); do
