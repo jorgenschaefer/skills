@@ -1,6 +1,6 @@
 ---
 name: debug
-description: Use when a bug, test failure, or unexpected behavior needs investigating and the cause isn't clear – especially when a fix isn't obvious or earlier fixes haven't stuck. Fired explicitly via /debug. To turn an already-understood bug into a change plan use /propose-change; to build new behavior use /implement.
+description: Investigate a bug, test failure, or unexpected behavior to root cause before fixing - especially when a fix isn't obvious or earlier fixes haven't stuck.
 disable-model-invocation: true
 ---
 

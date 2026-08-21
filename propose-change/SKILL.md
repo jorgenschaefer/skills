@@ -1,6 +1,6 @@
 ---
 name: propose-change
-description: Use when the user proposes a small change or bugfix to existing behavior and it needs evaluating and turning into a ticket `/implement` can build. Fired explicitly via /propose-change. If the change is independently worth shipping as its own improvement, use /discovery instead.
+description: Turn a proposed small change or bugfix into one ticket /implement can build, or a reasoned no.
 disable-model-invocation: true
 ---
 
@@ -44,7 +44,7 @@ This is the center of the skill. Before evaluating or planning, find how the cha
 
 If `UBIQUITOUS_LANGUAGE.md` exists at the repo root, read it and reuse its terms for anything you name in the ticket, so it matches the vocabulary `/implement` builds against.
 
-For a **bug**, this step is a diagnosis: trace to the root cause, not the symptom. A fix at the symptom (clamping a bad value, swallowing an error) leaves the real defect live; name the root cause and fix there unless there's a stated reason not to. If the root cause doesn't yield to inspection, use `/debug` to find it before writing the ticket - an unattended `/implement` run cannot, so an undiagnosed bug becomes a `mystery` halt rather than a fix.
+For a **bug**, this step is a diagnosis: trace to the root cause, not the symptom. A fix at the symptom (clamping a bad value, swallowing an error) leaves the real defect live; name the root cause and fix there unless there's a stated reason not to. If the root cause doesn't yield to inspection, point them at `/debug` to find it before writing the ticket - an unattended `/implement` run cannot, so an undiagnosed bug becomes a `mystery` halt rather than a fix.
 
 Delegate breadth here when it helps - a search agent can map callers and usages faster than reading serially - but you own the conclusion.
 
@@ -78,7 +78,7 @@ Unless the change is genuinely small - a one-liner, a single criterion - dispatc
 
 Resolve what it finds, pin the reading you mean, then present the ticket inline so the user can react. Run it once on the settled ticket; targeted revisions from later feedback you can recheck yourself. Revise until they're satisfied - the ticket is what `/implement` builds and is checked against, so it must match what you agreed and leave nothing to guess.
 
-Then offer to run `/implement` on it. You are present for this one, so a halt comes straight back to you.
+Then point them at `/implement` to build it. You are present for this one, so a halt comes straight back to you.
 
 No decision brief here. It exists to let an absent reviewer ratify work before hours of unattended building; you have been in the conversation throughout, and there is one ticket to read.
 

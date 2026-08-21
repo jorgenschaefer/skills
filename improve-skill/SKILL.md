@@ -1,6 +1,6 @@
 ---
 name: improve-skill
-description: Use to improve an existing agent skill while preserving what it does. Fired explicitly via /improve-skill. Operates on one skill at a time.
+description: Improve one existing agent skill - sharper, leaner, clearer - without changing what it does.
 disable-model-invocation: true
 ---
 

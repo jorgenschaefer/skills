@@ -1,6 +1,7 @@
 ---
 name: plan
-description: Use when a settled /discovery spec needs decomposing into the tickets an unattended /implement loop consumes. Triggers on "/plan", a request to turn a spec into tickets, or "/plan --refresh" to re-derive the remaining tickets after a drift halt.
+description: Decompose a settled /discovery spec into the tickets an unattended /implement loop consumes. --refresh re-derives the unbuilt ones after a drift halt.
+disable-model-invocation: true
 ---
 
 # Plan

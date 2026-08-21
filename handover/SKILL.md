@@ -1,6 +1,7 @@
 ---
 name: handover
-description: Use to close out a finished run - present what was built, surface the calls made where the spec was silent, and on acceptance promote what must survive and delete the paper. Runs last, after /trace and /critique. Triggers on "/handover".
+description: Close out a finished run: present what was built, surface the calls made where the spec was silent, and on acceptance promote what must survive and delete the paper. Runs last.
+disable-model-invocation: true
 ---
 
 # Handover

@@ -1,6 +1,7 @@
 ---
 name: implement
-description: Use to build one ticket from a `tickets/` directory – the unit `/plan` and `/propose-change` emit. Fired by the loop driver, or directly on a single ticket. Not for work without a ticket: for a feature use `/discovery`, for a small change or bugfix use `/propose-change`.
+description: Build one ticket end to end - TDD, the project's checks, then two reviews - halting rather than asking. The unit /plan and /propose-change emit.
+disable-model-invocation: true
 ---
 
 # Implement

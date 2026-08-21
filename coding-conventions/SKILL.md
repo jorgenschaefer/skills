@@ -1,6 +1,6 @@
 ---
 name: coding-conventions
-description: This project's shared code-quality standard - the rubric /implement builds to and /critique reviews against. Read it before writing or reviewing any feature code, or when the user asks what the project's conventions are: naming, structure, layering, validation, concurrency, cost at scale, accessibility, change safety, testing, security, dependencies. It is the standard, not the act of building or reviewing.
+description: The code-quality standard this project holds code to. Read before writing or reviewing any code, when another skill needs the rubric, or when the user asks what the conventions are - it is the standard itself, not the act of building or reviewing.
 ---
 
 # Coding Conventions

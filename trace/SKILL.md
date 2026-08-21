@@ -1,6 +1,7 @@
 ---
 name: trace
-description: Use to check a finished feature against the spec it was built from - every criterion met, every constraint verified, every non-goal respected. Runs after the ticket loop drains, and files a ticket for each gap it finds. Triggers on "/trace".
+description: Check a finished feature against the spec it was built from, and file a ticket for each gap. Runs after the ticket loop drains.
+disable-model-invocation: true
 ---
 
 # Trace

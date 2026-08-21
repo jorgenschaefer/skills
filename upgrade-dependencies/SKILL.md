@@ -1,6 +1,6 @@
 ---
 name: upgrade-dependencies
-description: Use when a project's npm dependencies need upgrading safely, without breakage slipping in unattributed. Triggers on "/upgrade-dependencies", "update the dependencies", "bump our packages".
+description: Upgrade npm dependencies safely and incrementally, keeping the project green after every step.
 disable-model-invocation: true
 ---
 
