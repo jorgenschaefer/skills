@@ -5,7 +5,7 @@ description: Use when reviewing code for quality – a set of changes or a whole
 
 # Critique
 
-You are reviewing code for quality. The standard you review against is the `coding-conventions` skill (`coding-conventions/SKILL.md`) - read it first. **It supplements your own judgment; it does not bound it.** Apply everything you already know about good code, and never excuse or downgrade a problem you would otherwise flag just because no rule there names it.
+You are reviewing code for quality. The standard you review against is the `coding-conventions` skill - read it first. **It supplements your own judgment; it does not bound it.** Apply everything you already know about good code, and never excuse or downgrade a problem you would otherwise flag just because no rule there names it.
 
 ## Scope
 

@@ -32,7 +32,7 @@ Waiting costs wall clock, which the driver expects; it runs a ticker for exactly
 - Read the spec and the criteria the ticket's `Satisfies` cites. Those criteria are what you build and what you are checked against. The ticket locates them; it does not restate them, and where the two seem to differ the spec wins.
 - Establish the project's verification command (below) and confirm the baseline is green. A red baseline is a halt (`blocked`), not something to work around – TDD needs a clean baseline to tell your red from someone else's.
 - If `UBIQUITOUS_LANGUAGE.md` exists at the repo root, read it and use those terms for names in code, tests, and commit messages.
-- Read `coding-conventions/SKILL.md` – the standard you build to, and the rubric both reviews apply.
+- Read the `coding-conventions` skill – every section of it, not the handful you would have thought of unprompted. It is the standard you build to, and the rubric both reviews apply.
 
 ### Verification commands
 
@@ -116,12 +116,12 @@ Then two reviews, in this order, each a fresh `general-purpose` subagent. Six ru
 - **They run separately.** Never fold them together, and never skip one on your own judgement – only where the caller explicitly asks for less (see below).
 - **They are adversarial.** Each assumes the work is broken, tries to break it, and counts a requirement satisfied only when an honest attempt to break it fails. Never a confirmation pass.
 - **A review fix is normal work.** It follows the same RED-first loop as the build; only pure refactors skip it.
-- **Verify the review happened.** Treat every verdict as a claim: a clean result counts only when the report shows the review occurred – findings, or the checks it ran, cited to `file:line`, and the criteria it covered named. A bare "looks good" is not a completed review; re-dispatch it once. You don't redo the review yourself – you refuse to accept one that didn't demonstrably occur. A reviewer that fails to show its work twice is broken, not strict: halt `blocked` rather than dispatch a third.
+- **Verify the review happened.** Treat the verdict as a claim to verify: a clean result counts only when the report shows the review happened – findings, or the checks it ran, cited to `file:line`, and the criteria it covered named. A bare "looks good" is not a completed review; re-dispatch it once. You don't redo the review yourself – you refuse to accept one that didn't demonstrably occur. A reviewer that fails to show its work twice is broken, not strict: halt `blocked` rather than dispatch a third.
 - **Don't pre-judge the reviewer.** Don't tell it what to conclude, what not to flag, or that a choice was already settled so it should accept it. Hand it the requirements and let it judge; adjudicate false positives afterwards, not by steering it beforehand.
 
 **1. Quality review.** Pass it the ticket, the criteria its `Satisfies` cites, and the diff. For each criterion, have it try to find a case where the implementation does not satisfy it, or a test that would still pass if the behavior were deleted. Have it check the ticket's `Out of scope` was respected – something built here that another ticket owns is as much a defect as something missing. This is not a code review; it is a check that the right thing was built. It runs first because a gap means new behavior, and that new code should then pass under the code review rather than escaping it.
 
-**2. Code review.** Have it read `coding-conventions/SKILL.md` and apply that rubric on top of its own judgement over the ticket's diff. Two of those properties it has to establish rather than read off the diff, so ask for both by name:
+**2. Code review.** Have it read the `coding-conventions` skill and apply that rubric on top of its own judgement over the ticket's diff. Two of those properties it has to establish rather than read off the diff, so ask for both by name:
 
 - every behavior change is pinned by a test meeting the coverage rule there - one that fails when the behavior changes *and* asserts on what the code produces, not on a collaborator having been called;
 - the change's callers still work: for every signature, exported name, return shape, thrown error, default, and stored or serialised format this ticket touched, renamed, or removed, grep out the other side and check it against the new behavior.
@@ -155,7 +155,3 @@ Both reviews clean, full suite green:
 3. Set `status: done` and commit the ticket.
 
 The `Record` is the only channel between this run and the human who accepts the work. A fork you noticed and didn't write down is one they will discover in the code instead.
-
-## Code quality
-
-Build to the standards in `coding-conventions/SKILL.md` – every section of it, not the handful you would have thought of unprompted – on top of your own judgement. It is the single source of truth for what good code is here, and the rubric both reviews apply.

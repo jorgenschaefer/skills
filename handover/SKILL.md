@@ -41,7 +41,7 @@ The spec and the tickets are deleted when the run is accepted. Whatever must out
 Three destinations, and each is a proposal for the user, not a change you make and mention:
 
 - **Vocabulary → `UBIQUITOUS_LANGUAGE.md`.** Terms the feature established or shifted. Discovery proposed these; this is where they land for real.
-- **Load-bearing rationale → a comment at the code it explains.** The spec's `_Why:_` entries and a ticket's `Decisions` where a future reader would otherwise change the code wrongly. Follow `coding-conventions/SKILL.md`: the comment restates the rule or the reason in your own words and never points at the artifact, which is about to stop existing. Most rationale does not clear this bar - the test is whether someone who never read the spec would get it wrong without the comment.
+- **Load-bearing rationale → a comment at the code it explains.** The spec's `_Why:_` entries and a ticket's `Decisions` where a future reader would otherwise change the code wrongly. Follow the `coding-conventions` skill: the comment restates the rule or the reason in your own words and never points at the artifact, which is about to stop existing. Most rationale does not clear this bar - the test is whether someone who never read the spec would get it wrong without the comment.
 - **Architecturally consequential choices → an ADR.** Never write one autonomously. Present the decision and a recommendation, and let the user decide whether it becomes an ADR at all.
 
 ## Accept

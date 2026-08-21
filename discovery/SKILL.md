@@ -27,9 +27,9 @@ Nothing downstream will save you from getting this wrong. There is no slicing st
 
 State what the feature delivers as a release note: one line a user would care about, no bullets, no "and". Then try to break it - **could you ship half of this, and would that half still be worth shipping?** If yes, it is two features, and the honest move is to pick one.
 
-This is a move you make continuously, not a check at the end. Scope grows a sentence at a time, and every "while we're at it" gets the split test on the spot:
+This is a move you make continuously, not a check at the end. Scope grows a sentence at a time, and every "while we're at it" gets the split test on the spot - **could you ship it on its own, and would that be worth shipping as an improvement in itself?**
 
-- **It passes as its own improvement** - park it. Append it to `IDEAS.md` where the specs live, with enough context to resurrect: the problem it solves, why it was deferred, what it would touch. Then return to the feature at hand. Parking is not refusing, and saying so keeps it from feeling like one.
+- **It passes** - park it. Append it to `IDEAS.md` where the specs live, with enough context to resurrect: the problem it solves, why it was deferred, what it would touch. Then return to the feature at hand. Parking is not refusing, and saying so keeps it from feeling like one.
 - **It doesn't stand alone** - it belongs in this feature. Absorb it.
 
 One case you flag rather than split: a feature that passes the split test and is still plainly large. Splitting it would produce halves that aren't independently shippable, and that tradeoff is the user's to make. Say what you see and offer the choice - one long run with a big review at the end, or two runs where the first doesn't stand on its own.
@@ -88,9 +88,7 @@ Beyond those, let the feature's shape say which usual hiding spots apply - don't
 
 ### How to ask
 
-**End your turn at the first question mark.** When composing a turn, the moment you reach a question that seeks new information, send it - a second question or "and also" waits for the next turn. This is a rule about output shape, not a preference: one turn, one open question, so the user never has to label which part of their reply answers which question.
-
-Confirming assumptions for veto isn't an originating question, but it gets its own turn - never mixed with a question, since that mix is what reads as "Question 1? And also, Question 2?".
+**End your turn at the first question mark.** The moment a turn reaches a question that seeks new information, send it - a second question or "and also" waits for the next turn. This is a rule about output shape, not a preference: one turn, one open question, so the user never has to label which part of their reply answers which question. Confirming assumptions for veto ("I'm assuming X unless you say otherwise") is not an originating question, but it gets its own turn, never mixed with a question.
 
 ### Show, don't tell
 

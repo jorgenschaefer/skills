@@ -26,7 +26,7 @@ The boundary is easy to miss because a request can arrive dressed as a small cha
 
 Scale it to the change. A one-line fix may need one investigative pass and a three-line ticket; a cross-cutting tweak, more. Run the steps in order, but let a trivial change collapse the small ones.
 
-**End your turn at the first question mark.** When a turn reaches a question that seeks new information, send it - a second question waits for the next turn, so the user never has to untangle which reply answers which question. Confirming assumptions for veto ("I'm assuming X unless you say otherwise") gets its own turn, never mixed with a question. This holds across every step below, not just the last.
+**End your turn at the first question mark.** The moment a turn reaches a question that seeks new information, send it - a second question or "and also" waits for the next turn. This is a rule about output shape, not a preference: one turn, one open question, so the user never has to label which part of their reply answers which question. Confirming assumptions for veto ("I'm assuming X unless you say otherwise") is not an originating question, but it gets its own turn, never mixed with a question. This holds across every step below, not just the last.
 
 ### 1. Understand the real problem
 

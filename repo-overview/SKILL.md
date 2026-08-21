@@ -25,11 +25,11 @@ Spawn up to 3 `Explore` subagents in parallel for steps 1-7 below. Suggested spl
 
 Each agent returns a short structured summary; the main loop synthesizes them into the report. Step 8 (one representative test file) stays in the main loop - it's small and confirms the understanding the agents have already surfaced.
 
-The numbered list below is the contract for what each agent should look for, even though steps 1-7 no longer run sequentially in the main loop.
+The numbered list below is the contract for what each agent looks for.
 
-## Exploration sequence
+## What to explore
 
-Work through these in order, stopping each step once you have enough for that section:
+Stop on each item once you have enough for its section - reading every file in a directory is never the goal.
 
 1. **Dependency manifest** — `package.json`, `go.mod`, `pyproject.toml`, `Gemfile`, `pom.xml`, `Cargo.toml`, etc. → identify tech stack
 2. **Directory structure** — two levels deep → code organization
@@ -39,8 +39,6 @@ Work through these in order, stopping each step once you have enough for that se
 6. **Service/application layer** — directories named `services/`, `use_cases/`, `application/`, `handlers/`, or equivalent → main workflows
 7. **Entry points** — router files, CLI definitions, queue consumers → confirm workflows, find precise entry points
 8. **One representative test file** — to confirm your domain and workflow understanding
-
-Do not read every file in a directory. Stop each step as soon as you have enough to fill that section.
 
 ## What to include and exclude
 
@@ -66,7 +64,7 @@ Do not read every file in a directory. Stop each step as soon as you have enough
 
 **Include:** 3–7 flows invoked by users or external callers (HTTP, CLI, queue); the primary stated purpose of the system; flows crossing module boundaries or involving multiple domain objects; background jobs central to the system's function.
 
-**Exclude:** pure CRUD flows with no domain logic; admin/debug/health-check endpoints; operational background jobs (cleanup, reindex); flows internal to one module.
+**Exclude:** pure CRUD flows with no domain logic; admin/debug/health-check endpoints; operational background jobs (cleanup, reindex); flows internal to one module; auth flow mechanics — a pointer to where auth lives is enough.
 
 For each workflow: name, entry point as `path/to/file:function_or_handler`, one-sentence description.
 
@@ -80,16 +78,9 @@ For each workflow: name, entry point as `path/to/file:function_or_handler`, one-
 
 3–5 files a new developer should read first, in the order that builds understanding most efficiently. One reason per file — why this specific file, what it teaches that the others don't. If `ARCHITECTURE.md` or `UBIQUITOUS_LANGUAGE.md` exist in the repo, always include them first — they are the cross-session memory for agents and the shared domain vocabulary, and a developer (or agent) who doesn't know they exist can't benefit from them.
 
-## Traps to avoid
+### The report as a whole
 
-- Do not list model fields
-- Do not document every endpoint — only workflow entry points
-- Do not explain self-evident CRUD flows
-- Do not enumerate every package — only non-obvious ones
-- Do not describe auth flow mechanics — a pointer to where auth lives is enough
-- Do not include env vars, configuration, or deployment details
-- Do not include historical rationale for decisions
-- Do not include code snippets — file paths and function names are enough
+**Prose and pointers.** File paths and function names carry the detail - no code snippets, no env vars, configuration or deployment details, and no historical rationale for decisions.
 
 ## Output format
 

@@ -27,7 +27,7 @@ The argument is where the run's paper lives - the spec file, or the directory ho
 - **Every non-goal.** Respected. Something the spec ruled out that got built anyway is a defect, not a bonus.
 - **Everything built that traces to nothing.** Behavior in the diff that no criterion asked for is either scope creep or a fork the spec left silent. Both are findings: the first to remove, the second for the human to ratify at handover.
 
-Delegate breadth where the spec is large - a subagent per story, each hunting for the way its criteria fail. Dispatch them with `run_in_background: false`, batched into one message so they still run at once; detached, they hand you an `agentId` and the run ends before their reports arrive. You own the verdict, and a subagent's clean report counts only when it shows what it checked and where.
+Delegate breadth where the spec is large - a subagent per story, each hunting for the way its criteria fail. Dispatch them with `run_in_background: false`, batched into one message so they still run at once; detached, they hand you an `agentId` and the run ends before their reports arrive. You own the verdict. Treat it as a claim to verify: a clean result counts only when the report shows the review happened - what it checked and where.
 
 ## Check the tests mechanically, not by reading
 

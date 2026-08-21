@@ -17,7 +17,7 @@ If a question would matter even for a feature built as a single ticket, it belon
 
 - The input is a path to the spec. If the user didn't supply one, ask where it lives before doing anything else.
 - Read the spec whole, then read the codebase for the structures it names - what exists now, under what names, with what shape. Every contract you write is a claim about code, so it has to be a claim you checked.
-- Read `coding-conventions/SKILL.md`. Seams you place and contracts you declare are design decisions, and that is the standard they are held to.
+- Read the `coding-conventions` skill. Seams you place and contracts you declare are design decisions, and that is the standard they are held to.
 - Read `TICKET_FORMAT.md`. It is the output shape and it settles most of what would otherwise be judgement.
 
 ## Audit the scope before decomposing
@@ -60,7 +60,7 @@ Sort every decision the decomposition raises into one of three buckets - the sam
 - **A wrong default would hurt, but there's a defensible best answer** - where a seam sits, which existing structure a ticket extends rather than replaces, whether two tickets share an abstraction or each keep their own. Decide it, then surface it for a veto: the decision, your recommendation, the alternative you rejected.
 - **A wrong default would hurt and the answer isn't yours** - almost nothing lands here, because product decisions belong to discovery. When one does, it usually means the spec has a gap. Check whether it should go back rather than be answered here.
 
-Ask one question per turn, and end the turn at the first question mark. Confirming a batch of decisions for veto is not a question and gets its own turn.
+**End your turn at the first question mark.** The moment a turn reaches a question that seeks new information, send it - a second question or "and also" waits for the next turn. This is a rule about output shape, not a preference: one turn, one open question, so the user never has to label which part of their reply answers which question. Confirming assumptions for veto ("I'm assuming X unless you say otherwise") is not an originating question, but it gets its own turn, never mixed with a question.
 
 ## Write the tickets
 
@@ -76,7 +76,7 @@ Give it the tickets, the spec, and the codebase, and this framing: *you are abou
 
 Have it check three things beyond that: every spec criterion claimed by exactly one ticket and every constraint by at least one; every `Provides` entry actually consumed by a later ticket, and every `Preconditions` entry actually provided by an earlier one; and every ticket nameable as observable behavior.
 
-Treat the verdict as a claim to verify. A clean result counts only when the report shows the review happened - the guesses it hunted for and where it looked, cited to specific tickets. Fix what it finds and re-dispatch once. Two rounds is the ceiling: a ticket set still leaving things to guess after a second pass has a problem the decomposition can't fix by iterating, so stop and take the standing findings to the user with the brief below.
+Treat the verdict as a claim to verify: a clean result counts only when the report shows the review happened - the guesses it hunted for and where it looked, cited to specific tickets. Fix what it finds and re-dispatch once. Two rounds is the ceiling: a ticket set still leaving things to guess after a second pass has a problem the decomposition can't fix by iterating, so stop and take the standing findings to the user with the brief below.
 
 ## Hand off
 
