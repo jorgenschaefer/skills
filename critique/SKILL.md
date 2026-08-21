@@ -48,3 +48,5 @@ Group findings by severity:
 - **Nits** – minor.
 
 For each: location (`file:line`), what's wrong, and why it matters; for a correctness or security finding, the concrete failure scenario that survived verification (the input or state and the wrong result it produces). If an area is clean, say so in a line rather than padding. Don't invent findings to fill a section.
+
+Where the caller asks for findings written up as work orders rather than reported – an unattended pipeline does – `TICKET_FORMAT.md` beside this skill is the shape, and a review finding is its *remediation ticket*. Nothing about the review changes: the caller knows what happens to a finding, and this skill still only judges code.

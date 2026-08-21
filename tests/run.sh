@@ -71,12 +71,13 @@ ticket() {
 # in $LOGS. $1 is the epoch the fixtures' reset is rewritten to.
 drive() {
   local resets_at="$1"; shift
-  : > "$WORK/calls"
+  : > "$WORK/calls"; : > "$WORK/prompts"
   OUT="$(cd "$WORK" && env \
     PATH="$WORK/bin:$PATH" TMPDIR="$WORK/logs" \
     STUB_PLAN="$WORK/plan" STUB_CALLS="$WORK/calls" \
+    STUB_PROMPTS="$WORK/prompts" \
     STUB_FIXTURES="$HERE/fixtures" STUB_RESETS_AT="$resets_at" \
-    "$@" timeout 60 bash "$LOOP" tickets 2>&1)"
+    "$@" timeout 60 bash "$LOOP" "${TICKET_DIR:-tickets}" 2>&1)"
   RC=$?
   LOGS="$(printf '%s\n' "$OUT" | sed -n 's/^logs: //p' | head -1)"
 }
@@ -90,6 +91,14 @@ $OUT" || ok "$2"; }
 expect_calls()   { local n; n=$(wc -l < "$WORK/calls")
                    [ "$n" = "$1" ] && ok "$2" || bad "$2" "$n calls, wanted $1
 $(cat "$WORK/calls")"; }
+# The prompt for one step, whole. Prompts are recorded separated by a `---`
+# line, so a case can ask what a given step was actually told rather than
+# whether the word appears anywhere in the run.
+prompt_for()     { awk -v c="$1" 'BEGIN { RS = "\n---\n" } index($0, c) == 1' \
+                     "$WORK/prompts"; }
+expect_prompt()  { grep -q -- "$2" <<< "$(prompt_for "$1")" && ok "$3" \
+                   || bad "$3" "no '$2' in the '$1' prompt:
+$(prompt_for "$1")"; }
 expect_log()     { local m=("$LOGS"/$1)
                    [ -e "${m[0]}" ] && ok "$2" || bad "$2" "no $1 in $LOGS
 $(ls "$LOGS" 2>&1)"; }
@@ -291,6 +300,58 @@ drive "$(hours_off -2)"
 expect_rc 3 "a reset already long past is no window to wait for"
 expect_no_out "waiting until" "a stale reset never becomes a wait"
 expect_calls 1 "a stale reset falls through to the retry ladder, which is empty"
+
+# --- what the driver asks for -------------------------------------------------
+
+workspace 01-thing
+mkdir -p "$WORK/docs/feature"
+mv "$WORK/tickets" "$WORK/docs/feature/tickets"
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 done
+clean.jsonl 0 -
+clean.jsonl 0 -
+clean.jsonl 0 -
+EOF
+TICKET_DIR=docs/feature/tickets drive 0
+unset TICKET_DIR
+expect_rc 0 "the ticket directory need not be ./tickets"
+expect_prompt /trace     docs/feature/tickets "trace is told where to file a gap"
+expect_prompt "Run /critique" docs/feature/tickets "critique is told where to file a blocker"
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 done
+clean.jsonl 0 -
+clean.jsonl 0 -
+clean.jsonl 0 -
+EOF
+drive 0 REVIEWS=code
+expect_rc 0 "the reduced-review mode runs"
+expect_prompt /implement "quality review" "the reduced mode says which review it drops"
+
+# --- the handover reaches the screen ------------------------------------------
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 done
+clean.jsonl 0 -
+clean.jsonl 0 -
+handover.jsonl 0 -
+EOF
+drive 0
+expect_rc 0 "a run ends with the handover"
+expect_out "status page" "the handover brief is printed whole, not just its first line"
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+handover.jsonl 0 done
+clean.jsonl 0 -
+clean.jsonl 0 -
+clean.jsonl 0 -
+EOF
+drive 0
+expect_out "Closing out the run" "a building step still narrates its first line"
+expect_no_out "status page" "a building step is still only its narration"
 
 # ------------------------------------------------------------------------------
 

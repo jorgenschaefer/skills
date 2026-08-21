@@ -20,7 +20,7 @@ Two ways a criterion fails, and the second is the one that hides:
 
 ## What to check
 
-Read the spec and the full diff of the run - every commit from the branch point.
+The argument is where the run's paper lives - the spec file, or the directory holding it and the `tickets/` beside it. Read the spec and the full diff of the run - every commit from the branch point.
 
 - **Every criterion (`US-N.M`).** Met, and pinned by a test that would fail without it.
 - **Every constraint (`C-N`).** Verified the way the spec said it would be. A constraint with no check is a wish, and this is the last place that gets noticed.
@@ -47,7 +47,7 @@ Read surviving mutants as evidence, not as a score to chase:
 
 ## Output
 
-**File a ticket for each gap.** Write it to `tickets/NN-slug.md` in the shape `TICKET_FORMAT.md` specifies, numbered after the highest existing ticket, `status: todo`, `depends_on: []`. `Satisfies` cites the criterion that failed. The gap is objective - a criterion is met or it isn't - so it goes back through the same loop that built everything else, with the same TDD and review discipline, rather than being patched by hand at the end.
+**File a ticket for each gap.** Write it beside the tickets this run was built from – the caller names the directory, and `tickets/` beside the spec is only the default – as `NN-slug.md` in the shape `TICKET_FORMAT.md` specifies, numbered after the highest existing ticket, `status: todo`, `depends_on: []`. A gap filed where the loop doesn't read is a gap nothing builds, and the run finishes looking clean. `Satisfies` cites the criterion that failed. The gap is objective - a criterion is met or it isn't - so it goes back through the same loop that built everything else, with the same TDD and review discipline, rather than being patched by hand at the end.
 
 Name the ticket for the behavior that is missing, not for the failure: "Let a reviewer see the rejection reason", not "fix US-3.2 gap".
 

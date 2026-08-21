@@ -7,6 +7,8 @@ description: Use to close out a finished run - present what was built, surface t
 
 The run is finished and the user was not watching it. They have to decide one thing: accept this, or send it back.
 
+The argument is where the run's paper lives - the spec file, or the directory holding it and the `tickets/` beside it.
+
 Everything before you optimised for building without them. This step exists to give them back the judgment that was deferred - and there is exactly one class of question no review could settle, because it isn't a question about correctness at all: **where the spec was silent, the implementation chose, and whether that choice matches intent is theirs to say.**
 
 ## Two jobs, in order
@@ -44,7 +46,9 @@ Three destinations, and each is a proposal for the user, not a change you make a
 
 ## Accept
 
-Only once the user says so. Acceptance is the deletion:
+Only once the user says so - which means you may not get there. The driver runs this step at the end of an unattended run, where there is nobody to answer: present the brief, name the promotions you would propose, and stop. Acceptance then happens when a human runs `/handover` again with you present, and nothing is deleted until they do.
+
+Acceptance is the deletion:
 
 1. Make the promotions they approved.
 2. Delete the spec and the `tickets/` directory.

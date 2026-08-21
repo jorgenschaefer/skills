@@ -25,7 +25,8 @@
 # A run takes hours, so progress on screen is the model's own narration - one
 # short line per phase - and nothing else. Every step's full transcript is kept
 # as JSON under the log directory printed at startup: the screen stays quiet,
-# the detail stays on disk.
+# the detail stays on disk. The closing handover is the exception, printed in
+# full, because that brief is what the run was for.
 
 set -uo pipefail
 
@@ -86,21 +87,36 @@ RUN_START=$SECONDS
 
 # --- progress -----------------------------------------------------------------
 
-# Narration and a closing summary; everything else stays in the transcript.
-PROGRESS_FILTER='
+# The line that closes a step, shared by both filters below.
+STEP_RESULT='
 def money:
   (. * 100 | round) as $c
   | "\($c / 100 | floor).\(if $c % 100 < 10 then "0" else "" end)\($c % 100)";
+def closing:
+  "  " + (if .is_error then "FAILED" else "ok" end)
+  + "  \(.duration_ms / 1000 | floor)s · \(.num_turns) turns"
+  + " · $\(.total_cost_usd | money)";
+'
+
+# Narration and a closing summary; everything else stays in the transcript.
+PROGRESS_FILTER="$STEP_RESULT"'
 if .type == "assistant" then
   .message.content[]?
   | select(.type == "text")
   | .text | split("\n")[0]
   | select(. != "")
   | "  " + (if length > 110 then .[0:107] + "..." else . end)
-elif .type == "result" then
-  "  " + (if .is_error then "FAILED" else "ok" end)
-  + "  \(.duration_ms / 1000 | floor)s · \(.num_turns) turns"
-  + " · $\(.total_cost_usd | money)"
+elif .type == "result" then closing
+else empty end'
+
+# Every line, for the one step whose words are the point. The handover brief is
+# what the whole run was for, and a brief nobody reads is a brief that was never
+# written - so it goes to the screen whole rather than into the transcript with
+# its first line showing.
+BRIEF_FILTER="$STEP_RESULT"'
+if .type == "assistant" then
+  .message.content[]? | select(.type == "text") | .text
+elif .type == "result" then closing
 else empty end'
 
 # Proof of life for the stretches the model works without narrating - a long
@@ -186,7 +202,7 @@ wait_for() {
   done
 }
 
-# $1 = log basename, $2 = prompt. Non-zero means the session died, which is
+# $1 = log basename, $2 = prompt, $3 = how to print it. Non-zero means the session died, which is
 # never a decision about the work - it leaves everything exactly where it was.
 #
 # Which is exactly why a death is answered here rather than handed back: the
@@ -198,13 +214,14 @@ wait_for() {
 # still say so.
 run_step() {
   local rc why reset attempt=0 retries=0 waited=0 pause note
+  local filter="${3:-$PROGRESS_FILTER}"
   local -a pauses=($RETRY_DELAYS)
   while :; do
     attempt=$((attempt + 1))
     ticker_start
     claude -p --output-format stream-json --verbose "$2" \
       | tee "$LOG_DIR/$1.jsonl" \
-      | jq --unbuffered -r "$PROGRESS_FILTER"
+      | jq --unbuffered -r "$filter"
     rc=${PIPESTATUS[0]}
     ticker_stop
     why="$(session_died "$rc" "$1")" || return 0
@@ -314,15 +331,6 @@ position() {
   printf '%d/%d' "$((done_n + 1))" "$total"
 }
 
-# Recomputed each time: /trace and /critique can file new tickets mid-run, so
-# the denominator is what exists now, not what existed at the start.
-position() {
-  local total done_n
-  total=$(ls "$TICKETS"/[0-9]*.md 2>/dev/null | wc -l)
-  done_n=$(grep -lE '^status:[[:space:]]*done' "$TICKETS"/[0-9]*.md 2>/dev/null | wc -l)
-  printf '%d/%d' "$((done_n + 1))" "$total"
-}
-
 # --- the loop -----------------------------------------------------------------
 
 # /implement sets `status` in the ticket before it finishes, and that is the
@@ -396,14 +404,17 @@ drain() {
 CHECKED_AT=""
 
 trace_prompt() {
-  [ -n "$CHECKED_AT" ] || { printf '/trace %s\n' "$SPEC_DIR"; return; }
-  cat <<EOF
-/trace $SPEC_DIR
+  printf '/trace %s\n' "$SPEC_DIR"
+  [ -z "$CHECKED_AT" ] || cat <<EOF
 Scope this to the commits since $CHECKED_AT - the tickets the last pass's
 reviews filed. Everything up to that commit traced clean and its criteria are
 pinned by tests the suite still runs, so check the criteria these commits claim
 and whether they broke anything built earlier.
 EOF
+  # Named rather than left to the skill's default, which is a `tickets/` beside
+  # the working directory. This run's may be anywhere, and a gap filed where the
+  # loop does not read is a gap nothing builds.
+  printf 'File each gap as a ticket in %s, where this run keeps its tickets.\n' "$TICKETS"
 }
 
 critique_prompt() {
@@ -412,7 +423,7 @@ critique_prompt() {
   cat <<EOF
 Run /critique over the diff from $since.
 For each Blocker and Should-fix, file a remediation ticket in $TICKETS,
-following TICKET_FORMAT.md as documented in the /implement skill.
+in the shape TICKET_FORMAT.md specifies.
 Do not file nits - leave those in your report for /handover to triage.
 EOF
 }
@@ -445,4 +456,10 @@ if [ -z "${reviews_clean:-}" ]; then
 fi
 
 echo "==> handover"
-run_step "handover" "/handover $SPEC_DIR" || exit 3
+run_step "handover" "/handover $SPEC_DIR" "$BRIEF_FILTER" || exit 3
+
+# Handover's last step - promoting what must survive, then deleting the spec and
+# the tickets - is the user's to authorise, and there was nobody here to ask.
+echo
+echo "Accepting the run means promoting what must survive and deleting the paper."
+echo "That one needs you present: /handover $SPEC_DIR"

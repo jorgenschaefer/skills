@@ -11,12 +11,16 @@
 # marks the ticket named in the prompt done, the way a finished /implement would.
 # A call the plan did not expect is an error, not a repeat: the test wanted to
 # know how often the driver calls out, so an extra call has to be visible.
+#
+# $STUB_CALLS gets one line per call, for counting. $STUB_PROMPTS gets each
+# prompt whole, for the cases that care what the driver actually asked for.
 
 set -uo pipefail
 
 prompt="${*: -1}"
 n=$(( $(wc -l < "$STUB_CALLS") + 1 ))
 printf '%s\n' "$prompt" | head -1 >> "$STUB_CALLS"
+printf '%s\n---\n' "$prompt" >> "$STUB_PROMPTS"
 
 line="$(sed -n "${n}p" "$STUB_PLAN")"
 [ -n "$line" ] || { echo "stub-claude: no plan line $n for: $prompt" >&2; exit 99; }
