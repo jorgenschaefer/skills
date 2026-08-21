@@ -80,6 +80,160 @@ Touches: loop.sh (drain, the halt path, LOG_DIR), improve-skill/SKILL.md.
 - Relaxing MAX_PASSES=2. Non-convergence is a signal, not a budget problem.
 - Touching the two-door structure or the split test. Both hold up.
 
+## Pipeline, compared against the field
+
+Evaluated against BMAD, GitHub Spec Kit, OpenSpec, GSD Core, Superpowers and
+mattpocock/skills, asking one question: what do they have that we don't, that
+serves quality surviving contact with maintenance.
+
+Items 1 and 2 are both inside Pipeline #1 above. The new claim here is their
+order: mutation testing sharpens a test suite that already exists, and nothing
+at all checks that the software runs. A suite can be 100% mutation-killed on an
+app that does not boot.
+
+### 1. Nothing in the pipeline ever runs the software
+
+The verification stack is one deterministic check and four prose reviews.
+SPEC_FORMAT has a Design section with screens and states - empty, loading,
+error, partial, disabled - plus accessibility criteria, and no step ever renders
+one. A feature can be green, traced, critiqued and handed over while failing to
+boot.
+
+GSD keeps a UAT phase; BMAD has a QA persona whose artifact is a validation
+report. The tooling is already here: the harness ships a `run` skill and
+claude-in-chrome.
+
+Touches: a new skill between /trace and /handover, filing tickets for gaps the
+way /trace does; loop.sh (drain).
+
+### 2. Mutation testing per ticket, which means the tooling ban goes
+
+Everything the pipeline claims rests on one property - every behavior pinned by
+a test that would fail without it - and today that property is asserted by the
+model that wrote the test. Mutation testing is the executable form of the same
+sentence.
+
+The blocker is ours: trace/SKILL.md says "Don't install tooling to satisfy
+this", so most projects get the fallback trace itself calls "proves less". That
+rule is what has to go, at the cost of a one-time tooling ticket per project.
+
+Touches: trace/SKILL.md (the ban), implement/SKILL.md (Review it), loop.sh.
+
+### 3. ADRs are written and never read
+
+`grep -rln ADR --include=SKILL.md` returns one file: handover. It can promote an
+architecturally consequential choice into an ADR, and nothing ever reads one
+again - not discovery, not plan, not implement, not critique.
+
+So the only durable decision record the pipeline produces has no consumer.
+Feature 12 can contradict a decision ratified at feature 3 and nothing notices,
+which is the exact failure ADRs exist to prevent. Spec Kit re-reads its
+constitution on every command; mattpocock keeps CONTEXT.md and ADRs current
+inline.
+
+Cheapest item on this list by a wide margin: three bullets in three files.
+
+Touches: discovery/SKILL.md and plan/SKILL.md (read the ADRs the way they
+already read UBIQUITOUS_LANGUAGE.md), critique/SKILL.md (contradicting a
+ratified ADR is a finding).
+
+### 4. The standard doesn't reach the skills that decide what gets built
+
+coding-conventions is read by six of sixteen skills: cleanup-repo, handover,
+critique, plan, implement, itself. Not discovery - which settles the design
+language, the data shapes, the aggregate boundaries and the whole Implementation
+decisions section. Not propose-change, which picks an approach and writes it
+into a ticket. Not trace.
+
+A ticket can therefore be born violating the layering doctrine, /implement
+builds it faithfully, and the code review flags a structure the ticket
+mandated. The rubric binds the builder and the reviewer but not the designer.
+
+Touches: discovery/SKILL.md, propose-change/SKILL.md (one line each).
+
+### 5. A durable system description, regenerated rather than maintained
+
+Deleting the spec and tickets at handover is right, and worth defending against
+OpenSpec's model of living capability specs updated by ADDED/MODIFIED/REMOVED
+deltas and archived per change. Stale specs are worse than none, and OpenSpec's
+archive discipline is the maintenance burden we avoided on purpose.
+
+But after twenty features there is a glossary, some comments, a few ADRs, and no
+document saying what the system does or how it is shaped. The repo-overview note
+below already names the fix.
+
+The move is regenerate-instead-of-maintain: repo-overview writes ARCHITECTURE.md
+marked as re-derived from code and never hand-patched. That keeps the anti-stale
+principle - it is a build artifact, not a maintained doc - and closes the
+gap the delete policy leaves open.
+
+Touches: repo-overview/SKILL.md.
+
+### 6. No lane for the work that keeps code maintainable
+
+propose-change bounces it explicitly: nobody outside the code can observe a
+refactor, so it is below the floor and "wants doing directly". cleanup-repo is
+manual and stops for approval. upgrade-dependencies is wired into nothing.
+
+So a suite whose goal is maintainable software routes every maintenance activity
+outside its own TDD and review discipline. Features get four reviews; the work
+that keeps the codebase alive gets none.
+
+The objection is real - a refactor has no new behavior, so nothing can be
+written RED. But that is the criterion, not a disqualification: the existing
+suite stays green and the diff provably changes no behavior, which is checkable
+and is what #2 is for. TICKET_FORMAT already carries a second ticket kind for
+/trace's remediation tickets; a third kind is the natural home.
+
+A decision, not an edit. Touches: TICKET_FORMAT.md (x4), propose-change.
+
+### 7. Nothing consults a primary source
+
+No skill does external research. discovery names "hard-to-reverse decisions:
+language, frameworks, data models" as the ones to be most careful about, and
+settles them from weights that are months stale. GSD makes research a blocking
+gate; mattpocock has a dedicated research skill.
+
+We already accept this argument at a smaller scale - coding-conventions says to
+look a dependency's version up because memory is almost always stale, and now
+its registry entry too. It applies with more force to choosing the library.
+
+Touches: discovery/SKILL.md - any hard-to-reverse external choice checked
+against current docs before it is recorded, citation in Implementation
+decisions.
+
+### 8. Trigger reliability
+
+/plan collides with plan mode. /critique competes with the harness's built-in
+code-review skill and loses by default. upgrade-dependencies has no event that
+fires it. implement wants a broader trigger. Four of sixteen skills, one
+problem: the skill does not fire, and a skill that does not fire is worth zero
+however good its contents.
+
+One pass over every description field, not four separate edits.
+
+### Smaller
+
+- A different model for the reviews than for the implementation. Pipeline #2's
+  first bullet; take that half and leave the parallelism half, which buys wall
+  clock rather than quality.
+- Superpowers' verification-before-completion iron law. We state that rule four
+  times in four skills, incompletely each time, and not at all in discovery,
+  propose-change or handover.
+
+### Checked and left alone
+
+- The delete-the-paper policy. Correct; #5 is its missing complement, not its
+  replacement.
+- The byte-identical TICKET_FORMAT copies. Deliberate - diff is the parity
+  check, and cross-skill relative paths break on independent install.
+- The two-door structure, the split test, and /implement's no-questions
+  contract.
+- BMAD's named persona agents. Ceremony without gain; our rule that the reviewer
+  does not know about tickets is the better instinct.
+- Spec Kit's article that every feature must begin as a standalone library.
+  Flatly contradicts YAGNI and deep-modules.
+
 ## Skill Notes
 
 ### cleanup-repo
