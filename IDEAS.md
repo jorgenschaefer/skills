@@ -59,20 +59,29 @@ Touches: discovery/SKILL.md, propose-change/SKILL.md. One line each.
 
 ## 3. Make the skills fire
 
-Four of sixteen skills have one problem: the skill does not fire, and a skill
-that does not fire is worth zero however good its contents.
+Two of sixteen skills still have one problem: the skill does not fire, and a
+skill that does not fire is worth zero however good its contents.
 
-- `/plan` collides with the harness's plan mode.
-- `/critique` competes with the built-in code-review skill and loses by default.
-- `upgrade-dependencies` has `disable-model-invocation: true` and no event that
-  fires it, so nothing ever calls it.
-- `implement` wants a broader trigger than "a ticket from a `tickets/`
-  directory".
+- `/critique` competes with the built-in code-review skill and loses by
+  default. The only one left that a `description` can fix, and the reason
+  critique stayed model-invoked while the rest of the loop's skills did not.
+- `upgrade-dependencies` is user-invoked and nothing routes maintenance work
+  to it, so it is never reached. That is #12's missing lane, not a trigger
+  problem - a better `description` would not help, because nobody is looking
+  for it.
 
-One pass over every `description` field, not four separate edits. The rename is
-the only real cost: `/plan` is named in README.md, discovery/SKILL.md,
-implement/SKILL.md, propose-change/SKILL.md, decision-brief/SKILL.md,
-SPEC_FORMAT.md and all four copies of TICKET_FORMAT.md.
+`/plan` and `/implement` were on this list and came off it by the opposite
+move. Both are user-invoked now, with `/trace` and `/handover`: the loop
+drives all four by typed name, so the model-reach they paid context for was
+never used. `/implement` no longer wants a broader trigger because it has
+none, and `/plan` can no longer be autonomously confused with the harness's
+plan mode.
+
+What survives of the `/plan` collision is the naming question for the human
+who types it, and the rename cost if the answer is yes: `/plan` is named in
+README.md, discovery/SKILL.md, implement/SKILL.md, propose-change/SKILL.md,
+decision-brief/SKILL.md, SPEC_FORMAT.md and all five copies of
+TICKET_FORMAT.md.
 
 ## 4. Show the user the domain model
 
@@ -211,7 +220,7 @@ suite stays green and the diff provably changes no behavior, which is checkable,
 and is what #10 is for. `TICKET_FORMAT.md` already carries a second ticket kind
 for `/trace`'s remediation tickets; a third kind is the natural home.
 
-A decision, not an edit. Touches: TICKET_FORMAT.md (all four copies),
+A decision, not an edit. Touches: TICKET_FORMAT.md (all five copies),
 propose-change/SKILL.md.
 
 ## 13. A durable system description, regenerated rather than maintained
@@ -318,6 +327,11 @@ Kept here so they don't get re-proposed.
   is the missing complement, not a replacement.
 - **The byte-identical TICKET_FORMAT copies.** Deliberate - diff is the parity
   check, and cross-skill relative paths break on independent install.
+- **A shared file for the split test and the other cross-skill rules.** The
+  split test, the one-question-per-turn rule and treat-the-verdict-as-a-claim
+  each live at three sites. They were reconciled in place instead: a file per
+  rule buys parity for three sentences and costs another artifact to keep in
+  step. The copies now read identically, so a grep is the check.
 - **The two-door structure, the split test, and `/implement`'s no-questions
   contract.** All hold up.
 - **BMAD's named persona agents.** Ceremony without gain; the rule that the
