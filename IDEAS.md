@@ -290,6 +290,17 @@ settled.
   upgrading existing ones?
 - **Should `/critique` generalise** to fire on any code review request, instead
   of competing with the built-in skill?
+- **Should `/handover` run inside the loop at all?** It cannot finish there:
+  promotion and deletion wait on a user who is asleep, so the driver produces
+  the brief and stops, and the human who accepts in the morning runs
+  `/handover` again - which re-derives the same brief from the same tickets.
+  The driver now prints the brief whole rather than losing it in a transcript,
+  which is worth having either way. But the alternative is that the loop ends
+  at `/critique` and simply says to run `/handover`, spending one session
+  instead of two and delivering the brief into the conversation that can act on
+  it. Against that: a run whose brief nobody reads until morning is still a run
+  whose brief exists, and reading it is how you decide whether to bother
+  accepting at all.
 - **handover and propose-change have never been run.** Both sit in the main
   path. Whatever is wrong with them is still undiscovered.
 

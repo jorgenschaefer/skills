@@ -16,11 +16,17 @@
 #
 # Neither of those is an agent decision, so neither ends a run. Running out of
 # usage is waited out: the window reopens at a time the stream names to the
-# second, and the driver sleeps until then, for a reset within MAX_WAIT_HOURS
-# (6) - a five-hour window, not a weekly one. Any other death - a dropped
+# second, and the driver sleeps until then, for as long as MAX_WAIT_HOURS (6)
+# allows - a five-hour window, not a weekly one. Any other death - a dropped
 # connection, a crash, a stream cut short - is tried again after a pause, seven
 # of them over about three hours (RETRY_DELAYS). Only an error no delay can fix,
 # a bad key or an empty balance, stops the run where it stands.
+#
+# Nobody is here to approve a tool call, so the run needs standing permission
+# for the edits, commands and commits every ticket makes - a `permissions.allow`
+# in settings that already covers them. `claude -p` cannot prompt: what it
+# cannot get approved it declines, and a ticket that could not write a file
+# halts as if the work were impossible.
 #
 # A run takes hours, so progress on screen is the model's own narration - one
 # short line per phase - and nothing else. Every step's full transcript is kept
@@ -31,8 +37,12 @@
 set -uo pipefail
 
 TICKETS="${1:-tickets}"
-MAX_PASSES=2
 TICK_MINUTES=3
+
+# Not tunable on purpose. Reviews that keep filing work after two passes are not
+# short of budget, they are failing to converge, and that is a thing to read
+# rather than a thing to raise.
+MAX_PASSES=2
 
 # REVIEWS=code drops the quality review and the code review's second round.
 # Reviews are about half a ticket's wall clock, so this roughly halves it - a

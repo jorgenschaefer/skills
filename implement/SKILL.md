@@ -140,7 +140,7 @@ Fix each review's findings before dispatching the next – blockers and should-f
 
 A finding is a claim to evaluate, not an order to execute. Before you change code for it:
 
-- **Verify it's right for this code.** If it's wrong – it misreads the code, breaks something that must keep working, or doesn't apply to this stack – push back in your reply to the finding with technical reasoning instead of complying, and record it under `Unresolved`. A reviewer can be wrong; adjudicate, don't obey.
+- **Verify it's right for this code.** If it's wrong – it misreads the code, breaks something that must keep working, or doesn't apply to this stack – don't comply. The reviewer has already finished and there is nobody to argue with, so the adjudication goes in the ticket's `Unresolved`: the finding, and the technical reasoning that answers it. A reviewer can be wrong; adjudicate, don't obey.
 - **YAGNI-check "do it properly."** When a finding asks you to build something out more fully, confirm it's actually needed – if nothing uses it, say so and don't add it.
 - **Clarify before you start.** If any finding in a batch is unclear, resolve that first; a partial understanding produces the wrong fix.
 
@@ -158,4 +158,4 @@ The `Record` is the only channel between this run and the human who accepts the 
 
 ## Code quality
 
-Build to the standards in `coding-conventions/SKILL.md` – simple design, structure and locality, domain layering, clarity, test coverage, and security – on top of your own judgement. It is the single source of truth for what good code is here, and the rubric both reviews apply.
+Build to the standards in `coding-conventions/SKILL.md` – every section of it, not the handful you would have thought of unprompted – on top of your own judgement. It is the single source of truth for what good code is here, and the rubric both reviews apply.
