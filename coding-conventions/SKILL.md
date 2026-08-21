@@ -1,6 +1,6 @@
 ---
 name: coding-conventions
-description: This project's shared code-quality standard - the rubric /implement builds to and /critique reviews against. Read it before writing or reviewing any feature code, or when the user asks what the project's conventions are: naming, structure, layering, validation, testing, security. It is the standard, not the act of building or reviewing.
+description: This project's shared code-quality standard - the rubric /implement builds to and /critique reviews against. Read it before writing or reviewing any feature code, or when the user asks what the project's conventions are: naming, structure, layering, validation, concurrency, change safety, testing, security, dependencies. It is the standard, not the act of building or reviewing.
 ---
 
 # Coding Conventions
@@ -109,20 +109,45 @@ The layers above describe *conceptual* granularity - the boundaries at which you
 - **Least astonishment.** Behavior matches the contract a caller infers from the name, signature, and type *before* reading the body. Hidden surprises break this: a query that mutates (a `get`/`is`/pure-looking call with side effects), error handling that diverges from its siblings (one throws where the next returns null for the same condition), a parameter or default whose effect contradicts its name. The test is a wrong assumption a caller would make and how it breaks, not a matter of taste.
 - **Reuse the established vocabulary.** Use the term already in use for a concept rather than coining a synonym. If `UBIQUITOUS_LANGUAGE.md` exists at the repo root, names in code, tests, and comments should match its terms; coining a synonym for a concept the glossary already defines violates this.
 - **Fail loud, not silent.** When a broken invariant is first detectable, prefer an explicit error or assertion over a silent fallback that masks it. A wrong result that looks fine is worse than a loud failure.
+- **A failure someone must act on is visible from outside the process.** Failing loud only counts as loud if it reaches someone. When code catches an error, takes a fallback, or drops work, that fact is recorded with enough context to identify the request or the record - and without the credentials or personal data that caused it. Silence should mean nothing went wrong, not that nothing was written down.
+
+## Concurrency and shared state
+
+Code that reads correctly from top to bottom can still be wrong, because it does not run alone. Two requests, two tabs, a double-clicked button, a retried webhook, two branches of a `Promise.all` - each is a second execution interleaved with the first, and the defect lives in the gap between two lines that look adjacent.
+
+- **A decision made from a value you loaded is stale by the time you act on it.** Read a balance, check it, write it back, and two concurrent runs both decide from the same load - one write is lost. "Does this exist? No - create it" is the same bug: the row appears in the gap. Push the decision down to where the data is - a conditional update, a unique constraint, `SET n = n + 1`, a transaction at an isolation level you chose on purpose - rather than holding it in application memory across an `await`.
+- **Anything the network can retry will arrive twice.** A webhook, a queue message, a resubmitted form, a client that timed out and tried again. Give the effect a key the second arrival collides with, so it becomes a no-op instead of a second charge.
+- **No mutable state outside a request.** A module-level cache, counter, or accumulator is shared by every request the process handles at once - and in a serverless runtime it survives between them too, so one user's data reaches the next. State belongs in the request or in the store.
+- **Every wait has a timeout, and whatever started an effect cancels it.** A call with no timeout is a hang with extra steps. An interval, subscription, or in-flight request still running after its component unmounted or its request ended is writing into something that is gone.
+
+## Changing what already runs
+
+A new file is judged against the spec. Everything else is judged against what is already deployed, already stored, and already calling it - none of which appears in the diff.
+
+- **A migration runs against data that exists, while the old code is still serving.** Add a column nullable or defaulted before anything writes it; backfill as its own step; drop a column only once nothing reads it, which is a later deploy and not this one. Adding a constraint or rewriting a large table takes a lock - know for how long before it meets production rows.
+- **Deploy order is part of the design.** For the length of a rollout, old code runs against the new schema and new code against the old one. A change that is only correct once both halves have landed is two changes, and the order they land in is a decision worth recording.
+- **A change is reversible, or its irreversibility is a decision.** Reverting code is cheap; reverting a dropped column is not. Say which one this is before it ships, rather than discovering it during the incident.
+- **The stored and published shape is a contract.** A serialised payload, a JSON column, a cache key, a queue message, a URL, an exported type - anything one version writes and another reads cannot change shape until the reader tolerates both.
+- **New configuration has a safe default, or fails at startup.** An environment variable the code needs and the deployment doesn't set should stop the process with its own name in the message, not surface as `undefined` three layers in. A flag gating new behavior is off until someone turns it on.
 
 ## Test coverage
 
 - **Every piece of business logic is pinned by a test:** removing or changing it would make a test fail. For each piece, you should be able to name the test that pins it; if you can't, that's a coverage gap.
 - **The test observes the behavior, not the call.** Failing when the behavior is removed is necessary, not sufficient. A test asserting that a mock was called does fail when you delete the call - and still says nothing about what the code computes, so it pins the wiring and leaves the logic free. Assert on what the code produces: the value returned, the state changed, the row written, the output rendered. A test that merely restates the implementation - the arguments a collaborator was handed, the order two internal steps ran in - moves with the code instead of holding it still, and does not close a coverage gap.
+- **The failure paths are pinned too.** What the code does when things go wrong is business logic: the rejected input, the failed call, the missing record, the conflicting write. A suite that only walks the happy path leaves the branches that run on the worst day as the only ones nobody has executed. Where the code cleans up, retries, or rolls back on failure, a test drives it there.
 - **External adapters** - the thin edge that talks to a third-party SDK, the network, or IO - may be untested when they genuinely can't be tested at all. The business logic behind them must be fully tested. Wrap the dependency in the thinnest possible adapter (just the calls you need, no logic), mock that adapter to test everything behind it, and accept the adapter itself going untested.
 
 ## Security
 
 These hold even when the spec doesn't name them.
 
-- Every internet-reachable endpoint enforces authentication and authorization.
+- **Every internet-reachable endpoint enforces authentication and authorization.**
+- **Authorization is checked against the object, not just the route.** Authentication establishes who is calling, and a route guard that they may call this endpoint; neither says they may touch *this record*. Every id arriving in a path, body, or query is a claim about ownership until the server checks it, and the check belongs inside the query (`where: { id, ownerId: session.userId }`) rather than after the fetch, where forgetting it returns the data anyway. The attacker here holds a valid session and is changing the number.
 - User input is validated at each trust boundary **and escaped where it is used** - HTML-escaped when rendered, parameterised when it reaches SQL, quoted when it reaches a shell, a path, or a URL. Validation constrains shape; it is the escaping at the point of use that prevents injection, and a value that passed a schema is not thereby safe to interpolate. Sanitising on the way in - stripping or rewriting the value to look harmless - is the weaker habit: it corrupts legitimate input and still misses the context it wasn't written for.
 
-## Dependency versions
+## Dependencies
 
-A newly added dependency is at its current latest stable release (or latest LTS line, where the ecosystem distinguishes one). Look the version up rather than relying on memory - memory is almost always stale.
+- **The dependency is warranted.** A direct dependency is a standing cost - its updates, its advisories, its transitive tree, its eventual abandonment. Prefer the standard library, or twenty lines of your own, over a package that saves five.
+- **The package is real, and you looked.** Check the registry before adding it. A plausible name with exactly the API you wanted and no registry entry is a hallucination; one that does exist under a name you half-remembered is worse, because that is where typosquats live. This holds for a package you were told to use as much as for one you thought of.
+- **It is at its current latest stable release** (or latest LTS line, where the ecosystem distinguishes one). Look the version up rather than relying on memory - memory is almost always stale.
+- **It carries no known advisory, under a licence this project can use.** Run the ecosystem's audit (`npm audit`, `pip-audit`, `cargo audit`) after adding it, and read the licence rather than assuming MIT. Neither is knowable from memory; both are one command away.
