@@ -155,7 +155,7 @@ are iterated by feel.
 
 Touches: loop.sh (`LOG_DIR`, drain, the halt path), improve-skill/SKILL.md.
 
-## 9. Something in the pipeline has to run the software
+## 9. Turn /trace into the Abnahme, so something runs the software
 
 Verification is one check command, the test suite, and four prose reviews.
 `SPEC_FORMAT.md` has a Design section with screens and states - empty, loading,
@@ -167,13 +167,38 @@ This ranks above mutation testing (#10) for that reason: a suite can be fully
 mutation-killed on an app that does not start. It is also the only entry here
 that touches *usable* rather than *correct*.
 
-The tooling is already present - the harness ships a `run` skill and
-claude-in-chrome. The shape is a new skill between `/trace` and `/handover`,
-filing a ticket per gap the way `/trace` does, so a failure re-enters the loop
-instead of being patched in behind the checks.
+The cheap shape is not a new skill beside `/trace` but `/trace` itself. It
+already runs after the loop drains, already reads the spec whole, and already
+files a ticket per gap so a failure re-enters the loop instead of being patched
+in behind the checks. What changes is the evidence: drive the running feature
+the way a user would, against the criteria, the way an Abnahme is done, rather
+than read the code and judge. The tooling is present - the harness ships a `run`
+skill and claude-in-chrome.
 
-Touches: a new skill, loop.sh (drain). The most expensive entry above the line,
-and the biggest hole.
+What that displaces is the real question. Trace carries two test-quality checks
+today and neither survives the move unchanged:
+
+- **Every criterion pinned by a test that would fail without it.** `/critique`
+  already establishes the same property under Coverage maps, one altitude down.
+  Consolidating there is the obvious move, and the cost is the reason it needs
+  deciding: critique is deliberately spec-blind, so it can map a test to the
+  logic it pins but not to the criterion that asked for it.
+- **Whether each test is worth anything on its own.** That is #10 - the mutation
+  check becomes a per-ticket gate in `/implement`, where a survivor lands on the
+  ticket nothing is built on yet.
+
+Two things the move must not lose. Trace is the only step that reads the spec
+whole, so the orphan sweep - a criterion no ticket claimed, a constraint nothing
+verified, a non-goal built anyway, behavior that traces to nothing - has to
+survive wherever it lands. A per-ticket check structurally cannot find what no
+ticket claimed. And not every criterion is observable from outside: a retry
+policy, an invariant, a performance budget. An Abnahme needs both modes - drive
+it where a user could see it, fall back to code and test evidence where nobody
+can - and which criteria got which is the report.
+
+Touches: trace/SKILL.md, critique/SKILL.md, implement/SKILL.md. Cheaper than the
+new-skill version it replaces - nothing new to write, and loop.sh's drain is
+unchanged - so it may belong above the rank it has here.
 
 ## 10. Mutation testing per ticket, which means the tooling ban goes
 
@@ -290,7 +315,9 @@ settled.
 - **Should `/trace` merge into `/critique`?** Both are reviews, but trace checks
   traceability to the spec rather than the code itself - and critique
   deliberately does not know about tickets or specs, a separation the pipeline
-  leans on.
+  leans on. #9 pushes the other way: an Abnahme that drives the application has
+  less in common with a code review than trace does today, and it is critique
+  that would inherit the coverage mapping.
 - **Is `/debug` worth keeping?**
 - **Is `ubiquitous-language-init` still useful?**
 - **Should `/decision-brief` become a summary of the discovery spec** rather
