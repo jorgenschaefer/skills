@@ -67,7 +67,7 @@ The driver reads `status` from the ticket to decide whether to continue, so sett
 
 ## Build it
 
-Implement the ticket with the TDD loop below. The ticket is complete only when every behavior it adds traces to a test that failed first and now pins it: the test would fail if that behavior were removed. If you cannot name that test, you are not done.
+Implement the ticket with the TDD loop below. The ticket is complete only when every behavior it adds traces to a test that failed first and now pins it: the test would fail if that behavior were removed, and it asserts on what the code produces rather than on a collaborator having been called. If you cannot name that test, you are not done.
 
 Build what the ticket claims and nothing else. Its `Out of scope` names what you will be tempted by – the adjacent case another ticket owns, the abstraction that is premature until a third caller exists. No human sees the diff before the next ticket starts, so scope creep here is unchecked.
 
@@ -121,7 +121,12 @@ Then two reviews, in this order, each a fresh `general-purpose` subagent. Six ru
 
 **1. Quality review.** Pass it the ticket, the criteria its `Satisfies` cites, and the diff. For each criterion, have it try to find a case where the implementation does not satisfy it, or a test that would still pass if the behavior were deleted. Have it check the ticket's `Out of scope` was respected – something built here that another ticket owns is as much a defect as something missing. This is not a code review; it is a check that the right thing was built. It runs first because a gap means new behavior, and that new code should then pass under the code review rather than escaping it.
 
-**2. Code review.** Have it read `coding-conventions/SKILL.md` and apply that rubric on top of its own judgement over the ticket's diff, plus a check that every behavior change is pinned by a test that would fail if the behavior were removed. Ask for findings grouped as **Blockers** (must fix), **Should-fix** (real problems worth addressing), and **Nits** (minor), each with a `file:line` and why it matters.
+**2. Code review.** Have it read `coding-conventions/SKILL.md` and apply that rubric on top of its own judgement over the ticket's diff. Two of those properties it has to establish rather than read off the diff, so ask for both by name:
+
+- every behavior change is pinned by a test meeting the coverage rule there - one that fails when the behavior changes *and* asserts on what the code produces, not on a collaborator having been called;
+- the change's callers still work: for every signature, exported name, return shape, thrown error, default, and stored or serialised format this ticket touched, renamed, or removed, grep out the other side and check it against the new behavior.
+
+Ask for findings grouped as **Blockers** (must fix), **Should-fix** (real problems worth addressing), and **Nits** (minor), each with a `file:line` and why it matters.
 
 Fix each review's findings before dispatching the next – blockers and should-fixes, with your judgement on nits. The quality review's fixes have to land first, which is the whole reason it goes first: they are new behavior, and the code review should see them.
 
