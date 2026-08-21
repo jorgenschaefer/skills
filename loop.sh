@@ -9,7 +9,8 @@
 # records the reason in the ticket rather than guessing past it.
 #
 # Exit codes say what kind of stop it was, because they want opposite responses:
-#   1  an agent halted, or the reviews would not converge - a human is needed
+#   1  an agent halted, the queue has tickets nothing can reach, or the reviews
+#      would not converge - a human is needed
 #   2  bad invocation - no ticket directory, not a repo, on main
 #   3  a session died in a way the driver could neither wait out nor retry
 #
@@ -42,9 +43,11 @@ case "$REVIEWS" in full|code) ;;
   *) echo "REVIEWS must be 'full' or 'code', not '$REVIEWS'" >&2; exit 2 ;;
 esac
 
-# How long a run may sit idle waiting for a usage window to reopen. Six hours
-# covers any five-hour window; a weekly limit can be days off, and a terminal
-# blocked for days is worse than a human reading a message in the morning.
+# How long one step may sit idle waiting for usage windows to reopen, summed
+# over every wait it takes. Six hours covers any five-hour window; a weekly
+# limit can be days off, and a terminal blocked for days is worse than a human
+# reading a message in the morning. Summing rather than capping each wait alone
+# is what stops a limit reported over and over from waiting out the night.
 MAX_WAIT_HOURS="${MAX_WAIT_HOURS:-6}"
 case "$MAX_WAIT_HOURS" in
   '' | *[!0-9]*)
@@ -194,7 +197,7 @@ wait_for() {
 # next one's - they hold real work and real cost, and the run's total should
 # still say so.
 run_step() {
-  local rc why reset attempt=0 retries=0 pause note
+  local rc why reset attempt=0 retries=0 waited=0 pause note
   local -a pauses=($RETRY_DELAYS)
   while :; do
     attempt=$((attempt + 1))
@@ -206,9 +209,17 @@ run_step() {
     ticker_stop
     why="$(session_died "$rc" "$1")" || return 0
 
+    # A window worth waiting for is one that has not opened yet. A `resetsAt`
+    # already behind us describes a window that came and went, and waiting no
+    # time at all for it is a retry with the pause taken out - which is how a
+    # session that keeps reporting a stale limit turns into a hot loop that
+    # spends the night starting sessions. Such a reset falls through to the
+    # ladder instead, where the pauses and the budget both apply.
     reset="$(limit_reset_at "$1")"
-    if [ -n "$reset" ] && [ $(( reset - $(date +%s) )) -le $(( MAX_WAIT_HOURS * 3600 )) ]; then
-      pause=$(( reset + 60 - $(date +%s) ))
+    pause=0
+    [ -z "$reset" ] || pause=$(( reset + 60 - $(date +%s) ))
+    if [ "$pause" -gt 0 ] && [ $(( waited + pause )) -le $(( MAX_WAIT_HOURS * 3600 )) ]; then
+      waited=$(( waited + pause ))
       note="$(printf 'waiting until %s, then picking %s back up' \
         "$(date -d "@$((reset + 60))" +%H:%M)" "$1")"
     elif unrecoverable "$why"; then
@@ -266,6 +277,43 @@ next_ticket() {
   return 1
 }
 
+# Why a ticket the loop skipped can never come up. `ready` answers only yes or
+# no, and the reasons want different responses from a human.
+why_stuck() {
+  local status dep file
+  status="$(status_of "$1")"
+  [ "$status" = "todo" ] || { echo "left $status by an earlier run"; return; }
+  for dep in $(deps_of "$1"); do
+    file="$(ticket_for "$dep")"
+    [ -n "$file" ] || { echo "depends on $dep, which does not exist"; return; }
+    [ "$(status_of "$file")" = "done" ] || {
+      echo "depends on $dep, which is $(status_of "$file")"; return; }
+  done
+  echo "ready, and skipped anyway - this is a bug in the driver"
+}
+
+# Everything the loop has no path to: a halt left behind by an earlier run, a
+# `depends_on` naming a ticket nobody wrote, two tickets waiting on each other.
+# `next_ticket` returns nothing for these exactly as it does for a queue that is
+# finished, and the two must never be confused - unbuilt work reported as a
+# delivered feature is the one failure an unattended driver must not produce.
+unreachable() {
+  local file
+  for file in "$TICKETS"/[0-9]*.md; do
+    [ -e "$file" ] || continue
+    [ "$(status_of "$file")" = "done" ] || printf '%s\n' "$file"
+  done
+}
+
+# Recomputed each time: /trace and /critique can file new tickets mid-run, so
+# the denominator is what exists now, not what existed at the start.
+position() {
+  local total done_n
+  total=$(ls "$TICKETS"/[0-9]*.md 2>/dev/null | wc -l)
+  done_n=$(grep -lE '^status:[[:space:]]*done' "$TICKETS"/[0-9]*.md 2>/dev/null | wc -l)
+  printf '%d/%d' "$((done_n + 1))" "$total"
+}
+
 # Recomputed each time: /trace and /critique can file new tickets mid-run, so
 # the denominator is what exists now, not what existed at the start.
 position() {
@@ -293,7 +341,7 @@ EOF
 }
 
 drain() {
-  local ticket name
+  local ticket name stuck
   while ticket="$(next_ticket)"; do
     name="$(basename "$ticket" .md)"
     echo "==> [$(position)] $name"
@@ -312,6 +360,21 @@ drain() {
     fi
     return 1
   done
+
+  stuck="$(unreachable)"
+  [ -n "$stuck" ] || return 0
+  {
+    echo
+    echo "!! nothing left the loop can build, and these are not done:"
+    while read -r ticket; do
+      printf '     %s - %s\n' "$(basename "$ticket" .md)" "$(why_stuck "$ticket")"
+    done <<< "$stuck"
+    echo "   A halt needs whatever blocked it resolved; a dependency that is"
+    echo "   missing or circular needs /plan --refresh. Set status back to todo"
+    echo "   on what should be rebuilt, then re-run:"
+    echo "     $0 $TICKETS"
+  } >&2
+  return 1
 }
 
 # Both end-of-run checks feed findings back as tickets, so a fix re-enters the

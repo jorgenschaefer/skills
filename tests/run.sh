@@ -59,6 +59,13 @@ workspace() {
   WORK="$dir"
 }
 
+# Rewrites one ticket's frontmatter, for the cases about a queue the driver
+# cannot drain.
+ticket() {
+  printf -- '---\nstatus: %s\ndepends_on: [%s]\n---\n\n# %s\n' \
+    "$2" "$3" "$1" > "$WORK/tickets/$1.md"
+}
+
 # Runs the driver in $WORK against the plan already written to $WORK/plan.
 # Leaves the run's output in $OUT, its exit code in $RC, and its log directory
 # in $LOGS. $1 is the epoch the fixtures' reset is rewritten to.
@@ -249,6 +256,41 @@ drive 0 RETRY_DELAYS="0 0"
 expect_rc 1 "a ticket left unfinished by a whole session is a halt"
 expect_out "halted on 01-thing" "a halt names the ticket"
 expect_calls 1 "a halt is a decision, so it is never retried"
+
+# --- a queue that cannot be drained -------------------------------------------
+
+workspace 01-thing 02-other
+ticket 02-other todo 01
+ticket 01-thing blocked ""
+drive 0
+expect_rc 1 "a ticket nothing can reach is a stop, not a finished run"
+expect_calls 0 "an unreachable queue never reaches trace, critique or handover"
+expect_out "01-thing" "the stop names the ticket that is stuck"
+expect_out "02-other" "the stop names what is stuck behind it"
+
+workspace 01-thing
+ticket 01-thing todo 09
+drive 0
+expect_rc 1 "a dependency that does not exist is a stop"
+expect_out "does not exist" "a missing dependency says what is missing"
+
+workspace 01-thing 02-other
+ticket 01-thing todo 02
+ticket 02-other todo 01
+drive 0
+expect_rc 1 "two tickets waiting on each other are a stop"
+expect_calls 0 "a cycle never reaches handover"
+
+# --- a reset that has already passed ------------------------------------------
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+rate-limited-session.jsonl 1 -
+EOF
+drive "$(hours_off -2)"
+expect_rc 3 "a reset already long past is no window to wait for"
+expect_no_out "waiting until" "a stale reset never becomes a wait"
+expect_calls 1 "a stale reset falls through to the retry ladder, which is empty"
 
 # ------------------------------------------------------------------------------
 
