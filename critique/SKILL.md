@@ -23,8 +23,8 @@ Check the code in scope against every property in `coding-conventions`. A proper
 
 Two of these properties are the reviewer's own work to establish, not just a read of the code:
 
-- **Tests pass.** Run the project's test command and confirm green. Report the actual result; if you can't run it, say so rather than assuming.
-- **Coverage maps.** For each piece of business logic in scope, name the test that pins it - one that would fail if the behavior changed. If you can't, that's a coverage finding. (You don't need to mutate code; the mapping is the check.) An adapter that genuinely can't be tested is the exception `coding-conventions` allows - don't count it as a gap, but the business logic behind it must still be pinned.
+- **The checks pass.** Run the project's combined check command - `npm run check`, `make check`, `just check` and their kin, which bundle typecheck, lint and tests - and confirm green. Only where the project has no such command do you assemble the pieces yourself; its CI workflow is the authoritative statement of what it gates on, so a check CI runs and you don't is one you are skipping. Report the actual result; if you can't run it, say so rather than assuming.
+- **Coverage maps.** For each piece of business logic in scope, name the test that pins it; if you can't, that's a coverage finding. The test qualifies on two counts, not one: it would fail if the behavior changed, *and* it asserts on what the code produces rather than on a collaborator having been called. A test that only checks the mock was invoked meets the first and proves nothing - count it as a gap, not as the test that pins the logic. (You don't need to mutate code; the mapping is the check.) An adapter that genuinely can't be tested is the exception `coding-conventions` allows - don't count it as a gap, but the business logic behind it must still be pinned.
 
 ## Verify before reporting
 
@@ -37,7 +37,11 @@ Refuted or unconstructable findings don't get reported, softened, or filed as ni
 
 ## Output
 
-Critique reports findings to the conversation; it does not modify code. Group findings by severity:
+Critique reports findings to the conversation; it does not modify code.
+
+**The bar is code health, not perfection.** Each finding has to answer whether the code is worse for what it does - not whether you can imagine something better. A choice you would have made differently is not a finding, and neither is a rewrite you would prefer to the working code in front of you. Severity follows consequence: assign it by what happens if nobody fixes this. A blocker breaks something, loses or exposes data, or lets something through. A should-fix costs the next reader or the next change real effort. Everything else is a nit, and between two levels you take the lower one. This bounds what you *report*; it does not bound what you look for - a defect is a defect however small the diff carrying it.
+
+Group findings by severity:
 - **Blockers** – must fix before this is acceptable.
 - **Should-fix** – real problems worth addressing.
 - **Nits** – minor.

@@ -113,6 +113,7 @@ The layers above describe *conceptual* granularity - the boundaries at which you
 ## Test coverage
 
 - **Every piece of business logic is pinned by a test:** removing or changing it would make a test fail. For each piece, you should be able to name the test that pins it; if you can't, that's a coverage gap.
+- **The test observes the behavior, not the call.** Failing when the behavior is removed is necessary, not sufficient. A test asserting that a mock was called does fail when you delete the call - and still says nothing about what the code computes, so it pins the wiring and leaves the logic free. Assert on what the code produces: the value returned, the state changed, the row written, the output rendered. A test that merely restates the implementation - the arguments a collaborator was handed, the order two internal steps ran in - moves with the code instead of holding it still, and does not close a coverage gap.
 - **External adapters** - the thin edge that talks to a third-party SDK, the network, or IO - may be untested when they genuinely can't be tested at all. The business logic behind them must be fully tested. Wrap the dependency in the thinnest possible adapter (just the calls you need, no logic), mock that adapter to test everything behind it, and accept the adapter itself going untested.
 
 ## Security
@@ -120,7 +121,7 @@ The layers above describe *conceptual* granularity - the boundaries at which you
 These hold even when the spec doesn't name them.
 
 - Every internet-reachable endpoint enforces authentication and authorization.
-- All user input is validated and sanitized.
+- User input is validated at each trust boundary **and escaped where it is used** - HTML-escaped when rendered, parameterised when it reaches SQL, quoted when it reaches a shell, a path, or a URL. Validation constrains shape; it is the escaping at the point of use that prevents injection, and a value that passed a schema is not thereby safe to interpolate. Sanitising on the way in - stripping or rewriting the value to look harmless - is the weaker habit: it corrupts legitimate input and still misses the context it wasn't written for.
 
 ## Dependency versions
 
