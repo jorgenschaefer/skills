@@ -17,6 +17,14 @@ A ticket takes a long time to build and your narration is the only progress anyo
 
 Put it on the **first line** of the message – that is the part that reaches the screen. And keep it to phases, not a running commentary on tool calls: roughly a dozen lines across a whole ticket is right.
 
+## Nothing runs in the background
+
+There is no next turn. The run is `claude -p`, so ending your turn ends the process, and whatever you detached dies unfinished with it – a Bash call with `run_in_background`, a `Monitor`, a subagent dispatched detached. Their notifications arrive after the session is gone.
+
+Run everything in the foreground and wait for it, however long it takes. A slow suite is a reason to raise the timeout, not to detach. And never end a turn in order to wait: "I'll pick this up when it reports" is the end of the run, not a pause – if you are narrating that you are waiting, you have already detached something you shouldn't have.
+
+Waiting costs wall clock, which the driver expects; it runs a ticker for exactly this silence. Detaching costs the ticket: the session ends without setting `status`, so the driver reports a halt nobody wrote and stops for a human who has nothing to read.
+
 ## Before starting
 
 - Read the ticket. `TICKET_FORMAT.md` describes its shape.
@@ -104,7 +112,7 @@ Append each entry the moment you make the decision, not reconstructed at the end
 
 Then two reviews, in this order, each a fresh `general-purpose` subagent. Six rules govern both:
 
-- **They block.** Dispatch with `run_in_background: false`. The default detaches the reviewer and hands you an `agentId` instead of a report – and there is nothing useful to do while a reviewer reads a tree you must not disturb, so the run idles, narrating that it is waiting, until the session exits and takes the unfinished review with it. An `agentId` is not a review.
+- **They block.** Dispatch with `run_in_background: false`. There is nothing useful to do while a reviewer reads a tree you must not disturb, and an `agentId` is not a review.
 - **They run separately.** Never fold them together or skip one.
 - **They are adversarial.** Each assumes the work is broken, tries to break it, and counts a requirement satisfied only when an honest attempt to break it fails. Never a confirmation pass.
 - **A review fix is normal work.** It follows the same RED-first loop as the build; only pure refactors skip it.
