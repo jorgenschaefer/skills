@@ -1,6 +1,6 @@
 ---
 name: coding-conventions
-description: This project's shared code-quality standard - the rubric /implement builds to and /critique reviews against. Read it before writing or reviewing any feature code, or when the user asks what the project's conventions are: naming, structure, layering, validation, concurrency, change safety, testing, security, dependencies. It is the standard, not the act of building or reviewing.
+description: This project's shared code-quality standard - the rubric /implement builds to and /critique reviews against. Read it before writing or reviewing any feature code, or when the user asks what the project's conventions are: naming, structure, layering, validation, concurrency, cost at scale, accessibility, change safety, testing, security, dependencies. It is the standard, not the act of building or reviewing.
 ---
 
 # Coding Conventions
@@ -120,6 +120,23 @@ Code that reads correctly from top to bottom can still be wrong, because it does
 - **No mutable state outside a request.** A module-level cache, counter, or accumulator is shared by every request the process handles at once - and in a serverless runtime it survives between them too, so one user's data reaches the next. State belongs in the request or in the store.
 - **Every wait has a timeout, and whatever started an effect cancels it.** A call with no timeout is a hang with extra steps. An interval, subscription, or in-flight request still running after its component unmounted or its request ended is writing into something that is gone.
 
+## Cost at scale
+
+The diff shows one pass over one row. What it costs depends on how many rows there are, and that number is not in the diff.
+
+This is not licence to optimise ahead of a measurement - KISS and YAGNI still hold, and a clever fast version of something nobody has measured is its own defect. These are the two cases where the cost follows from the shape of the code plus a number you can go and look up.
+
+- **A query inside a loop is one query.** Fetch a list, then fetch each item's related row, and you have the N+1 that the data-access seam actively invites - a domain-named query per entity is exactly what it asks you to write. Fetch the set in one query and join or group in memory.
+- **Every query has a bound and an index.** A list endpoint with no limit is fine on the developer's fifty rows and an outage at a hundred thousand; a filter or sort over an unindexed column is the same surprise in a different shape. Check both against what the table will hold, not what it holds today.
+
+## Accessibility
+
+A visual check never fails on any of this - it has to be driven. And what judgment catches unprompted, a missing `alt` or a `div` wired up as a button, is not what actually locks someone out.
+
+- **Everything reachable by mouse is reachable by keyboard, and you can see where you are.** Tab through the change: focus order follows the visual order, focus is visible at every stop, a dialog holds focus while it is open and hands it back to the trigger on close, and nothing behind an overlay is still tabbable.
+- **Content that arrives without a page load announces itself.** A validation error, a toast, a result that finished loading - anything a sighted user notices because it appeared - needs a live region or focus moved into it, or for a screen reader it did not happen.
+- **Colour is not the only signal, and contrast is a number.** An error shown only in red, a required field marked only by colour, or body text sitting at 3:1 fails a reader who cannot separate the two. Check the pair of values, in each theme the project ships, rather than the impression.
+
 ## Changing what already runs
 
 A new file is judged against the spec. Everything else is judged against what is already deployed, already stored, and already calling it - none of which appears in the diff.
@@ -134,6 +151,7 @@ A new file is judged against the spec. Everything else is judged against what is
 
 - **Every piece of business logic is pinned by a test:** removing or changing it would make a test fail. For each piece, you should be able to name the test that pins it; if you can't, that's a coverage gap.
 - **The test observes the behavior, not the call.** Failing when the behavior is removed is necessary, not sufficient. A test asserting that a mock was called does fail when you delete the call - and still says nothing about what the code computes, so it pins the wiring and leaves the logic free. Assert on what the code produces: the value returned, the state changed, the row written, the output rendered. A test that merely restates the implementation - the arguments a collaborator was handed, the order two internal steps ran in - moves with the code instead of holding it still, and does not close a coverage gap.
+- **The edges of the input range are pinned too.** The happy path runs on the value someone had in mind; the behavior has to be right on the boundaries around it, and those come from a list rather than from inspiration. Walk it against what this code takes in: empty and absent (not the same thing), zero, one, negative, the largest input that is realistic rather than the largest that is possible, the value on each side of every comparison, a duplicate, and - where the domain has them - non-ASCII text, a timezone or DST boundary, and money that will not survive a float. An entry that means something here and that the code has never seen is either a missing test or a defect.
 - **The failure paths are pinned too.** What the code does when things go wrong is business logic: the rejected input, the failed call, the missing record, the conflicting write. A suite that only walks the happy path leaves the branches that run on the worst day as the only ones nobody has executed. Where the code cleans up, retries, or rolls back on failure, a test drives it there.
 - **External adapters** - the thin edge that talks to a third-party SDK, the network, or IO - may be untested when they genuinely can't be tested at all. The business logic behind them must be fully tested. Wrap the dependency in the thinnest possible adapter (just the calls you need, no logic), mock that adapter to test everything behind it, and accept the adapter itself going untested.
 
