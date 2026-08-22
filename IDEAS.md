@@ -81,7 +81,9 @@ What survives of the `/plan` collision is the naming question for the human
 who types it, and the rename cost if the answer is yes: `/plan` is named in
 README.md, discovery/SKILL.md, implement/SKILL.md, propose-change/SKILL.md,
 decision-brief/SKILL.md, SPEC_FORMAT.md and all five copies of
-TICKET_FORMAT.md.
+TICKET_FORMAT.md. #16 carries that question now: the rename is one part of
+splitting the craft tier from the loop tier, and paying the cost twice would
+be the waste.
 
 ## 4. Show the user the domain model
 
@@ -293,7 +295,77 @@ drifting across skills, and this rule is not in it.
 Touches: coding-conventions/SKILL.md, and a reference from the skills that
 currently restate a fragment of it.
 
-## 16. Build the independent tail in parallel
+## 16. Split the craft from the loop that drives it
+
+Two tiers: skills that are useful on their own, and skills that tie them into
+the spec/ticket workflow. Half of it is already the stated design. critique
+closes with "the caller knows about tickets, the reviewer doesn't", and the
+ticket knowledge sits in `loop.sh:critique_prompt()` - four lines of it. trace
+is the same shape, generic body with one ticket-shaped paragraph in `Output`.
+
+implement is the outlier, ticket-bound throughout: `spec_hash`, `depends_on`,
+four halt codes, `Record`, `status`. 33 of its 158 lines are unattendedness
+rather than building - *Say what you are doing* (6), *Nothing runs in the
+background* (8), *Halting* (15), the no-questions preamble (3), the
+`REVIEWS=code` paragraph (1). A fifth of the longest skill in the suite after
+coding-conventions is a concern that has nothing to do with code.
+
+**The cut is not generic-vs-ticket.** That puts the two tiers in conflict over
+implement's most load-bearing rule: a generic implement invoked on a line of
+prompt *should* ask when the requirement is ambiguous, and a ticket implement
+must never. Splitting that way means the wrapper overrides the inner skill's
+core contract, which is the leakiest seam available. The boundary is craft vs
+**mode** - tier 2 owns the ticket contract, unattendedness and the loop's
+position and resumption together, and the craft tier holds no opinion about
+who is watching.
+
+The shape that follows is not three twins. Build a wrapper only where the
+workflow knowledge is too big for a prompt line:
+
+- **implement** earns one - a whole contract, not four lines.
+- **critique and trace** need subtraction, not a twin: drop the ticket
+  paragraph and the `TICKET_FORMAT.md` copy, and let the driver's prompt carry
+  what it already carries. Five byte-identical copies become three.
+- **plan** is definitionally tier 2 - it exists to produce tickets, so there is
+  no generic core to extract. This is where #3's surviving naming question
+  lands; `/decompose` or `/to-tickets`, with the rename cost #3 enumerates.
+
+Naming principle if it goes ahead: tier 1 named for the activity, tier 2 for
+the artifact. discovery, implement, critique, trace against decompose,
+build-ticket.
+
+**The open call is wrapper skill or mode-dispatch.** The cheaper mechanism is
+the one already in use: implement stays one installable skill with a sibling
+`TICKET_MODE.md`, dispatching on whether its input is a ticket path or a
+sentence. That buys both stated goals - generic use outside the loop, loop
+details out of the generic reading path - with no install-time dependency and
+no second registry entry. A wrapper buys a distinct invocation name, a
+distinct description, and hard enforcement that the generic path cannot read
+the ticket rules. Indirection has to pay for itself, and mode-dispatch is the
+smaller bet.
+
+Context is free either way: plan, implement, trace and handover are already
+user-invoked, so a tier-2 description never loads. Skill-reads-skill is
+already precedent - six skills read coding-conventions.
+
+Ranked here because it buys maintainability of the suite and reuse rather than
+closing a hole in what the pipeline can prove, which is this list's measure.
+Same family as #15: a rule that belongs in one place, restated in several. It
+also unblocks #12, whose maintenance lane would reuse the craft tier rather
+than route around the pipeline.
+
+The cost is a collision. `PLAN.md`'s seven edits target implement/SKILL.md,
+trace/SKILL.md, critique/SKILL.md and all five TICKET_FORMAT.md copies - every
+file this would move. Those edits are evidence-driven from two runs; this is
+structural with no evidence of harm yet, and a refactor goes on green. Against
+that: two of the seven touch all five format copies, which this cuts to three.
+
+Touches: implement/SKILL.md (the extraction), critique/SKILL.md and
+trace/SKILL.md (the subtraction), plan/SKILL.md (the rename), loop.sh (the
+prompts that inherit what the skills drop), tests/run.sh, and the
+TICKET_FORMAT.md copies that go.
+
+## 17. Build the independent tail in parallel
 
 Wall clock is the sum of all tickets although `depends_on` already declares the
 DAG. Keep the uncertainty-first prologue serial - that ordering is why a halt
