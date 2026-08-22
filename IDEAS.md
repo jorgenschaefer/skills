@@ -87,7 +87,7 @@ skill that does not fire is worth zero however good its contents.
   default. The only one left that a `description` can fix, and the reason
   critique stayed model-invoked while the rest of the loop's skills did not.
 - `upgrade-dependencies` is user-invoked and nothing routes maintenance work
-  to it, so it is never reached. That is #18's missing lane, not a trigger
+  to it, so it is never reached. That is #19's missing lane, not a trigger
   problem - a better `description` would not help, because nobody is looking
   for it.
 
@@ -102,7 +102,7 @@ What survives of the `/plan` collision is the naming question for the human
 who types it, and the rename cost if the answer is yes: `/plan` is named in
 README.md, discovery/SKILL.md, implement/SKILL.md, propose-change/SKILL.md,
 decision-brief/SKILL.md, SPEC_FORMAT.md and all five copies of
-TICKET_FORMAT.md. #22 carries that question now: the rename is one part of
+TICKET_FORMAT.md. #23 carries that question now: the rename is one part of
 splitting the craft tier from the loop tier, and paying the cost twice would
 be the waste.
 
@@ -334,7 +334,58 @@ that ceremony at all, or only when the ticket's `Decisions` came back non-empty.
 Touches: handover/SKILL.md, propose-change/SKILL.md. A decision first, then two
 small edits.
 
-## 11. Review with a different model than the one that wrote the code
+## 11. Let the caller tell handover whether anyone is there
+
+`/critique` closes with "the caller knows about tickets, the reviewer doesn't",
+and keeps its ticket knowledge in `loop.sh`. `/trace` is told where to file a
+gap. `/handover` is the one that settled it for itself - its `## Accept`
+section reads "the driver runs this step at the end of an unattended run, where
+there is nobody to answer: present the brief, name the promotions you would
+propose, and stop."
+
+Nothing is at risk: the guard works and an unattended run deletes nothing. The
+defect is where the guard lives. The driver passes no mode at all - `run_step
+"handover" "/handover $SPEC_DIR" "$BRIEF_FILTER"`, where the third argument is
+an output filter - so the skill knows its caller instead of the caller knowing
+its skill, backwards by the suite's own doctrine. And because the skill decided
+it unilaterally, the rule is now written three times: the skill's `## Accept`,
+loop.sh's closing comment and two `echo` lines, and the README's "accepting the
+work ... is a step you run yourself afterwards". This repo has a commit named
+*Say each shared rule once, in one wording*.
+
+**The brief is written for a sleeping reader and then thrown away.** The skill:
+"the briefs need no deleting; they are presented inline and never written down,
+since a brief is spent the moment its reader decides." That is inherited from
+`/decision-brief`, where producer and reader share a conversation and it is
+right. Here they are separated by a night, and the brief survives only as a
+`$TMPDIR` JSONL. So the morning `/handover` re-derives the whole thing from
+every ticket in order to execute a decision already made - and the two
+derivations will not be identical, which is how a reader ends up acting on a
+brief that differs from the one they read.
+
+Fix, in two halves. **The caller declares the mode**: nobody is present,
+produce the brief, name the promotions you would propose, change nothing,
+delete nothing. The skill's `## Accept` then says only that acceptance needs
+the user's word, and handover becomes caller-agnostic like critique. **And the
+brief is written down**, beside the spec, committed like the tickets and
+deleted with them on acceptance - not a new policy but the existing paper
+policy applied to a document that was exempted by a rule borrowed from a
+different situation. The morning session reads it instead of rebuilding it.
+
+Two roads not taken. Splitting handover the way #23 splits `/implement` does
+not pay: the brief and the promotion list are one derivation, and two skills
+would duplicate it. And ending the loop at `/critique` - the shape this was an
+open question about - is a regression, because the question at 7am is whether
+the run is worth accepting and answering it needs the brief to already exist.
+
+Unexercised, like #10 and for the same reason: handover has never been run.
+That is what holds it here rather than beside the entries with shipped defects
+behind them.
+
+Touches: handover/SKILL.md (`## Accept`, and the no-file rule), loop.sh (a
+handover prompt, and the closing echoes it replaces), tests/run.sh, README.md.
+
+## 12. Review with a different model than the one that wrote the code
 
 Every step is `claude -p` with one model in a fresh serial session. Two
 deterministic checks sit under four prose reviews - quality, code, `/trace`,
@@ -347,7 +398,7 @@ and a sha256 comparison get the same budget today.
 
 Touches: loop.sh (`run_step`), implement/SKILL.md (the review dispatches).
 
-## 12. Let the driver recover from drift
+## 13. Let the driver recover from drift
 
 `drift` and `stale-spec` have a documented mechanical recovery - `/plan
 --refresh` - and the driver never calls it. It retries infrastructure failure
@@ -360,7 +411,7 @@ per run and to those two halt reasons and the no-guessing contract holds.
 
 Touches: loop.sh (the halt path).
 
-## 13. Keep the evidence a run produces
+## 14. Keep the evidence a run produces
 
 `LOG_DIR` lands under `$TMPDIR` and the transcripts are framed as debugging
 aids, not artifacts. So nothing accumulates across runs: which halt reasons
@@ -372,7 +423,7 @@ are iterated by feel.
 
 Touches: loop.sh (`LOG_DIR`, drain, the halt path), improve-skill/SKILL.md.
 
-## 14. Turn /trace into the Abnahme, so something runs the software
+## 15. Turn /trace into the Abnahme, so something runs the software
 
 Verification is one check command, the test suite, and four prose reviews.
 `SPEC_FORMAT.md` has a Design section with screens and states - empty, loading,
@@ -380,7 +431,7 @@ error, partial, disabled - plus accessibility criteria, and no step ever renders
 one.
 
 A feature can be green, traced, critiqued and handed over while failing to boot.
-This ranks above mutation testing (#15) for that reason: a suite can be fully
+This ranks above mutation testing (#16) for that reason: a suite can be fully
 mutation-killed on an app that does not start. It is also the only entry here
 that touches *usable* rather than *correct*.
 
@@ -400,7 +451,7 @@ today and neither survives the move unchanged:
   Consolidating there is the obvious move, and the cost is the reason it needs
   deciding: critique is deliberately spec-blind, so it can map a test to the
   logic it pins but not to the criterion that asked for it.
-- **Whether each test is worth anything on its own.** That is #15 - the mutation
+- **Whether each test is worth anything on its own.** That is #16 - the mutation
   check becomes a per-ticket gate in `/implement`, where a survivor lands on the
   ticket nothing is built on yet.
 
@@ -417,7 +468,7 @@ Touches: trace/SKILL.md, critique/SKILL.md, implement/SKILL.md. Cheaper than the
 new-skill version it replaces - nothing new to write, and loop.sh's drain is
 unchanged - so it may belong above the rank it has here.
 
-## 15. Mutation testing per ticket, which means the tooling ban goes
+## 16. Mutation testing per ticket, which means the tooling ban goes
 
 Everything the pipeline claims rests on one property - every behavior pinned by
 a test that would fail without it - and today that property is asserted by the
@@ -437,7 +488,7 @@ rule is what has to go, at the cost of a one-time tooling ticket per project.
 Touches: trace/SKILL.md (the ban), implement/SKILL.md (Review it), loop.sh
 (`REVIEWS`).
 
-## 16. Separate now from later in discovery
+## 17. Separate now from later in discovery
 
 Discovery holds scope to one shippable feature and parks the rest, but nothing
 makes the spec state the smallest version worth shipping and what deliberately
@@ -446,7 +497,7 @@ it does not catch a single feature specified past its MVP.
 
 Touches: discovery/SKILL.md, discovery/SPEC_FORMAT.md.
 
-## 17. Separate what the spec settled from what it merely defaulted
+## 18. Separate what the spec settled from what it merely defaulted
 
 SPEC_FORMAT's marker points one way only. A decision that was the user's to
 make - "a business rule, not a reversible default" - says so in its `_Why:_`
@@ -493,7 +544,7 @@ and ticket 9 each overturn it their own way, cold, and nothing ever notices.
 Touches: discovery/SPEC_FORMAT.md, discovery/SKILL.md, implement/SKILL.md,
 plan/SKILL.md.
 
-## 18. A lane for the work that keeps code maintainable
+## 19. A lane for the work that keeps code maintainable
 
 propose-change bounces it explicitly: nobody outside the code can observe a
 refactor, so it is below the floor and "wants doing directly". cleanup-repo is
@@ -506,13 +557,13 @@ that keeps the codebase alive gets none.
 The objection is real - a refactor has no new behavior, so nothing can be
 written RED. But that is the criterion, not a disqualification: the existing
 suite stays green and the diff provably changes no behavior, which is checkable,
-and is what #15 is for. `TICKET_FORMAT.md` already carries a second ticket kind
+and is what #16 is for. `TICKET_FORMAT.md` already carries a second ticket kind
 for `/trace`'s remediation tickets; a third kind is the natural home.
 
 A decision, not an edit. Touches: TICKET_FORMAT.md (all five copies),
 propose-change/SKILL.md.
 
-## 19. A durable system description, regenerated rather than maintained
+## 20. A durable system description, regenerated rather than maintained
 
 Deleting the spec and tickets at handover is right, and worth keeping. But after
 twenty features there is a glossary, some comments, a few ADRs, and no document
@@ -529,7 +580,7 @@ actually needs.
 
 Touches: repo-overview/SKILL.md.
 
-## 20. Check hard-to-reverse external choices against a primary source
+## 21. Check hard-to-reverse external choices against a primary source
 
 No skill does external research. Discovery names "language, frameworks, data
 models" as the decisions to be most careful about, and settles them from weights
@@ -544,7 +595,7 @@ Touches: discovery/SKILL.md - any hard-to-reverse external choice checked
 against current docs before it is recorded, with the citation in Implementation
 decisions.
 
-## 21. State the iron law once, in the one place that owns shared rules
+## 22. State the iron law once, in the one place that owns shared rules
 
 "Don't report done on something you didn't run" exists across the pipeline only
 in partial, skill-local forms: implement's RED confirmation, critique's
@@ -557,7 +608,7 @@ drifting across skills, and this rule is not in it.
 Touches: coding-conventions/SKILL.md, and a reference from the skills that
 currently restate a fragment of it.
 
-## 22. Split the craft from the loop that drives it
+## 23. Split the craft from the loop that drives it
 
 Two tiers: skills that are useful on their own, and skills that tie them into
 the spec/ticket workflow. Half of it is already the stated design. critique
@@ -612,8 +663,8 @@ already precedent - six skills read coding-conventions.
 
 Ranked here because it buys maintainability of the suite and reuse rather than
 closing a hole in what the pipeline can prove, which is this list's measure.
-Same family as #21: a rule that belongs in one place, restated in several. It
-also unblocks #18, whose maintenance lane would reuse the craft tier rather
+Same family as #22: a rule that belongs in one place, restated in several. It
+also unblocks #19, whose maintenance lane would reuse the craft tier rather
 than route around the pipeline.
 
 The cost is a collision. #6 to #9 target implement/SKILL.md, trace/SKILL.md,
@@ -627,7 +678,7 @@ trace/SKILL.md (the subtraction), plan/SKILL.md (the rename), loop.sh (the
 prompts that inherit what the skills drop), tests/run.sh, and the
 TICKET_FORMAT.md copies that go.
 
-## 23. Build the independent tail in parallel
+## 24. Build the independent tail in parallel
 
 Wall clock is the sum of all tickets although `depends_on` already declares the
 DAG. Keep the uncertainty-first prologue serial - that ordering is why a halt
@@ -649,7 +700,7 @@ settled.
 - **Should `/trace` merge into `/critique`?** Both are reviews, but trace checks
   traceability to the spec rather than the code itself - and critique
   deliberately does not know about tickets or specs, a separation the pipeline
-  leans on. #14 pushes the other way: an Abnahme that drives the application has
+  leans on. #15 pushes the other way: an Abnahme that drives the application has
   less in common with a code review than trace does today, and it is critique
   that would inherit the coverage mapping.
 - **Should the driver notice it is being restarted onto unconverged work?**
@@ -668,19 +719,9 @@ settled.
   upgrading existing ones?
 - **Should `/critique` generalise** to fire on any code review request, instead
   of competing with the built-in skill?
-- **Should `/handover` run inside the loop at all?** It cannot finish there:
-  promotion and deletion wait on a user who is asleep, so the driver produces
-  the brief and stops, and the human who accepts in the morning runs
-  `/handover` again - which re-derives the same brief from the same tickets.
-  The driver now prints the brief whole rather than losing it in a transcript,
-  which is worth having either way. But the alternative is that the loop ends
-  at `/critique` and simply says to run `/handover`, spending one session
-  instead of two and delivering the brief into the conversation that can act on
-  it. Against that: a run whose brief nobody reads until morning is still a run
-  whose brief exists, and reading it is how you decide whether to bother
-  accepting at all.
 - **handover and propose-change have never been run.** Both sit in the main
-  path. Whatever is wrong with them is still undiscovered.
+  path. Whatever is wrong with them is still undiscovered - #11 is what reading
+  the skill turns up, not what running it would.
 
 ## Rejected
 
@@ -692,7 +733,7 @@ Kept here so they don't get re-proposed.
   problem.
 - **OpenSpec's living capability specs**, updated by ADDED/MODIFIED/REMOVED
   deltas and archived per change. Stale specs are worse than none; the archive
-  discipline is the maintenance burden the delete policy avoids on purpose. #19
+  discipline is the maintenance burden the delete policy avoids on purpose. #20
   is the missing complement, not a replacement.
 - **The byte-identical TICKET_FORMAT copies.** Deliberate - diff is the parity
   check, and cross-skill relative paths break on independent install.
