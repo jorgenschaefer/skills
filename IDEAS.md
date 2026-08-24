@@ -14,7 +14,7 @@ against it or wait on it.
 
 ## Two runs, cited throughout
 
-Entries 4 to 6 and the review discipline in `PLAN.md` argue from the same two
+Entries 2 to 4 and the review discipline in `PLAN.md` argue from the same two
 runs, so the accounting sits here once rather than four times.
 
 `kh-finder` (`spec-dokumentbestand`) finished at 15 tickets: 4 planned, 11
@@ -26,7 +26,7 @@ names, and the last three critique passes spent on a test-only diff.
 Not all 27 late tickets are defects in the pipeline. Duplication found once
 three copies existed, a vocabulary split, a suite poisoning its own database,
 and a defect in a late fix caught by critique after trace are the yield the
-reviews exist for. Entries 4 to 6, and the regress `PLAN.md` claims, are the
+reviews exist for. Entries 2 to 4, and the regress `PLAN.md` claims, are the
 ones that should not have got that far, and each names the tickets it claims.
 
 Transcripts under `/tmp/loop-spec-dokumentbestand-*`,
@@ -42,7 +42,7 @@ skill that does not fire is worth zero however good its contents.
   default. The only one left that a `description` can fix, and the reason
   critique stayed model-invoked while the rest of the loop's skills did not.
 - `upgrade-dependencies` is user-invoked and nothing routes maintenance work
-  to it, so it is never reached. That is #13's missing lane, not a trigger
+  to it, so it is never reached. That is #11's missing lane, not a trigger
   problem - a better `description` would not help, because nobody is looking
   for it.
 
@@ -57,93 +57,11 @@ What survives of the `/plan` collision is the naming question for the human
 who types it, and the rename cost if the answer is yes: `/plan` is named in
 README.md, discovery/SKILL.md, implement/SKILL.md, propose-change/SKILL.md,
 solution/SKILL.md, SPEC_FORMAT.md and all five copies of
-TICKET_FORMAT.md. #17 carries that question now: the rename is one part of
+TICKET_FORMAT.md. #15 carries that question now: the rename is one part of
 splitting the craft tier from the loop tier, and paying the cost twice would
 be the waste.
 
-## 2. Show the user the domain model
-
-Discovery models the domain thoroughly - actors, work objects, entities,
-aggregates, actions, events - and then says outright that "the domain story is
-the analysis; the user story is what you record". The model reaches the spec's
-Domain section, but it is never put in front of the user as a proposal during
-the interview.
-
-The cause is a misfiling. Discovery's three-bucket sort names "where an
-aggregate boundary falls" in bucket 2 - decide it yourself, surface it for a
-veto - alongside how to wrap a dependency and where a seam sits. So by the
-skill's own rules the user is never asked; they are told, inside a bundled
-"I'm assuming X and Y unless you say otherwise" turn built to be skimmed. It is
-misfiled by the skill's own definition: the boundary "dictates what can change
-together and what must stay consistent", which is a statement about what the
-business will tolerate being briefly wrong, and bucket 3 is exactly "a business
-rule the code cannot imply". A third gate closes behind those two -
-SPEC_FORMAT's Work objects are included "only when identity, boundary, or an
-invariant is non-obvious enough that a wrong default would hurt", so the model
-can legitimately be omitted whole.
-
-**Shown, not asked** - settled. What kills a proposal is collapsing it back
-into the ten-default list, since one bullet among ten is buried rather than
-shown. The rule that saves it already exists and is never invoked here:
-confirming assumptions "gets its own turn, never mixed with a question".
-
-Show the domain stories the skill already traces internally - this actor does
-this action on this work object, which raises this event - plus, per aggregate,
-what changes together and the invariant the root holds. That is nearly free,
-being work already done rather than a new step. Foreground what can actually be
-vetoed: these two things are one thing, X may lag Y, that is not what we call
-it, you have missed an actor. Entity-versus-value-object is not something to put
-in front of a user. Prose or a small table by default; a diagram only where the
-relations are dense enough that prose fails, on the same reasoning that gates
-the HTML mockup. Show it after the journey is understood and before criteria
-harden - the model changes which criteria are needed, so a later showing is a
-rubber stamp.
-
-Two consequences. Work objects stop being conditional and become "what was
-ratified". And the durable half splits: vocabulary has the glossary, but a
-**consistency boundary has no home** and dies with the deleted spec, though it
-outlives the run and is exactly what `PLAN.md`'s ADRs are for.
-
-Touches: discovery/SKILL.md, discovery/SPEC_FORMAT.md.
-
-## 3. Mock the journey, not the decision
-
-`Show, don't tell` fires on "when a UI **decision** is genuinely open" - per
-decision, never per journey. So it produces a component, or two layouts side by
-side, and structurally cannot produce screen 1 to screen 5. The mockup is then
-disposable and scoped to that one decision, so nothing accumulates into a flow.
-SPEC_FORMAT matches it: Design is "for each screen: layout and components,
-states" - a list of screens with nothing between them.
-
-That also explains why mockups appear only sometimes. On a project with an
-established design language most screen decisions resolve into bucket 1, the
-codebase answers it, and nothing is shown at all. Correct for a component and
-wrong for a flow: **the codebase can answer what a button looks like; it can
-never answer where the user goes next.**
-
-Evidenced. The everlast spec gives a twelve-story, multi-screen product 13 lines
-of Design and says nowhere what happens to a reader after a deletion. Three of
-its sixteen review-filed tickets are that one question - 20 "pin where a reader
-is put down after a removal", 22 "keep a walked-away deletion from moving its
-reader", 23 "name a notebook's own page in one place". Structural rather than
-bad luck: a transition between two screens owned by two tickets is owned by
-neither, and `/implement` builds each ticket cold. Flow is what per-ticket
-construction is least able to see and what the spec records least.
-
-Bind the mockup to the journey instead - the screens in sequence, including
-where each terminal action puts the reader down - and let the Design section
-carry the walk rather than only the stops. Same disposal policy; the deletion
-rule is unchanged. It is also the honest source of the `Depends on` notes
-`/plan` already asks for.
-
-Ranks above the three that follow because a whole class of requirement is here
-not merely unproven but unstated, and no discipline downstream closes a hole in
-what the spec never said - #4 to #6 all assume the criterion exists.
-
-Touches: discovery/SKILL.md (`Show, don't tell`, Process),
-discovery/SPEC_FORMAT.md (Design).
-
-## 4. Pin what the ticket claims, and notice when a pin leaves
+## 2. Pin what the ticket claims, and notice when a pin leaves
 
 The pipeline's central claim is that every criterion is met *and* pinned by a
 test that would fail without it. Four mechanisms let one through unpinned, and
@@ -192,7 +110,7 @@ every part of it left unpinned.
 
 Touches: implement/SKILL.md, trace/SKILL.md, the five TICKET_FORMAT.md copies.
 
-## 5. Let a constraint that covers a set name its members
+## 3. Let a constraint that covers a set name its members
 
 plan requires a criterion be claimed by exactly one ticket and a constraint by
 *at least* one. A constraint naming one property - a latency budget, a retry
@@ -222,7 +140,7 @@ claims one already does.
 
 Touches: plan/SKILL.md, discovery/SPEC_FORMAT.md, discovery/SKILL.md.
 
-## 6. Give the implementer's out-of-scope finding a destination
+## 4. Give the implementer's out-of-scope finding a destination
 
 An implementer deep in the code is the cheapest finder in a run, and what it
 finds outside its own ticket reaches nothing the loop reads. kh-finder's ticket
@@ -246,7 +164,7 @@ The cheapest of these three, and the only one with a driver test.
 Touches: the five TICKET_FORMAT.md copies, trace/SKILL.md, loop.sh,
 tests/run.sh.
 
-## 7. Review with a different model than the one that wrote the code
+## 5. Review with a different model than the one that wrote the code
 
 Every step is `claude -p` with one model in a fresh serial session. Two
 deterministic checks sit under four prose reviews - quality, code, `/trace`,
@@ -259,7 +177,7 @@ and a sha256 comparison get the same budget today.
 
 Touches: loop.sh (`run_step`), implement/SKILL.md (the review dispatches).
 
-## 8. Let the driver recover from drift
+## 6. Let the driver recover from drift
 
 `drift` and `stale-spec` have a documented mechanical recovery - `/plan
 --refresh` - and the driver never calls it. It retries infrastructure failure
@@ -272,7 +190,7 @@ per run and to those two halt reasons and the no-guessing contract holds.
 
 Touches: loop.sh (the halt path).
 
-## 9. Keep the evidence a run produces
+## 7. Keep the evidence a run produces
 
 `LOG_DIR` lands under `$TMPDIR` and the transcripts are framed as debugging
 aids, not artifacts. So nothing accumulates across runs: which halt reasons
@@ -284,7 +202,7 @@ are iterated by feel.
 
 Touches: loop.sh (`LOG_DIR`, drain, the halt path), improve-skill/SKILL.md.
 
-## 10. Turn /trace into the Abnahme, so something runs the software
+## 8. Turn /trace into the Abnahme, so something runs the software
 
 Verification is one check command, the test suite, and four prose reviews.
 `SPEC_FORMAT.md` has a Design section carrying each screen's layout,
@@ -293,7 +211,7 @@ omits - empty, loading, error, partial, disabled - plus accessibility criteria.
 No step ever renders one.
 
 A feature can be green, traced and critiqued while failing to boot. This ranks
-above mutation testing (#11) for that reason: a suite can be fully
+above mutation testing (#9) for that reason: a suite can be fully
 mutation-killed on an app that does not start. It is also the only entry here
 that touches *usable* rather than *correct*.
 
@@ -320,7 +238,7 @@ today and neither survives the move unchanged:
   Consolidating there is the obvious move, and the cost is the reason it needs
   deciding: critique is deliberately spec-blind, so it can map a test to the
   logic it pins but not to the criterion that asked for it.
-- **Whether each test is worth anything on its own.** That is #11 - the mutation
+- **Whether each test is worth anything on its own.** That is #9 - the mutation
   check becomes a per-ticket gate in `/implement`, where a survivor lands on the
   ticket nothing is built on yet.
 
@@ -337,7 +255,7 @@ Touches: trace/SKILL.md, critique/SKILL.md, implement/SKILL.md. Cheaper than the
 new-skill version it replaces - nothing new to write, and loop.sh's drain is
 unchanged - so it may belong above the rank it has here.
 
-## 11. Mutation testing per ticket, which means the tooling ban goes
+## 9. Mutation testing per ticket, which means the tooling ban goes
 
 Everything the pipeline claims rests on one property - every behavior pinned by
 a test that would fail without it - and today that property is asserted by the
@@ -357,7 +275,7 @@ rule is what has to go, at the cost of a one-time tooling ticket per project.
 Touches: trace/SKILL.md (the ban), implement/SKILL.md (Review it), loop.sh
 (`REVIEWS`).
 
-## 12. Separate now from later in discovery
+## 10. Separate now from later in discovery
 
 Discovery holds scope to one shippable feature and parks the rest, but nothing
 makes the spec state the smallest version worth shipping and what deliberately
@@ -366,7 +284,7 @@ it does not catch a single feature specified past its MVP.
 
 Touches: discovery/SKILL.md, discovery/SPEC_FORMAT.md.
 
-## 13. A lane for the work that keeps code maintainable
+## 11. A lane for the work that keeps code maintainable
 
 propose-change bounces it explicitly: nobody outside the code can observe a
 refactor, so it is below the floor and "wants doing directly". cleanup-repo is
@@ -379,13 +297,13 @@ that keeps the codebase alive gets none.
 The objection is real - a refactor has no new behavior, so nothing can be
 written RED. But that is the criterion, not a disqualification: the existing
 suite stays green and the diff provably changes no behavior, which is checkable,
-and is what #11 is for. `TICKET_FORMAT.md` already carries a second ticket kind
+and is what #9 is for. `TICKET_FORMAT.md` already carries a second ticket kind
 for `/trace`'s remediation tickets; a third kind is the natural home.
 
 A decision, not an edit. Touches: TICKET_FORMAT.md (all five copies),
 propose-change/SKILL.md.
 
-## 14. A durable system description, regenerated rather than maintained
+## 12. A durable system description, regenerated rather than maintained
 
 Deleting the spec and tickets at the merge is right, and worth keeping. But
 after twenty features there is a glossary, some comments, a few ADRs, a handful
@@ -403,7 +321,7 @@ actually needs.
 
 Touches: repo-overview/SKILL.md.
 
-## 15. Check hard-to-reverse external choices against a primary source
+## 13. Check hard-to-reverse external choices against a primary source
 
 No skill does external research. Discovery names "language, frameworks, data
 models" as the decisions to be most careful about, and settles them from weights
@@ -418,7 +336,7 @@ Touches: discovery/SKILL.md - any hard-to-reverse external choice checked
 against current docs before it is recorded, with the citation in Implementation
 decisions.
 
-## 16. State the iron law once, in the one place that owns shared rules
+## 14. State the iron law once, in the one place that owns shared rules
 
 "Don't report done on something you didn't run" exists across the pipeline only
 in partial, skill-local forms: implement's RED confirmation, critique's
@@ -431,7 +349,7 @@ drifting across skills, and this rule is not in it.
 Touches: coding-conventions/SKILL.md, and a reference from the skills that
 currently restate a fragment of it.
 
-## 17. Split the craft from the loop that drives it
+## 15. Split the craft from the loop that drives it
 
 Two tiers: skills that are useful on their own, and skills that tie them into
 the spec/ticket workflow. Half of it is already the stated design. critique
@@ -487,15 +405,15 @@ deletes handover.
 
 Ranked here because it buys maintainability of the suite and reuse rather than
 closing a hole in what the pipeline can prove, which is this list's measure.
-Same family as #16: a rule that belongs in one place, restated in several. It
-also unblocks #13, whose maintenance lane would reuse the craft tier rather
+Same family as #14: a rule that belongs in one place, restated in several. It
+also unblocks #11, whose maintenance lane would reuse the craft tier rather
 than route around the pipeline.
 
-The cost is a collision, and `PLAN.md` makes it worse: the plan, #4 and #6 all
+The cost is a collision, and `PLAN.md` makes it worse: the plan, #2 and #4 all
 target implement/SKILL.md, trace/SKILL.md, critique/SKILL.md and the
 TICKET_FORMAT.md copies - every file this would move, and the plan lands first.
 The two entries are evidence-driven from two runs; this is structural with no
-evidence of harm yet, and a refactor goes on green. Against that: #4 and #6 both
+evidence of harm yet, and a refactor goes on green. Against that: #2 and #4 both
 touch every format copy, and between them the plan and this entry take five down
 to three.
 
@@ -504,7 +422,7 @@ trace/SKILL.md (the subtraction), plan/SKILL.md (the rename), loop.sh (the
 prompts that inherit what the skills drop), tests/run.sh, and the
 TICKET_FORMAT.md copies that go.
 
-## 18. Build the independent tail in parallel
+## 16. Build the independent tail in parallel
 
 Wall clock is the sum of all tickets although `depends_on` already declares the
 DAG. Keep the uncertainty-first prologue serial - that ordering is why a halt
@@ -526,7 +444,7 @@ settled.
 - **Should `/trace` merge into `/critique`?** Both are reviews, but trace checks
   traceability to the spec rather than the code itself - and critique
   deliberately does not know about tickets or specs, a separation the pipeline
-  leans on. #10 pushes the other way: an Abnahme that drives the application has
+  leans on. #8 pushes the other way: an Abnahme that drives the application has
   less in common with a code review than trace does today, and it is critique
   that would inherit the coverage mapping. `PLAN.md` raises the price: it makes
   trace the only step that may add work, precisely because it checks against a
@@ -560,7 +478,7 @@ Kept here so they don't get re-proposed.
   deltas and archived per change. Stale specs are worse than none; the archive
   discipline is the maintenance burden the delete policy avoids on purpose.
   `PLAN.md` answers the same need from the opposite side - the durable
-  functional record is executable, so it cannot go stale unnoticed - and #14 is
+  functional record is executable, so it cannot go stale unnoticed - and #12 is
   the missing complement, not a replacement.
 
 - **A closing step that ratifies decisions after the run.** Both `/handover` and

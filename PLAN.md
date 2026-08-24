@@ -64,6 +64,71 @@ touches is not a default but a contract**, and `/plan` promotes it into a
 `Provides`. Without that, ticket 3 and ticket 9 each overturn it their own way,
 cold, and nothing notices.
 
+### The journey is written down
+
+`/discovery` identifies "the user journey (or journeys) and the tasks that
+compose it", but only as a means to a story per task: `grep journey
+discovery/SPEC_FORMAT.md` returns nothing. The journey is analysis, discarded
+the way the domain story is - "the domain story is the analysis; the user story
+is what you record". That was survivable while nothing downstream needed it.
+
+It is not survivable now, because the permanent tier is journey-shaped. A
+workflow test pins a journey, and `spec_hash` freezes a file with no journey in
+it, so `/plan` would reconstruct from stories what the user actually ratified.
+`SPEC_FORMAT.md` gains a `## Journeys` section, written by `/discovery`, and per
+journey it carries four things:
+
+- **The trigger** - when and why the user starts down this path. Nothing asks
+  for this today, and it is the half of a journey that stories never imply.
+- **The steps in sequence**, including where each terminal action puts the user
+  down afterwards.
+- **The domain effect** - which actors act on which work objects, and what
+  events that raises.
+- **The screens it passes through**, as a walk rather than a list.
+
+A ratified workflow test then quotes its journey instead of deriving from it, so
+what the user said yes to and what the test asserts are the same words.
+
+Two entries from `IDEAS.md` are absorbed here, because both are the same
+omission seen from different sides and both become load-bearing once a journey
+has to be written down.
+
+**The domain model is shown, not just recorded.** Discovery models actors, work
+objects, entities, aggregates, actions and events thoroughly, and never puts the
+model in front of the user as a proposal. The cause is a misfiling: "where an
+aggregate boundary falls" sits in bucket 2 - decide it yourself, surface it for
+a veto - alongside how to wrap a dependency. But a boundary "dictates what can
+change together and what must stay consistent", which is a statement about what
+the business will tolerate being briefly wrong, and that is bucket 3. Show the
+domain stories the skill already traces internally, plus per aggregate what
+changes together and the invariant the root holds, in its own turn rather than
+buried in a ten-item assumption list. Foreground what can actually be vetoed:
+these two things are one thing, X may lag Y, that is not what we call it, you
+have missed an actor. Entity-versus-value-object is not something to put in
+front of a user. Show it after the journey is understood and before criteria
+harden - the model changes which criteria are needed, so a later showing is a
+rubber stamp. Work objects stop being a conditional section and become what was
+ratified.
+
+**The mockup binds to the journey, not to one open decision.** `Show, don't
+tell` fires "when a UI decision is genuinely open" - per decision, never per
+journey - so it can produce a component or two layouts side by side and
+structurally cannot produce screen 1 to screen 5. On a project with an
+established design language most screen decisions resolve into bucket 1, the
+codebase answers it, and nothing is shown at all. That is correct for a
+component and wrong for a flow: **the codebase can answer what a button looks
+like; it can never answer where the user goes next.** The everlast spec gave a
+twelve-story, multi-screen product 13 lines of Design and said nowhere what
+happens to a reader after a deletion; three of its sixteen review-filed tickets
+were that one question. A transition between two screens owned by two tickets is
+owned by neither, and `/implement` builds each ticket cold. Same disposal
+policy - the mockup is a communication device, kept only where the visual is the
+record.
+
+This does not move `## Design` back into `/discovery`. The journey says where
+the user goes and what that means in the domain; the design says what the screen
+is made of. The first is the what, the second is the how, and the seam holds.
+
 ### Permanent means executable
 
 The permanent tier has three kinds and each needs its own answer to drift.
@@ -82,9 +147,9 @@ They are rare by construction. `/discovery` already separates the journey from
 the tasks that compose it, so the bar writes itself: **a workflow test pins a
 journey; per-task criteria stay in the spec as ordinary tests.** Most features
 extend an existing journey and ratify none, and the skill has to say so or every
-feature will invent one to feel thorough. A ratified workflow is written out as
-its steps and its observable outcome, not as a title - it has to be precise
-enough to become a test in a ticket nobody discusses.
+feature will invent one to feel thorough. What the ticket builds from is the
+`## Journeys` entry above, quoted rather than paraphrased - precise enough to
+become a test in a ticket nobody discusses.
 
 The second effect is larger than the record-keeping. The workflow suite runs in
 the project's check command, so feature 12's run keeps feature 3's journeys
@@ -138,6 +203,29 @@ not settle the how, and it must not promise what the code makes impossible.
 Not folded into `/plan` instead, which is the tempting two-step version:
 `/plan`'s value is that it audits the spec cold and sends an oversized one back,
 and no step can adversarially review a design it just argued for.
+
+### `/solution` surveys before it decides
+
+Keeping prior solutions working is what the workflow tests are for. Unifying
+similar approaches is nobody's job. `coding-conventions` carries "no
+duplication" and "duplication is justified or removed", but as a rubric
+`/critique` applies to a diff - after the fact, on the code this run wrote.
+everlast found duplication once three copies existed and a vocabulary split
+later still, which is what after-the-fact costs in a codebase that has had
+twenty features through it.
+
+So `/solution` opens with a survey rather than a design: what already exists
+that resembles what this feature needs, module by module, and for each one
+whether the new work reuses it, extends it, absorbs it, replaces it, or
+deliberately sits beside it - with the reason. That goes into `Implementation
+decisions`, and the list of affected modules falls out of the same pass, which
+nothing asks for today either.
+
+Bound it, or it becomes a licence to rewrite the codebase on a feature's budget:
+the survey decides what *this feature* touches. Unification it wants but does
+not need goes to `IDEAS.md` like any other parked scope. A unification that is
+architecturally consequential is a permanent-tier item and gets an ADR and a
+yes, like any other.
 
 ### ADRs get a source and a reader
 
@@ -267,19 +355,21 @@ against today's behaviour first, so the rewrite has a baseline that fails when
 it breaks something.
 
 **1. `discovery/SPEC_FORMAT.md`** - the tier markers, the defaults list beside
-Implementation decisions, and the seam: everything through `## User Stories`
-belongs to `/discovery`, `## Design` and `## Implementation decisions` to
-`/solution`.
+Implementation decisions, the new `## Journeys` section, and the seam:
+everything through `## User Stories` belongs to `/discovery`, `## Design` and
+`## Implementation decisions` to `/solution`.
 
 **2. `ADR_FORMAT.md` and the location convention**, plus the reader line in
 discovery, solution, plan and critique.
 
 **3. `discovery/SKILL.md`** - cut to the what; ratification in flight and the
-closing receipt; reads the existing workflow tests and the ADRs; the
-`/decision-brief` close goes.
+closing receipt; reads the existing workflow tests and the ADRs; writes the
+journeys, shows the domain model in its own turn, and binds `Show, don't tell`
+to the journey rather than to one open decision; the `/decision-brief` close
+goes.
 
-**4. `solution/SKILL.md`** - new; the how; reads `coding-conventions` and the
-ADRs; may send requirements back.
+**4. `solution/SKILL.md`** - new; the survey first, then the how; reads
+`coding-conventions` and the ADRs; may send requirements back.
 
 **5. `plan/SKILL.md`** - the workflow-test ticket ordered last, the multi-ticket
 default promoted to a `Provides`, the workflow authorisation written into the
