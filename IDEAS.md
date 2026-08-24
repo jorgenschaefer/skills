@@ -8,14 +8,14 @@ that closes a hole in what the pipeline can prove.
 `/discovery` reads this file as its parking lot, so every entry says what
 problem it solves, what it would touch, and what it costs.
 
-Work that is decided rather than weighed lives in `PLAN.md` instead. The
-front-loaded-ratification rework is there, and several entries below argue
-against it or wait on it.
+Work that is decided rather than weighed lives in a `PLAN_*.md` file instead.
+`PLAN_RATIFICATION.md` holds the front-loaded-ratification rework, and several
+entries below argue against it or wait on it. `PLAN_LAYERS.md` drafts #15.
 
 ## Two runs, cited throughout
 
-Entries 2 to 4 and the review discipline in `PLAN.md` argue from the same two
-runs, so the accounting sits here once rather than four times.
+Entries 2 to 4 and the review discipline in `PLAN_RATIFICATION.md` argue from
+the same two runs, so the accounting sits here once rather than four times.
 
 `kh-finder` (`spec-dokumentbestand`) finished at 15 tickets: 4 planned, 11
 filed by `/trace` and `/critique` during the run. `everlast-notebooklm`
@@ -26,8 +26,9 @@ names, and the last three critique passes spent on a test-only diff.
 Not all 27 late tickets are defects in the pipeline. Duplication found once
 three copies existed, a vocabulary split, a suite poisoning its own database,
 and a defect in a late fix caught by critique after trace are the yield the
-reviews exist for. Entries 2 to 4, and the regress `PLAN.md` claims, are the
-ones that should not have got that far, and each names the tickets it claims.
+reviews exist for. Entries 2 to 4, and the regress `PLAN_RATIFICATION.md`
+claims, are the ones that should not have got that far, and each names the
+tickets it claims.
 
 Transcripts under `/tmp/loop-spec-dokumentbestand-*`,
 `/tmp/loop-notebooklm-mvp-*` and `/tmp/loop-finalize-*`; the tickets themselves
@@ -98,9 +99,9 @@ kh-finder's second trace pass checked exactly this by hand and reported the
 counts, but as one pass's initiative rather than a rule. Fix: a test removed,
 renamed away or weakened over the run's diff is a finding for trace, and a
 ticket-scoped one for implement's code review, which catches a consolidation at
-the moment it consolidates. `PLAN.md`'s work bar would forbid this finding as
-written - coverage that pinned a deleted spec's criterion traces to no criterion
-in this one - so the carve-out that keeps it legal lives there.
+the moment it consolidates. `PLAN_RATIFICATION.md`'s work bar would forbid this
+finding as written - coverage that pinned a deleted spec's criterion traces to
+no criterion in this one - so the carve-out that keeps it legal lives there.
 
 **A remediation ticket fixes the half the mutation reached.** everlast's US-0.1
 has two halves - the gate that blocks a red deploy, and the throwaway database
@@ -215,12 +216,15 @@ above mutation testing (#9) for that reason: a suite can be fully
 mutation-killed on an app that does not start. It is also the only entry here
 that touches *usable* rather than *correct*.
 
-`PLAN.md`'s workflow tests take the largest bite out of this: a permanent
-suite that drives the main journeys at every ticket cannot stay green on an app
-that does not start. What they do not reach is the feature's own criteria -
-they are rare by construction, one per journey, and a screen's empty and error
-states are not journeys. So this survives, narrowed to what the permanent suite
-does not cover.
+`PLAN_RATIFICATION.md`'s workflow tests take the largest bite out of this: a
+permanent suite that drives the main journeys at every ticket cannot stay green
+on an app that does not start. What they do not reach is the feature's own
+criteria - they are rare by construction, one per journey, and a screen's empty
+and error states are not journeys. Nor do they reach whether the journey runs
+the way the user ratified it: a workflow test asserts what its implementer chose
+to assert, and it is joined to the ratified journey by quotation, which is a
+prose discipline. So this survives, narrowed to what the permanent suite does
+not cover - the feature's own criteria, and the fidelity the suite assumes.
 
 The cheap shape is not a new skill beside `/trace` but `/trace` itself. It
 already runs after the loop drains, already reads the spec whole, and already
@@ -351,6 +355,10 @@ currently restate a fragment of it.
 
 ## 15. Split the craft from the loop that drives it
 
+Drafted in `PLAN_LAYERS.md`, which settles the boundary and the target skill
+list and leaves the naming and the format copies open. The rest of this entry
+is the argument that draft was built from.
+
 Two tiers: skills that are useful on their own, and skills that tie them into
 the spec/ticket workflow. Half of it is already the stated design. critique
 closes with "the caller knows about tickets, the reviewer doesn't", and the
@@ -400,8 +408,8 @@ smaller bet.
 
 Context is free either way: plan, solution, implement and trace are already
 user-invoked, so a tier-2 description never loads. Skill-reads-skill is
-already precedent - five skills read coding-conventions, four once `PLAN.md`
-deletes handover.
+already precedent - five skills read coding-conventions, four once
+`PLAN_RATIFICATION.md` deletes handover.
 
 Ranked here because it buys maintainability of the suite and reuse rather than
 closing a hole in what the pipeline can prove, which is this list's measure.
@@ -409,8 +417,8 @@ Same family as #14: a rule that belongs in one place, restated in several. It
 also unblocks #11, whose maintenance lane would reuse the craft tier rather
 than route around the pipeline.
 
-The cost is a collision, and `PLAN.md` makes it worse: the plan, #2 and #4 all
-target implement/SKILL.md, trace/SKILL.md, critique/SKILL.md and the
+The cost is a collision, and `PLAN_RATIFICATION.md` makes it worse: the plan, #2
+and #4 all target implement/SKILL.md, trace/SKILL.md, critique/SKILL.md and the
 TICKET_FORMAT.md copies - every file this would move, and the plan lands first.
 The two entries are evidence-driven from two runs; this is structural with no
 evidence of harm yet, and a refactor goes on green. Against that: #2 and #4 both
@@ -446,18 +454,22 @@ settled.
   deliberately does not know about tickets or specs, a separation the pipeline
   leans on. #8 pushes the other way: an Abnahme that drives the application has
   less in common with a code review than trace does today, and it is critique
-  that would inherit the coverage mapping. `PLAN.md` raises the price: it makes
-  trace the only step that may add work, precisely because it checks against a
-  finite spec, so merging it into the spec-blind reviewer hands that power to
-  the one bounded by nothing but taste.
+  that would inherit the coverage mapping. `PLAN_RATIFICATION.md` raises the
+  price without settling it: it lets both file, but only trace may file against
+  the spec, while critique files only what it can construct a trigger for and
+  what lands in the security and data-loss properties that bind unstated.
+  Merging them merges two differently-bounded mandates into one reviewer, and
+  the merged skill would have to carry both bars separately anyway.
 - **Should the driver notice it is being restarted onto unconverged work?**
   `MAX_PASSES=2` exists so non-convergence reaches a human, and relaxing it is
   in *Rejected* below for the right reason. On everlast the signal fired and was
   answered by re-running `loop.sh` five times, twice under a new branch name -
   which resets both the pass count and `CHECKED_AT`, so the ceiling never bit.
-  `PLAN.md` should stop that particular regress, which is the argument for
-  leaving the driver alone; against it, the restart is silent, and a ceiling
-  routed around without anyone deciding to is not a ceiling.
+  `PLAN_RATIFICATION.md` shrinks what each pass can produce but does not touch
+  the reset, and keeps `MAX_PASSES` as the backstop rather than replacing it -
+  so the argument for leaving the driver alone is weaker than it looked.
+  Against it still: the restart is silent, and a ceiling routed around without
+  anyone deciding to is not a ceiling.
 - **Is `/debug` worth keeping?**
 - **Is `ubiquitous-language-init` still useful?**
 - **Should `upgrade-dependencies` cover adding a new dependency**, not only
@@ -477,9 +489,9 @@ Kept here so they don't get re-proposed.
 - **OpenSpec's living capability specs**, updated by ADDED/MODIFIED/REMOVED
   deltas and archived per change. Stale specs are worse than none; the archive
   discipline is the maintenance burden the delete policy avoids on purpose.
-  `PLAN.md` answers the same need from the opposite side - the durable
-  functional record is executable, so it cannot go stale unnoticed - and #12 is
-  the missing complement, not a replacement.
+  `PLAN_RATIFICATION.md` answers the same need from the opposite side - the
+  durable functional record is executable, so it cannot go stale unnoticed -
+  and #12 is the missing complement, not a replacement.
 
 - **A closing step that ratifies decisions after the run.** Both `/handover` and
   `/decision-brief` died of it. A ranked list handed to a reader with no live
