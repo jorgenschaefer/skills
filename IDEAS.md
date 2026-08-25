@@ -70,3 +70,73 @@ the ticket alone. What stays is what would be true of building anything -
 which is the test for where each line belongs.
 *Touches: implement/SKILL.md, implement-ticket/SKILL.md, and the description
 that decides when either fires.*
+
+**Skills that name a sibling skill do not install standalone.** `/critique` and
+`/implement` both say "read the `coding-conventions` skill", and `/cleanup-repo`
+cites its only-looks-dead list. Installed one at a time -
+`npx skills add jorgenschaefer/skills@critique` - that instruction finds
+nothing, so the skill most worth having on its own is the one that breaks.
+Seven of the other skills name `coding-conventions` and three tell the agent to
+read it whole. The shared format documents already have an answer: each
+consuming skill carries its own byte-identical copy and `diff` is the parity
+check. Open is whether the same answer fits a hundred-and-seventy-line standard
+seven skills point at, or whether the dependency should be declared somewhere
+instead of copied. Settle this before the rest of this list: every generic
+skill below inherits it.
+*Touches: coding-conventions/SKILL.md and the seven skills that name it,
+README.md.*
+
+**`coding-conventions` is stack-neutral except where it isn't.** Everything in
+it travels - simple design, clarity, concurrency, cost at scale, accessibility,
+changing what already runs, coverage, security, dependencies - apart from
+`## Domain layering`, whose seams are a React/Next.js/Prisma/TanStack Query
+write path naming Server Actions, Zod and Prisma types directly. Roughly
+fifteen lines in a hundred and seventy, and the section a Go or Python project
+would be most misled by, because the domain-naming rule underneath it is the
+part that generalises. Open: whether the seams stay as a worked example marked
+as one, or whether a stack-neutral core splits from a `coding-conventions-web`
+beside it. That is a decision, not an edit.
+*Touches: coding-conventions/SKILL.md.*
+
+**`/handover` should stand alone as a pull request description.** What it does -
+what this branch does now, how it works, what to look at first, what is still
+uncertain, kept to a page - is craft with nothing to do with a run. Two things
+tie it down: the instruction not to restate the mechanical half, which only
+means anything while the driver is printing that half beside it, and the whole
+`## Promote before the paper goes` section, which exists because `./accept.sh`
+is about to delete the spec and the tickets. Both are conditional on a caller
+that has paper, and with no caller saying so, neither applies. The best return
+for the work on this list.
+*Touches: handover/SKILL.md.*
+
+**Three skills carry a pipeline tail they do not need.** `/critique` is already
+written both ways - "where the review has requirements behind it… where there
+are none, `coding-conventions` is the destination" - and only its closing two
+paragraphs, on workflow-test authorisation and filing findings as remediation
+tickets, assume a loop; both are already fenced behind "where the caller asks".
+`/cleanup-repo` names one sibling skill. `/improve-skill` reads `loop.sh`'s
+transcripts by name where any run transcript would do. One editing pass each,
+and none of them changes what the skill does.
+*Touches: critique/SKILL.md, cleanup-repo/SKILL.md, improve-skill/SKILL.md.*
+
+**`/check-against-spec` has a generic acceptance skill inside it.** Drive it
+rather than read it, the two ways a criterion fails, the test for where nobody
+can drive it, the mutation gate, the orphan sweep, the bar a gap has to clear -
+none of that needs a pipeline. What does: criteria numbered `US-N.M` and
+constraints `C-N`, journeys as the script, and an output that files tickets
+into a queue. A generic version reports instead of filing, and needs a fallback
+for a feature with no numbered spec behind it, which is most of them. After the
+three above rather than before: it is a rewrite of the output half, not a
+conditional.
+*Touches: check-against-spec/SKILL.md.*
+
+**`/upgrade-dependencies` is npm-only.** One paragraph of pipeline framing is
+all that ties it to a run and dropping it is trivial; the genuine limit is the
+other axis. `npm ci`, `npm update`, `npm outdated`, `ERESOLVE`,
+`package-lock.json`, `.nvmrc`, `@types/node` and `engines.node` run through the
+whole skill. Every ecosystem has the same three passes - baseline, the updates
+the ranges already allow, then the majors one at a time - so the shape travels
+and the commands do not. Either it is renamed for what it actually covers, or
+the passes are stated once and the commands become the project's to establish,
+the way `/implement` establishes its verification command.
+*Touches: upgrade-dependencies/SKILL.md.*
