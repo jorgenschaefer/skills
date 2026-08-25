@@ -132,8 +132,15 @@ expect_commit()  { grep -q -- "$1" <<< "$(commit_msg)" && ok "$2" || bad "$2" "n
 $(commit_msg)"; }
 expect_no_commit() { grep -q -- "$1" <<< "$(commit_msg)" && bad "$2" "found '$1' in:
 $(commit_msg)" || ok "$2"; }
-# A path that is in the history and has nothing uncommitted against it - for the
-# halt the driver writes over work it deliberately leaves committed.
+# Which of two strings the run printed first, for the report's ordering.
+expect_order()   { local a b
+                   a="$(grep -n -- "$1" <<< "$OUT" | head -1 | cut -d: -f1)"
+                   b="$(grep -n -- "$2" <<< "$OUT" | head -1 | cut -d: -f1)"
+                   [ -n "$a" ] && [ -n "$b" ] && [ "$a" -lt "$b" ] && ok "$3" \
+                     || bad "$3" "'$1' at ${a:-nowhere}, '$2' at ${b:-nowhere}
+$OUT"; }
+# A path that is in the history with nothing uncommitted against it - for the
+# halt the driver writes over work it deliberately leaves standing.
 expect_committed() { git -C "$WORK" log --oneline -- "$1" | grep -q . \
                      && [ -z "$(git -C "$WORK" status --porcelain -- "$1")" ] \
                      && ok "$2" || bad "$2" "$1 is not committed
@@ -154,7 +161,7 @@ workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 done
 clean.jsonl 0 -
-clean.jsonl 0 -
+reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF
 drive 0
@@ -169,7 +176,7 @@ workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 done
 clean.jsonl 0 -
-clean.jsonl 0 -
+reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF
 drive 0
@@ -179,7 +186,7 @@ expect_no_out "logs: $WORK/tmp" "a run's transcripts are not left in the temp di
 
 cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 -
-clean.jsonl 0 -
+reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF
 drive 0
@@ -210,7 +217,7 @@ cat > "$WORK/plan" <<'EOF'
 rate-limited-session.jsonl 1 -
 clean.jsonl 0 done
 clean.jsonl 0 -
-clean.jsonl 0 -
+reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF
 drive "$(just_reset)"
@@ -225,7 +232,7 @@ cat > "$WORK/plan" <<'EOF'
 rate-limited-session.jsonl 0 -
 clean.jsonl 0 done
 clean.jsonl 0 -
-clean.jsonl 0 -
+reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF
 drive "$(just_reset)"
@@ -236,7 +243,7 @@ workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
 warned.jsonl 0 done
 clean.jsonl 0 -
-clean.jsonl 0 -
+reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF
 drive "$(hours_off 1)"
@@ -249,7 +256,7 @@ rate-limited-session.jsonl 1 -
 errored.jsonl 0 -
 clean.jsonl 0 done
 clean.jsonl 0 -
-clean.jsonl 0 -
+reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF
 drive "$(just_reset)" RETRY_DELAYS=0
@@ -310,7 +317,7 @@ cat > "$WORK/plan" <<'EOF'
 errored.jsonl 0 -
 clean.jsonl 0 done
 clean.jsonl 0 -
-clean.jsonl 0 -
+reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF
 drive 0 RETRY_DELAYS="0 0"
@@ -342,25 +349,32 @@ expect_out "No delay fixes" "a bad key says why nothing was retried"
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 -
+clean.jsonl 0 -
 EOF
 drive 0 RETRY_DELAYS="0 0"
 expect_rc 1 "a ticket left unfinished by a whole session is a halt"
 expect_out "halted on 01-thing" "a halt names the ticket"
-expect_calls 1 "a halt is a decision, so it is never retried"
+expect_calls 2 "a halt is a decision, so it is never retried - only handed over"
 
 # --- a queue that cannot be drained -------------------------------------------
 
 workspace 01-thing 02-other
 ticket 02-other todo 01
 ticket 01-thing blocked ""
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 -
+EOF
 drive 0
 expect_rc 1 "a ticket nothing can reach is a stop, not a finished run"
-expect_calls 0 "an unreachable queue never reaches the checks or the handover"
+expect_calls 1 "an unreachable queue reaches the handover and nothing before it"
 expect_out "01-thing" "the stop names the ticket that is stuck"
 expect_out "02-other" "the stop names what is stuck behind it"
 
 workspace 01-thing
 ticket 01-thing todo 09
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 -
+EOF
 drive 0
 expect_rc 1 "a dependency that does not exist is a stop"
 expect_out "does not exist" "a missing dependency says what is missing"
@@ -368,88 +382,116 @@ expect_out "does not exist" "a missing dependency says what is missing"
 workspace 01-thing 02-other
 ticket 01-thing todo 02
 ticket 02-other todo 01
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 -
+EOF
 drive 0
 expect_rc 1 "two tickets waiting on each other are a stop"
-expect_calls 0 "a cycle never reaches handover"
+expect_calls 1 "a cycle reaches nothing but the handover"
 
-# --- reviews that file work ---------------------------------------------------
+# --- how a run ends -----------------------------------------------------------
 
-# A review's findings become tickets, and the same loop builds them under the
-# same discipline rather than leaving them for a human.
+# Every path out of a run produces the same two things: the driver's account of
+# what happened, which is mechanical, and the handover's, which is judgement.
 
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
-clean.jsonl 0 done
-clean.jsonl 0 file
-clean.jsonl 0 done
+clean.jsonl 0 record
+clean.jsonl 0 -
+reviewed.jsonl 0 -
+clean.jsonl 0 -
+EOF
+drive 0
+expect_rc 0 "a run with nothing standing ends clean"
+expect_out "state: clean" "the run says which of the three ways it ended"
+expect_out "./accept.sh" "and how to accept it"
+expect_calls 4 "one build, one check, one critique, one handover"
+expect_out "rejection reasons have no length ceiling" "the report carries what the builds decided"
+expect_out "the status page's two branches" "and what they left standing"
+expect_order "no length ceiling" "named the flag" "sorted by what it costs to be wrong"
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 -
 clean.jsonl 0 -
 EOF
 drive 0
-expect_rc 0 "a ticket a review files is built before the run ends"
-expect_out "\[2/2\] 90-filed-2" "a ticket filed mid-run counts in the position"
-expect_calls 5 "the filed ticket costs one more step, and the run still ends"
-expect_no_prompt /check-against-spec "Scope this to" "the first pass checks the whole run"
-expect_prompt "Run /critique" "from this branch's start" \
-  "the first pass reviews the whole branch"
+expect_rc 1 "a run that halts is a run that ended, not one that stopped"
+expect_out "state: halted" "it says so"
+expect_calls 2 "and still gets its handover - that reader needs it most"
+expect_out "$LOOP" "the report says what resumes it"
 
-# A later pass re-reads only what the previous pass's findings added, and the
-# commit it narrows to is where the branch stood when that pass finished - here
-# the commit that built 01-thing, not the one the run started from.
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 record
+clean.jsonl 0 -
+critique-blockers.jsonl 0 -
+clean.jsonl 0 -
+EOF
+drive 0
+expect_rc 1 "blockers left standing are a run a human has to rule on"
+expect_out "state: requires human review" "the third state says what is wanted"
+expect_out "2 blockers" "the verdict line is read rather than the prose around it"
+expect_out "re-run" "and the way back is written down"
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 record
+clean.jsonl 0 -
+critique-standing.jsonl 0 -
+clean.jsonl 0 -
+EOF
+drive 0
+expect_rc 1 "a disagreement the review refused to reopen also wants a human"
+expect_out "state: requires human review" "even with nothing filed and nothing blocking"
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 record
+clean.jsonl 0 -
+critique-mute.jsonl 0 -
+clean.jsonl 0 -
+EOF
+drive 0
+expect_rc 1 "a review that never closed with its verdict line is not a pass"
+expect_out "no verdict line" "the report says the review did not say"
+
+# The spec check is the loop's; the review is not. It reads the whole run once
+# after the last drain, then only what it filed itself.
 
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 done
-clean.jsonl 0 -
 clean.jsonl 0 file
 clean.jsonl 0 done
 clean.jsonl 0 -
-clean.jsonl 0 -
+reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF
 drive 0
 SHA="$(git -C "$WORK" rev-parse HEAD~1)"
-expect_rc 0 "work filed by the last review of a pass opens another pass"
-expect_calls 7 "a second pass is a second check, critique and handover"
+expect_rc 0 "a gap the check files is built inside the pass loop"
+expect_calls 6 "and the review still runs once at the end"
 expect_prompt /check-against-spec "Scope this to the commits since $SHA" \
-  "the second spec check is narrowed to the last pass's commits"
+  "the check's second pass reads only what the first one filed"
+expect_prompt "Run /critique" "from this branch's start" \
+  "and the review still reads the whole branch"
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 done
+clean.jsonl 0 -
+clean.jsonl 0 file
+clean.jsonl 0 done
+reviewed.jsonl 0 -
+clean.jsonl 0 -
+EOF
+drive 0
+SHA="$(git -C "$WORK" rev-parse HEAD~1)"
+expect_rc 0 "work the review files is built and then re-reviewed"
+expect_calls 6 "which is one more build and one more review, not another pass"
 expect_prompt "Run /critique" "over the diff from $SHA" \
-  "the second critique is narrowed to the same commit"
-
-# Only the last review of a pass decides whether the run has converged: a gap
-# /check-against-spec files is drained inside the pass and holds nothing up.
-
-workspace 01-thing
-cat > "$WORK/plan" <<'EOF'
-clean.jsonl 0 done
-clean.jsonl 0 -
-clean.jsonl 0 file
-clean.jsonl 0 done
-clean.jsonl 0 file
-clean.jsonl 0 done
-clean.jsonl 0 -
-clean.jsonl 0 -
-EOF
-drive 0
-expect_rc 0 "a gap the second pass's check files is built, not counted against it"
-expect_calls 8 "the run converges on the pass that filed it"
-
-# Reviews that are still filing work when the passes run out are not short of
-# budget, and the run says so rather than handing over as if it were finished.
-
-workspace 01-thing
-cat > "$WORK/plan" <<'EOF'
-clean.jsonl 0 done
-clean.jsonl 0 -
-clean.jsonl 0 file
-clean.jsonl 0 done
-clean.jsonl 0 -
-clean.jsonl 0 file
-EOF
-drive 0
-expect_rc 1 "reviews that never converge stop for a human"
-expect_out "still filing work after 2 passes" "the stop says what would not converge"
-expect_calls 6 "a run that will not converge never reaches handover"
+  "the second read covers only what the first one filed"
 
 # --- a reset that has already passed ------------------------------------------
 
@@ -470,7 +512,7 @@ mv "$WORK/tickets" "$WORK/docs/feature/tickets"
 cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 done
 clean.jsonl 0 -
-clean.jsonl 0 -
+reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF
 TICKET_DIR=docs/feature/tickets drive 0
@@ -486,7 +528,7 @@ workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 done
 clean.jsonl 0 -
-clean.jsonl 0 -
+reviewed.jsonl 0 -
 handover.jsonl 0 -
 EOF
 drive 0 REVIEWS=code
@@ -503,7 +545,7 @@ workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 done
 clean.jsonl 0 -
-clean.jsonl 0 -
+reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF
 drive 0
@@ -519,7 +561,7 @@ workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 done
 clean.jsonl 0 -
-clean.jsonl 0 -
+reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF
 drive 0 BUILD_MODEL=sonnet REVIEW_MODEL=opus
@@ -539,7 +581,7 @@ workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 done
 clean.jsonl 0 -
-clean.jsonl 0 -
+reviewed.jsonl 0 -
 handover.jsonl 0 -
 EOF
 drive 0
@@ -550,7 +592,7 @@ workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
 handover.jsonl 0 done
 clean.jsonl 0 -
-clean.jsonl 0 -
+reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF
 drive 0
@@ -566,10 +608,11 @@ expect_no_out "status page" "a building step is still only its narration"
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 workflow
+clean.jsonl 0 -
 EOF
 drive 0
 expect_rc 1 "a build that changes a workflow test with no authorisation stops the run"
-expect_calls 1 "the run stops at that ticket"
+expect_calls 2 "the run stops at that ticket and hands over"
 expect_out "tests/workflows/" "the stop names what was touched"
 expect_ticket 01-thing "^## Halt" "the driver writes the halt into the ticket"
 expect_ticket 01-thing "tests/workflows/journey.test" "the halt names the paths"
@@ -585,6 +628,7 @@ expect_committed tests/workflows/journey.test "the change itself is left standin
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 self-authorised
+clean.jsonl 0 -
 EOF
 drive 0
 expect_rc 1 "a build cannot authorise itself on the way past"
@@ -597,17 +641,18 @@ cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 done
 clean.jsonl 0 file
 clean.jsonl 0 workflow
+clean.jsonl 0 -
 EOF
 drive 0
 expect_rc 1 "a ticket a later pass filed is guarded too"
-expect_calls 3 "the run stops on it rather than handing over"
+expect_calls 4 "the run stops on it and hands over"
 
 workspace 01-thing
 printf -- '---\nstatus: todo\ndepends_on: []\n---\n\n# 01-thing\n\n## Workflow tests\n- tests/workflows/journey.test - the rename reaches it\n' > "$WORK/tickets/01-thing.md"
 cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 workflow
 clean.jsonl 0 -
-clean.jsonl 0 -
+reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF
 drive 0

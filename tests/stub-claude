@@ -4,7 +4,7 @@
 #
 # Each invocation consumes one line of $STUB_PLAN:
 #
-#   <fixture> <exit-code> <done|file|workflow|self-authorised|->
+#   <fixture> <exit-code> <done|record|file|workflow|self-authorised|->
 #
 # and replays that fixture on stdout - real records, captured from runs that hit
 # the real limit - exits with that code, and then does what the third field says:
@@ -49,7 +49,23 @@ if [ "$action" = "self-authorised" ]; then
   printf '\n## Workflow tests\n- tests/workflows/journey.test - I decided this was fine\n' >> "$ticket"
 fi
 
-if [ "$action" = "done" ] || [ "$action" = "workflow" ] || [ "$action" = "self-authorised" ]; then
+# A finished build's Record, written out of order on purpose: what reads it has
+# to sort, and a fixture already in order would not show that.
+if [ "$action" = "record" ]; then
+  ticket="$(printf '%s\n' "$prompt" | sed -n 's#^/implement-ticket \(.*\.md\).*#\1#p' | head -1)"
+  cat >> "$ticket" <<'RECORD'
+
+## Record
+**Commit:** 9f4a2c1
+**Decisions:**
+- **[low]** named the flag `enabled` rather than `active`
+- **[high]** rejection reasons have no length ceiling
+**Unresolved:**
+- **[medium]** the status page's two branches were left unmerged
+RECORD
+fi
+
+if [ "$action" = "done" ] || [ "$action" = "record" ] || [ "$action" = "workflow" ] || [ "$action" = "self-authorised" ]; then
   ticket="$(printf '%s\n' "$prompt" | sed -n 's#^/implement-ticket \(.*\.md\).*#\1#p' | head -1)"
   [ -n "$ticket" ] || { echo "stub-claude: no ticket to finish in: $prompt" >&2; exit 99; }
   sed -i 's/^status:.*/status: done/' "$ticket"

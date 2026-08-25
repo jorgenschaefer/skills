@@ -126,7 +126,7 @@ Only what you decided. The spec's own decisions were ratified as discovery made 
 
 `/spec-to-tickets --refresh` re-derives the unbuilt tickets after the loop halts on `drift` or `stale-spec`. The premise is that reality moved: either the code an unbuilt ticket assumed, or the spec every ticket cites.
 
-- Leave `done` tickets untouched. They are a record of work that happened, and their `Record` sections feed the handover.
+- Leave `done` tickets untouched. They are a record of work that happened, and their `Record` sections are what the run's closing report is collected from.
 - Re-derive every `todo` and `blocked` ticket against the codebase as it actually is now - read the code, not the prose of the tickets you are replacing, which is the drifted material. Renumber nothing; ids are referenced by `depends_on` and by commit messages.
 - Re-check which defaults are binding before re-stamping. A refresh moves seams, so a default one ticket owned may now be shared. Adding `(binding)` is not patching a spec decision - it records which tickets depend on one - and it goes in before the hash, as it did the first time.
 - Re-stamp `spec_hash` on everything you rewrite.

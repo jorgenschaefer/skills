@@ -162,7 +162,7 @@ The driver appends a `## Halt` of its own where it catches something after the f
 
 `Pinned by` answers, for every id in `Satisfies` - or for every behaviour the diff touches, in a ticket that claims no ids - which test would fail if that behaviour were removed - and says whether the proof is the RED run this ticket wrote, or a restore-and-break check against a test it did not write. A whole suite passing says nothing about the one criterion nobody wrote a test for, so the claim is made per id or not at all.
 
-`Decisions` is what the handover brief aggregates at the end of a run: where the spec was silent, whether the default matches intent is the user's call, and this is the only place that question gets asked. `Unresolved` is for findings deliberately not fixed - a nit judged not worth it, a should-fix the implementer argued against. A section stays absent when empty rather than carrying a "none".
+`Decisions` is what the driver's closing report collects: where the spec was silent, whether the default matches intent is the user's call, and this is the only place that question gets asked. `Unresolved` is for findings deliberately not fixed - a nit judged not worth it, a should-fix the implementer argued against. A section stays absent when empty rather than carrying a "none".
 
 **Every `Decisions` and `Unresolved` entry opens with its stakes**, in exactly the form `**[high]**`, `**[medium]**` or `**[low]**`, marked as the entry is written and while the reasoning is still live. The mark is what it costs to have been wrong:
 

@@ -486,7 +486,7 @@ box in the same commit as the step.
 - [x] **D1** The review bar - *tested*
 - [x] **D2** Mutation - *tested*
 - [x] **D3** Workflow tests and their guard - *tested*
-- [ ] **E1** Terminal states, the report, and `/handover` split - *tested*
+- [x] **E1** Terminal states, the report, and `/handover` split - *tested*
 - [ ] **E2** Driver resilience - *tested*
 - [ ] **E3** The Abnahme
 - [ ] **F1** `ARCHITECTURE.md`

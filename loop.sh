@@ -9,9 +9,10 @@
 # /implement-ticket records the reason rather than guessing past it.
 #
 # Exit codes say what kind of stop it was, because they want opposite responses:
-#   1  an agent halted, a build changed a ratified workflow test it was not
-#      authorised to touch, the queue has tickets nothing can reach, or the
-#      reviews would not converge - a human is needed
+#   1  the run ended somewhere other than clean: an agent halted, a build
+#      changed a ratified workflow test it was not authorised to touch, the
+#      queue has tickets nothing can reach, the spec check would not converge,
+#      or the review left blockers or a disagreement standing
 #   2  bad invocation - no ticket directory, not a repo, on main
 #   3  a session died in a way the driver could neither wait out nor retry
 #
@@ -33,7 +34,9 @@
 # short line per phase - and nothing else. Every step's full transcript is kept
 # as JSON under the log directory printed at startup: the screen stays quiet,
 # the detail stays on disk. The closing handover is the exception, printed in
-# full, because that brief is what the run was for.
+# full, because that description is what the run was for - preceded by this
+# script's own account of how the run ended, collected from the tickets rather
+# than judged.
 
 set -uo pipefail
 
@@ -505,20 +508,19 @@ drain() {
 
 # Both end-of-run checks feed findings back as tickets, so a fix re-enters the
 # same loop with the same TDD and review discipline instead of being patched by
-# hand after everything else has been verified. /check-against-spec runs first:
-# a gap it finds becomes code, and that code should pass under /critique rather
-# than land behind it. /critique stays a generic review skill - the prompt here,
-# not the skill, knows this pipeline files tickets.
+# hand after everything else has been verified. /check-against-spec runs first
+# and inside the pass loop: a gap it finds becomes code, and that code has to be
+# checked like everything else. /critique stays a generic review skill - the
+# prompt here, not the skill, knows this pipeline files tickets.
 #
-# Pass 1 checks the whole run; a later pass checks only what the previous pass's
-# findings added. Re-reading twelve tickets' code to check three fixes is the
-# same review over again, and it is what makes a second pass cost as much as the
-# first. Narrowing is safe because pass 1 is the check that proves every
-# criterion is pinned by a test that fails without it - once that holds, the
-# green suite is what guards the old criteria, not another read of them.
-#
-# Set to HEAD once a pass's checks are done, so the next pass's baseline is
-# every commit built after them.
+# CHECKED_AT is a baseline both prompts read. The check's first pass reads the
+# whole run and a later pass reads only what the previous one filed, because
+# re-reading twelve tickets' code to check three fixes is the same review twice.
+# Narrowing is safe because pass 1 proves every criterion is pinned by a test
+# that fails without it - once that holds, the green suite guards the old
+# criteria rather than another read of them. It is cleared before /critique,
+# which has had no passes and reads the branch whole, and set again between its
+# two reads.
 CHECKED_AT=""
 
 check_prompt() {
@@ -550,7 +552,8 @@ critique_prompt() {
 Run /critique over the diff from $since.
 For each Blocker and Should-fix, file a remediation ticket in $TICKETS,
 in the shape TICKET_FORMAT.md specifies.
-Do not file nits - leave those in your report for /handover to triage.
+Do not file nits - leave those in your report, which this run keeps as a
+transcript and names in its closing report.
 Where a fix would reach tests/workflows/, say so in the ticket you file.
 The done tickets there carry a Record of what each build decided, left
 Unresolved, and left open. Read them as leads and verify each for yourself.
@@ -558,37 +561,176 @@ Close with the verdict line the skill specifies, alone on the last line.
 EOF
 }
 
+# --- how the run ends ---------------------------------------------------------
+
+# Three ways out, and they want different things from the reader: a clean run
+# wants accepting, a halted one wants reading, and one with blockers standing
+# wants deciding. Each is written down rather than inferred from an exit code,
+# because the person who reads this was not here for any of it.
+#
+# The mechanical half of the closing text is the driver's: what state the run
+# reached, what every build recorded, what the review counted, and the one
+# command that comes next. The judgement half is /handover's, and both are
+# produced on every path - the run that ended badly is the one whose reader
+# most needs both.
+
+# Every fork a build recorded and every finding it argued down, ordered by what
+# it costs to have been wrong. The marks were written while the reasoning was
+# live, so this only sorts; nothing is ranked here at the end.
+run_entries() {
+  local file name
+  for file in "$TICKETS"/[0-9]*.md; do
+    [ -e "$file" ] || continue
+    name="$(basename "$file" .md)"
+    # Only under `## Record`, and only the two marked lists: a ticket quoting the
+    # format in its body would otherwise contribute the example. An entry runs
+    # until the next one, so a wrapped line keeps its reasoning and its
+    # file:line - the half that makes a fork judgeable.
+    awk -v t="$name" '
+      function flush() { if (e != "") { print r "\t" t "\t" e; e = "" } }
+      /^## /  { flush(); rec = ($0 == "## Record"); list = 0 }
+      !rec    { next }
+      /^\*\*(Decisions|Unresolved):\*\*/ { flush(); list = 1; next }
+      /^\*\*/ { flush(); list = 0 }
+      !list   { next }
+      /^- \*\*\[(high|medium|low)\]\*\*/ {
+        flush()
+        r = /\[high\]/ ? 1 : (/\[medium\]/ ? 2 : 3)
+        e = $0; sub(/^- \*\*\[[a-z]+\]\*\* */, "", e); next
+      }
+      /^[[:space:]]+[^[:space:]]/ { if (e != "") { c = $0; sub(/^[[:space:]]+/, "", c); e = e " " c }; next }
+      { flush() }
+      END { flush() }
+    ' "$file"
+  done | sort -n -k1,1 -s | awk -F'\t' \
+      '{ print "  " ($1 == 1 ? "[high]  " : $1 == 2 ? "[medium]" : "[low]   ") "  " $2 "  " $3 }'
+}
+
+# The review closes with a fixed line so this can read a count instead of
+# spending a second agent on the first one's prose. All four fields or none: a
+# line that half matches is a review that did not close the way it was asked to,
+# and reading three of its numbers would be worse than reading none of them.
+# Singular tolerated on the way in, though the skill asks for the plural always:
+# strictness belongs in the instruction, forgiveness in the thing that reads it.
+VERDICT_RE='^VERDICT: [0-9]+ blockers?, [0-9]+ should-fix, [0-9]+ nits?, [0-9]+ standing disagreements?$'
+critique_verdict() {
+  jq -r 'select(.type == "assistant") | .message.content[]? | select(.type == "text") | .text' \
+     "$LOG_DIR/critique-$1.jsonl" 2>/dev/null | grep -E "$VERDICT_RE" | tail -1
+}
+
+report() {
+  local state="$1" verdict="$2" entries
+  entries="$(run_entries)"
+  echo
+  echo "── the run ──────────────────────────────────────────────"
+  echo "state: $state"
+  [ -z "$verdict" ] || echo "review: $verdict"
+  ! ls "$LOG_DIR"/critique-*.jsonl >/dev/null 2>&1 \
+    || echo "the review in full, nits included: $LOG_DIR/critique-*.jsonl"
+  if [ -n "$entries" ]; then
+    echo
+    echo "what the builds decided and left standing:"
+    printf '%s\n' "$entries"
+  fi
+  echo
+}
+
+# The closing brief, on every path. What is left after it is the one command
+# that follows from the state the run reached.
+finish_run() {
+  local state="$1" verdict="${2:-}"
+  report "$state" "$verdict"
+  echo "==> handover"
+  # A handover that dies does not change what the run reached, and the half above
+  # is already printed. Say so and let the state stand, rather than reporting the
+  # death as the ending.
+  run_step handover "handover" \
+    "$(printf "/handover %s\nThe run's state: %s. Write the pull request description for it.\n" \
+       "$SPEC_DIR" "$state")" "$BRIEF_FILTER" \
+    || echo "!! no pull request description was written - the report above stands" >&2
+  echo
+  case "$state" in
+    clean)
+      echo "Accepting deletes the spec and the tickets, and that is yours to do:"
+      echo "  ./accept.sh $SPEC_DIR" ;;
+    *)
+      echo "Resolve what stands above, then re-run - it drains whatever that"
+      echo "produced and checks and reviews the new commits:"
+      echo "  $0 $TICKETS" ;;
+  esac
+}
+
+# drain stops for two different reasons and they are not both endings: 1 is a
+# decision somebody has to read, 3 is a session that died and left the work
+# exactly where it was, which is a run to resume rather than one to hand over.
+drain_or_end() {
+  local rc=0
+  drain || rc=$?
+  [ "$rc" -eq 0 ] && return 0
+  [ "$rc" -eq 1 ] || exit "$rc"
+  finish_run halted
+  exit 1
+}
+
 echo "logs: $LOG_DIR"
 
-# Bounded, because work the loop cannot converge on should reach a human.
+# The spec check belongs in the loop: a gap it finds becomes code, and that code
+# has to be checked like everything else. The review does not - it reads the run
+# whole, once, and re-reads only what it filed itself. Passes 2 and 3 of a review
+# inside this loop spent their budget re-reading a test-only diff.
 for pass in $(seq "$MAX_PASSES"); do
-  drain || exit $?
+  drain_or_end
 
   echo "==> spec check (pass $pass)"
   run_step review "spec-check-$pass" "$(check_prompt)" || exit 3
-  drain || exit $?
-
-  echo "==> critique (pass $pass)"
-  run_step review "critique-$pass" "$(critique_prompt)" || exit 3
 
   if ! next_ticket >/dev/null; then
-    reviews_clean=1
+    checks_clean=1
     break
   fi
   CHECKED_AT="$(git rev-parse HEAD)"
-  echo "==> reviews filed work; draining again"
+  echo "==> the check filed work; draining again"
 done
 
-if [ -z "${reviews_clean:-}" ]; then
-  echo "!! reviews still filing work after $MAX_PASSES passes - stopping for a human" >&2
+if [ -z "${checks_clean:-}" ]; then
+  echo "!! the spec check is still filing work after $MAX_PASSES passes" >&2
+  finish_run "requires human review"
   exit 1
 fi
 
-echo "==> handover"
-run_step handover "handover" "/handover $SPEC_DIR" "$BRIEF_FILTER" || exit 3
+# The check narrowed its later passes to what the previous one filed. The review
+# has had no passes: it reads the branch whole, so that narrowing is not its.
+CHECKED_AT=""
+echo "==> critique"
+run_step review "critique-1" "$(critique_prompt)" || exit 3
+verdict="$(critique_verdict 1)"
 
-# Handover's last step - promoting what must survive, then deleting the spec and
-# the tickets - is the user's to authorise, and there was nobody here to ask.
-echo
-echo "Accepting the run means promoting what must survive and deleting the paper."
-echo "That one needs you present: /handover $SPEC_DIR"
+# What it filed is built, and then it reads that and nothing else.
+if next_ticket >/dev/null; then
+  CHECKED_AT="$(git rev-parse HEAD)"
+  drain_or_end
+  echo "==> critique (over what it filed)"
+  run_step review "critique-2" "$(critique_prompt)" || exit 3
+  verdict="$(critique_verdict 2)"
+fi
+
+# A blocker that survived being filed, built and re-read is not work the loop
+# can converge on, and a disagreement it refused to reopen is not work at all.
+# Both are for a human, and neither makes the run a failure.
+blockers="$(sed -n 's/^VERDICT: \([0-9]*\) blockers.*/\1/p' <<< "$verdict")"
+standing="$(sed -n 's/.*, \([0-9]*\) standing disagreements*$/\1/p' <<< "$verdict")"
+if next_ticket >/dev/null; then
+  # Filed by the last read, with nothing after it to build them. Unbuilt work
+  # reported as a delivered feature is the one failure this must not produce.
+  echo "!! the review filed work on its second read, and nothing builds it" >&2
+  finish_run "requires human review" "$verdict"
+  exit 1
+elif [ -z "$verdict" ]; then
+  finish_run "requires human review" "no verdict line - the review did not say"
+  exit 1
+elif [ "${blockers:-0}" -gt 0 ] || [ "${standing:-0}" -gt 0 ]; then
+  finish_run "requires human review" "$verdict"
+  exit 1
+fi
+
+finish_run clean "$verdict"
