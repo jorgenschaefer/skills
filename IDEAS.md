@@ -460,6 +460,37 @@ stays inside the branch.
 **A0, A1, A3, C3 and F1 depend on nothing** and can land at any point,
 including first.
 
+Nine of the twenty steps change only prose that no test guards, so *green* means
+less here than the count suggests; for those the verification is a careful read.
+The eleven marked *tested* below own a case in `tests/run.sh`, written failing
+first as the repo's rule requires.
+
+The boxes are this sequence's `status` field. A session ends and another begins
+with no memory of which steps landed, which is the problem the ticket format
+already solves by keeping state in the file rather than in the driver. Tick the
+box in the same commit as the step.
+
+- [ ] **A0** Pin the untested machinery - *tested*
+- [ ] **A1** Keep the run's evidence - *tested*
+- [ ] **A2** Review independence, `REVIEWS=code` retired - *tested*
+- [ ] **A3** `accept.sh` - *tested*
+- [ ] **B1** `SPEC_FORMAT.md` and a new `ADR_FORMAT.md`
+- [ ] **B2** `/discovery` gains everything it now owns
+- [ ] **B3** Delete `/propose-change`, `/decision-brief`, `/debug`
+- [ ] **B4** The renames - *tested*
+- [ ] **B5** `/spec-to-tickets`'s decomposition rules
+- [ ] **C1** `/implement-ticket`, with the rule split from the resolution - *tested*
+- [ ] **C2** The ticket format and what `/implement` writes into it
+- [ ] **C3** The maintenance lane
+- [ ] **D1** The review bar - *tested*
+- [ ] **D2** Mutation - *tested*
+- [ ] **D3** Workflow tests and their guard - *tested*
+- [ ] **E1** Terminal states, the report, and `/handover` split - *tested*
+- [ ] **E2** Driver resilience - *tested*
+- [ ] **E3** The Abnahme
+- [ ] **F1** `ARCHITECTURE.md`
+- [ ] **F2** `README.md`
+
 ### Phase A - the mechanical work that depends on nothing
 
 **A0. Pin the untested machinery.** The fixture that files a ticket, plus cases
@@ -471,8 +502,10 @@ none of them is covered now.
 **A1. Keep the run's evidence.** `LOG_DIR` out of `$TMPDIR`, accumulating across
 runs; `/improve-skill` reads it. Early because every dogfood run from here on
 either produces evidence or does not, and this is the only mechanism on the list
-that lets a line be removed because a run went right.
-*loop.sh, improve-skill/SKILL.md.*
+that lets a line be removed because a run went right. A case that a run's logs
+land where the next run can read them, written failing first - a silent failure
+here loses exactly the evidence the step exists to collect.
+*loop.sh, improve-skill/SKILL.md, tests/run.sh.*
 
 **A2. Review independence, and `REVIEWS=code` retired.** A different model for
 the reviews, reasoning effort per step, and the quality-for-time trade deleted.
@@ -548,13 +581,17 @@ everything above except C2's copy set.
 **D1. The review bar.** The three conjuncts, the pre-existing-coverage carve-out
 and *notice a test that leaves* together, severity by what the defect does, the
 fixed verdict line, reviews reading `Record` entries as leads, and `/critique`'s
-description fixed. Needs C2, which is where the third subsection appears.
-*critique/SKILL.md, check-against-spec/SKILL.md, implement/SKILL.md, loop.sh.*
+description fixed. Needs C2, which is where the third subsection appears. The
+driver-side reads - the verdict line's counts, and the `Record` entries the
+review prompt points at - take a prompt case each, written failing first.
+*critique/SKILL.md, check-against-spec/SKILL.md, implement/SKILL.md, loop.sh,
+tests/run.sh.*
 
 **D2. Mutation.** The tooling ban lifted, the per-ticket gate, and the
 surviving-mutant bar - all three, or the gate imports the regress D1 closes.
-After D1, because the bar is stated in terms of the destination conjunct.
-*check-against-spec/SKILL.md, implement/SKILL.md, loop.sh.*
+After D1, because the bar is stated in terms of the destination conjunct. What
+the driver passes the gate is a prompt case, written failing first.
+*check-against-spec/SKILL.md, implement/SKILL.md, loop.sh, tests/run.sh.*
 
 **D3. Workflow tests and their guard.** The `tests/workflows/` convention, the
 driver guard, and the planning-time authorisation in one step - the guard alone
