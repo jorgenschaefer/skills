@@ -483,6 +483,9 @@ EOF
 drive 0 REVIEWS=code
 expect_rc 0 "a run asks for no less than the skills' full discipline"
 expect_no_prompt /implement-ticket "quality review" "no run trades a review away for time"
+expect_prompt /implement-ticket "say so in the ticket rather than installing" \
+  "a build that finds the mutation tooling missing files it rather than fixing it"
+expect_no_prompt /implement-ticket "authorised" "no run authorises a build to change the project"
 
 # What each step is run as. A review reads code a different model wrote, and the
 # steps are not alike enough to think equally hard about.

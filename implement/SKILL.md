@@ -97,6 +97,22 @@ A criterion whose test you cannot name, or whose test still passes with the beha
 
 On a ticket meant to change no behavior this check *is* the ticket: a test that no longer fails when you break what it was written for has stopped pinning it, and a suite that stays green because it stopped looking is the failure mode the whole exercise exists to catch.
 
+### The mutation gate
+
+Run the project's mutation testing tool over this ticket's own diff and nothing else - Stryker's `--since`, `mutmut`, PIT's incremental mode, `cargo-mutants`, Infection. Deciding by eye whether a test would notice a deletion is prediction; this executes it, and it is the only check in a ticket that is not a model judging work a model produced.
+
+It is also the slowest thing in the ticket, so it is bounded like everything else here: scoped to the diff, one run, plus one more if you killed a survivor. Where the tool has no incremental mode and the only thing available is a whole-suite run costing more than the ticket did, say that in `Left open` rather than running it - and where the project has no such tool at all, say that instead. Setting one up is a change to the project, which is a ticket of its own and not something to do inside this one. A gate that did not run is not a gate that passed, and the run's own checks read `Left open` to find out.
+
+Here rather than at the end of the run, because here the gap is on the ticket nothing is built on yet. The same survivor found after twelve tickets is found in code that eleven others now stand on.
+
+It joins the quality review; it does not stand in for one. A mutant says a test did not notice a change to the code, which is a different question from whether the right thing was built.
+
+**A survivor is a gap only where it lands on code the bar can name** - behaviour a criterion this ticket claims, a constraint, a workflow test, or one of `coding-conventions`' `## Security` or `## Changing what already runs` properties. Mutants are not a finite set: every codebase has an unbounded supply of survivors on code nobody promised anything about, so without that limit the gate becomes exactly the endless relitigation the bar exists to stop. Equivalent mutants cannot be killed at all, and a loop trying to kill one writes absurd tests until something stops it.
+
+A survivor that clears the bar is a hole in this ticket's own tests. Close it the way a criterion that already works is closed: apply the mutant by hand, write the test, watch it fail against the mutant, then restore the code and watch it pass. A test written green against code that already works proves nothing. Re-run the gate once over what you added; if survivors are still appearing after that, the ticket's tests have a shape problem another round will not fix, and it goes in `Left open` for the run's own checks.
+
+A survivor that does not clear the bar goes in `Left open` too, not into a test.
+
 ## Review it
 
 **Run the verification command first and fix what it reports.** It is deterministic, fast, and independent of the model that wrote the code – three things no review below is – so it goes ahead of them. A review round spent on something a typechecker would have caught is a round wasted, and a type error means the code is broken no matter what a reviewer concludes about it.

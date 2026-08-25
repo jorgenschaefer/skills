@@ -484,7 +484,7 @@ box in the same commit as the step.
 - [x] **C2** The ticket format and what `/implement` writes into it
 - [x] **C3** The maintenance lane
 - [x] **D1** The review bar - *tested*
-- [ ] **D2** Mutation - *tested*
+- [x] **D2** Mutation - *tested*
 - [ ] **D3** Workflow tests and their guard - *tested*
 - [ ] **E1** Terminal states, the report, and `/handover` split - *tested*
 - [ ] **E2** Driver resilience - *tested*
@@ -640,6 +640,10 @@ Neither gates a step.
 - **The `/implement-ticket` boundary is enforced by nothing.** The grep lint was
   dropped along with the three-layer taxonomy it was written to enforce, so
   ticket knowledge drifting back into `implement/SKILL.md` fails no test.
+- **What the mutation gate costs at every ticket.** It is bounded in the skill -
+  the ticket's own diff, one run plus one, and a stated bail-out where only a
+  whole-suite run is available - but the bail-out is the builder's judgement and
+  nothing measures what it actually spends.
 - **What the workflow suite costs at every ticket** on a project where it is
   slow. The fallback of running it only at the final gate was dropped, so the
   at-every-ticket property is unconditional and its cost is unbudgeted.

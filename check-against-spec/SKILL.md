@@ -41,25 +41,29 @@ Delegate breadth where the spec is large - a subagent per story, each hunting fo
 
 ## Check the tests mechanically, not by reading
 
-The second failure mode - behavior that works with nothing pinning it - is the one you should not judge by eye. Deciding whether a test would notice a deletion means simulating that deletion, and a tool does it by execution instead of prediction. Every review before this one, including your own, is a model judging work a model produced; this is the one check in the pipeline that isn't.
+The second failure mode - behavior that works with nothing pinning it - is the one you should not judge by eye. Deciding whether a test would notice a deletion means simulating that deletion, and a tool does it by execution instead of prediction. Every review before this one, including your own, is a model judging work a model produced. The per-ticket gate and this one are the exceptions, and this is the only one that sees the whole run at once.
 
 **If the project already has a mutation testing tool configured**, run it over this run's diff - Stryker's `--since`, `mutmut`, PIT's incremental mode, `cargo-mutants`, Infection. Scope it to what changed: a whole-suite run is slow enough to be worth avoiding, and untouched code is not what you are checking.
 
 Read surviving mutants as evidence, not as a score to chase:
 
-- A survivor on behavior a criterion names means that criterion is unpinned. File a ticket - the gap is objective.
-- A survivor anywhere else has no destination under the bar above, so it is not a ticket. Report it for a human to weigh.
+- A survivor on behaviour the bar can name - a criterion, a constraint, a non-goal, a workflow test, or one of `coding-conventions`' `## Security` or `## Changing what already runs` properties - means that thing is unpinned. File a ticket; the gap is objective.
+- A survivor anywhere else has no destination under the bar, so it is not a ticket. Report it for a human to weigh. Mutants are not a finite set - every codebase has an unbounded supply of them on code nobody promised anything about - and a gate without that limit is the relitigation the bar exists to stop.
 - Never chase a score. Equivalent mutants cannot be killed by definition, and a loop trying to kill one writes absurd tests until something stops it.
 
 **Where no such tool is configured**, fall back to the crude version: revert the non-test files in the run's diff, run the suite, confirm the new tests fail, then restore. It proves less - removing everything at once tends to produce import errors rather than assertion failures, which is exactly the evidence `/implement` refuses to accept as RED - but a suite that stays green with the feature deleted is damning however it was measured.
 
-**Don't install tooling to satisfy this.** Adding a mutation framework is a change to the project, not a check on it, and that is not a decision to make from inside a review. Say in your report that the check was unavailable, so a clean result is never mistaken for a verified one.
+**Where the project has no tool**, file its setup as a maintenance ticket and use the fallback for this run. Adding a framework is a change to the project rather than a check on it, so it goes through the same build and the same reviews as any other change - once, and every run after this one has the gate at every ticket. This is the one gap you file that traces to no criterion: the bar's destination rule cannot see a check that does not exist yet, and leaving it unfiled is what has kept most projects on a fallback this skill itself calls "proves less". Say in your report that the real check was unavailable this time, so a clean result is never mistaken for a verified one.
+
+Where the tooling was there, each ticket has already run the same gate over its own diff. Yours is the sweep across the whole run, which sees what one ticket's tests pinned and a later ticket's change quietly unpinned - visible from nowhere else.
 
 ## Output
 
 **File a ticket for each gap.** Write it beside the tickets this run was built from – the caller names the directory, and `tickets/` beside the spec is only the default – as `NN-slug.md` in the shape `TICKET_FORMAT.md` specifies, numbered after the highest existing ticket, `status: todo`, `depends_on: []`. A gap filed where the loop doesn't read is a gap nothing builds, and the run finishes looking clean. `Satisfies` cites the criterion that failed. The gap is objective - a criterion is met or it isn't - so it goes back through the same loop that built everything else, with the same TDD and review discipline, rather than being patched by hand at the end.
 
 Name the ticket for the behavior that is missing, not for the failure: "Let a reviewer see the rejection reason", not "fix US-3.2 gap".
+
+Where the gap is missing tooling rather than missing code, file it as a **maintenance ticket** - the format's third kind, which claims no criteria and whose contract is that nothing observable changed.
 
 Where the gap is a missing *test* over working behavior, file it as a **remediation ticket** - the format's second kind, which names the defect because there is no new behavior to name. Say in it that the behavior already works: the implementer still writes the test RED first, which here means deliberately breaking the behavior to watch the test fail, then restoring it. A test written green against code that already works proves nothing.
 
