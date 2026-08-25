@@ -4,7 +4,7 @@ The shape of the feature specification `discovery` writes, `/spec-to-tickets` de
 
 Number user stories `US-1`, `US-2`… and their acceptance criteria `US-1.1`, `US-1.2`… always, without exception. Tickets cite criteria rather than copying them, so each one needs a stable anchor to be pointed at - and a criterion with no id is a criterion no ticket can claim and no review can check off.
 
-The spec is frozen once `/spec-to-tickets` has hashed it: each ticket carries that hash, and editing the file afterwards halts the loop. `/spec-to-tickets` writes into it first - promoting the defaults more than one ticket has to hold to - and hashes what it leaves. Settle everything else before decomposition rather than during.
+The spec is frozen once `/spec-to-tickets` has hashed it: each ticket carries that hash, and editing the file afterwards halts the loop. `/spec-to-tickets` marks it first - `(binding)` on every default more than one ticket has to hold to - and hashes what it leaves. Settle everything else before decomposition rather than during.
 
 Three tiers of commitment live in this file and a reader has to be able to tell them apart:
 
@@ -78,7 +78,9 @@ Three tiers of commitment live in this file and a reader has to be able to tell 
 
 ## Defaults
 - **D-1** <what the builder should do absent evidence, stated as an instruction rather than a preference.> _Overturnable on: <what in the code would say otherwise.>_
-- **D-2 (binding)** <a default more than one ticket has to hold to, promoted here before the spec is hashed. Binding here means no ticket may overturn it alone: the evidence one ticket finds does not settle a choice the others are already built on.>
+- **D-2 (binding)** <`(binding)` is added by `/spec-to-tickets`, before the spec is hashed, to every default more than one ticket has to hold to - here or wherever else it stands. It means no ticket may overturn that default alone: the evidence one ticket finds does not settle a choice the others are already built on.>
+
+<`D-n` is one sequence across the whole file, so a default marked in place beside a decision and one collected here never share a number.>
 ```
 
 ## Worked example

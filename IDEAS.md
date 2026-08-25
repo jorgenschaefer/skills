@@ -479,7 +479,7 @@ box in the same commit as the step.
 - [x] **B2** `/discovery` gains everything it now owns
 - [x] **B3** Delete `/propose-change`, `/decision-brief`, `/debug`
 - [x] **B4** The renames - *tested*
-- [ ] **B5** `/spec-to-tickets`'s decomposition rules
+- [x] **B5** `/spec-to-tickets`'s decomposition rules
 - [ ] **C1** `/implement-ticket`, with the rule split from the resolution - *tested*
 - [ ] **C2** The ticket format and what `/implement` writes into it
 - [ ] **C3** The maintenance lane

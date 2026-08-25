@@ -199,4 +199,4 @@ Most discoveries produce nothing permanent, and then the receipt is a single lin
 
 Every item in it already got its own yes when it was proposed, so the receipt is the last chance to take one back rather than the first sight of it. The ranked closing brief this replaced grew with the spec until nobody read it to the end, which is how the one item that needed a veto got skimmed past.
 
-Once they ratify it, point them at `/spec-to-tickets`, which decomposes the spec into tickets. From that point the spec is frozen: each ticket carries its hash, and an edit halts the loop.
+Once they ratify it, point them at `/spec-to-tickets`, which decomposes the spec into tickets. It marks the defaults more than one ticket must hold to, and hashes the spec as it leaves it; from that hash on the spec is frozen, each ticket carries it, and an edit halts the loop.
