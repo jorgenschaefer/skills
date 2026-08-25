@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Build the ticket at the path you were given, then hand back.
 
-The craft is `/implement`'s. Read the `implement` skill - it sits beside this one, as `implement/SKILL.md` - and follow all of it: the RED-first loop, the verification command, the two reviews, the bounded attempts, the `Record` it writes at the end. This skill supplies the one fact `/implement` cannot know on its own: **nobody is watching this run.** Everything below follows from that.
+The craft is `/implement`'s. Invoke it by name and follow all of it: the RED-first loop, the verification command, the two reviews, the bounded attempts, the `Record` it writes at the end. This skill supplies the one fact `/implement` cannot know on its own: **nobody is watching this run.** Everything below follows from that.
 
 `TICKET_FORMAT.md` describes the shape of the ticket you are building and of what you write back into it.
 

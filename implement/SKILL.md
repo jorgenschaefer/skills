@@ -1,7 +1,6 @@
 ---
 name: implement
-description: Build one ticket end to end - TDD, the project's checks, then two reviews - asking wherever the ticket is ambiguous rather than guessing. The unit /spec-to-tickets and /discovery emit.
-disable-model-invocation: true
+description: Use to build one ticket - the unit /spec-to-tickets and /discovery emit - end to end: TDD, the project's checks, then a quality review and a code review before committing. Fires on "/implement", "build this ticket", "implement <ticket path>", and whenever another skill hands you a ticket to build.
 ---
 
 # Implement
