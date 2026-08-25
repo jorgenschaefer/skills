@@ -31,13 +31,15 @@ One ticket, written to `tickets/` where the specs live, in the shape `TICKET_FOR
 
 Most of this skill is written for the spec lane and does not apply here - no journeys, no domain-model turn, no mockup walk, no module survey, no spec file, no hardening sweep. What does apply:
 
-- **Find the root cause, not the symptom.** A fix that clamps a bad value or swallows an error leaves the defect live and hides it. For a bug the *why* is already settled, so pin the two things a fix is judged against: what happens now, what should happen, and a case that reproduces it.
+- **Find the root cause, not the symptom.** A fix that clamps a bad value or swallows an error leaves the defect live and hides it. For a bug the *why* is already settled, so pin the two things a fix is judged against: what happens now, what should happen, and a case that reproduces it. Where the cause will not yield to inspection, there is no ticket yet - an unattended session cannot diagnose either, so an undiagnosed bug becomes a `mystery` halt rather than a fix. Diagnose it here, with the user, or say that is what the next session is for.
 - **Trace the blast radius.** What else calls this, depends on it, or shares the behaviour being changed. A one-line change with four callers is not a one-line change.
+- **Find the mechanism that already exists.** Extend the pattern the codebase already uses in preference to introducing one beside it. The module survey below is the spec lane's; this is the same instinct at one ticket's scale.
 - **Weigh it.** Benefit against what it costs to build *and* to carry afterwards, and against what it complicates for the common case. Four honest verdicts, not two: worth it; worth it done differently; not worth it now; not worth it at all.
 - **Ratify in flight.** A term, an ADR, a journey is permanent-tier here exactly as it is on the spec lane, and the user is in front of you, so it gets its yes on the spot. A default is marked in the ticket that carries it, with what in the code would overturn it - the implementer is bound by it either way.
-- **Read it cold before handing it over.** Ask of your own ticket: *what is the first thing a builder would have to guess?* A lone ticket has no spec behind it to answer that, so whatever it is has to be in the ticket.
+- **Have it read cold before handing it over.** Dispatch a fresh `general-purpose` subagent over the finished ticket with two questions: what is the first thing you would have to guess, and where does this fight itself? Your own context cannot forget the intent that silently reconciles a ticket, and a lone ticket has no spec behind it to answer either question. Skip this only for a change that is genuinely one line.
+- **Promote what must outlive the change.** A piece of reasoning a later reader would otherwise undo belongs in a comment at the code it explains, not in the ticket - the ticket is paper and goes when the run is accepted.
 
-Then the receipt, the same five-line cap as below.
+Then the receipt, the same five-line cap as below, and point them at `/implement`.
 
 ## Goal
 
@@ -177,7 +179,7 @@ Discovery is done when every decision a wrong default could hurt has an answer -
 
 Before writing the summary, confirm your running list of defaults and verify none actually needed the user. Resolve any question still open now - a spec never carries an open-questions section. If a question survives, discovery isn't over.
 
-Then harden the spec into a contract an implementer can build without improvising - a closing sweep across the whole feature, now that its shape is settled. This sweep and the summary below are the spec lane's; a ticket lane ends at the ticket and the receipt, and a no ends at the reasoning.
+Then harden the spec into a contract an implementer can build without improvising - a closing sweep across the whole feature, now that its shape is settled. This sweep and the summary below are the spec lane's; the small lane ends at the ticket and the receipt, and a no ends at the reasoning.
 
 - **Complete the criteria.** Every behavior a wrong default could hurt gets a criterion, given/when/then or EARS; each one becomes a test `/implement` writes RED first. A story left with no criteria is where the implementer invents behavior - close it here. During the interview criteria stay loose; this is where they harden.
 - **Number everything.** Journeys `J-1`, stories `US-1`, criteria `US-1.1`, constraints `C-1`, defaults `D-1`. Tickets cite these rather than copying them, so an unnumbered one is a thing no ticket can claim and no review can check off. This is not optional at any spec size.

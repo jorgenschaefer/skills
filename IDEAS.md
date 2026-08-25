@@ -477,7 +477,7 @@ box in the same commit as the step.
 - [x] **A3** `accept.sh` - *tested*
 - [x] **B1** `SPEC_FORMAT.md` and a new `ADR_FORMAT.md`
 - [x] **B2** `/discovery` gains everything it now owns
-- [ ] **B3** Delete `/propose-change`, `/decision-brief`, `/debug`
+- [x] **B3** Delete `/propose-change`, `/decision-brief`, `/debug`
 - [ ] **B4** The renames - *tested*
 - [ ] **B5** `/spec-to-tickets`'s decomposition rules
 - [ ] **C1** `/implement-ticket`, with the rule split from the resolution - *tested*

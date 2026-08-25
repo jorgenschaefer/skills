@@ -29,7 +29,7 @@ State what the spec delivers as a release note: one line a user would care about
 
 - **Half is independently worth shipping** - the spec describes more than one feature. Stop. Send it back to `/discovery` to be split into separate specs, and say which halves you found.
 - **Nothing smaller is worth shipping** - it is one feature. Continue.
-- **Nothing about it is observable outside the code** - it is below the floor. Stop, and point the user at `/propose-change`.
+- **Nothing about it is observable outside the code** - it is below the floor. Stop, and send it back to `/discovery`, which decides whether it wants a ticket or simply doing.
 
 Stop too if the spec isn't settled: criteria missing, decisions left open, an open-questions section surviving. Those are discovery's to close, and inventing the gaps here buries them in tickets nobody will re-read.
 
@@ -77,15 +77,19 @@ Give it the tickets, the spec, and the codebase, and this framing: *you are abou
 
 Have it check three things beyond that: every spec criterion claimed by exactly one ticket and every constraint by at least one; every `Provides` entry actually consumed by a later ticket, and every `Preconditions` entry actually provided by an earlier one; and every ticket nameable as observable behavior.
 
-Treat the verdict as a claim to verify: a clean result counts only when the report shows the review happened - the guesses it hunted for and where it looked, cited to specific tickets. Fix what it finds and re-dispatch once. Two rounds is the ceiling: a ticket set still leaving things to guess after a second pass has a problem the decomposition can't fix by iterating, so stop and take the standing findings to the user with the brief below.
+Treat the verdict as a claim to verify: a clean result counts only when the report shows the review happened - the guesses it hunted for and where it looked, cited to specific tickets. Fix what it finds and re-dispatch once. Two rounds is the ceiling: a ticket set still leaving things to guess after a second pass has a problem the decomposition can't fix by iterating, so stop and take the standing findings to the user with the hand-off below.
 
 ## Hand off
 
-Close with `/decision-brief` over the tickets. This is the last point at which a human can cheaply stop hours of wrong work - everything after it is expensive to unwind - so it is the highest-leverage artifact in the pipeline, and it earns that only by surfacing what the reader would otherwise skim past.
+This is the last point at which a human can cheaply stop hours of wrong work - everything after it is expensive to unwind - so close by surfacing what a reader would otherwise skim past.
 
-Do not summarise the tickets; a table of contents tells a reviewer nothing they can veto. Surface the decisions: which existing modules change and how, which contracts were declared and what they commit later tickets to, which calls you made under a veto and which you defaulted in silence, and where the decomposition is most likely to be wrong.
+Present it inline and leave it there. It is read once, by someone deciding, and a hand-off written to a file is one that outlives the decision it was for.
 
-Brief only what you decided. The spec's decisions were briefed when discovery closed, and re-raising them here spends the reader's attention on choices they already ratified - which is how the item that actually needed a veto gets skimmed past.
+Do not summarise the tickets; a table of contents tells a reviewer nothing they can veto. Surface what *you* decided: which existing modules change and how, which contracts were declared and what they commit later tickets to, which calls you made under a veto and which you defaulted in silence, where a load-bearing assumption is stated as though it were fact, and where the decomposition is most likely to be wrong.
+
+Rank by stakes, and state each as the tradeoff it was - what it commits to, what that buys, what it gives up. A decision that arrives with only its upside named is one the reader can agree with but not judge, and a flat unranked list is one nobody reads to the end.
+
+Only what you decided. The spec's own decisions were ratified as discovery made them, and re-raising them here spends the reader's attention on choices they have already settled - which is how the item that actually needed a veto gets skimmed past.
 
 ## Refresh
 

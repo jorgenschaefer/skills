@@ -1,6 +1,6 @@
 # Ticket format
 
-The shape of the work order `/plan` and `/propose-change` emit and `/implement` consumes. One ticket is one `/implement` run: one agent, one context window, no questions asked of anyone - so everything that run needs to decide must already be decided here.
+The shape of the work order `/plan` and `/discovery` emit and `/implement` consumes. One ticket is one `/implement` run: one agent, one context window, no questions asked of anyone - so everything that run needs to decide must already be decided here.
 
 A ticket carries what to build, what it may rely on, and what it must not touch. It does not carry the requirements themselves. Those stay in the spec and are cited by id, so there is one place to change them when they change.
 
@@ -12,7 +12,7 @@ Tickets are scaffolding, not documentation - they are deleted along with the spe
 
 Deletion belongs to accepting the work, not to finishing it. A run that completes but is rejected still needs its tickets to re-run, and a `blocked` ticket survives until whatever blocked it is resolved.
 
-`NN` is a zero-padded sequence in dependency order. `/propose-change` emits a single ticket in the same shape - the light lane differs in how much interviewing precedes the ticket, not in what a ticket is.
+`NN` is a zero-padded sequence in dependency order. `/discovery`'s small lane emits a single ticket in the same shape - the lanes differ in how much interviewing precedes the ticket, not in what a ticket is.
 
 ## Frontmatter
 
@@ -95,9 +95,9 @@ A given/when/then criterion already implies its test, and `/implement` writes it
 
 - **`spec` and `spec_hash` are omitted.** Nothing to cite, nothing to freeze.
 - **`Satisfies` carries the criteria in full**, given/when/then, rather than pointing at them. The rule against copying exists because copies drift from a shared source; a lone ticket has no source to drift from.
-- **A `## Why` section leads the body** - one to three sentences on the problem beneath the change. In the heavy lane the spec carries intent, and an implementer who knows why is the one who notices when the literal instruction would miss the point.
+- **A `## Why` section leads the body** - one to three sentences on the problem beneath the change. In the spec lane the spec carries intent, and an implementer who knows why is the one who notices when the literal instruction would miss the point.
 
-`Provides` is usually empty, since no later ticket is coming to consume it. Everything else means what it means in the heavy lane.
+`Provides` is usually empty, since no later ticket is coming to consume it. Everything else means what it means in the spec lane.
 
 ## What `/implement` appends
 
@@ -111,7 +111,7 @@ A ticket is intent before the run and a record after it. `/implement` appends ex
 
 - **blocked** - the spec contradicts itself, or a criterion cannot be met as written. Back to `/discovery`.
 - **drift** - `Preconditions` or `Touches` no longer match the code. Back to `/plan --refresh`.
-- **mystery** - a test will not go green and the cause is unknown after the bounded attempts. Back to `/debug`, run by a human.
+- **mystery** - a test will not go green and the cause is unknown after the bounded attempts. Back to a human to diagnose.
 - **stale-spec** - `spec_hash` does not match. Back to `/plan --refresh`.
 
 ```markdown

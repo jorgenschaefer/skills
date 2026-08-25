@@ -1,6 +1,6 @@
 ---
 name: implement
-description: Build one ticket end to end - TDD, the project's checks, then two reviews - halting rather than asking. The unit /plan and /propose-change emit.
+description: Build one ticket end to end - TDD, the project's checks, then two reviews - halting rather than asking. The unit /plan and /discovery emit.
 disable-model-invocation: true
 ---
 
@@ -74,7 +74,7 @@ Build what the ticket claims and nothing else. Its `Out of scope` names what you
 
 As you work, keep the **decision log** described below: append an entry the moment you make a non-obvious implementation-level design decision, while the reasoning is still fresh.
 
-If a test will not go green because behavior is failing in a way you do not understand, that is a `mystery` halt after three attempts – not a licence to thrash. `/debug` is a human's response to that halt, not yours to invoke.
+If a test will not go green because behavior is failing in a way you do not understand, that is a `mystery` halt after three attempts – not a licence to thrash. The diagnosis is a human's response to that halt, not a fourth attempt.
 
 ### Using TDD
 

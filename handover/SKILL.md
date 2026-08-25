@@ -22,7 +22,7 @@ Open with what the system can do now that it couldn't before, in the user's term
 
 ### Decide
 
-Inherit `/decision-brief`'s stance wholesale: surface decisions rather than defects, rank them by stakes, never recommend accept or reject. The goal the work serves lives in the reader's head, not on this page. What differs is only the input - a built thing rather than a proposed one - and one extra source.
+Surface decisions rather than defects, rank them by stakes, and never recommend accept or reject: the goal the work serves lives in the reader's head, not on this page. State each as the tradeoff it was - what it committed to, what that bought, what it gave up - so the reader can judge it rather than agree with it.
 
 Two streams feed the ranked list:
 
@@ -31,13 +31,13 @@ Two streams feed the ranked list:
 
 Review findings that mattered are not a third stream - `/trace` and `/critique` filed their gaps and blockers as tickets, and those were built and reviewed like everything else before the run reached you. What survives is `/critique`'s nits, which nobody acted on. Put them in a short appendix below the ranked list, not in it. They are not decisions, and mixing forty nits into the list is how the one item that needed a veto gets skimmed past.
 
-De-spin each item the way a decision brief does: what it committed to, what that gained, and what it gave up. A `Record` entry written by the agent that made the choice arrives already justified - find the cost it is paying and name that too.
+A `Record` entry written by the agent that made the choice arrives already justified - the cost it is paying is the half you have to supply.
 
 Rank by stakes and stop where the rest is clearly ratifiable. Twelve tickets can produce forty log entries, and a flat list of forty is a list nobody reads to the end - which is how the one that mattered gets missed.
 
 ## Promote before deleting
 
-The spec and the tickets are deleted when the run is accepted. Whatever must outlive them has to be moved somewhere durable first, deliberately - nothing survives by being left where it is. The briefs need no deleting; they are presented inline and never written down, since a brief is spent the moment its reader decides.
+The spec and the tickets are deleted when the run is accepted. Whatever must outlive them has to be moved somewhere durable first, deliberately - nothing survives by being left where it is. The brief needs no deleting; it is presented inline and never written down, since a brief is spent the moment its reader decides.
 
 Three destinations, and each is a proposal for the user, not a change you make and mention:
 
