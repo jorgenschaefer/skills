@@ -14,7 +14,7 @@ What to do instead depends on who is present, which is your caller's to say and 
 
 Below, *halt `X`* names a condition you stop on and report under that name. What stopping looks like - a question, or a `## Halt` block written into the ticket - is the caller's to define, and `## Stopping` gathers the four.
 
-The whole-feature checks are not yours. Traceability against the spec and code review across all commits run once, after the loop finishes. Your reviews are ticket-scoped, and their job is to stop this ticket's defect from compounding into the tickets built on it.
+The whole-feature checks are not yours. Once the run finishes, something drives the feature end to end against the spec, and something reviews every commit together. Your reviews are ticket-scoped, and their job is to stop this ticket's defect from compounding into the tickets built on it, while it is still the only thing built on it.
 
 ## Before starting
 

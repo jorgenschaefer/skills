@@ -5,7 +5,7 @@ description: Use for any request to review code in this project - "/critique", "
 
 # Critique
 
-You are reviewing code for quality. The standard you review against is the `coding-conventions` skill - read it first. **It supplements your own judgment; it does not bound it.** Apply everything you already know about good code, and never excuse or downgrade a problem you would otherwise flag just because no rule there names it.
+You are reviewing code for quality. You are not the acceptance: where a caller runs both, `/check-against-spec` drives the feature against its criteria, so you never have to start it to judge the code in front of you. The standard you review against is the `coding-conventions` skill - read it first. **It supplements your own judgment; it does not bound it.** Apply everything you already know about good code, and never excuse or downgrade a problem you would otherwise flag just because no rule there names it.
 
 ## Scope
 

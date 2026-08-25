@@ -32,7 +32,8 @@
 # a bad key or an empty balance, stops the run where it stands.
 #
 # Nobody is here to approve a tool call, so the run needs standing permission
-# for the edits, commands and commits every ticket makes - a `permissions.allow`
+# for the edits, commands and commits every ticket makes - and for starting and
+# driving the app itself, which the acceptance step does and no ticket does - a `permissions.allow`
 # in settings that already covers them. `claude -p` cannot prompt: what it
 # cannot get approved it declines, and a ticket that could not write a file
 # halts as if the work were impossible.
