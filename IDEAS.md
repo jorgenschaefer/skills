@@ -1,15 +1,15 @@
 # Filtered ideas
 
 The decided work: every concrete change that survived a pass over the two
-superseded plan files and `IDEAS.md`'s numbered entries, each kept or dropped on
-its own. Rationale was deliberately set aside - those plans argued from premises
-that do not all survive, so every solution was judged as a change to make rather
-than as a consequence of the argument that produced it.
+superseded plan files and this file's earlier numbered entries, each kept or
+dropped on its own. Rationale was deliberately set aside - those plans argued
+from premises that do not all survive, so every solution was judged as a change
+to make rather than as a consequence of the argument that produced it.
 
 This file records **what to build**, not why the pipeline needs it. Where an
-item's evidence matters it is named in one clause; the run accounting behind
-those clauses is in `IDEAS.md`, which stays the parking lot for what is still
-being weighed and the one home for what has been rejected.
+item's evidence matters it is named in one clause. The run accounting those
+clauses cite - kh-finder at 15 tickets, everlast at 29 and never converged - is
+in the version of this file at commit `f85cfa4`, along with the rejected list.
 
 Names below use the post-rename forms: `/spec-to-tickets` (was `/plan`) and
 `/check-against-spec` (was `/trace`).
@@ -121,11 +121,18 @@ strict; the expensive halts are anticipated rather than discovered.
 
 ## Building (`/implement`)
 
-**`/implement-ticket`, a tier-2 wrapper.** The 33 ticket-bound lines move out of
+**`/implement-ticket`, a tier-2 wrapper.** The ticket-bound lines move out of
 `implement/SKILL.md` - *Say what you are doing*, *Nothing runs in the
 background*, the no-questions preamble, and the halt codes and commit protocol
-from *Halting*. The wrapper reads `TICKET_FORMAT.md` and calls `/implement` by
-name, the way five skills already call `coding-conventions`.
+from *Halting*. Thirty-two rather than thirty-three, since the `REVIEWS=code`
+paragraph is retired before the extraction rather than moved. The wrapper calls
+`/implement` by name, the way five skills already call `coding-conventions`.
+
+**`implement/TICKET_FORMAT.md` moves with it** rather than being copied. The
+craft skill never reads a ticket, so it should not carry the format at all.
+After `/propose-change`'s copy goes there are four - `critique`,
+`implement-ticket`, `spec-to-tickets`, `check-against-spec` - still
+byte-identical, with diff still the parity check.
 *Touches: a new implement-ticket/ skill, implement/SKILL.md, loop.sh, README.md.*
 
 **Split the rule from the resolution at `implement/SKILL.md:11`.** The craft
@@ -331,8 +338,28 @@ the command that resumes. **Judgement is the skill's**: what the branch does now
 that it did not before, what changed and where, what a reviewer should look at,
 what is still uncertain - a PR description, which has a reader and a moment.
 Every terminal path produces both. The ranked ratification brief goes; promotion
-moved upstream to ratify-in-flight.
+moved upstream to ratify-in-flight, and `## Accept` goes to `accept.sh` below.
 *Touches: loop.sh, handover/SKILL.md, tests/run.sh.*
+
+**Acceptance is a script, not a skill.** A new `accept.sh` deletes the spec and
+the `tickets/` directory and commits that, staging only those paths. It became
+mechanical when promotion moved upstream: of `## Accept`'s three steps, the
+judgement was step 1, and steps 2 and 3 are `git rm` and `git commit`. The
+commit message needs no skill - the report was dropped and the PR description
+carries the run's prose, so the subject is the feature and the body is the
+ticket ids, both derivable from filenames.
+
+It refuses rather than trusts, and every guard already exists in `loop.sh` to
+copy: in a repo and not on `main` (`:84-89`), the ticket directory present
+(`:81`), every ticket `status: done` (`:340`, `why_stuck` at `:309`), and the
+tree clean so the commit is deletions only. This is the pipeline's one
+irreversible act and the only one that destroys the record of what was asked, so
+it is bash with guards rather than an agent session or a pasted command.
+
+The driver prints `./accept.sh <spec-dir>` on the clean path: the human types it
+after reading the PR description, which is the explicit act, and it runs on the
+branch before the merge, so the paper never reaches the default branch.
+*Touches: a new accept.sh, loop.sh, handover/SKILL.md, tests/run.sh, README.md.*
 
 **The driver recovers from drift.** `/spec-to-tickets --refresh` on `drift` and
 `stale-spec` only, bounded to one per run. `blocked` and `mystery` still need a
@@ -420,23 +447,166 @@ steps, the new terminal states. "Two front doors" goes.
 - **`/implement-ticket`** and **the rule/resolution split**. The wrapper
   overrides the craft skill's core contract without it.
 
+## Sequence
+
+Twenty steps in one branch. Each leaves the suite green and is judgeable on
+its own. Three rules set the order: the driver's untested machinery is pinned
+before anything rewrites it; the artifacts and the skill set settle before the
+content that fills them, so nothing is edited twice against a filename that is
+about to change; and spec-format changes land before driver changes, so the
+window where a spec written under the old rules is built under the new ones
+stays inside the branch.
+
+**A0, A1, A3, C3 and F1 depend on nothing** and can land at any point,
+including first.
+
+### Phase A - the mechanical work that depends on nothing
+
+**A0. Pin the untested machinery.** The fixture that files a ticket, plus cases
+for the re-drain, `CHECKED_AT` narrowing and the non-convergence exit, written
+against today's behaviour. Every driver step below rewrites exactly these, and
+none of them is covered now.
+*tests/run.sh.*
+
+**A1. Keep the run's evidence.** `LOG_DIR` out of `$TMPDIR`, accumulating across
+runs; `/improve-skill` reads it. Early because every dogfood run from here on
+either produces evidence or does not, and this is the only mechanism on the list
+that lets a line be removed because a run went right.
+*loop.sh, improve-skill/SKILL.md.*
+
+**A2. Review independence, and `REVIEWS=code` retired.** A different model for
+the reviews, reasoning effort per step, and the quality-for-time trade deleted.
+Before C1, so the wrapper never inherits a paragraph that is about to die - the
+extraction is 32 lines rather than 33.
+*loop.sh (`run_step`), implement/SKILL.md, tests/run.sh.*
+
+**A3. `accept.sh`.** The script and its guards, with cases in `tests/run.sh`.
+Before E1, so the mechanism exists before `/handover`'s `## Accept` is cut and
+there is no window in which nothing can accept a run. It reads today's `status:`
+vocabulary and today's spec layout, so nothing above it is a prerequisite.
+*a new accept.sh, tests/run.sh.*
+
+### Phase B - settle the artifacts and the skill set
+
+**B1. `SPEC_FORMAT.md`, and a new `ADR_FORMAT.md`.** `## Journeys`; the three
+tiers with defaults marked; `_Verified:_` in the future tense; now-versus-later;
+where survey verdicts and affected modules are recorded; the ADR format and its
+location convention. All format changes at once, because the format is the
+contract every later step writes against.
+*discovery/SPEC_FORMAT.md, a new ADR_FORMAT.md.*
+
+**B2. `/discovery` gains everything it now owns.** The journeys, the domain model
+shown in its own turn, the mockup bound to the journey, ratification in flight
+with the capped receipt, the duplication survey, ADRs written where the
+alternatives are live, the primary-source check, now-versus-later, and the three
+terminals including the downward exit. One edit rather than three.
+*discovery/SKILL.md.*
+
+**B3. Delete `/propose-change`, `/decision-brief`, `/debug`.** Safe only after B2,
+which is where the small lane goes. Clean every reference in `plan/SKILL.md`,
+`implement/SKILL.md`, `handover/SKILL.md` and `README.md`. Five
+`TICKET_FORMAT.md` copies become four.
+*three skill directories, and the files that name them.*
+
+**B4. The renames.** `plan/` to `spec-to-tickets/`, `trace/` to
+`check-against-spec/`. Here rather than last: B3 has already cut the reference
+count, and every step after this one writes the final names once.
+*directories, loop.sh, tests/run.sh, README.md.*
+
+**B5. `/spec-to-tickets`'s decomposition rules.** A constraint quantifying over
+a set is not claimable until the set is enumerated against the real code and
+every member is assigned; and a default more than one ticket touches is promoted
+to binding in the spec's defaults list before `spec_hash` is computed. After B4
+so it is written under the new name, and after B1 so the defaults list exists to
+promote into.
+*spec-to-tickets/SKILL.md.*
+
+### Phase C - the building contract
+
+**C1. `/implement-ticket`, with the rule split from the resolution.** The wrapper
+and `implement/SKILL.md:11` in the same step; the wrapper overrides the craft
+skill's contract without the split. `implement/TICKET_FORMAT.md` moves into the
+wrapper here, leaving four copies rather than five.
+*a new implement-ticket/, implement/SKILL.md, loop.sh, tests/run.sh.*
+
+**C2. The ticket format and what `/implement` writes into it.** `Record`'s third
+subsection, the stakes mark on every `Decisions` and `Unresolved` entry,
+contract-scoped completion, `Verification` saying how rather than whether, the
+whole-criterion remediation rule, the quality review checking each default
+overturn, and the bounded attempts staying craft. Format and writer together: a
+field with no writer is dead, and the copies are byte-identical, so every format
+edit is a five-way edit worth making once.
+*the TICKET_FORMAT.md copies, implement/SKILL.md.*
+
+**C3. The maintenance lane.** A third ticket kind, and `upgrade-dependencies`
+covering a new dependency under the primary-source check. Independent of
+everything above except C2's copy set.
+*the TICKET_FORMAT.md copies, upgrade-dependencies/SKILL.md.*
+
+### Phase D - the reviewing contract
+
+**D1. The review bar.** The three conjuncts, the pre-existing-coverage carve-out
+and *notice a test that leaves* together, severity by what the defect does, the
+fixed verdict line, reviews reading `Record` entries as leads, and `/critique`'s
+description fixed. Needs C2, which is where the third subsection appears.
+*critique/SKILL.md, check-against-spec/SKILL.md, implement/SKILL.md, loop.sh.*
+
+**D2. Mutation.** The tooling ban lifted, the per-ticket gate, and the
+surviving-mutant bar - all three, or the gate imports the regress D1 closes.
+After D1, because the bar is stated in terms of the destination conjunct.
+*check-against-spec/SKILL.md, implement/SKILL.md, loop.sh.*
+
+**D3. Workflow tests and their guard.** The `tests/workflows/` convention, the
+driver guard, and the planning-time authorisation in one step - the guard alone
+produces expensive halts hours into unattended runs. Needs B1 and B2 for the
+journey a test quotes, and B4 for the skill that pre-writes the authorisation.
+*spec-to-tickets/SKILL.md, loop.sh, tests/run.sh, tests/workflows/.*
+
+### Phase E - the run's ending
+
+**E1. Terminal states, the report, and `/handover` split.** Three states with a
+defined way back, the mechanically collected report on every path, the driver
+writing the mechanical half and the skill the PR description, and `/critique`
+leaving the pass loop, plus `## Accept` cut from the skill and `./accept.sh`
+printed on the clean path instead. Needs C2's stakes field to sort on, D1's
+verdict line to count, and A3 to exist.
+*loop.sh, handover/SKILL.md, tests/run.sh.*
+
+**E2. Driver resilience.** Bounded `--refresh` on `drift` and `stale-spec`, and
+noticing a restart onto unconverged work. After E1, because a restart is
+recognised against the terminal state the previous run recorded.
+*loop.sh, tests/run.sh.*
+
+**E3. The Abnahme.** `/check-against-spec` drives the running feature rather than
+reading code, keeping both modes and the orphan sweep. Last of the behavioural
+work: it is narrowed to what the permanent suite does not cover, so D3 has to
+exist first for that narrowing to mean anything.
+*check-against-spec/SKILL.md, critique/SKILL.md, implement/SKILL.md.*
+
+### Phase F - the durable documents
+
+**F1. `ARCHITECTURE.md`.** `repo-overview` writes it, re-derived and never
+hand-patched. Touches nothing else on this list.
+*repo-overview/SKILL.md.*
+
+**F2. `README.md`.** One door and three terminals, the renamed steps, the new
+terminal states, the maintenance lane. Last, because it is the only place the
+shape is explained to a reader and it should be written once against the
+finished thing.
+*README.md.*
+
 ## Open
 
-- **Who deletes the spec and the tickets, and when.** The deletion commit
-  carrying the report was dropped, and `/handover`'s `## Accept` was the only
-  other owner. Acceptance needs a defined moment and a defined actor.
+Neither gates a step.
+
 - **The `/implement-ticket` boundary is enforced by nothing.** The grep lint was
   dropped along with the three-layer taxonomy it was written to enforce, so
   ticket knowledge drifting back into `implement/SKILL.md` fails no test.
-- **Where the five `TICKET_FORMAT.md` copies live** once `/propose-change` is
-  deleted. Four copies remain and stay byte-identical, with diff as the parity
-  check; `/implement-ticket` needs one of its own.
 - **What the workflow suite costs at every ticket** on a project where it is
   slow. The fallback of running it only at the final gate was dropped, so the
   at-every-ticket property is unconditional and its cost is unbudgeted.
 
 ## Dropped
 
-The thirteen solutions that did not survive this pass are recorded in
-`IDEAS.md`'s *Rejected* section, with the reason for each, so that there is one
-place to check before re-proposing anything.
+The thirteen solutions that did not survive the filtering pass are recorded,
+with the reason for each, in the version of this file at commit `f85cfa4`.
