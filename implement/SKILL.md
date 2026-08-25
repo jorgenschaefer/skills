@@ -111,10 +111,11 @@ Append each entry the moment you make the decision, not reconstructed at the end
 
 **Run the verification command first and fix what it reports.** It is deterministic, fast, and independent of the model that wrote the code – three things no review below is – so it goes ahead of them. A review round spent on something a typechecker would have caught is a round wasted, and a type error means the code is broken no matter what a reviewer concludes about it.
 
-Then two reviews, in this order, each a fresh `general-purpose` subagent. Six rules govern both:
+Then two reviews, in this order, each a fresh `general-purpose` subagent. Seven rules govern both:
 
 - **They block.** Dispatch with `run_in_background: false`. There is nothing useful to do while a reviewer reads a tree you must not disturb, and an `agentId` is not a review.
-- **They run separately.** Never fold them together, and never skip one on your own judgement – only where the caller explicitly asks for less (see below).
+- **They are a second opinion.** Dispatch each with an explicit `model` other than the one you are running on - a peer, never a smaller one, since a reviewer that cannot follow the code finds nothing in it. Two sessions of one model share its blind spots, and a reviewer that misses a defect for the same reason you wrote it has confirmed the code rather than reviewed it – no prompt makes it independent.
+- **They run separately.** Never fold them together, and never skip one. Both reviews run on every ticket.
 - **They are adversarial.** Each assumes the work is broken, tries to break it, and counts a requirement satisfied only when an honest attempt to break it fails. Never a confirmation pass.
 - **A review fix is normal work.** It follows the same RED-first loop as the build; only pure refactors skip it.
 - **Verify the review happened.** Treat the verdict as a claim to verify: a clean result counts only when the report shows the review happened – findings, or the checks it ran, cited to `file:line`, and the criteria it covered named. A bare "looks good" is not a completed review; re-dispatch it once. You don't redo the review yourself – you refuse to accept one that didn't demonstrably occur. A reviewer that fails to show its work twice is broken, not strict: halt `blocked` rather than dispatch a third.
@@ -134,8 +135,6 @@ Fix each review's findings before dispatching the next – blockers and should-f
 **Only the code review runs twice.** Re-dispatch it once over the fixes, then stop: a fix is new code written late and under pressure to satisfy a finding, and it is the one part of the diff no reviewer has seen. If blockers survive that second round, halt `blocked` and record the standing findings – a defect you cannot resolve in two passes needs a human, not a third.
 
 **The quality review runs once and is never repeated.** Its fixes are already checked twice over without it: each follows the RED-first loop, so a failing-then-passing test re-verifies the criterion mechanically, and the code review runs afterwards over a diff that now contains them. A second quality review re-reads criteria the suite already pins and reliably finds nothing.
-
-**The caller may ask for less, and only the caller may.** Reviews are about half a ticket's wall clock, so a run against a deadline can ask you to drop the quality review, the code review's second round, or both. That request is the one sanctioned exception to the rules above – it is a trade the caller owns, made with a view of the deadline you don't have. Everything else stands unchanged: the RED-first loop, the halt rules, the adversarial stance of whatever review remains. Say in the `Record` which review the ticket shipped without, so the human accepting the run knows which part of it was never checked. Absent such a request, both reviews run.
 
 ### Acting on review findings
 

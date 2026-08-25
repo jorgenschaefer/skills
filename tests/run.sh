@@ -71,11 +71,11 @@ ticket() {
 # in $LOGS. $1 is the epoch the fixtures' reset is rewritten to.
 drive() {
   local resets_at="$1"; shift
-  : > "$WORK/calls"; : > "$WORK/prompts"
+  : > "$WORK/calls"; : > "$WORK/prompts"; : > "$WORK/argv"
   OUT="$(cd "$WORK" && env \
     PATH="$WORK/bin:$PATH" TMPDIR="$WORK/tmp" XDG_STATE_HOME="$WORK/state" \
     STUB_PLAN="$WORK/plan" STUB_CALLS="$WORK/calls" \
-    STUB_PROMPTS="$WORK/prompts" \
+    STUB_PROMPTS="$WORK/prompts" STUB_ARGV="$WORK/argv" \
     STUB_FIXTURES="$HERE/fixtures" STUB_RESETS_AT="$resets_at" \
     "$@" timeout 60 bash "$LOOP" "${TICKET_DIR:-tickets}" 2>&1)"
   RC=$?
@@ -96,6 +96,14 @@ $(cat "$WORK/calls")"; }
 # whether the word appears anywhere in the run.
 prompt_for()     { awk -v c="$1" 'BEGIN { RS = "\n---\n" } index($0, c) == 1' \
                      "$WORK/prompts"; }
+# The flags one step was run with. Calls and flags are recorded in lockstep, so the
+# nth call's flags are the nth line - a step is asked for by the prompt that
+# names it rather than by its position in the run.
+argv_for()       { local n; n="$(grep -n -- "^$1" "$WORK/calls" | head -1 | cut -d: -f1)"
+                   [ -n "$n" ] && sed -n "${n}p" "$WORK/argv"; }
+expect_argv()    { grep -q -- "$2" <<< "$(argv_for "$1")" && ok "$3" \
+                   || bad "$3" "no '$2' in what '$1' was run as:
+$(argv_for "$1")"; }
 expect_prompt()  { grep -q -- "$2" <<< "$(prompt_for "$1")" && ok "$3" \
                    || bad "$3" "no '$2' in the '$1' prompt:
 $(prompt_for "$1")"; }
@@ -450,11 +458,48 @@ cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 done
 clean.jsonl 0 -
 clean.jsonl 0 -
-clean.jsonl 0 -
+handover.jsonl 0 -
 EOF
 drive 0 REVIEWS=code
-expect_rc 0 "the reduced-review mode runs"
-expect_prompt /implement "quality review" "the reduced mode says which review it drops"
+expect_rc 0 "a run asks for no less than the skills' full discipline"
+expect_no_prompt /implement "quality review" "no run trades a review away for time"
+
+# What each step is run as. A review reads code a different model wrote, and the
+# steps are not alike enough to think equally hard about.
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 done
+clean.jsonl 0 -
+clean.jsonl 0 -
+clean.jsonl 0 -
+EOF
+drive 0
+expect_argv /implement "--model opus" "a ticket is built by the build model"
+expect_argv /trace "--model sonnet" "the check runs on a model that did not write the code"
+expect_argv "Run /critique" "--model sonnet" "so does the review"
+expect_argv /handover "--model opus" "the handover is not a review and stays on the build model"
+expect_argv /implement "--effort high" "building a ticket gets the budget for it"
+expect_argv "Run /critique" "--effort high" "so does reading a diff adversarially"
+expect_argv /handover "--effort medium" "writing up finished work does not"
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 done
+clean.jsonl 0 -
+clean.jsonl 0 -
+clean.jsonl 0 -
+EOF
+drive 0 BUILD_MODEL=sonnet REVIEW_MODEL=opus
+expect_rc 0 "a run may name the two models itself"
+expect_argv /implement "--model sonnet" "the build runs on the model the run named"
+expect_argv /trace "--model opus" "and the reviews on the other one"
+
+workspace 01-thing
+drive 0 REVIEW_MODEL=opus
+expect_rc 2 "a review by the model that wrote the code is a bad invocation"
+expect_out "must differ" "the stop says what was wrong"
+expect_calls 0 "a run with no second opinion never starts a step"
 
 # --- the handover reaches the screen ------------------------------------------
 

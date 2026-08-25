@@ -44,15 +44,31 @@ TICK_MINUTES=3
 # rather than a thing to raise.
 MAX_PASSES=2
 
-# REVIEWS=code drops the quality review and the code review's second round.
-# Reviews are about half a ticket's wall clock, so this roughly halves it - a
-# trade worth making against a deadline and not otherwise. The skill keeps its
-# full discipline as the default; the driver asks for less, the same way it asks
-# /critique to file tickets.
-REVIEWS="${REVIEWS:-full}"
-case "$REVIEWS" in full|code) ;;
-  *) echo "REVIEWS must be 'full' or 'code', not '$REVIEWS'" >&2; exit 2 ;;
-esac
+# Which model each kind of step runs on. Reviews read code a different model
+# wrote: two sessions of one model share its blind spots, and a reviewer that
+# misses a defect for the same reason the builder wrote it is not a second
+# opinion, however adversarial its prompt. Which two models is an account's
+# business - that they differ is not, so a run where they do not is refused
+# rather than quietly downgraded to one opinion twice.
+BUILD_MODEL="${BUILD_MODEL:-opus}"
+REVIEW_MODEL="${REVIEW_MODEL:-sonnet}"
+[ "$BUILD_MODEL" != "$REVIEW_MODEL" ] || {
+  echo "BUILD_MODEL and REVIEW_MODEL must differ - a review by the model that wrote the code is not a second opinion" >&2
+  exit 2; }
+
+# Effort is per kind because the kinds are not alike: building a ticket and
+# reading a diff for what is wrong with it are the thinking; the handover writes
+# up work already done and decided. A kind with no flags would be a session on
+# whatever model came to hand - the one thing the guard above exists to refuse -
+# so an unknown one stops the run rather than defaulting.
+step_flags() {
+  case "$1" in
+    build)    printf -- '--model %s --effort high'   "$BUILD_MODEL" ;;
+    review)   printf -- '--model %s --effort high'   "$REVIEW_MODEL" ;;
+    handover) printf -- '--model %s --effort medium' "$BUILD_MODEL" ;;
+    *)        echo "no such kind of step: $1" >&2; exit 2 ;;
+  esac
+}
 
 # How long one step may sit idle waiting for usage windows to reopen, summed
 # over every wait it takes. Six hours covers any five-hour window; a weekly
@@ -224,8 +240,9 @@ wait_for() {
   done
 }
 
-# $1 = log basename, $2 = prompt, $3 = how to print it. Non-zero means the session died, which is
-# never a decision about the work - it leaves everything exactly where it was.
+# $1 = kind of step, $2 = log basename, $3 = prompt, $4 = how to print it.
+# Non-zero means the session died, which is never a decision about the work - it
+# leaves everything exactly where it was.
 #
 # Which is exactly why a death is answered here rather than handed back: the
 # step decided nothing, so running it again resumes it. A usage limit even says
@@ -236,17 +253,17 @@ wait_for() {
 # still say so.
 run_step() {
   local rc why reset attempt=0 retries=0 waited=0 pause note
-  local filter="${3:-$PROGRESS_FILTER}"
-  local -a pauses=($RETRY_DELAYS)
+  local filter="${4:-$PROGRESS_FILTER}"
+  local -a pauses=($RETRY_DELAYS) flags=($(step_flags "$1"))
   while :; do
     attempt=$((attempt + 1))
     ticker_start
-    claude -p --output-format stream-json --verbose "$2" \
-      | tee "$LOG_DIR/$1.jsonl" \
+    claude -p "${flags[@]}" --output-format stream-json --verbose "$3" \
+      | tee "$LOG_DIR/$2.jsonl" \
       | jq --unbuffered -r "$filter"
     rc=${PIPESTATUS[0]}
     ticker_stop
-    why="$(session_died "$rc" "$1")" || return 0
+    why="$(session_died "$rc" "$2")" || return 0
 
     # A window worth waiting for is one that has not opened yet. A `resetsAt`
     # already behind us describes a window that came and went, and waiting no
@@ -254,39 +271,39 @@ run_step() {
     # session that keeps reporting a stale limit turns into a hot loop that
     # spends the night starting sessions. Such a reset falls through to the
     # ladder instead, where the pauses and the budget both apply.
-    reset="$(limit_reset_at "$1")"
+    reset="$(limit_reset_at "$2")"
     pause=0
     [ -z "$reset" ] || pause=$(( reset + 60 - $(date +%s) ))
     if [ "$pause" -gt 0 ] && [ $(( waited + pause )) -le $(( MAX_WAIT_HOURS * 3600 )) ]; then
       waited=$(( waited + pause ))
       note="$(printf 'waiting until %s, then picking %s back up' \
-        "$(date -d "@$((reset + 60))" +%H:%M)" "$1")"
+        "$(date -d "@$((reset + 60))" +%H:%M)" "$2")"
     elif unrecoverable "$why"; then
       break
     elif [ -n "${pauses[retries]-}" ]; then
       pause="${pauses[retries]}"
       retries=$((retries + 1))
       note="$(printf 'trying %s again in %dm (attempt %d of %d)' \
-        "$1" $(( pause / 60 )) $((attempt + 1)) $(( ${#pauses[@]} + 1 )))"
+        "$2" $(( pause / 60 )) $((attempt + 1)) $(( ${#pauses[@]} + 1 )))"
     else
       break
     fi
 
-    mv "$LOG_DIR/$1.jsonl" "$LOG_DIR/$1.attempt-$attempt.jsonl"
+    mv "$LOG_DIR/$2.jsonl" "$LOG_DIR/$2.attempt-$attempt.jsonl"
     echo
     echo "!! $why"
     echo "   $note"
     wait_for "$pause"
-    echo "==> $1 (attempt $((attempt + 1)))"
+    echo "==> $2 (attempt $((attempt + 1)))"
   done
   {
     echo
-    echo "!! session died on $1 - $why"
+    echo "!! session died on $2 - $why"
     [ "$attempt" -eq 1 ] || echo "   gave up after $attempt attempts"
     ! unrecoverable "$why" || echo "   No delay fixes this one, so nothing was retried."
     echo "   Nothing was halted and no ticket changed, so re-running resumes here:"
     echo "     $0 $TICKETS"
-    echo "   transcript: $LOG_DIR/$1.jsonl"
+    echo "   transcript: $LOG_DIR/$2.jsonl"
   } >&2
   return 1
 }
@@ -359,23 +376,12 @@ position() {
 # signal - not the exit code, since a session can end without deciding anything.
 # So an unfinished ticket means one of two things, and they want opposite
 # responses: a dead session leaves work to resume, a halt leaves work to read.
-implement_prompt() {
-  [ "$REVIEWS" = "code" ] || { printf '/implement %s\n' "$1"; return; }
-  cat <<EOF
-/implement $1
-Run the code review only - once, no second round - and skip the quality review
-entirely. Everything else in the skill stands: the RED-first loop, the halt
-rules, the Record. This is a deliberate trade against a deadline, so note in the
-Record that the ticket shipped without a quality review.
-EOF
-}
-
 drain() {
   local ticket name stuck
   while ticket="$(next_ticket)"; do
     name="$(basename "$ticket" .md)"
     echo "==> [$(position)] $name"
-    run_step "$name" "$(implement_prompt "$ticket")" || return 3
+    run_step build "$name" "/implement $ticket" || return 3
     [ "$(status_of "$ticket")" = "done" ] && continue
 
     echo
@@ -451,18 +457,17 @@ EOF
 }
 
 echo "logs: $LOG_DIR"
-[ "$REVIEWS" = "full" ] || echo "reviews: $REVIEWS (quality review skipped)"
 
 # Bounded, because work the loop cannot converge on should reach a human.
 for pass in $(seq "$MAX_PASSES"); do
   drain || exit $?
 
   echo "==> trace (pass $pass)"
-  run_step "trace-$pass" "$(trace_prompt)" || exit 3
+  run_step review "trace-$pass" "$(trace_prompt)" || exit 3
   drain || exit $?
 
   echo "==> critique (pass $pass)"
-  run_step "critique-$pass" "$(critique_prompt)" || exit 3
+  run_step review "critique-$pass" "$(critique_prompt)" || exit 3
 
   if ! next_ticket >/dev/null; then
     reviews_clean=1
@@ -478,7 +483,7 @@ if [ -z "${reviews_clean:-}" ]; then
 fi
 
 echo "==> handover"
-run_step "handover" "/handover $SPEC_DIR" "$BRIEF_FILTER" || exit 3
+run_step handover "handover" "/handover $SPEC_DIR" "$BRIEF_FILTER" || exit 3
 
 # Handover's last step - promoting what must survive, then deleting the spec and
 # the tickets - is the user's to authorise, and there was nobody here to ask.

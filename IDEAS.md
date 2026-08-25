@@ -472,7 +472,7 @@ box in the same commit as the step.
 
 - [x] **A0** Pin the untested machinery - *tested*
 - [x] **A1** Keep the run's evidence - *tested*
-- [ ] **A2** Review independence, `REVIEWS=code` retired - *tested*
+- [x] **A2** Review independence, `REVIEWS=code` retired - *tested*
 - [ ] **A3** `accept.sh` - *tested*
 - [ ] **B1** `SPEC_FORMAT.md` and a new `ADR_FORMAT.md`
 - [ ] **B2** `/discovery` gains everything it now owns

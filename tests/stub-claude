@@ -15,7 +15,9 @@
 # often the driver calls out, so an extra call has to be visible.
 #
 # $STUB_CALLS gets one line per call, for counting. $STUB_PROMPTS gets each
-# prompt whole, for the cases that care what the driver actually asked for.
+# prompt whole, for the cases that care what the driver actually asked for, and
+# $STUB_ARGV the flags each call was made with, for the cases that care what the
+# step was run as.
 
 set -uo pipefail
 
@@ -23,6 +25,7 @@ prompt="${*: -1}"
 n=$(( $(wc -l < "$STUB_CALLS") + 1 ))
 printf '%s\n' "$prompt" | head -1 >> "$STUB_CALLS"
 printf '%s\n---\n' "$prompt" >> "$STUB_PROMPTS"
+printf '%s\n' "${*:1:$# - 1}" >> "$STUB_ARGV"
 
 line="$(sed -n "${n}p" "$STUB_PLAN")"
 [ -n "$line" ] || { echo "stub-claude: no plan line $n for: $prompt" >&2; exit 99; }
