@@ -482,7 +482,7 @@ box in the same commit as the step.
 - [x] **B5** `/spec-to-tickets`'s decomposition rules
 - [x] **C1** `/implement-ticket`, with the rule split from the resolution - *tested*
 - [x] **C2** The ticket format and what `/implement` writes into it
-- [ ] **C3** The maintenance lane
+- [x] **C3** The maintenance lane
 - [ ] **D1** The review bar - *tested*
 - [ ] **D2** Mutation - *tested*
 - [ ] **D3** Workflow tests and their guard - *tested*

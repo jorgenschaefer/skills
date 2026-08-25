@@ -23,7 +23,7 @@ You are the one door into the pipeline, and three things come out of it:
 
 Which of the three it is comes out of the interview and is never a question you open with. The split test below tells a feature from a change.
 
-There is a floor under all three. When nobody outside the code could observe any difference - a rename, a refactor, a cleanup - there is nothing here to discover: say so and let it be done directly.
+Work nobody outside the code could observe - a refactor, a consolidation, a dependency upgrade, a rename that reaches every caller - is none of the three. There is almost nothing to discover, so it takes almost no interview: it becomes a **maintenance ticket**, in the shape `TICKET_FORMAT.md` gives that kind. Say what is wrong with the code now, what should be true after, and what is out of scope, and let it go through the same build and the same reviews as everything else. Done by hand instead, it is the change least likely to be checked and the one whose mistakes are hardest to find.
 
 ## The small lane
 

@@ -18,7 +18,7 @@ The whole-feature checks are not yours. Traceability against the spec and code r
 
 ## Before starting
 
-- Read the ticket whole, `Out of scope` included.
+- Read the ticket whole, `Out of scope` included. A ticket with no `spec` in its frontmatter carries its own requirements: the next two steps have nothing to read, and the contract is the fixed one its kind states.
 - Recompute `sha256sum` over the spec named in the ticket's frontmatter and compare the first 12 characters against `spec_hash`. On a mismatch, halt `stale-spec`: the requirements moved under the ticket, so every criterion it cites may now say something else.
 - Read the spec and the criteria the ticket's `Satisfies` cites. Those criteria are what you build and what you are checked against. The ticket locates them; it does not restate them, and where the two seem to differ the spec wins.
 - Read the spec's defaults too - every `D-n`, wherever in the spec it stands. They bind you the way criteria do, with one exception: you may overturn one on evidence you find in the code, never on preference, and then the ticket records the overturn with that evidence. A default marked `(binding)` is not yours to overturn at all - other tickets are already built on it - so evidence against one stops the build.
@@ -44,7 +44,7 @@ A difference in shape that leaves the substance intact is not drift. Contracts a
 
 ## Stopping
 
-Four things stop a build rather than bend it: a `spec_hash` that no longer matches (`stale-spec`), a codebase that contradicts the ticket's `Preconditions` or `Touches` (`drift`), a spec that contradicts itself, a criterion that cannot be met as written or pinned by anything, a red baseline, reviews that will not converge, or evidence against a `(binding)` default (`blocked`), and a test that will not go green for reasons you cannot find (`mystery`). Each is a fact about the work, not a matter of effort, and each is reported to your caller under that name.
+Four things stop a build rather than bend it: a `spec_hash` that no longer matches (`stale-spec`), a codebase that contradicts the ticket's `Preconditions` or `Touches` (`drift`), a spec that contradicts itself, a criterion that cannot be met as written or pinned by anything, a red baseline, reviews that will not converge, evidence against a `(binding)` default, or work that cannot land without the behaviour change it was written to avoid (`blocked`), and a test that will not go green for reasons you cannot find (`mystery`). Each is a fact about the work, not a matter of effort, and each is reported to your caller under that name.
 
 **Bounded attempts.** Three tries to get a failing test green before halting `mystery`; two code-review rounds before halting `blocked` with the standing findings recorded. Unattended, an unbounded loop does not converge – it thrashes, and each round of fixes leaves the code worse. A round that doesn't converge means something is wrong that another round will not find, and reviews are the expensive place to learn that twice over.
 
@@ -91,9 +91,11 @@ Append each entry the moment you make the decision, not reconstructed at the end
 
 ### Prove the contract before the reviews see it
 
-**Prove the contract before you hand it to a review.** Completion is scoped to what the ticket claims, not to the diff being green: for every id in `Satisfies`, name the test that fails without that criterion. Where you wrote a RED run for it, that run is the proof and you already have it. Where you did not – the behavior turned out to exist already, or something you did not write covers it – break the behavior, watch the named test fail, and restore it.
+**Prove the contract before you hand it to a review.** Completion is scoped to what the ticket claims, not to the diff being green: for every id in `Satisfies` – or, where the ticket claims none because it is meant to change no behaviour, for every behaviour its diff touches – name the test that fails without that behaviour. Where you wrote a RED run for it, that run is the proof and you already have it. Where you did not – the behavior turned out to exist already, or something you did not write covers it – break the behavior, watch the named test fail, and restore it.
 
 A criterion whose test you cannot name, or whose test still passes with the behavior removed, is unbuilt work: write that test now, RED first, like any other. Here rather than after the reviews, so what you add is reviewed like everything else. A criterion nothing can pin is a `blocked` halt, not a line to write around.
+
+On a ticket meant to change no behavior this check *is* the ticket: a test that no longer fails when you break what it was written for has stopped pinning it, and a suite that stays green because it stopped looking is the failure mode the whole exercise exists to catch.
 
 ## Review it
 
@@ -109,7 +111,7 @@ Then two reviews, in this order, each a fresh `general-purpose` subagent. Seven 
 - **Verify the review happened.** Treat the verdict as a claim to verify: a clean result counts only when the report shows the review happened – findings, or the checks it ran, cited to `file:line`, and the criteria it covered named. A bare "looks good" is not a completed review; re-dispatch it once. You don't redo the review yourself – you refuse to accept one that didn't demonstrably occur. A reviewer that fails to show its work twice is broken, not strict: halt `blocked` rather than dispatch a third.
 - **Don't pre-judge the reviewer.** Don't tell it what to conclude, what not to flag, or that a choice was already settled so it should accept it. Hand it the requirements and let it judge; adjudicate false positives afterwards, not by steering it beforehand.
 
-**1. Quality review.** Pass it the ticket, the criteria its `Satisfies` cites, the spec defaults this ticket relied on or overturned, and the diff. Of each overturn, have it ask whether the evidence cited is actually in the code: a default is overturnable on what the builder found there and on nothing else, so an overturn argued from taste is a finding. For each criterion, have it try to find a case where the implementation does not satisfy it, or a test that would still pass if the behavior were deleted. Have it check the ticket's `Out of scope` was respected – something built here that another ticket owns is as much a defect as something missing. This is not a code review; it is a check that the right thing was built. It runs first because a gap means new behavior, and that new code should then pass under the code review rather than escaping it.
+**1. Quality review.** Pass it the ticket, the criteria its `Satisfies` cites, the spec defaults this ticket relied on or overturned, and the diff. Of each overturn, have it ask whether the evidence cited is actually in the code: a default is overturnable on what the builder found there and on nothing else, so an overturn argued from taste is a finding. Where the ticket claims no criteria, its contract is the review's subject instead: have it hunt for anything observable the diff changed, and for a test that now passes over code it no longer reaches. For each criterion, have it try to find a case where the implementation does not satisfy it, or a test that would still pass if the behavior were deleted. Have it check the ticket's `Out of scope` was respected – something built here that another ticket owns is as much a defect as something missing. This is not a code review; it is a check that the right thing was built. It runs first because a gap means new behavior, and that new code should then pass under the code review rather than escaping it.
 
 **2. Code review.** Have it read the `coding-conventions` skill and apply that rubric on top of its own judgement over the ticket's diff. Two of those properties it has to establish rather than read off the diff, so ask for both by name:
 

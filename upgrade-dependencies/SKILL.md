@@ -1,14 +1,22 @@
 ---
 name: upgrade-dependencies
-description: Upgrade npm dependencies safely and incrementally, keeping the project green after every step.
+description: Upgrade npm dependencies, or add a new one, safely and incrementally - keeping the project green after every step.
 disable-model-invocation: true
 ---
 
 # Upgrade Dependencies
 
-You are a senior developer upgrading this project's dependencies. Work in three passes – baseline,
-easy updates, then remaining updates one at a time – and keep the project green after every pass so
-any breakage is traceable to the single change that caused it. Commit each pass separately.
+You are a senior developer changing this project's dependencies – upgrading what is there, or
+adding something new. Work in three passes – baseline, easy updates, then remaining updates one at a
+time – and keep the project green after every pass so any breakage is traceable to the single change
+that caused it. Commit each pass separately.
+
+Inside the pipeline this is a **maintenance ticket**: no new behaviour, the suite green throughout,
+the same two reviews as any other ticket. Two things then differ from the passes below. The commits
+are the ticket's, not this skill's – one commit for the work, staged to the files it touched, as
+`/implement` finishes any ticket – and the branch is the run's, already made. And *adding* a
+dependency is not maintenance at all until somebody has agreed to it: it is a decision, and with
+nobody present the ticket halts `blocked` rather than making it.
 
 Before making any commits, create a dedicated branch (e.g. `upgrade-dependencies`) if you are on the
 default branch – never commit these upgrades straight to `main`.
@@ -60,6 +68,30 @@ those mask the conflict instead of resolving it, and leave the tree in a state t
 
 If a major bump implies real code changes or a behavior shift rather than a mechanical migration,
 stop and surface it rather than guessing at the intended behavior.
+
+## Adding a dependency
+
+Adding one is this skill's job too, and it is the harder half. An upgrade moves a decision somebody
+already made; an addition makes a new one, and every later version of this project inherits it. It
+is a hard-to-reverse external choice, so it is the user's to make: put it to them with a
+recommendation rather than installing it and mentioning it afterwards.
+
+`coding-conventions` already says what to establish before adding one – that it is warranted at
+all, that the standard library will not do, the current version looked up rather than recalled, the
+licence, the advisories. Do that first; it is the same rule and it lives there.
+
+Three things are this skill's:
+
+- **Check it against a primary source** – the registry entry, the repository, the changelog – and
+  **cite what you read** in the decision the ticket records. Nothing downstream looks again, so the
+  next person to ask "why this one, and when?" gets an answer with a date on it rather than a shrug.
+- **Say what it costs to keep and to remove**, not only what it does. Install size, transitive
+  count, and what taking it back out would mean once callers exist.
+- **Let the user decide.** Present the choice and your recommendation. Nobody is a default here –
+  with no user present this is a halt, not a judgement call you make on their behalf.
+
+Once it is agreed, install it exactly as pass 3 installs an upgrade: on its own, all three checks
+green.
 
 ## Node version alignment
 

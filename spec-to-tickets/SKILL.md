@@ -30,7 +30,7 @@ State what the spec delivers as a release note: one line a user would care about
 
 - **Half is independently worth shipping** - the spec describes more than one feature. Stop. Send it back to `/discovery` to be split into separate specs, and say which halves you found.
 - **Nothing smaller is worth shipping** - it is one feature. Continue.
-- **Nothing about it is observable outside the code** - it is below the floor. Stop, and send it back to `/discovery`, which decides whether it wants a ticket or simply doing.
+- **Nothing about it is observable outside the code** - this is maintenance, not a feature. Stop, and send it back to `/discovery`, where it becomes a maintenance ticket.
 
 Stop too if the spec isn't settled: criteria missing, decisions left open, an open-questions section surviving. Those are discovery's to close, and inventing the gaps here buries them in tickets nobody will re-read.
 

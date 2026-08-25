@@ -542,6 +542,20 @@ drive 0
 expect_out "Closing out the run" "a building step still narrates its first line"
 expect_no_out "status page" "a building step is still only its narration"
 
+# --- the skills' shared files ---------------------------------------------------
+
+# Five skills read the ticket format and each carries its own copy, because a
+# skill installs alone and cannot reach into a sibling's directory. Identical is
+# the whole point, and a five-way edit is easy to make four-way by accident.
+
+copies=("$HERE"/../*/TICKET_FORMAT.md)
+[ "${#copies[@]}" -eq 5 ] \
+  && ok "every skill that reads a ticket has the format beside it" \
+  || bad "every skill that reads a ticket has the format beside it" "${copies[*]}"
+[ "$(md5sum "${copies[@]}" | awk '{print $1}' | sort -u | wc -l)" = 1 ] \
+  && ok "the ticket format's copies are byte-identical" \
+  || bad "the ticket format's copies are byte-identical" "$(md5sum "${copies[@]}")"
+
 # --- accepting a run ----------------------------------------------------------
 
 # Deleting the spec and the tickets is the pipeline's one irreversible act and

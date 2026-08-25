@@ -2,6 +2,8 @@
 
 The shape of the work order `/spec-to-tickets` and `/discovery` emit and `/implement` consumes. One ticket is one build: one agent, one context window - and in an unattended run, nobody to ask, so everything that run needs to decide must already be decided here.
 
+Three kinds of ticket share this shape: the **feature ticket** that claims criteria from a spec, the **remediation ticket** a review files against work already built, and the **maintenance ticket** that changes no behaviour at all. Everything below describes the feature ticket unless it says otherwise; the other two get a section each, naming only what differs.
+
 A ticket carries what to build, what it may rely on, and what it must not touch. It does not carry the requirements themselves. Those stay in the spec and are cited by id, so there is one place to change them when they change.
 
 ## Where tickets live
@@ -26,7 +28,7 @@ spec_hash: a3f2c81d09e4
 
 `status` is the loop's durable state: it picks the lowest-numbered `todo` whose `depends_on` are all `done`, and stops when none qualifies. Keeping it in the file rather than in the driver is what makes a halted run resumable.
 
-`spec` and `spec_hash` are omitted when no spec stands behind the ticket - see *Tickets without a spec* below.
+`spec` and `spec_hash` are omitted when no spec stands behind the ticket - a maintenance ticket, or the single ticket `/discovery`'s small lane emits. See *Maintenance tickets* and *Tickets without a spec* below.
 
 `spec_hash` is the first 12 characters of `sha256sum` over the spec file. `/spec-to-tickets` stamps it; `/implement` recomputes it on arrival and halts if it differs. This freezes the spec for the duration of a run: tickets cite requirements rather than copying them, so an edit to the spec mid-run would silently change what the remaining tickets mean. The hash turns that from a convention nobody remembers into a detected condition. Recovery is `/spec-to-tickets --refresh`, which re-derives the remaining tickets and re-stamps them.
 
@@ -38,6 +40,7 @@ spec_hash: a3f2c81d09e4
 ## Satisfies
 - **US-3.1** - <a few words locating the criterion, not a copy of it>
 - **US-3.2** - <...>
+<Absent in a maintenance ticket, which claims no criteria.>
 
 ## Preconditions
 - <What an earlier ticket built that this one stands on, named durably.>
@@ -69,9 +72,21 @@ Where the finding is a criterion nothing pins, the ticket names the **whole** cr
 
 Everything else holds. `Out of scope` still bounds it, since a consolidation ticket that drifts into redesign is the same failure as a feature ticket that scope-creeps, and the `Record` still carries what it decided, what it left `Unresolved`, and what it left open.
 
+### Maintenance tickets change nothing observable
+
+The third kind. A refactor, a consolidation, a dependency upgrade, a rename that reaches every caller - work with no new behaviour in it, which is exactly why it usually gets done by hand, outside the discipline that would have caught the mistake.
+
+It has no `Satisfies` and no `spec` or `spec_hash`: there is no criterion to claim and no spec behind it. It is named for the change rather than for behaviour - "consolidate the two application validators", "move onto the current LTS" - because naming it for observable behaviour is impossible by construction, which is the same exception remediation gets and for the same reason.
+
+Its contract is fixed and identical every time: **the existing suite stays green, and every behaviour the diff touches is still pinned afterwards by a test that fails when that behaviour is broken.** Green alone is too weak - a test that no longer reaches the code it was written for is still green - so the proof is the restore-and-break check `/implement` already runs against a criterion, applied here per behaviour instead. `Pinned by` in the `Record` names those tests. A refactor that quietly changed behaviour is the most expensive defect to find later, because nothing was watching and no test was ever written that would have.
+
+A `## Why` leads the body: what is wrong with the code as it stands, and what should be true of it afterwards. `Out of scope` bounds it harder than anywhere else, because "while I'm here" is the material a refactor is made of. Where the work is a dependency upgrade or a new dependency, the `upgrade-dependencies` skill is how it is done.
+
+Nothing else is relaxed: the same two reviews, the same `Record`, the same halts. Only the RED-first loop changes shape, since there is no new behaviour to write a failing test for. If the work turns out to need a behaviour change to land, it is not this kind of ticket - halt `blocked` rather than smuggle one in under a refactor.
+
 ### Satisfies cites, it does not copy
 
-Every ticket traces to numbered criteria in the spec (`US-3.1`). The text beside each id is a locator so the ticket reads on its own - enough to know which criterion is meant, not enough to be a second copy of it that can disagree with the first. `/implement` reads the spec alongside the ticket; one extra file costs an agent nothing, and one source of truth costs a refresh a great deal less.
+Every feature ticket traces to numbered criteria in the spec (`US-3.1`). The text beside each id is a locator so the ticket reads on its own - enough to know which criterion is meant, not enough to be a second copy of it that can disagree with the first. `/implement` reads the spec alongside the ticket; one extra file costs an agent nothing, and one source of truth costs a refresh a great deal less.
 
 A ticket may take a whole story or part of one, but never a criterion split across two tickets: the criterion is the smallest unit a test pins, so splitting it leaves both tickets unable to prove they are done.
 
@@ -113,7 +128,7 @@ A ticket is intent before the run and a record after it. Exactly one of these is
 <What happened, and what the human needs to decide.>
 ```
 
-- **blocked** - the spec contradicts itself, or a criterion cannot be met as written. Back to `/discovery`.
+- **blocked** - the spec contradicts itself, a criterion cannot be met as written or pinned by anything, or a maintenance ticket cannot land without changing behaviour. Back to `/discovery`.
 - **drift** - `Preconditions` or `Touches` no longer match the code. Back to `/spec-to-tickets --refresh`.
 - **mystery** - a test will not go green and the cause is unknown after the bounded attempts. Back to a human to diagnose.
 - **stale-spec** - `spec_hash` does not match. Back to `/spec-to-tickets --refresh`.
@@ -131,7 +146,7 @@ A ticket is intent before the run and a record after it. Exactly one of these is
 - <a gap found here and deliberately not closed: what is wrong, where, and which criterion or constraint you believe covers it - or that none does>
 ```
 
-`Pinned by` answers, for every id in `Satisfies`, which test would fail if that criterion's behaviour were removed - and says whether the proof is the RED run this ticket wrote, or a restore-and-break check against a test it did not write. A whole suite passing says nothing about the one criterion nobody wrote a test for, so the claim is made per id or not at all.
+`Pinned by` answers, for every id in `Satisfies` - or for every behaviour the diff touches, in a ticket that claims no ids - which test would fail if that behaviour were removed - and says whether the proof is the RED run this ticket wrote, or a restore-and-break check against a test it did not write. A whole suite passing says nothing about the one criterion nobody wrote a test for, so the claim is made per id or not at all.
 
 `Decisions` is what the handover brief aggregates at the end of a run: where the spec was silent, whether the default matches intent is the user's call, and this is the only place that question gets asked. `Unresolved` is for findings deliberately not fixed - a nit judged not worth it, a should-fix the implementer argued against. A section stays absent when empty rather than carrying a "none".
 
