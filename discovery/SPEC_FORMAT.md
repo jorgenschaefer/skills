@@ -1,10 +1,10 @@
 # Feature spec format
 
-The shape of the feature specification `discovery` writes, `/plan` decomposes into tickets, and `/implement` builds against. It is a complete contract: every unit of work maps back to a story or decision, and nothing in it is left unbuilt. Omit sections that don't apply; add subsections where the domain warrants.
+The shape of the feature specification `discovery` writes, `/spec-to-tickets` decomposes into tickets, and `/implement` builds against. It is a complete contract: every unit of work maps back to a story or decision, and nothing in it is left unbuilt. Omit sections that don't apply; add subsections where the domain warrants.
 
 Number user stories `US-1`, `US-2`… and their acceptance criteria `US-1.1`, `US-1.2`… always, without exception. Tickets cite criteria rather than copying them, so each one needs a stable anchor to be pointed at - and a criterion with no id is a criterion no ticket can claim and no review can check off.
 
-The spec is frozen once `/plan` has hashed it: each ticket carries that hash, and editing the file afterwards halts the loop. `/plan` writes into it first - promoting the defaults more than one ticket has to hold to - and hashes what it leaves. Settle everything else before decomposition rather than during.
+The spec is frozen once `/spec-to-tickets` has hashed it: each ticket carries that hash, and editing the file afterwards halts the loop. `/spec-to-tickets` writes into it first - promoting the defaults more than one ticket has to hold to - and hashes what it leaves. Settle everything else before decomposition rather than during.
 
 Three tiers of commitment live in this file and a reader has to be able to tell them apart:
 
@@ -62,7 +62,7 @@ Three tiers of commitment live in this file and a reader has to be able to tell 
 
 ## User Stories
 - **US-1 · As a** <role>, **I want to** <action>, **so that** <outcome>. _(J-1)_
-  - _Depends on: US-2 — <what this story needs in place first>. Omit when the story stands alone; record only real build-order dependencies, so `/plan` can decompose along them._
+  - _Depends on: US-2 — <what this story needs in place first>. Omit when the story stands alone; record only real build-order dependencies, so `/spec-to-tickets` can decompose along them._
   - **US-1.1** <acceptance criterion as given/when/then - required for every behavior a wrong default could hurt; each one becomes a test written RED first. Use EARS instead (`WHILE <state> the system shall …`, `IF <condition> THEN the system shall …`) where the behavior is a standing invariant rather than an event, and given/when/then would need a scenario per case to say it.>
   - _Why: <rationale - include only when omitting it would let an implementer take a wrong turn>_
 

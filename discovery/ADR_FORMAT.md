@@ -1,6 +1,6 @@
 # ADR format
 
-The shape of an architecture decision record: one choice, the alternatives that were live when it was made, and what it costs. `/discovery` writes them, `/plan` and `/critique` read them.
+The shape of an architecture decision record: one choice, the alternatives that were live when it was made, and what it costs. `/discovery` writes them, `/spec-to-tickets` and `/critique` read them.
 
 An ADR is permanent-tier. It outlives the feature that produced it and the spec that carried it, so it is never written autonomously - the decision and a recommendation are put to the user, and the ADR exists only once they say yes to it. What does not clear that bar is an implementation decision and belongs in the spec, where it is deleted with the rest of the paper on acceptance.
 

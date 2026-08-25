@@ -1,10 +1,10 @@
 ---
-name: trace
+name: check-against-spec
 description: Check a finished feature against the spec it was built from, and file a ticket for each gap. Runs after the ticket loop drains.
 disable-model-invocation: true
 ---
 
-# Trace
+# Check Against Spec
 
 Check that the right thing was built. Not that the code is good - `/critique` owns that - but that the feature the spec describes is the feature that now exists.
 
@@ -56,4 +56,4 @@ Where the gap is a missing *test* over working behavior, file it as a **remediat
 
 **Report what you found**, whether or not you filed tickets. Name the criteria you checked and how, so a clean result is evidence rather than an assertion. A silent pass and a pass with nothing to show look identical to whoever reads it next, and only one of them means anything.
 
-If you filed tickets, the loop runs again and `/trace` runs again after it. Expect that; a run that needs a second pass is working as designed, not failing.
+If you filed tickets, the loop runs again and `/check-against-spec` runs again after it. Expect that; a run that needs a second pass is working as designed, not failing.

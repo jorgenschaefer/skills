@@ -69,7 +69,7 @@ Written in `/discovery` where the alternatives are live, never autonomously - an
 ADR is a permanent-tier item and gets its own yes. Read by `/discovery` and
 `/spec-to-tickets` the way discovery already reads `UBIQUITOUS_LANGUAGE.md`;
 `/critique` treats contradicting a ratified ADR as a finding.
-*Touches: a new ADR_FORMAT.md, discovery/SKILL.md, plan/SKILL.md,
+*Touches: a new ADR_FORMAT.md, discovery/SKILL.md, spec-to-tickets/SKILL.md,
 critique/SKILL.md.*
 
 **Hard-to-reverse external choices are checked against a primary source** before
@@ -103,19 +103,19 @@ ticket, or one ticket owns the class with the list in it. `/spec-to-tickets`
 already reads the codebase for the structures the spec names.
 Evidence: kh-finder C-2, claimed by four tickets and owned by none, came back as
 tickets 10, 11 and 14.
-*Touches: plan/SKILL.md.*
+*Touches: spec-to-tickets/SKILL.md.*
 
 **A default more than one ticket touches is promoted to binding** - marked in
 the spec's own defaults list before `spec_hash` is computed. Not into a
 `Provides`, which would manufacture a `drift` halt out of a date-format
 convention.
-*Touches: plan/SKILL.md, discovery/SPEC_FORMAT.md.*
+*Touches: spec-to-tickets/SKILL.md, discovery/SPEC_FORMAT.md.*
 
 **Workflow-test authorisation is pre-written at planning time.**
 `/spec-to-tickets` reads `tests/workflows/` and writes the authorisation into
 any ticket whose work reaches one, mechanical renames included. The guard stays
 strict; the expensive halts are anticipated rather than discovered.
-*Touches: plan/SKILL.md.*
+*Touches: spec-to-tickets/SKILL.md.*
 
 ---
 
@@ -163,13 +163,13 @@ non-code case: criteria over a README, a glossary, a module comment or a
 workflow file are pinned by asserting on the file's text.
 Evidence: kh-finder ticket 04 wrote "Kein Test"; four of its five criteria came
 back as tickets 06 and 07.
-*Touches: implement/SKILL.md, trace/SKILL.md, the five TICKET_FORMAT.md copies.*
+*Touches: implement/SKILL.md, check-against-spec/SKILL.md, the five TICKET_FORMAT.md copies.*
 
 **A remediation ticket names the whole criterion** and every part of it left
 unpinned, not only the half a mutation reached.
 Evidence: everlast US-0.1 - ticket 14 pinned one half, ticket 15 the other a
 pass later.
-*Touches: the five TICKET_FORMAT.md copies, trace/SKILL.md.*
+*Touches: the five TICKET_FORMAT.md copies, check-against-spec/SKILL.md.*
 
 **`Record` gains a third subsection**, beside `Decisions` and `Unresolved`, for
 a gap found and deliberately not closed here: what is wrong, where, and which
@@ -189,7 +189,7 @@ each overturn whether the evidence cited is actually in the code.
 **Mutation testing as a per-ticket gate**, catching the gap on the ticket
 nothing is built on yet. It **joins** the quality review rather than replacing
 it - that review also holds the default-overturn evidence check above.
-*Touches: implement/SKILL.md, trace/SKILL.md (the ban, below), loop.sh.*
+*Touches: implement/SKILL.md, check-against-spec/SKILL.md (the ban, below), loop.sh.*
 
 **`/implement`'s own quality and code reviews take the review bar** below.
 *Touches: implement/SKILL.md.*
@@ -211,18 +211,18 @@ it - that review also holds the default-overturn evidence check above.
 Evidence: everlast 25/27/29 - one finding relitigated twice, the last three
 critique passes spent on a test-only diff. The third conjunct alone stops 27
 and 29.
-*Touches: critique/SKILL.md, trace/SKILL.md, implement/SKILL.md.*
+*Touches: critique/SKILL.md, check-against-spec/SKILL.md, implement/SKILL.md.*
 
 **A surviving mutant is a gap only on code implementing one of those.** Mutants
 are not a finite set, so without this bar the per-ticket mutation gate imports
 the regress the other conjuncts close.
-*Touches: trace/SKILL.md, implement/SKILL.md.*
+*Touches: check-against-spec/SKILL.md, implement/SKILL.md.*
 
 **The pre-existing-coverage carve-out.** Coverage that existed before the run
 and does not exist after it **is work**, even though it traces to no criterion
 in this spec - the criterion it pinned belongs to a deleted spec, which the
 destination conjunct cannot see. Without this, the finding below is illegal.
-*Touches: critique/SKILL.md, trace/SKILL.md.*
+*Touches: critique/SKILL.md, check-against-spec/SKILL.md.*
 
 **Notice a test that leaves.** A test removed, renamed away or weakened over the
 run's diff is a finding for `/check-against-spec`, and a ticket-scoped one for
@@ -230,7 +230,7 @@ run's diff is a finding for `/check-against-spec`, and a ticket-scoped one for
 consolidates.
 Evidence: everlast ticket 26 consolidated two caller suites and removed
 pre-existing coverage; ticket 28 found it a pass later.
-*Touches: trace/SKILL.md, implement/SKILL.md.*
+*Touches: check-against-spec/SKILL.md, implement/SKILL.md.*
 
 **Severity is assigned by what the defect does, not by what it could become.** A
 **blocker** is a wrong result, a crash, a loss or a breach with a trigger
@@ -260,17 +260,17 @@ criterion no ticket claimed, a constraint nothing verified, a non-goal built
 anyway - survives here, because a per-ticket check structurally cannot find what
 no ticket claimed. Sequence this **after** workflow tests, and narrow it to what
 the permanent suite does not cover.
-*Touches: trace/SKILL.md, critique/SKILL.md, implement/SKILL.md.*
+*Touches: check-against-spec/SKILL.md, critique/SKILL.md, implement/SKILL.md.*
 
-**Lift the tooling ban** at `trace/SKILL.md:47`, at the cost of a one-time
+**Lift the tooling ban** at `check-against-spec/SKILL.md:47`, at the cost of a one-time
 tooling ticket per project. It is what forces most projects onto a fallback the
 skill itself calls "proves less".
-*Touches: trace/SKILL.md.*
+*Touches: check-against-spec/SKILL.md.*
 
 **Reviews read done tickets' `Record` sections as leads, not verdicts.** An
 entry in the new third subsection is a place to look; the reviewer still
 verifies adversarially and decides for itself.
-*Touches: trace/SKILL.md, loop.sh (`trace_prompt`), tests/run.sh.*
+*Touches: check-against-spec/SKILL.md, loop.sh (`check_prompt`), tests/run.sh.*
 
 **Fix `/critique`'s `description`** so it fires instead of losing to the
 built-in code-review skill. Affects hand use only - the driver invokes it by
@@ -289,7 +289,7 @@ stay ordinary tests, and most features extend an existing journey and ratify
 none - the skill has to say so or every feature will invent one. The suite runs
 in the project's check command, so feature 12's run keeps feature 3's journeys
 green at every ticket.
-*Touches: discovery/SKILL.md, plan/SKILL.md, loop.sh, a convention for
+*Touches: discovery/SKILL.md, spec-to-tickets/SKILL.md, loop.sh, a convention for
 tests/workflows/.*
 
 **The driver guards `tests/workflows/`.** Any ticket whose diff touches the
@@ -364,7 +364,7 @@ branch before the merge, so the paper never reaches the default branch.
 
 **The driver recovers from drift.** `/spec-to-tickets --refresh` on `drift` and
 `stale-spec` only, bounded to one per run. `blocked` and `mystery` still need a
-human. The recovery is already documented in `plan/SKILL.md:92` and in all five
+human. The recovery is already documented in `spec-to-tickets/SKILL.md:92` and in all five
 format copies; the driver simply never calls it.
 *Touches: loop.sh, tests/run.sh.*
 
@@ -403,7 +403,7 @@ requires inside `/implement` goes with it.
 name them.*
 
 **Deleted: `/propose-change`.** Merged into `/discovery`'s shaped-instruction
-terminal. Its references in `plan/SKILL.md`, `implement/SKILL.md`, `README.md`
+terminal. Its references in `spec-to-tickets/SKILL.md`, `implement/SKILL.md`, `README.md`
 and the surviving `TICKET_FORMAT.md` copies go with it.
 
 **Deleted: `/decision-brief`.** Its job - rank the decisions worth a veto out of
@@ -478,7 +478,7 @@ box in the same commit as the step.
 - [x] **B1** `SPEC_FORMAT.md` and a new `ADR_FORMAT.md`
 - [x] **B2** `/discovery` gains everything it now owns
 - [x] **B3** Delete `/propose-change`, `/decision-brief`, `/debug`
-- [ ] **B4** The renames - *tested*
+- [x] **B4** The renames - *tested*
 - [ ] **B5** `/spec-to-tickets`'s decomposition rules
 - [ ] **C1** `/implement-ticket`, with the rule split from the resolution - *tested*
 - [ ] **C2** The ticket format and what `/implement` writes into it
@@ -537,7 +537,7 @@ terminals including the downward exit. One edit rather than three.
 *discovery/SKILL.md.*
 
 **B3. Delete `/propose-change`, `/decision-brief`, `/debug`.** Safe only after B2,
-which is where the small lane goes. Clean every reference in `plan/SKILL.md`,
+which is where the small lane goes. Clean every reference in `spec-to-tickets/SKILL.md`,
 `implement/SKILL.md`, `handover/SKILL.md` and `README.md`. Six
 `TICKET_FORMAT.md` copies become five.
 *three skill directories, and the files that name them.*

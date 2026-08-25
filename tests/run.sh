@@ -346,7 +346,7 @@ ticket 02-other todo 01
 ticket 01-thing blocked ""
 drive 0
 expect_rc 1 "a ticket nothing can reach is a stop, not a finished run"
-expect_calls 0 "an unreachable queue never reaches trace, critique or handover"
+expect_calls 0 "an unreachable queue never reaches the checks or the handover"
 expect_out "01-thing" "the stop names the ticket that is stuck"
 expect_out "02-other" "the stop names what is stuck behind it"
 
@@ -380,7 +380,7 @@ drive 0
 expect_rc 0 "a ticket a review files is built before the run ends"
 expect_out "\[2/2\] 90-filed-2" "a ticket filed mid-run counts in the position"
 expect_calls 5 "the filed ticket costs one more step, and the run still ends"
-expect_no_prompt /trace "Scope this to" "the first pass checks the whole run"
+expect_no_prompt /check-against-spec "Scope this to" "the first pass checks the whole run"
 expect_prompt "Run /critique" "from this branch's start" \
   "the first pass reviews the whole branch"
 
@@ -401,14 +401,14 @@ EOF
 drive 0
 SHA="$(git -C "$WORK" rev-parse HEAD~1)"
 expect_rc 0 "work filed by the last review of a pass opens another pass"
-expect_calls 7 "a second pass is a second trace, critique and handover"
-expect_prompt /trace "Scope this to the commits since $SHA" \
-  "the second trace is narrowed to the last pass's commits"
+expect_calls 7 "a second pass is a second check, critique and handover"
+expect_prompt /check-against-spec "Scope this to the commits since $SHA" \
+  "the second spec check is narrowed to the last pass's commits"
 expect_prompt "Run /critique" "over the diff from $SHA" \
   "the second critique is narrowed to the same commit"
 
 # Only the last review of a pass decides whether the run has converged: a gap
-# /trace files is drained inside the pass and holds nothing up.
+# /check-against-spec files is drained inside the pass and holds nothing up.
 
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
@@ -422,7 +422,7 @@ clean.jsonl 0 -
 clean.jsonl 0 -
 EOF
 drive 0
-expect_rc 0 "a gap the second pass's trace files is built, not counted against it"
+expect_rc 0 "a gap the second pass's check files is built, not counted against it"
 expect_calls 8 "the run converges on the pass that filed it"
 
 # Reviews that are still filing work when the passes run out are not short of
@@ -467,8 +467,8 @@ EOF
 TICKET_DIR=docs/feature/tickets drive 0
 unset TICKET_DIR
 expect_rc 0 "the ticket directory need not be ./tickets"
-expect_prompt /trace     docs/feature/tickets "trace is told where to file a gap"
-expect_prompt "Run /critique" docs/feature/tickets "critique is told where to file a blocker"
+expect_prompt /check-against-spec docs/feature/tickets "the spec check is told where to file a gap"
+expect_prompt "Run /critique"     docs/feature/tickets "critique is told where to file a blocker"
 
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
@@ -493,7 +493,7 @@ clean.jsonl 0 -
 EOF
 drive 0
 expect_argv /implement "--model opus" "a ticket is built by the build model"
-expect_argv /trace "--model sonnet" "the check runs on a model that did not write the code"
+expect_argv /check-against-spec "--model sonnet" "the check runs on a model that did not write the code"
 expect_argv "Run /critique" "--model sonnet" "so does the review"
 expect_argv /handover "--model opus" "the handover is not a review and stays on the build model"
 expect_argv /implement "--effort high" "building a ticket gets the budget for it"
@@ -510,7 +510,7 @@ EOF
 drive 0 BUILD_MODEL=sonnet REVIEW_MODEL=opus
 expect_rc 0 "a run may name the two models itself"
 expect_argv /implement "--model sonnet" "the build runs on the model the run named"
-expect_argv /trace "--model opus" "and the reviews on the other one"
+expect_argv /check-against-spec "--model opus" "and the reviews on the other one"
 
 workspace 01-thing
 drive 0 REVIEW_MODEL=opus

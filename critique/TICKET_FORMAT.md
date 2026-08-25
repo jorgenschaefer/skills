@@ -1,6 +1,6 @@
 # Ticket format
 
-The shape of the work order `/plan` and `/discovery` emit and `/implement` consumes. One ticket is one `/implement` run: one agent, one context window, no questions asked of anyone - so everything that run needs to decide must already be decided here.
+The shape of the work order `/spec-to-tickets` and `/discovery` emit and `/implement` consumes. One ticket is one `/implement` run: one agent, one context window, no questions asked of anyone - so everything that run needs to decide must already be decided here.
 
 A ticket carries what to build, what it may rely on, and what it must not touch. It does not carry the requirements themselves. Those stay in the spec and are cited by id, so there is one place to change them when they change.
 
@@ -28,7 +28,7 @@ spec_hash: a3f2c81d09e4
 
 `spec` and `spec_hash` are omitted when no spec stands behind the ticket - see *Tickets without a spec* below.
 
-`spec_hash` is the first 12 characters of `sha256sum` over the spec file. `/plan` stamps it; `/implement` recomputes it on arrival and halts if it differs. This freezes the spec for the duration of a run: tickets cite requirements rather than copying them, so an edit to the spec mid-run would silently change what the remaining tickets mean. The hash turns that from a convention nobody remembers into a detected condition. Recovery is `/plan --refresh`, which re-derives the remaining tickets and re-stamps them.
+`spec_hash` is the first 12 characters of `sha256sum` over the spec file. `/spec-to-tickets` stamps it; `/implement` recomputes it on arrival and halts if it differs. This freezes the spec for the duration of a run: tickets cite requirements rather than copying them, so an edit to the spec mid-run would silently change what the remaining tickets mean. The hash turns that from a convention nobody remembers into a detected condition. Recovery is `/spec-to-tickets --refresh`, which re-derives the remaining tickets and re-stamps them.
 
 ## The body
 
@@ -61,7 +61,7 @@ spec_hash: a3f2c81d09e4
 
 ### Remediation tickets are the exception
 
-Most tickets add behavior and the rule above governs them. A **remediation ticket** comes from a review instead - a `/trace` gap where the behavior works but no test pins it, a `/critique` blocker like three tickets each inventing their own validator - and its job is to repair something already built.
+Most tickets add behavior and the rule above governs them. A **remediation ticket** comes from a review instead - a `/check-against-spec` gap where the behavior works but no test pins it, a `/critique` blocker like three tickets each inventing their own validator - and its job is to repair something already built.
 
 It names the defect, because there is no new behavior to name. Its `Satisfies` is the finding it resolves, quoted, with where the finding came from. Its contract is fixed and identical every time: **the finding is resolved and every existing test still passes.** That is checkable, which is what the naming rule was protecting in the first place - so the exception costs nothing.
 
@@ -110,9 +110,9 @@ A ticket is intent before the run and a record after it. `/implement` appends ex
 ```
 
 - **blocked** - the spec contradicts itself, or a criterion cannot be met as written. Back to `/discovery`.
-- **drift** - `Preconditions` or `Touches` no longer match the code. Back to `/plan --refresh`.
+- **drift** - `Preconditions` or `Touches` no longer match the code. Back to `/spec-to-tickets --refresh`.
 - **mystery** - a test will not go green and the cause is unknown after the bounded attempts. Back to a human to diagnose.
-- **stale-spec** - `spec_hash` does not match. Back to `/plan --refresh`.
+- **stale-spec** - `spec_hash` does not match. Back to `/spec-to-tickets --refresh`.
 
 ```markdown
 ## Record

@@ -1,10 +1,10 @@
 ---
-name: plan
+name: spec-to-tickets
 description: Decompose a settled /discovery spec into the tickets an unattended /implement loop consumes. --refresh re-derives the unbuilt ones after a drift halt.
 disable-model-invocation: true
 ---
 
-# Plan
+# Spec to Tickets
 
 Turn a settled `/discovery` spec into the `tickets/` an unattended `/implement` loop can build without asking anyone anything.
 
@@ -93,7 +93,7 @@ Only what you decided. The spec's own decisions were ratified as discovery made 
 
 ## Refresh
 
-`/plan --refresh` re-derives the unbuilt tickets after the loop halts on `drift` or `stale-spec`. The premise is that reality moved: either the code an unbuilt ticket assumed, or the spec every ticket cites.
+`/spec-to-tickets --refresh` re-derives the unbuilt tickets after the loop halts on `drift` or `stale-spec`. The premise is that reality moved: either the code an unbuilt ticket assumed, or the spec every ticket cites.
 
 - Leave `done` tickets untouched. They are a record of work that happened, and their `Record` sections feed the handover.
 - Re-derive every `todo` and `blocked` ticket against the codebase as it actually is now - read the code, not the prose of the tickets you are replacing, which is the drifted material. Renumber nothing; ids are referenced by `depends_on` and by commit messages.

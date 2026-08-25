@@ -1,6 +1,6 @@
 ---
 name: implement
-description: Build one ticket end to end - TDD, the project's checks, then two reviews - halting rather than asking. The unit /plan and /discovery emit.
+description: Build one ticket end to end - TDD, the project's checks, then two reviews - halting rather than asking. The unit /spec-to-tickets and /discovery emit.
 disable-model-invocation: true
 ---
 

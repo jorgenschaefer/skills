@@ -361,7 +361,7 @@ unreachable() {
   done
 }
 
-# Recomputed each time: /trace and /critique can file new tickets mid-run, so
+# Recomputed each time: the end-of-run checks can file new tickets mid-run, so
 # the denominator is what exists now, not what existed at the start.
 position() {
   local total done_n
@@ -406,8 +406,8 @@ drain() {
       printf '     %s - %s\n' "$(basename "$ticket" .md)" "$(why_stuck "$ticket")"
     done <<< "$stuck"
     echo "   A halt needs whatever blocked it resolved; a dependency that is"
-    echo "   missing or circular needs /plan --refresh. Set status back to todo"
-    echo "   on what should be rebuilt, then re-run:"
+    echo "   missing or circular needs /spec-to-tickets --refresh. Set status"
+    echo "   back to todo on what should be rebuilt, then re-run:"
     echo "     $0 $TICKETS"
   } >&2
   return 1
@@ -415,10 +415,10 @@ drain() {
 
 # Both end-of-run checks feed findings back as tickets, so a fix re-enters the
 # same loop with the same TDD and review discipline instead of being patched by
-# hand after everything else has been verified. /trace runs first: a gap it finds
-# becomes code, and that code should pass under /critique rather than land behind
-# it. /critique stays a generic review skill - the prompt here, not the skill,
-# knows this pipeline files tickets.
+# hand after everything else has been verified. /check-against-spec runs first:
+# a gap it finds becomes code, and that code should pass under /critique rather
+# than land behind it. /critique stays a generic review skill - the prompt here,
+# not the skill, knows this pipeline files tickets.
 #
 # Pass 1 checks the whole run; a later pass checks only what the previous pass's
 # findings added. Re-reading twelve tickets' code to check three fixes is the
@@ -431,11 +431,11 @@ drain() {
 # every commit built after them.
 CHECKED_AT=""
 
-trace_prompt() {
-  printf '/trace %s\n' "$SPEC_DIR"
+check_prompt() {
+  printf '/check-against-spec %s\n' "$SPEC_DIR"
   [ -z "$CHECKED_AT" ] || cat <<EOF
 Scope this to the commits since $CHECKED_AT - the tickets the last pass's
-reviews filed. Everything up to that commit traced clean and its criteria are
+reviews filed. Everything up to that commit checked clean and its criteria are
 pinned by tests the suite still runs, so check the criteria these commits claim
 and whether they broke anything built earlier.
 EOF
@@ -462,8 +462,8 @@ echo "logs: $LOG_DIR"
 for pass in $(seq "$MAX_PASSES"); do
   drain || exit $?
 
-  echo "==> trace (pass $pass)"
-  run_step review "trace-$pass" "$(trace_prompt)" || exit 3
+  echo "==> spec check (pass $pass)"
+  run_step review "spec-check-$pass" "$(check_prompt)" || exit 3
   drain || exit $?
 
   echo "==> critique (pass $pass)"

@@ -29,7 +29,7 @@ Two streams feed the ranked list:
 - **Every ticket's `Record`.** The spec-silent forks each run logged. These are the core of the page: by definition the spec did not say, so nobody but the user can judge whether the default matches intent, and a different answer means rework.
 - **Every `Unresolved` finding.** A review raised it and the implementer argued it down. That adjudication happened with no human present and deserves one now.
 
-Review findings that mattered are not a third stream - `/trace` and `/critique` filed their gaps and blockers as tickets, and those were built and reviewed like everything else before the run reached you. What survives is `/critique`'s nits, which nobody acted on. Put them in a short appendix below the ranked list, not in it. They are not decisions, and mixing forty nits into the list is how the one item that needed a veto gets skimmed past.
+Review findings that mattered are not a third stream - `/check-against-spec` and `/critique` filed their gaps and blockers as tickets, and those were built and reviewed like everything else before the run reached you. What survives is `/critique`'s nits, which nobody acted on. Put them in a short appendix below the ranked list, not in it. They are not decisions, and mixing forty nits into the list is how the one item that needed a veto gets skimmed past.
 
 A `Record` entry written by the agent that made the choice arrives already justified - the cost it is paying is the half you have to supply.
 

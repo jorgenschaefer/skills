@@ -17,7 +17,7 @@ Read `IDEAS.md` too, if one exists where the specs live. It holds what earlier f
 
 You are the one door into the pipeline, and three things come out of it:
 
-- **A spec.** The default, and what everything below is written for: a change big enough that `/plan` decomposes it into tickets an unattended loop builds.
+- **A spec.** The default, and what everything below is written for: a change big enough that `/spec-to-tickets` decomposes it into tickets an unattended loop builds.
 - **One ticket.** The change is a single observable thing - a bugfix, a small behaviour change - and a spec for it would be ceremony. See *The small lane*.
 - **A reasoned no.** The idea does not survive the interview: the problem is already solved, the cost is out of proportion to it, the thing asked for is a symptom of something else, or it is worth doing but not the way it was asked for. Say so with the reasoning and name what you would do instead.
 
@@ -51,7 +51,7 @@ Settle the boundary too - what the feature explicitly won't do, and how you'll b
 
 A spec describes **one** feature: a single change someone outside the code can observe, substantial enough to be worth shipping on its own. Not three changes. Not polish nobody would notice.
 
-Nothing downstream will save you from getting this wrong. There is no slicing step any more - `/plan` decomposes the spec into tickets and an unattended loop builds all of them, so an oversized spec becomes a long run whose result nobody can review in one sitting. `/plan` re-applies this test cold and will send an oversized spec back, but that costs a whole discovery cycle. Hold the line here instead.
+Nothing downstream will save you from getting this wrong. There is no slicing step any more - `/spec-to-tickets` decomposes the spec into tickets and an unattended loop builds all of them, so an oversized spec becomes a long run whose result nobody can review in one sitting. `/spec-to-tickets` re-applies this test cold and will send an oversized spec back, but that costs a whole discovery cycle. Hold the line here instead.
 
 State what the feature delivers as a release note: one line a user would care about, no bullets, no "and". Then try to break it - **could you ship half of this, and would that half still be worth shipping?** If yes, it is two features, and the honest move is to pick one.
 
@@ -147,7 +147,7 @@ Before the design is written, go module by module through what this feature need
 
 Bounded to what this feature touches - this is not an audit of the repository.
 
-Every verdict is recorded in the spec's `## Implementation decisions`, the reuse and sit-beside ones included. A verdict left unwritten reads later as a module nobody looked at, and `/trace`'s orphan sweep files a ticket to delete what you deliberately kept. Each verdict you reached with the codebase actually open in front of you is a **default**, marked as one with what in the code would overturn it.
+Every verdict is recorded in the spec's `## Implementation decisions`, the reuse and sit-beside ones included. A verdict left unwritten reads later as a module nobody looked at, and `/check-against-spec`'s orphan sweep files a ticket to delete what you deliberately kept. Each verdict you reached with the codebase actually open in front of you is a **default**, marked as one with what in the code would overturn it.
 
 An `absorb` or `replace` that no criterion requires is scope rather than survey: park it in `IDEAS.md`. One a criterion does require is a hard-to-reverse structural choice, so it gets an ADR and its own yes.
 
@@ -185,13 +185,13 @@ Then harden the spec into a contract an implementer can build without improvisin
 - **Number everything.** Journeys `J-1`, stories `US-1`, criteria `US-1.1`, constraints `C-1`, defaults `D-1`. Tickets cite these rather than copying them, so an unnumbered one is a thing no ticket can claim and no review can check off. This is not optional at any spec size.
 - **Check every story names its journey**, and that every journey's steps are covered by stories. A story belonging to no journey is a story nobody asked for; a journey step no story covers is a hole the run will not fill.
 - **Bind the decisions.** Every decision that touches existing code names the real structure it reuses or extends, drawn from the codebase - a durable choice, not a `file:line` that drift will invalidate.
-- **Map the dependencies.** Record them as the `Depends on` notes in User Stories, so `/plan` can decompose along them.
+- **Map the dependencies.** Record them as the `Depends on` notes in User Stories, so `/spec-to-tickets` can decompose along them.
 
-The result is the complete spec `/plan` decomposes into tickets.
+The result is the complete spec `/spec-to-tickets` decomposes into tickets.
 
 ## Summary
 
-Write the summary to a markdown spec file in the repo - propose a path and confirm it - and present the same content inline so the user can react. Before presenting, dispatch a fresh `general-purpose` subagent to read the written spec cold and report where it fights itself - a success criterion a non-goal rules out, an acceptance criterion that contradicts a domain decision, two decisions that can't both hold, or a requirement a reader could take two ways; a fresh reader catches these because your own context can't forget the intent that silently reconciles them. Resolve what it finds and pin the reading you mean, then present. Run it once on the settled spec; targeted revisions from later feedback you can recheck yourself. Follow the shape in `SPEC_FORMAT.md`, and revise from feedback until they're satisfied; the file is what `/plan` decomposes and `/implement` is checked against, so it must match what you've agreed.
+Write the summary to a markdown spec file in the repo - propose a path and confirm it - and present the same content inline so the user can react. Before presenting, dispatch a fresh `general-purpose` subagent to read the written spec cold and report where it fights itself - a success criterion a non-goal rules out, an acceptance criterion that contradicts a domain decision, two decisions that can't both hold, or a requirement a reader could take two ways; a fresh reader catches these because your own context can't forget the intent that silently reconciles them. Resolve what it finds and pin the reading you mean, then present. Run it once on the settled spec; targeted revisions from later feedback you can recheck yourself. Follow the shape in `SPEC_FORMAT.md`, and revise from feedback until they're satisfied; the file is what `/spec-to-tickets` decomposes and `/implement` is checked against, so it must match what you've agreed.
 
 Then close with the receipt: **at most five lines**, one per permanent-tier item this discovery produced - a term, an ADR, a ratified journey - each naming what it commits the project to, and an offer to reopen any of them now. Nothing else belongs in it.
 
@@ -199,4 +199,4 @@ Most discoveries produce nothing permanent, and then the receipt is a single lin
 
 Every item in it already got its own yes when it was proposed, so the receipt is the last chance to take one back rather than the first sight of it. The ranked closing brief this replaced grew with the spec until nobody read it to the end, which is how the one item that needed a veto got skimmed past.
 
-Once they ratify it, point them at `/plan`, which decomposes the spec into tickets. From that point the spec is frozen: each ticket carries its hash, and an edit halts the loop.
+Once they ratify it, point them at `/spec-to-tickets`, which decomposes the spec into tickets. From that point the spec is frozen: each ticket carries its hash, and an edit halts the loop.
