@@ -26,6 +26,12 @@ To halt: set `status: blocked` in the ticket's frontmatter, append the `## Halt`
 
 The driver reads `status` from the ticket to decide whether to continue, so setting it is what makes a halt visible. A run that stops without setting it looks like a crash, and the human gets a transcript to read instead of a sentence.
 
+## Workflow tests are not yours to change
+
+`tests/workflows/` holds journeys the project ratified with a human. A ticket that has to touch one says so in a `## Workflow tests` section, written before the run started; the driver checks that section as it stood beforehand and stops the run over any change made without it.
+
+So check the ticket for that section before you touch anything under there. Where the work needs it and the ticket does not carry it, halt `blocked` now rather than building the ticket and having the run stopped afterwards - the answer is the same and it costs a whole ticket less. Adding the section yourself is not an answer: it is the thing the check exists to catch.
+
 ## Say what you are doing
 
 A ticket takes a long time to build and your narration is the only progress anyone watching can see. Silence is indistinguishable from a hang, so as you enter each phase, say so in one short plain line: reconciling the ticket, writing the RED test for a given criterion, running the verification command, dispatching each review, committing.

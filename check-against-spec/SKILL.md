@@ -61,6 +61,8 @@ Where the tooling was there, each ticket has already run the same gate over its 
 
 **File a ticket for each gap.** Write it beside the tickets this run was built from – the caller names the directory, and `tickets/` beside the spec is only the default – as `NN-slug.md` in the shape `TICKET_FORMAT.md` specifies, numbered after the highest existing ticket, `status: todo`, `depends_on: []`. A gap filed where the loop doesn't read is a gap nothing builds, and the run finishes looking clean. `Satisfies` cites the criterion that failed. The gap is objective - a criterion is met or it isn't - so it goes back through the same loop that built everything else, with the same TDD and review discipline, rather than being patched by hand at the end.
 
+Where closing the gap would reach a ratified workflow test, write the ticket's `## Workflow tests` section as you file it. The driver halts a build that touches one without it, and a remediation ticket is the case that most often needs it.
+
 Name the ticket for the behavior that is missing, not for the failure: "Let a reviewer see the rejection reason", not "fix US-3.2 gap".
 
 Where the gap is missing tooling rather than missing code, file it as a **maintenance ticket** - the format's third kind, which claims no criteria and whose contract is that nothing observable changed.

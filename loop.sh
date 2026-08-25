@@ -9,8 +9,9 @@
 # /implement-ticket records the reason rather than guessing past it.
 #
 # Exit codes say what kind of stop it was, because they want opposite responses:
-#   1  an agent halted, the queue has tickets nothing can reach, or the reviews
-#      would not converge - a human is needed
+#   1  an agent halted, a build changed a ratified workflow test it was not
+#      authorised to touch, the queue has tickets nothing can reach, or the
+#      reviews would not converge - a human is needed
 #   2  bad invocation - no ticket directory, not a repo, on main
 #   3  a session died in a way the driver could neither wait out nor retry
 #
@@ -370,6 +371,65 @@ position() {
   printf '%d/%d' "$((done_n + 1))" "$total"
 }
 
+# --- the workflow guard -------------------------------------------------------
+
+# A journey ratified into tests/workflows/ is a promise every feature after it
+# keeps green. A ticket may still have to change one - a rename reaches every
+# caller - but only where somebody decided that before the run and wrote it into
+# the ticket. Anything else is a build quietly editing the record of what the
+# product does, which is the one change no review would think to question,
+# because the test it would check against is the thing that moved.
+#
+# Post-commit on purpose. The work is committed and stays that way: reverting is
+# a judgement about what the branch should contain, and a driver that reverted
+# would be making it. This one halt is the driver's own, so its text is fixed -
+# the reason, the commit, the paths - and there is no judgement in it.
+# `:(top)` because the path is the repository's, not the working directory's,
+# and the driver can be started from anywhere inside the tree.
+WORKFLOWS=':(top)tests/workflows'
+
+# What a build changed under there, committed or not. Uncommitted counts: a
+# build that halts is told to leave its work in the tree, so an edit left there
+# would otherwise be invisible here and swept into the next ticket's commit,
+# where this would name the wrong ticket. quotePath off, because these files are
+# named for journeys in the user's language and half of them are not ASCII.
+workflows_touched() {
+  { git -c core.quotePath=false diff --name-only "$1"..HEAD -- "$WORKFLOWS"
+    git -c core.quotePath=false status --porcelain -- "$WORKFLOWS" | cut -c4-
+  } | sort -u
+}
+
+# Read before the build, never after. The ticket is a file the build edits, so
+# an authorisation read afterwards is one the build could have written itself -
+# which is the agent deciding the question it was sent here to be checked on.
+authorised_for_workflows() { grep -q '^## Workflow tests' "$1"; }
+
+halt_for_workflows() {
+  local ticket="$1" before="$2" paths="$3" sha
+  sha="$(git log -1 --format=%h "$before"..HEAD -- "$WORKFLOWS")"
+  [ -n "$sha" ] || sha="not committed - the change is still in the working tree"
+  # Only the first `status:` line: a ticket body may quote frontmatter of its own.
+  sed -i "0,/^status:.*/s//status: blocked/" "$ticket"
+  {
+    echo
+    echo '## Halt'
+    echo '**Reason:** unauthorised'
+    echo 'This ticket changed a ratified workflow test, and it carried no'
+    echo '`## Workflow tests` authorisation when the build started.'
+    echo
+    echo "**Commit:** $sha"
+    echo '**Paths:**'
+    printf '%s\n' "$paths" | sed 's/^/- /'
+    echo
+    echo 'Nothing was reverted; whether to keep the change is yours to decide. To'
+    echo 'let it stand, add the authorisation to this ticket, set status back to'
+    echo 'done, and re-run - the work itself already happened. This is not a'
+    echo 're-plan.'
+  } >> "$ticket"
+  git add "$ticket" && git commit -qm "halt $(basename "$ticket" .md): workflow test changed without authorisation" && return 0
+  echo "!! could not commit the halt - $ticket says it, but the tree is dirty" >&2
+}
+
 # --- the loop -----------------------------------------------------------------
 
 # /implement-ticket sets `status` in the ticket before it finishes, and that is
@@ -391,11 +451,27 @@ EOF
 }
 
 drain() {
-  local ticket name stuck
+  local ticket name stuck before touched authorised
   while ticket="$(next_ticket)"; do
     name="$(basename "$ticket" .md)"
     echo "==> [$(position)] $name"
+    before="$(git rev-parse HEAD)"
+    authorised=no
+    ! authorised_for_workflows "$ticket" || authorised=yes
     run_step build "$name" "$(implement_prompt "$ticket")" || return 3
+
+    touched="$(workflows_touched "$before")"
+    if [ -n "$touched" ] && [ "$authorised" = no ]; then
+      halt_for_workflows "$ticket" "$before" "$touched"
+      {
+        echo
+        echo "!! halted on $name - it changed a ratified workflow test and the ticket"
+        echo "   carried no authorisation for that:"
+        printf '%s\n' "$touched" | sed 's/^/     /'
+        echo "   Nothing was reverted, and $ticket now records the halt."
+      } >&2
+      return 1
+    fi
     [ "$(status_of "$ticket")" = "done" ] && continue
 
     echo
@@ -457,6 +533,7 @@ EOF
   # the working directory. This run's may be anywhere, and a gap filed where the
   # loop does not read is a gap nothing builds.
   printf 'File each gap as a ticket in %s, where this run keeps its tickets.\n' "$TICKETS"
+  printf 'Where a fix would reach tests/workflows/, say so in the ticket you file.\n'
   # The builds wrote down what they noticed and did not fix. Nothing else reads
   # those, and the agent that wrote one is gone.
   cat <<EOF
@@ -474,6 +551,7 @@ Run /critique over the diff from $since.
 For each Blocker and Should-fix, file a remediation ticket in $TICKETS,
 in the shape TICKET_FORMAT.md specifies.
 Do not file nits - leave those in your report for /handover to triage.
+Where a fix would reach tests/workflows/, say so in the ticket you file.
 The done tickets there carry a Record of what each build decided, left
 Unresolved, and left open. Read them as leads and verify each for yourself.
 Close with the verdict line the skill specifies, alone on the last line.

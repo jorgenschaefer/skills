@@ -120,6 +120,9 @@ $(ls "$LOGS" 2>&1)"; }
 expect_file()    { [ -s "$1" ] && ok "$2" || bad "$2" "no $1
 $(ls "$(dirname "$1")" 2>&1)"; }
 expect_no_file() { [ -e "$1" ] && bad "$2" "found $1" || ok "$2"; }
+expect_ticket()  { grep -q -- "$2" "$WORK/${TICKET_DIR:-tickets}/$1.md" && ok "$3" \
+                   || bad "$3" "no '$2' in $1:
+$(cat "$WORK/${TICKET_DIR:-tickets}/$1.md")"; }
 # The last commit in $WORK: what it says, and what it did to which files. Two
 # questions, asked apart, so a ticket id in the file list cannot answer for one
 # in the message.
@@ -129,6 +132,12 @@ expect_commit()  { grep -q -- "$1" <<< "$(commit_msg)" && ok "$2" || bad "$2" "n
 $(commit_msg)"; }
 expect_no_commit() { grep -q -- "$1" <<< "$(commit_msg)" && bad "$2" "found '$1' in:
 $(commit_msg)" || ok "$2"; }
+# A path that is in the history and has nothing uncommitted against it - for the
+# halt the driver writes over work it deliberately leaves committed.
+expect_committed() { git -C "$WORK" log --oneline -- "$1" | grep -q . \
+                     && [ -z "$(git -C "$WORK" status --porcelain -- "$1")" ] \
+                     && ok "$2" || bad "$2" "$1 is not committed
+$(git -C "$WORK" status --porcelain -- "$1")"; }
 expect_diff()    { grep -q -- "$1" <<< "$(commit_diff)" && ok "$2" || bad "$2" "no '$1' in:
 $(commit_diff)"; }
 expect_no_diff() { grep -q -- "$1" <<< "$(commit_diff)" && bad "$2" "found '$1' in:
@@ -547,6 +556,63 @@ EOF
 drive 0
 expect_out "Closing out the run" "a building step still narrates its first line"
 expect_no_out "status page" "a building step is still only its narration"
+
+# --- the workflow-test guard --------------------------------------------------
+
+# A journey ratified into tests/workflows/ is a promise every later feature
+# keeps, so a build that rewrites one is rewriting the record of what the
+# product does. It is allowed only where somebody decided that before the run.
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 workflow
+EOF
+drive 0
+expect_rc 1 "a build that changes a workflow test with no authorisation stops the run"
+expect_calls 1 "the run stops at that ticket"
+expect_out "tests/workflows/" "the stop names what was touched"
+expect_ticket 01-thing "^## Halt" "the driver writes the halt into the ticket"
+expect_ticket 01-thing "tests/workflows/journey.test" "the halt names the paths"
+expect_ticket 01-thing "^status: blocked" "and leaves the ticket blocked"
+expect_ticket 01-thing "^\*\*Reason:\*\* unauthorised" "the halt says which halt it is"
+expect_ticket 01-thing "^\*\*Commit:\*\*" "and which commit made the change"
+expect_commit "workflow test" "the driver commits its own halt, so the tree stays clean"
+expect_committed tests/workflows/journey.test "the change itself is left standing"
+
+# The permission is the plan's, not the build's: a ticket that writes its own is
+# an agent deciding what it was sent to be checked on.
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 self-authorised
+EOF
+drive 0
+expect_rc 1 "a build cannot authorise itself on the way past"
+expect_ticket 01-thing "^status: blocked" "it is halted like any other"
+
+# A ticket a review filed mid-run is guarded exactly the same.
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 done
+clean.jsonl 0 file
+clean.jsonl 0 workflow
+EOF
+drive 0
+expect_rc 1 "a ticket a later pass filed is guarded too"
+expect_calls 3 "the run stops on it rather than handing over"
+
+workspace 01-thing
+printf -- '---\nstatus: todo\ndepends_on: []\n---\n\n# 01-thing\n\n## Workflow tests\n- tests/workflows/journey.test - the rename reaches it\n' > "$WORK/tickets/01-thing.md"
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 workflow
+clean.jsonl 0 -
+clean.jsonl 0 -
+clean.jsonl 0 -
+EOF
+drive 0
+expect_rc 0 "a ticket authorised at planning time changes one and the run goes on"
+expect_calls 4 "the authorised ticket costs no extra step"
 
 # --- the skills' shared files ---------------------------------------------------
 

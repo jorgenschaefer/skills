@@ -54,6 +54,9 @@ spec_hash: a3f2c81d09e4
 ## Out of scope
 - <What not to build here.>
 
+## Workflow tests
+- tests/workflows/<file> - <why this ticket has to touch it. Absent unless it does.>
+
 ## Verification
 - <Only where a criterion doesn't imply its own test.>
 ```
@@ -102,6 +105,14 @@ Describe both by durable intent, never by signature: "the `Reservation` aggregat
 
 No human sees the diff between one ticket and the next, so "while I'm here" goes unchecked. Name what an implementer would plausibly reach for and must not: the adjacent case a later ticket owns, the abstraction that would be premature until the third caller exists, the deferred story from the spec's non-goals that this ticket sits next to.
 
+### Workflow tests are touched only by permission
+
+`tests/workflows/` holds the journeys the project has ratified, one test per journey, quoting the journey in the user's own words. They run in the project's check command, so a run building feature twelve keeps feature three's journeys green at every ticket - and a build that quietly edits one has changed the record of what the product does, in the one place no review would think to question, because the test it would check against is the thing that moved.
+
+So a ticket that will reach one says so before the run starts. `/spec-to-tickets` reads the directory and writes this section into any ticket whose work gets there, mechanical reasons included - a rename that reaches every caller reaches the tests that call it too. A review filing a remediation ticket does the same. What the section never authorises is changing what a workflow test *asserts*: the journey it quotes was ratified with the user, so that is a decision to send back to `/discovery`.
+
+The driver checks the section as it stood **before** the build, and halts the run over any change made without one. Writing the section during the build is not an authorisation - it is the agent answering the question it was sent to be checked on.
+
 ### Verification says how, never whether
 
 A given/when/then criterion already implies its test, and `/implement` writes it RED first. This section is for the ones that don't: an EARS constraint with no natural unit test, a behavior that must be pinned at the integration level rather than in isolation, or a criterion two tickets could each plausibly test - where saying which one owns it prevents both from testing it, or neither.
@@ -120,11 +131,13 @@ What it never says is that a criterion cannot be checked. "No test" is not a ver
 
 ## What the build appends
 
-A ticket is intent before the run and a record after it. Exactly one of these is appended, then `status` is set. `/implement` writes the `## Record`; the `## Halt` block and `status` belong to whoever called it, which for an unattended run is `/implement-ticket`.
+A ticket is intent before the run and a record after it. A build appends one of these and sets `status`: `/implement` writes the `## Record`, while the `## Halt` block and `status` belong to whoever called it, which for an unattended run is `/implement-ticket`.
+
+The driver appends a `## Halt` of its own where it catches something after the fact, and that one can follow a `## Record` a finished build already wrote.
 
 ```markdown
 ## Halt
-**Reason:** blocked | drift | mystery | stale-spec
+**Reason:** blocked | drift | mystery | stale-spec | unauthorised
 <What happened, and what the human needs to decide.>
 ```
 
@@ -132,6 +145,7 @@ A ticket is intent before the run and a record after it. Exactly one of these is
 - **drift** - `Preconditions` or `Touches` no longer match the code. Back to `/spec-to-tickets --refresh`.
 - **mystery** - a test will not go green and the cause is unknown after the bounded attempts. Back to a human to diagnose.
 - **stale-spec** - `spec_hash` does not match. Back to `/spec-to-tickets --refresh`.
+- **unauthorised** - written by the driver, never by a build: the ticket changed a ratified workflow test with no `## Workflow tests` section standing in it beforehand. It carries `**Commit:**` and `**Paths:**` naming what changed. Nothing is reverted; resolving it is adding the authorisation and setting `status` back to `done`.
 
 ```markdown
 ## Record

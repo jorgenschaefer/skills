@@ -21,6 +21,7 @@ If a question would matter even for a feature built as a single ticket, it belon
 - Read the `coding-conventions` skill. Seams you place and contracts you declare are design decisions, and that is the standard they are held to.
 - Read `TICKET_FORMAT.md`. It is the output shape and it settles most of what would otherwise be judgement.
 - Read `SPEC_FORMAT.md`. You write one mark back into the spec - see *Promote the binding defaults* - and it says where and in what form.
+- Read `tests/workflows/`, if the project has one. Those tests are ratified journeys, and the driver halts any ticket that changes one without saying beforehand that it would - see *Authorise the workflow tests a ticket will reach*.
 
 ## Audit the scope before decomposing
 
@@ -71,6 +72,19 @@ Nowhere else, and never in a `Provides`: a date format or a naming convention is
 
 **End your turn at the first question mark.** The moment a turn reaches a question that seeks new information, send it - a second question or "and also" waits for the next turn. This is a rule about output shape, not a preference: one turn, one open question, so the user never has to label which part of their reply answers which question. Confirming assumptions for veto ("I'm assuming X unless you say otherwise") is not an originating question, but it gets its own turn, never mixed with a question.
 
+## Authorise the workflow tests a ticket will reach
+
+`TICKET_FORMAT.md` says what `tests/workflows/` is and why a build may not quietly edit one. What is yours is anticipating it: the driver halts a ticket that touches the directory without the authorisation, hours into an unattended run and after the work is done, and you are the only step that reads both the tickets and the directory before any of it starts.
+
+For every ticket whose work reaches a workflow test, write into it:
+
+```markdown
+## Workflow tests
+- tests/workflows/<file> - <why this ticket has to touch it>
+```
+
+Mechanical reasons count and are the common case: a rename that reaches every caller reaches the tests that call it too. What does not count is a ticket that would change what a workflow test *asserts* - the journey it quotes is permanent-tier and was ratified with the user, so changing it is a discovery decision, not a decomposition one. Send that back rather than authorising it.
+
 ## Write the tickets
 
 Write `tickets/NN-slug.md` beside the spec, in the shape `TICKET_FORMAT.md` specifies, numbered in dependency order. Mark the binding defaults before you hash, never after: the hash has to cover the spec as marked, or every ticket freezes a version that does not say what binds it.
@@ -91,7 +105,8 @@ Have it check five more things:
 - every constraint quantifying over a set enumerated against the code, with every member assigned or the class owned outright;
 - every `D-n` whose subject more than one ticket touches marked `(binding)`;
 - every `Provides` entry actually consumed by a later ticket, and every `Preconditions` entry actually provided by an earlier one;
-- every ticket nameable as observable behavior.
+- every ticket nameable as observable behavior;
+- every ticket whose work reaches `tests/workflows/` carrying the authorisation, and no ticket carrying one it does not need.
 
 Treat the verdict as a claim to verify: a clean result counts only when the report shows the review happened - the guesses it hunted for and where it looked, cited to specific tickets. Fix what it finds and re-dispatch once. Two rounds is the ceiling: a ticket set still leaving things to guess after a second pass has a problem the decomposition can't fix by iterating, so stop and take the standing findings to the user with the hand-off below.
 

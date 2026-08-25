@@ -78,4 +78,6 @@ Four counts, always all four, in that order, with those words whatever the numbe
 
 A caller that has to read the prose to learn whether the review passed spends a whole second agent on it, and gets an answer that disagrees with yours about as often as people disagree about prose.
 
+Where such a ticket's fix would reach a ratified workflow test under `tests/workflows/`, write its `## Workflow tests` section as you file it: a build that touches one without that section stops the run.
+
 Where the caller asks for findings written up as work orders rather than reported – an unattended pipeline does – `TICKET_FORMAT.md` beside this skill is the shape, and a review finding is its *remediation ticket*. Nothing about the review changes: the caller knows what happens to a finding, and this skill still only judges code.

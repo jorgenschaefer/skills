@@ -4,12 +4,13 @@
 #
 # Each invocation consumes one line of $STUB_PLAN:
 #
-#   <fixture> <exit-code> <done|file|->
+#   <fixture> <exit-code> <done|file|workflow|self-authorised|->
 #
 # and replays that fixture on stdout - real records, captured from runs that hit
 # the real limit - exits with that code, and then does what the third field says:
 # `done` marks the ticket named in the prompt done and commits, the way a
-# finished /implement would, and `file` writes a fresh todo ticket into the
+# finished /implement would; `workflow` does that and changes a ratified
+# workflow test on the way past; and `file` writes a fresh todo ticket into the
 # directory the prompt names, the way a review that found something does. A call
 # the plan did not expect is an error, not a repeat: the test wanted to know how
 # often the driver calls out, so an extra call has to be visible.
@@ -36,7 +37,19 @@ sed "s/__RESETS_AT__/${STUB_RESETS_AT:-0}/" "$STUB_FIXTURES/$fixture"
 # The commit matters as much as the status: the driver narrows a later pass to
 # the commits an earlier one produced, so a run whose history never moves cannot
 # tell a case that narrowing works from one that ignores it.
-if [ "$action" = "done" ]; then
+if [ "$action" = "workflow" ] || [ "$action" = "self-authorised" ]; then
+  mkdir -p tests/workflows
+  echo "a step nobody agreed to" >> tests/workflows/journey.test
+  git add tests/workflows/journey.test
+fi
+
+# A build writing its own permission into the ticket it was handed.
+if [ "$action" = "self-authorised" ]; then
+  ticket="$(printf '%s\n' "$prompt" | sed -n 's#^/implement-ticket \(.*\.md\).*#\1#p' | head -1)"
+  printf '\n## Workflow tests\n- tests/workflows/journey.test - I decided this was fine\n' >> "$ticket"
+fi
+
+if [ "$action" = "done" ] || [ "$action" = "workflow" ] || [ "$action" = "self-authorised" ]; then
   ticket="$(printf '%s\n' "$prompt" | sed -n 's#^/implement-ticket \(.*\.md\).*#\1#p' | head -1)"
   [ -n "$ticket" ] || { echo "stub-claude: no ticket to finish in: $prompt" >&2; exit 99; }
   sed -i 's/^status:.*/status: done/' "$ticket"

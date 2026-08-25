@@ -485,7 +485,7 @@ box in the same commit as the step.
 - [x] **C3** The maintenance lane
 - [x] **D1** The review bar - *tested*
 - [x] **D2** Mutation - *tested*
-- [ ] **D3** Workflow tests and their guard - *tested*
+- [x] **D3** Workflow tests and their guard - *tested*
 - [ ] **E1** Terminal states, the report, and `/handover` split - *tested*
 - [ ] **E2** Driver resilience - *tested*
 - [ ] **E3** The Abnahme
