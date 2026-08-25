@@ -37,15 +37,13 @@ leaves the run reporting *clean* with that disagreement outstanding. The same
 four-count line, read the same way, closes it.
 *Touches: check-against-spec/SKILL.md, loop.sh, tests/run.sh.*
 
-**`ARCHITECTURE.md` needs a reader.** `/repo-overview` writes it, re-derived
-from the code and never hand-patched, and nothing in the pipeline reads it -
-unlike `UBIQUITOUS_LANGUAGE.md`, which five skills read and which has a step
-wiring it into `CLAUDE.md`. The obvious readers are the two steps that skim the
-codebase before writing anything: `/discovery`, which reads what the feature
-will sit next to, and `/spec-to-tickets`, which reads the structures the spec
-names. Both would need it treated as a lead rather than as truth, since it is
-only as current as the last run.
-*Touches: repo-overview/SKILL.md, discovery/SKILL.md, spec-to-tickets/SKILL.md.*
+**`ARCHITECTURE.md` needs a second reader.** `/repo-overview` writes it,
+re-derived from the code and never hand-patched. `/discovery` now reads it in
+its first phase, as a lead rather than as truth - it is only as current as the
+last run, and the code settles anything the two disagree on. The other obvious
+reader is `/spec-to-tickets`, which reads the structures the spec names before
+splitting along them, and it still does not.
+*Touches: spec-to-tickets/SKILL.md.*
 
 **Make `/implement` generic.** It is the craft skill - RED-first, the project's
 checks, two adversarial reviews, bounded attempts - and none of that is about

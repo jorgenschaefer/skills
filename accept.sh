@@ -4,10 +4,11 @@
 #
 #   ./accept.sh path/to/spec-dir
 #
-# The spec and the tickets are the record of what was asked for, and deleting
-# them is the one act in the pipeline that destroys it. Git history keeps every
-# deleted file, so nothing is lost - but this commit is what marks the feature
-# accepted, and it should mark work that is actually finished.
+# The spec, the tickets and the mockups drawn for them are the record of what
+# was asked for, and deleting them is the one act in the pipeline that destroys
+# it. Git history keeps every deleted file, so nothing is lost - but this commit
+# is what marks the feature accepted, and it should mark work that is actually
+# finished.
 #
 # So it refuses rather than trusts, and stops on the first check that does not
 # hold: in a repository, on a branch of its own, one spec beside a ticket
@@ -91,15 +92,30 @@ ignored="$(git status --porcelain --ignored=matching -- "$SPEC_DIR")"
     printf '%s\n' "$ignored"; } >&2
   exit 2; }
 
+# The mockups the feature's journeys were walked as are paper like the rest:
+# the implementer built against them, and one that outlives the run is a second
+# source of truth that nobody updates. Optional, because most runs have nothing
+# to draw - and untracked ones are left where they are, since git cannot delete
+# what it never held.
+MOCKUPS="$SPEC_DIR/mockups"
+
 # `:(literal)` because these are paths, and git would otherwise read a `*` or a
 # `[` in one of them as a pattern matching more than the path it came from.
+paper=(":(literal)$TICKETS" ":(literal)$SPEC")
+drawn=""
+if [ -d "$MOCKUPS" ] && [ ! -L "$MOCKUPS" ] &&
+   [ -n "$(git ls-files -- ":(literal)$MOCKUPS")" ]; then
+  paper+=(":(literal)$MOCKUPS")
+  drawn=" and $MOCKUPS"
+fi
+
 feature="$(basename "$SPEC" .md | tr '_-' '  ')"
-git rm -rq -- ":(literal)$TICKETS" ":(literal)$SPEC" || exit 2
+git rm -rq -- "${paper[@]}" || exit 2
 git commit -q -F - <<EOF || { echo "the deletion is staged but nothing was committed" >&2; exit 2; }
 Accept $feature
 
 The run is accepted, so the paper it was built from goes. Git history
-keeps the spec and the tickets; this commit is what marks the feature
+keeps every deleted file; this commit is what marks the feature
 finished.
 
 $(printf '  %s\n' "${built[@]}")
@@ -111,4 +127,4 @@ EOF
 state="${XDG_STATE_HOME:-${HOME:+$HOME/.local/state}}"
 [ -z "$state" ] || rm -f "$state/loop/attempts/$(printf '%s' "$(cd "$SPEC_DIR" && pwd)" | md5sum | cut -c1-12)"
 
-echo "accepted $feature - ${#built[@]} tickets, $SPEC and $TICKETS deleted in $(git rev-parse --short HEAD)"
+echo "accepted $feature - ${#built[@]} tickets, $SPEC and $TICKETS$drawn deleted in $(git rev-parse --short HEAD)"

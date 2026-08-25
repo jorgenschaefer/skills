@@ -822,6 +822,29 @@ expect_commit "^  01-thing$" "the commit says which tickets the run built"
 expect_diff "^D.docs/feature/tickets/02-other.md" "the deletion is what it commits"
 expect_no_diff "^[AM]" "it adds and changes nothing"
 
+# The mockups a feature's journeys were walked as are paper too: the implementer
+# built against them, and one left behind would outlive the run as a second
+# source of truth that nobody updates.
+accepted 01-thing 02-other
+mkdir -p "$WORK/docs/feature/mockups"
+printf '<p>the walk</p>\n' > "$WORK/docs/feature/mockups/reject-flow.html"
+git -C "$WORK" add docs && git -C "$WORK" commit -qm "the walk it was built against"
+accept
+expect_rc 0 "a run with mockups is accepted"
+expect_no_file "$WORK/docs/feature/mockups" "the mockups go with the paper"
+expect_out "mockups" "and it says which run's drawings went"
+expect_diff "^D.docs/feature/mockups/reject-flow.html" "the deletion is what it commits"
+expect_no_diff "^[AM]" "deleting them adds and changes nothing either"
+
+# Git does not track an empty directory, so there is nothing there to delete -
+# and asking it to would fail the whole acceptance over a directory nobody drew
+# anything in.
+accepted 01-thing
+mkdir -p "$WORK/docs/feature/mockups"
+accept
+expect_rc 0 "an empty mockups directory is nothing to delete"
+expect_no_file "$WORK/docs/feature/reviewer-rejection.md" "and the rest of the paper still goes"
+
 accepted 01-thing
 git -C "$WORK" checkout -q main && git -C "$WORK" merge -q feature
 accept

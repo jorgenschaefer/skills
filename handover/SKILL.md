@@ -25,7 +25,7 @@ Keep it to a page. A reviewer who wanted the full walkthrough would read the dif
 
 ## Promote before the paper goes
 
-The spec and the tickets are deleted when the run is accepted, and `./accept.sh` does that in one commit. Whatever must outlive them has to be moved somewhere durable first, deliberately - nothing survives by being left where it is.
+The spec, the tickets and any mockups the journeys were walked as are deleted when the run is accepted, and `./accept.sh` does that in one commit. Whatever must outlive them has to be moved somewhere durable first, deliberately - nothing survives by being left where it is.
 
 Most of that already happened: terms, ADRs and ratified journeys were agreed as `/discovery` proposed them, and they live in the project rather than in the paper. What is left is the rationale a build discovered while writing the code:
 

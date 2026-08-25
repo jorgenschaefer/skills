@@ -16,7 +16,11 @@ Three tiers of commitment live in this file and a reader has to be able to tell 
 # Feature: <name>
 
 ## Why
-<1-3 sentences: the problem and the desired outcome.>
+<1-3 sentences: the problem and the desired outcome. State the problem, not the solution - the one agreed in discovery's first phase, in the user's own words.>
+
+## Solution
+- **Chosen** - <the approach in a sentence, and which existing concept it extends or what new one it introduces.>
+- **Rejected** - <each candidate that lost, and why, one line each - including whatever the user arrived with, where that is not what was chosen. An idea rejected for good reasons and recorded nowhere gets rediscovered and argued from scratch, and the user's own is the one everything downstream drifts back toward. Where the user overruled the recommendation, say that here: it marks the choice as settled rather than open.>
 
 ## Success criteria
 - <How we know the feature as a whole works - reserve per-story behavior for the acceptance criteria under User Stories>
@@ -67,7 +71,7 @@ Three tiers of commitment live in this file and a reader has to be able to tell 
   - _Why: <rationale - include only when omitting it would let an implementer take a wrong turn>_
 
 ## Design
-- <For each screen: layout and components (reused vs new), states, and an inline _Why: ..._ when a wrong turn was the risk. Greenfield, record the established design language here. When a mockup was load-bearing to the decision and prose can't carry the layout, keep that mockup in the repo and link it here instead of describing it.>
+- <Link the mockup of each journey's walk, kept in `mockups/` beside this file: **[the reject flow](mockups/reject-flow.html)**. The implementer builds against what was agreed rather than a paragraph describing it, and `./accept.sh` deletes the mockups with this spec so nothing outlives the run to contradict the shipped UI. Then, per screen: layout and components (reused vs new), states, and an inline _Why: ..._ when a wrong turn was the risk - what the mockup shows but cannot say. Greenfield, record the established design language here.>
 
 ## Implementation decisions
 - <Each decision and its resolution where a wrong default would hurt, with an inline _Why: ..._ when the rationale was load-bearing. A decision that touches existing code names the real structure it reuses or extends as a durable choice - "extend the existing `ApplicationForm`, following the profile form's validation" - not a `file:line` reference that drift will invalidate. When a decision was the user's to make - a business rule, not a reversible default - say so in its _Why:_ so a later reader or reviewer knows it's settled, not open to challenge.>
@@ -88,6 +92,11 @@ Three tiers of commitment live in this file and a reader has to be able to tell 
 A fragment showing the intended granularity - terse entries, `_Why:_` only where a wrong turn was the risk:
 
 ```markdown
+## Solution
+- **Chosen** - reject as a decision recorded on the Application, extending the existing status transition and the notification queue.
+- **Rejected** - a separate Rejection record with its own lifecycle: two places would then answer "is this application live", and nothing needs a rejection to outlive the application it belongs to.
+- **Rejected** - a free-text note on the queue rather than a status change, which is what was originally asked for: it leaves the application Pending, so the queue never gets shorter and the applicant is never told.
+
 ## Journeys
 - **J-2 A reviewer turns an application down**
   - _Trigger:_ a reviewer opens an application sitting in Pending.
