@@ -27,6 +27,15 @@ The argument is where the run's paper lives - the spec file, or the directory ho
 - **Every constraint (`C-N`).** Verified the way the spec said it would be. A constraint with no check is a wish, and this is the last place that gets noticed.
 - **Every non-goal.** Respected. Something the spec ruled out that got built anyway is a defect, not a bonus.
 - **Everything built that traces to nothing.** Behavior in the diff that no criterion asked for is either scope creep or a fork the spec left silent. Both are findings: the first to remove, the second for the human to ratify at handover.
+- **Every test that left.** A test deleted, renamed away, or weakened over the run's diff - an assertion loosened, a case dropped, two suites consolidated into one that covers less. Coverage that existed before the run and does not exist after it is a gap even though it traces to no criterion here: the criterion it pinned belonged to a spec deleted when its own feature was accepted, so nothing you can read points at it. Consolidation is where this hides, because the diff reads as tidying.
+
+**Read the done tickets' `Record` sections as leads.** Each build wrote down what it decided where the spec was silent, which review findings it argued down, and what it noticed and deliberately did not fix. Those are places worth looking, and the third of them - what a build noticed and left open - is read by nothing else in the pipeline. They are not verdicts you inherit: the agent that wrote one is gone and cannot defend it, so verify each for yourself, adversarially, like anything else.
+
+**The bar a gap has to clear.** Three things hold of every one, and a candidate that fails any is not a gap:
+
+- **A constructed trigger** - the input or state that shows the criterion unmet, or the deletion the test failed to notice. Not an account of how it might be unmet.
+- **A destination** - a numbered criterion, a constraint, a non-goal, a workflow test, or one of `coding-conventions`' `## Security` or `## Changing what already runs` properties, which bind whether or not the spec names them. Anything else is a new requirement, and it goes to `IDEAS.md` rather than into a ticket. Coverage that left during the run is the exception above: file it.
+- **No reopening** - a gap that overturns a prior ticket's `Unresolved` adjudication on the same code may not be filed. Say in the report that you disagree and leave it there, for a human to rule on rather than the loop to rebuild.
 
 Delegate breadth where the spec is large - a subagent per story, each hunting for the way its criteria fail. Dispatch them with `run_in_background: false`, batched into one message so they still run at once; detached, they hand you an `agentId` and the run ends before their reports arrive. You own the verdict. Treat it as a claim to verify: a clean result counts only when the report shows the review happened - what it checked and where.
 
@@ -39,7 +48,7 @@ The second failure mode - behavior that works with nothing pinning it - is the o
 Read surviving mutants as evidence, not as a score to chase:
 
 - A survivor on behavior a criterion names means that criterion is unpinned. File a ticket - the gap is objective.
-- A survivor anywhere else goes to handover as a finding, for a human to weigh.
+- A survivor anywhere else has no destination under the bar above, so it is not a ticket. Report it for a human to weigh.
 - Never chase a score. Equivalent mutants cannot be killed by definition, and a loop trying to kill one writes absurd tests until something stops it.
 
 **Where no such tool is configured**, fall back to the crude version: revert the non-test files in the run's diff, run the suite, confirm the new tests fail, then restore. It proves less - removing everything at once tends to produce import errors rather than assertion failures, which is exactly the evidence `/implement` refuses to accept as RED - but a suite that stays green with the feature deleted is damning however it was measured.

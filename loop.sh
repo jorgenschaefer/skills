@@ -443,6 +443,13 @@ EOF
   # the working directory. This run's may be anywhere, and a gap filed where the
   # loop does not read is a gap nothing builds.
   printf 'File each gap as a ticket in %s, where this run keeps its tickets.\n' "$TICKETS"
+  # The builds wrote down what they noticed and did not fix. Nothing else reads
+  # those, and the agent that wrote one is gone.
+  cat <<EOF
+The done tickets in $TICKETS carry a Record of what each build decided, left
+Unresolved, and left open. Read them as leads - places worth looking - and
+verify each for yourself. None of them is a verdict you inherit.
+EOF
 }
 
 critique_prompt() {
@@ -453,6 +460,9 @@ Run /critique over the diff from $since.
 For each Blocker and Should-fix, file a remediation ticket in $TICKETS,
 in the shape TICKET_FORMAT.md specifies.
 Do not file nits - leave those in your report for /handover to triage.
+The done tickets there carry a Record of what each build decided, left
+Unresolved, and left open. Read them as leads and verify each for yourself.
+Close with the verdict line the skill specifies, alone on the last line.
 EOF
 }
 

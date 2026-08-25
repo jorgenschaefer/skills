@@ -469,6 +469,9 @@ unset TICKET_DIR
 expect_rc 0 "the ticket directory need not be ./tickets"
 expect_prompt /check-against-spec docs/feature/tickets "the spec check is told where to file a gap"
 expect_prompt "Run /critique"     docs/feature/tickets "critique is told where to file a blocker"
+expect_prompt /check-against-spec "Read them as leads" "the check is pointed at what the builds left behind"
+expect_prompt "Run /critique"     "Read them as leads" "the review is pointed there too"
+expect_prompt "Run /critique"     "Close with the verdict line" "the review is asked to close with a countable verdict"
 
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
