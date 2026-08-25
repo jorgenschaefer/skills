@@ -373,7 +373,7 @@ twice under a new branch name, so `MAX_PASSES=2` never bit. A ceiling routed
 around without anyone deciding to is not a ceiling.
 *Touches: loop.sh, tests/run.sh.*
 
-**Keep the run's evidence.** `LOG_DIR` moves out of `$TMPDIR` (`loop.sh:94`) and
+**Keep the run's evidence.** `LOG_DIR` moves out of `$TMPDIR` and
 accumulates across runs: which halt reasons recur, which convention findings
 repeat, how often a second pass finds anything, cost per ticket. This is the
 only empirical input `/improve-skill` can have, and the only mechanism on this
@@ -471,7 +471,7 @@ already solves by keeping state in the file rather than in the driver. Tick the
 box in the same commit as the step.
 
 - [x] **A0** Pin the untested machinery - *tested*
-- [ ] **A1** Keep the run's evidence - *tested*
+- [x] **A1** Keep the run's evidence - *tested*
 - [ ] **A2** Review independence, `REVIEWS=code` retired - *tested*
 - [ ] **A3** `accept.sh` - *tested*
 - [ ] **B1** `SPEC_FORMAT.md` and a new `ADR_FORMAT.md`

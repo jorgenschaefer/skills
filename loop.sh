@@ -89,10 +89,22 @@ case "$branch" in
     exit 2 ;;
 esac
 
-# Outside the repo on purpose. Logs are debugging aids, not artifacts, and the
-# pipeline's habit is to leave no paper behind in the working tree.
-LOG_DIR="${TMPDIR:-/tmp}/loop-${branch//\//-}-$(date +%Y%m%d-%H%M%S)"
-mkdir -p "$LOG_DIR"
+# Outside the repo, because the pipeline leaves no paper behind in the working
+# tree - and out of $TMPDIR, which is swept, because a run's transcripts are the
+# only record of how the pipeline behaved rather than how its skills read, and
+# that record is worth more the longer it accumulates. One directory per run
+# under one root, so reading across runs is a glob; the pid keeps two runs
+# started in the same second from writing over each other.
+#
+# Logging nowhere is a bad invocation rather than a detail to discover later: a
+# step whose transcript is missing reads as a session that died mid-stream, so
+# the run would spend its whole retry ladder on the wrong diagnosis.
+STATE="${XDG_STATE_HOME:-${HOME:+$HOME/.local/state}}"
+[ -n "$STATE" ] || {
+  echo "set XDG_STATE_HOME or HOME - the run's transcripts need somewhere to accumulate" >&2
+  exit 2; }
+LOG_DIR="$STATE/loop/${branch//\//-}-$(date +%Y%m%d-%H%M%S)-$$"
+mkdir -p "$LOG_DIR" || { echo "cannot keep this run's transcripts in $LOG_DIR" >&2; exit 2; }
 RUN_START=$SECONDS
 
 # --- progress -----------------------------------------------------------------

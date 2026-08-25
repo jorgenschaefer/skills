@@ -50,7 +50,7 @@ workspace() {
   git -C "$dir" add README
   git -C "$dir" commit -qm "first"
   git -C "$dir" checkout -qb feature
-  mkdir -p "$dir/tickets" "$dir/logs" "$dir/bin"
+  mkdir -p "$dir/tickets" "$dir/tmp" "$dir/bin"
   ln -s "$HERE/stub-claude" "$dir/bin/claude"
   for n in "$@"; do
     printf -- '---\nstatus: todo\ndepends_on: []\n---\n\n# %s\n' "$n" > "$dir/tickets/$n.md"
@@ -73,7 +73,7 @@ drive() {
   local resets_at="$1"; shift
   : > "$WORK/calls"; : > "$WORK/prompts"
   OUT="$(cd "$WORK" && env \
-    PATH="$WORK/bin:$PATH" TMPDIR="$WORK/logs" \
+    PATH="$WORK/bin:$PATH" TMPDIR="$WORK/tmp" XDG_STATE_HOME="$WORK/state" \
     STUB_PLAN="$WORK/plan" STUB_CALLS="$WORK/calls" \
     STUB_PROMPTS="$WORK/prompts" \
     STUB_FIXTURES="$HERE/fixtures" STUB_RESETS_AT="$resets_at" \
@@ -105,6 +105,9 @@ $(prompt_for "$1")" || ok "$3"; }
 expect_log()     { local m=("$LOGS"/$1)
                    [ -e "${m[0]}" ] && ok "$2" || bad "$2" "no $1 in $LOGS
 $(ls "$LOGS" 2>&1)"; }
+expect_file()    { [ -s "$1" ] && ok "$2" || bad "$2" "no $1
+$(ls "$(dirname "$1")" 2>&1)"; }
+expect_no_file() { [ -e "$1" ] && bad "$2" "found $1" || ok "$2"; }
 
 # A reset a minute ago: past the window, still two seconds of waiting once the
 # driver adds its slack.
@@ -123,6 +126,48 @@ EOF
 drive 0
 expect_rc 0 "a clean run builds the ticket, checks it and hands over"
 expect_calls 4 "a clean run calls out once per step"
+
+# --- the run's evidence -------------------------------------------------------
+
+# Transcripts outlive their run and accumulate where the next run can read them.
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 done
+clean.jsonl 0 -
+clean.jsonl 0 -
+clean.jsonl 0 -
+EOF
+drive 0
+first="$LOGS"
+expect_out "logs: $WORK/state/loop/" "a run's transcripts land under the state directory"
+expect_no_out "logs: $WORK/tmp" "a run's transcripts are not left in the temp directory"
+
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 -
+clean.jsonl 0 -
+clean.jsonl 0 -
+EOF
+drive 0
+expect_rc 0 "a second run over a drained queue finishes"
+expect_out "logs: $WORK/state/loop/" "the next run logs beside the last one"
+expect_file "$first/01-thing.jsonl" "an earlier run's transcripts survive the next run"
+expect_no_file "$LOGS/01-thing.jsonl" "a run never writes into an earlier run's directory"
+
+# A run that cannot log loses exactly what it exists to leave behind, and reads
+# its own missing transcript as a dead session - so it stops before the first
+# step rather than eight attempts later.
+
+workspace 01-thing
+drive 0 XDG_STATE_HOME= HOME=
+expect_rc 2 "nowhere to keep the transcripts is a bad invocation"
+expect_out "XDG_STATE_HOME" "the stop names what to set"
+expect_calls 0 "a run with nowhere to log never starts a step"
+
+: > "$WORK/not-a-directory"
+drive 0 XDG_STATE_HOME="$WORK/not-a-directory"
+expect_rc 2 "a log directory that cannot be made stops the run"
+expect_calls 0 "a run that cannot log never starts a step"
 
 # --- a usage limit ------------------------------------------------------------
 

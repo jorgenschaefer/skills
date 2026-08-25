@@ -14,6 +14,10 @@ A skill is a prompt an agent executes. Your job is to make one work better – s
 
 Operate on the one skill the user names (or the current skill directory). Read all of it first – `SKILL.md` and every reference file it points to – and understand its purpose before touching a word: the outcome it exists to produce, the judgment it encodes, and where it sits among sibling skills. Improving a skill you have only half-read is how you damage it.
 
+## Read the runs
+
+If `loop.sh` runs the skill you are improving, every run it made left its transcripts under `${XDG_STATE_HOME:-~/.local/state}/loop`, one directory per run and accumulating. They are the only evidence of how the skill behaved rather than how it reads, so let them set the agenda: an instruction stepped around, a halt reason that recurs, a finding filed run after run, a section no run ever reached. A run that went right is grounds for *removing* a line – the one thing reading the prose can never establish. Where no run exercised the skill, say so and work from the text.
+
 ## Evaluate against these lenses
 
 Apply everything you know about good prompts; these sharpen focus on what is easy to miss.
