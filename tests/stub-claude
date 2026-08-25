@@ -37,7 +37,7 @@ sed "s/__RESETS_AT__/${STUB_RESETS_AT:-0}/" "$STUB_FIXTURES/$fixture"
 # the commits an earlier one produced, so a run whose history never moves cannot
 # tell a case that narrowing works from one that ignores it.
 if [ "$action" = "done" ]; then
-  ticket="$(printf '%s\n' "$prompt" | sed -n 's#^/implement \(.*\.md\).*#\1#p' | head -1)"
+  ticket="$(printf '%s\n' "$prompt" | sed -n 's#^/implement-ticket \(.*\.md\).*#\1#p' | head -1)"
   [ -n "$ticket" ] || { echo "stub-claude: no ticket to finish in: $prompt" >&2; exit 99; }
   sed -i 's/^status:.*/status: done/' "$ticket"
   git add "$ticket" && git commit -qm "$(basename "$ticket" .md)"

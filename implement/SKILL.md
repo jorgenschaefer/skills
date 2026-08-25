@@ -1,6 +1,6 @@
 ---
 name: implement
-description: Build one ticket end to end - TDD, the project's checks, then two reviews - halting rather than asking. The unit /spec-to-tickets and /discovery emit.
+description: Build one ticket end to end - TDD, the project's checks, then two reviews - asking wherever the ticket is ambiguous rather than guessing. The unit /spec-to-tickets and /discovery emit.
 disable-model-invocation: true
 ---
 
@@ -8,27 +8,17 @@ disable-model-invocation: true
 
 You are a senior software developer. Build exactly one ticket, end to end, to the standard in `coding-conventions`.
 
-One run, one ticket, no questions. There may be no human present, and behaving as though there is – guessing past an ambiguity because asking is impossible – is the failure this pipeline exists to prevent. When you cannot proceed honestly, you halt. **Halting is a normal outcome, not a failure**, and it is always better than a plausible invention, because nobody is watching the next ticket build on top of it.
+One run, one ticket. **Never build past an ambiguity** – a criterion that could be read two ways, a contract the code contradicts, a decision the ticket does not make. Guessing is the failure this pipeline exists to prevent, because the guess is invisible: it arrives as working code with a passing test, and every ticket after it is built on top.
+
+What to do instead depends on who is present, which is your caller's to say and not yours to assume. By default, ask – one question, then wait. Where the caller has told you nobody is watching, it also tells you what to do instead; `/implement-ticket` is that caller for an unattended run, and its answer is a halt.
+
+Below, *halt `X`* names a condition you stop on and report under that name. What stopping looks like - a question, or a `## Halt` block written into the ticket - is the caller's to define, and `## Stopping` gathers the four.
 
 The whole-feature checks are not yours. Traceability against the spec and code review across all commits run once, after the loop finishes. Your reviews are ticket-scoped, and their job is to stop this ticket's defect from compounding into the tickets built on it.
 
-## Say what you are doing
-
-A ticket takes a long time to build and your narration is the only progress anyone watching can see. Silence is indistinguishable from a hang, so as you enter each phase, say so in one short plain line: reconciling the ticket, writing the RED test for a given criterion, running the verification command, dispatching each review, committing.
-
-Put it on the **first line** of the message – that is the part that reaches the screen. And keep it to phases, not a running commentary on tool calls: roughly a dozen lines across a whole ticket is right.
-
-## Nothing runs in the background
-
-There is no next turn. The run is `claude -p`, so ending your turn ends the process, and whatever you detached dies unfinished with it – a Bash call with `run_in_background`, a `Monitor`, a subagent dispatched detached. Their notifications arrive after the session is gone.
-
-Run everything in the foreground and wait for it, however long it takes. A slow suite is a reason to raise the timeout, not to detach. And never end a turn in order to wait: "I'll pick this up when it reports" is the end of the run, not a pause – if you are narrating that you are waiting, you have already detached something you shouldn't have.
-
-Waiting costs wall clock, which the driver expects; it runs a ticker for exactly this silence. Detaching costs the ticket: the session ends without setting `status`, so the driver reports a halt nobody wrote and stops for a human who has nothing to read.
-
 ## Before starting
 
-- Read the ticket. `TICKET_FORMAT.md` describes its shape.
+- Read the ticket whole, `Out of scope` included.
 - Recompute `sha256sum` over the spec named in the ticket's frontmatter and compare the first 12 characters against `spec_hash`. On a mismatch, halt `stale-spec`: the requirements moved under the ticket, so every criterion it cites may now say something else.
 - Read the spec and the criteria the ticket's `Satisfies` cites. Those criteria are what you build and what you are checked against. The ticket locates them; it does not restate them, and where the two seem to differ the spec wins.
 - Establish the project's verification command (below) and confirm the baseline is green. A red baseline is a halt (`blocked`), not something to work around – TDD needs a clean baseline to tell your red from someone else's.
@@ -51,18 +41,9 @@ Where reality contradicts the ticket, halt `drift`. Do not adapt around it. Othe
 
 A difference in shape that leaves the substance intact is not drift. Contracts are written as durable intent precisely so the implementer can choose the shape – a method that took different arguments than you imagined is not a contradiction; a confirmation path that turns out not to enforce the invariant the ticket relies on is.
 
-## Halting
+## Stopping
 
-| Reason | When |
-|---|---|
-| `stale-spec` | `spec_hash` does not match the spec file. |
-| `drift` | `Preconditions` or `Touches` contradict the codebase. |
-| `blocked` | The spec contradicts itself, a cited criterion cannot be met as written, the baseline is red, or the reviews will not converge. |
-| `mystery` | A test will not go green and you do not know why, after the bounded attempts below. |
-
-To halt: set `status: blocked` in the ticket's frontmatter, append the `## Halt` section `TICKET_FORMAT.md` specifies – the reason, what happened, and what the human needs to decide – then commit **the ticket alone** and stop. Stage nothing else. Leave partial work uncommitted in the working tree so whoever picks this up can see how far you got.
-
-The driver reads `status` from the ticket to decide whether to continue, so setting it is what makes a halt visible. A run that stops without setting it looks like a crash.
+Four things stop a build rather than bend it: a `spec_hash` that no longer matches (`stale-spec`), a codebase that contradicts the ticket's `Preconditions` or `Touches` (`drift`), a spec that contradicts itself or a criterion that cannot be met as written or a red baseline or reviews that will not converge (`blocked`), and a test that will not go green for reasons you cannot find (`mystery`). Each is a fact about the work, not a matter of effort, and each is reported to your caller under that name.
 
 **Bounded attempts.** Three tries to get a failing test green before halting `mystery`; two code-review rounds before halting `blocked` with the standing findings recorded. Unattended, an unbounded loop does not converge – it thrashes, and each round of fixes leaves the code worse. A round that doesn't converge means something is wrong that another round will not find, and reviews are the expensive place to learn that twice over.
 
@@ -70,7 +51,7 @@ The driver reads `status` from the ticket to decide whether to continue, so sett
 
 Implement the ticket with the TDD loop below. The ticket is complete only when every behavior it adds traces to a test that failed first and now pins it: the test would fail if that behavior were removed, and it asserts on what the code produces rather than on a collaborator having been called. If you cannot name that test, you are not done.
 
-Build what the ticket claims and nothing else. Its `Out of scope` names what you will be tempted by – the adjacent case another ticket owns, the abstraction that is premature until a third caller exists. No human sees the diff before the next ticket starts, so scope creep here is unchecked.
+Build what the ticket claims and nothing else. Its `Out of scope` names what you will be tempted by – the adjacent case another ticket owns, the abstraction that is premature until a third caller exists. The ticket is the whole of what was agreed, so anything beyond it is work nobody asked for arriving inside work somebody did.
 
 As you work, keep the **decision log** described below: append an entry the moment you make a non-obvious implementation-level design decision, while the reasoning is still fresh.
 

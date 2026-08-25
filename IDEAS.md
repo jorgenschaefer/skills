@@ -480,7 +480,7 @@ box in the same commit as the step.
 - [x] **B3** Delete `/propose-change`, `/decision-brief`, `/debug`
 - [x] **B4** The renames - *tested*
 - [x] **B5** `/spec-to-tickets`'s decomposition rules
-- [ ] **C1** `/implement-ticket`, with the rule split from the resolution - *tested*
+- [x] **C1** `/implement-ticket`, with the rule split from the resolution - *tested*
 - [ ] **C2** The ticket format and what `/implement` writes into it
 - [ ] **C3** The maintenance lane
 - [ ] **D1** The review bar - *tested*

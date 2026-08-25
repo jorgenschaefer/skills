@@ -5,8 +5,8 @@
 #   ./loop.sh path/to/tickets
 #
 # Builds every ready ticket in dependency order, then checks the result against
-# the spec, reviews it, and hands it back. Stops at the first halt: /implement
-# records the reason in the ticket rather than guessing past it.
+# the spec, reviews it, and hands it back. Stops at the first halt:
+# /implement-ticket records the reason rather than guessing past it.
 #
 # Exit codes say what kind of stop it was, because they want opposite responses:
 #   1  an agent halted, the queue has tickets nothing can reach, or the reviews
@@ -372,8 +372,8 @@ position() {
 
 # --- the loop -----------------------------------------------------------------
 
-# /implement sets `status` in the ticket before it finishes, and that is the
-# signal - not the exit code, since a session can end without deciding anything.
+# /implement-ticket sets `status` in the ticket before it finishes, and that is
+# the signal - not the exit code, since a session can end without deciding anything.
 # So an unfinished ticket means one of two things, and they want opposite
 # responses: a dead session leaves work to resume, a halt leaves work to read.
 drain() {
@@ -381,7 +381,7 @@ drain() {
   while ticket="$(next_ticket)"; do
     name="$(basename "$ticket" .md)"
     echo "==> [$(position)] $name"
-    run_step build "$name" "/implement $ticket" || return 3
+    run_step build "$name" "/implement-ticket $ticket" || return 3
     [ "$(status_of "$ticket")" = "done" ] && continue
 
     echo

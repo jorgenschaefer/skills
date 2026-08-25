@@ -479,7 +479,7 @@ handover.jsonl 0 -
 EOF
 drive 0 REVIEWS=code
 expect_rc 0 "a run asks for no less than the skills' full discipline"
-expect_no_prompt /implement "quality review" "no run trades a review away for time"
+expect_no_prompt /implement-ticket "quality review" "no run trades a review away for time"
 
 # What each step is run as. A review reads code a different model wrote, and the
 # steps are not alike enough to think equally hard about.
@@ -492,11 +492,11 @@ clean.jsonl 0 -
 clean.jsonl 0 -
 EOF
 drive 0
-expect_argv /implement "--model opus" "a ticket is built by the build model"
+expect_argv /implement-ticket "--model opus" "a ticket is built by the build model"
 expect_argv /check-against-spec "--model sonnet" "the check runs on a model that did not write the code"
 expect_argv "Run /critique" "--model sonnet" "so does the review"
 expect_argv /handover "--model opus" "the handover is not a review and stays on the build model"
-expect_argv /implement "--effort high" "building a ticket gets the budget for it"
+expect_argv /implement-ticket "--effort high" "building a ticket gets the budget for it"
 expect_argv "Run /critique" "--effort high" "so does reading a diff adversarially"
 expect_argv /handover "--effort medium" "writing up finished work does not"
 
@@ -509,7 +509,7 @@ clean.jsonl 0 -
 EOF
 drive 0 BUILD_MODEL=sonnet REVIEW_MODEL=opus
 expect_rc 0 "a run may name the two models itself"
-expect_argv /implement "--model sonnet" "the build runs on the model the run named"
+expect_argv /implement-ticket "--model sonnet" "the build runs on the model the run named"
 expect_argv /check-against-spec "--model opus" "and the reviews on the other one"
 
 workspace 01-thing
