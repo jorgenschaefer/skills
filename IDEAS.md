@@ -130,9 +130,10 @@ paragraph is retired before the extraction rather than moved. The wrapper calls
 
 **`implement/TICKET_FORMAT.md` moves with it** rather than being copied. The
 craft skill never reads a ticket, so it should not carry the format at all.
-After `/propose-change`'s copy goes there are four - `critique`,
+After `/propose-change`'s copy goes there are five - `critique`, `discovery`,
 `implement-ticket`, `spec-to-tickets`, `check-against-spec` - still
-byte-identical, with diff still the parity check.
+byte-identical, with diff still the parity check. `/discovery` needs one
+because the small lane emits a real ticket, which is what `/implement` reads.
 *Touches: a new implement-ticket/ skill, implement/SKILL.md, loop.sh, README.md.*
 
 **Split the rule from the resolution at `implement/SKILL.md:11`.** The craft
@@ -475,7 +476,7 @@ box in the same commit as the step.
 - [x] **A2** Review independence, `REVIEWS=code` retired - *tested*
 - [x] **A3** `accept.sh` - *tested*
 - [x] **B1** `SPEC_FORMAT.md` and a new `ADR_FORMAT.md`
-- [ ] **B2** `/discovery` gains everything it now owns
+- [x] **B2** `/discovery` gains everything it now owns
 - [ ] **B3** Delete `/propose-change`, `/decision-brief`, `/debug`
 - [ ] **B4** The renames - *tested*
 - [ ] **B5** `/spec-to-tickets`'s decomposition rules
@@ -537,8 +538,8 @@ terminals including the downward exit. One edit rather than three.
 
 **B3. Delete `/propose-change`, `/decision-brief`, `/debug`.** Safe only after B2,
 which is where the small lane goes. Clean every reference in `plan/SKILL.md`,
-`implement/SKILL.md`, `handover/SKILL.md` and `README.md`. Five
-`TICKET_FORMAT.md` copies become four.
+`implement/SKILL.md`, `handover/SKILL.md` and `README.md`. Six
+`TICKET_FORMAT.md` copies become five.
 *three skill directories, and the files that name them.*
 
 **B4. The renames.** `plan/` to `spec-to-tickets/`, `trace/` to
@@ -559,7 +560,7 @@ promote into.
 **C1. `/implement-ticket`, with the rule split from the resolution.** The wrapper
 and `implement/SKILL.md:11` in the same step; the wrapper overrides the craft
 skill's contract without the split. `implement/TICKET_FORMAT.md` moves into the
-wrapper here, leaving four copies rather than five.
+wrapper here, leaving the same five copies in different hands.
 *a new implement-ticket/, implement/SKILL.md, loop.sh, tests/run.sh.*
 
 **C2. The ticket format and what `/implement` writes into it.** `Record`'s third

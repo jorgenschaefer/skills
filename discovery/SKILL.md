@@ -1,6 +1,6 @@
 ---
 name: discovery
-description: Use when designing a new feature with the user - fired explicitly via /discovery, or whenever a feature idea needs developing into a structured summary an implementer can build from.
+description: Use when a change to this codebase is being worked out with the user - fired explicitly via /discovery, or whenever a feature, a bug or a passing idea needs developing into something an implementer can build from. The one way in.
 ---
 
 # Discovery
@@ -12,6 +12,32 @@ Thoroughness is a property of the spec, not the conversation: scale the intervie
 Before interviewing, skim the codebase for what the feature will sit next to: terminology, conventions, and adjacent features it must integrate with. For UI, note the existing design language - component library, design tokens, spacing and type scale, styling conventions - so new screens stay consistent. If `UBIQUITOUS_LANGUAGE.md` exists, read it and reuse its terms. The code answers "what exists"; the user answers "what's new". Then open by reflecting the request back and digging for the problem beneath it (see Goal).
 
 Read `IDEAS.md` too, if one exists where the specs live. It holds what earlier features parked, and something in it may belong in this one. Raise what fits - a parking lot nobody revisits is just a slower way of forgetting.
+
+## Where this ends
+
+You are the one door into the pipeline, and three things come out of it:
+
+- **A spec.** The default, and what everything below is written for: a change big enough that `/plan` decomposes it into tickets an unattended loop builds.
+- **One ticket.** The change is a single observable thing - a bugfix, a small behaviour change - and a spec for it would be ceremony. See *The small lane*.
+- **A reasoned no.** The idea does not survive the interview: the problem is already solved, the cost is out of proportion to it, the thing asked for is a symptom of something else, or it is worth doing but not the way it was asked for. Say so with the reasoning and name what you would do instead.
+
+Which of the three it is comes out of the interview and is never a question you open with. The split test below tells a feature from a change.
+
+There is a floor under all three. When nobody outside the code could observe any difference - a rename, a refactor, a cleanup - there is nothing here to discover: say so and let it be done directly.
+
+## The small lane
+
+One ticket, written to `tickets/` where the specs live, in the shape `TICKET_FORMAT.md` specifies: no `spec` or `spec_hash`, criteria written out in full rather than cited, and a leading `## Why`. `/implement` builds it with the user still present.
+
+Most of this skill is written for the spec lane and does not apply here - no journeys, no domain-model turn, no mockup walk, no module survey, no spec file, no hardening sweep. What does apply:
+
+- **Find the root cause, not the symptom.** A fix that clamps a bad value or swallows an error leaves the defect live and hides it. For a bug the *why* is already settled, so pin the two things a fix is judged against: what happens now, what should happen, and a case that reproduces it.
+- **Trace the blast radius.** What else calls this, depends on it, or shares the behaviour being changed. A one-line change with four callers is not a one-line change.
+- **Weigh it.** Benefit against what it costs to build *and* to carry afterwards, and against what it complicates for the common case. Four honest verdicts, not two: worth it; worth it done differently; not worth it now; not worth it at all.
+- **Ratify in flight.** A term, an ADR, a journey is permanent-tier here exactly as it is on the spec lane, and the user is in front of you, so it gets its yes on the spot. A default is marked in the ticket that carries it, with what in the code would overturn it - the implementer is bound by it either way.
+- **Read it cold before handing it over.** Ask of your own ticket: *what is the first thing a builder would have to guess?* A lone ticket has no spec behind it to answer that, so whatever it is has to be in the ticket.
+
+Then the receipt, the same five-line cap as below.
 
 ## Goal
 
@@ -32,6 +58,8 @@ This is a move you make continuously, not a check at the end. Scope grows a sent
 - **It passes** - park it. Append it to `IDEAS.md` where the specs live, with enough context to resurrect: the problem it solves, why it was deferred, what it would touch. Then return to the feature at hand. Parking is not refusing, and saying so keeps it from feeling like one.
 - **It doesn't stand alone** - it belongs in this feature. Absorb it.
 
+**Then say what comes after the feature.** The spec's `## Now and later` holds the smallest slice worth shipping and the part deliberately held back. The split test catches a second feature hiding inside this one; this catches one feature specified well past the point it should have shipped at. Later is not a non-goal - a non-goal is out of scope for good, later is scope you are choosing not to build yet.
+
 One case you flag rather than split: a feature that passes the split test and is still plainly large. Splitting it would produce halves that aren't independently shippable, and that tradeoff is the user's to make. Say what you see and offer the choice - one long run with a big review at the end, or two runs where the first doesn't stand on its own.
 
 ## Role
@@ -44,9 +72,11 @@ You are a discussion partner, not a stenographer. So:
 
 ## Process
 
-Identify the user journey (or journeys) and the tasks that compose it - the journey is the high-level workflow, the tasks its distinct steps. Write a user story per task, and acceptance criteria for any story whose behavior isn't obvious or has a non-obvious edge case. Phrase criteria as concrete given/when/then conditions, so they translate directly into failing tests.
+Identify the journeys - the paths a user takes through the feature from end to end - and the tasks that compose each. The journey is what you write down, in the spec's `## Journeys`: its trigger, its steps in sequence, the domain effect each step has, and the screens it walks through. Say where the last step puts the user down - the screen or the state they are left looking at. A journey that ends "and it is saved" has skipped the part where anyone finds out it worked.
 
-Where the behavior is a standing invariant rather than an event - a rule that holds while some state is true, a threshold, a security or performance property - write it in EARS instead (`WHILE <state> the system shall …`, `IF <condition> THEN the system shall …`). Gherkin needs a scenario per case to say what EARS says in a line, and three near-identical scenarios hide the one rule underneath them. Non-functional limits go to the spec's `Constraints` section rather than under a story, and each says how it is verified.
+Then a user story per task, naming the journey it belongs to, and acceptance criteria for any story whose behavior isn't obvious or has a non-obvious edge case. Phrase criteria as concrete given/when/then conditions, so they translate directly into failing tests.
+
+Where the behavior is a standing invariant rather than an event - a rule that holds while some state is true, a threshold, a security or performance property - write it in EARS instead (`WHILE <state> the system shall …`, `IF <condition> THEN the system shall …`). Gherkin needs a scenario per case to say what EARS says in a line, and three near-identical scenarios hide the one rule underneath them. Non-functional limits go to the spec's `## Constraints` rather than under a story, and each says how it will be verified - future tense, because the check does not exist yet and naming one that does ticks the constraint off against coverage that was never about this feature.
 
 ### Model the domain
 
@@ -62,17 +92,40 @@ Behind every journey is a domain. Modeling it finds the decisions the stories do
 
 Trace each task as a domain story - "this actor does this action on this work object, which raises this event" - and the missing steps announce themselves: an action with no actor, a work object nobody creates, an event nothing reacts to. The domain story is the analysis; the user story is what you record.
 
+**Then show the model back, in a turn of its own.** Once the journeys are understood and before the criteria harden: the domain stories you traced, and per aggregate what changes together and the invariant its root holds. In the user's language - whether something is an entity or a value object is your problem, not theirs, and a turn spent on that vocabulary is a turn they cannot correct you in.
+
+Foreground what they can veto, because a model presented as a finished picture gets nodded at:
+
+- these two are one thing - or they are two, and you have merged them;
+- this may lag that, so they need not change together;
+- that is not what we call it here;
+- you have missed an actor, or named an event nothing reacts to.
+
+This is the cheapest correction in the pipeline; every ticket after it is built on what they agree to here.
+
 ### The mechanic: sort every decision
 
 A feature forces dozens of decisions. Sort each into one bucket:
 
 - **The codebase answers it.** Resolve it silently and move on. Always check the code before asking.
-- **A wrong default would hurt, but there's a defensible best answer** - a technical choice like how to wrap a dependency, where a seam sits, a data shape, where an aggregate boundary falls. Decide it, then surface it for a veto: state the decision, your recommendation, and the key alternatives. Don't make the user originate it; do let them overrule it.
+- **A wrong default would hurt, but there's a defensible best answer** - a technical choice like how to wrap a dependency, where a seam sits, a data shape, where an aggregate boundary falls. Decide it, then surface it for a veto: state the decision, your recommendation, and the key alternatives. Don't make the user originate it; do let them overrule it. This is a **default**: it goes in the spec's `## Defaults` with what in the code would overturn it, or, where it qualifies a decision it cannot be read apart from, marked and numbered beside that decision instead. You are deciding it without the evidence the builder will have - which is exactly why the builder may overturn it on evidence found in the code, and never on taste.
 - **A wrong default would hurt, and the answer is genuinely the user's** - a business rule, a priority, a product tradeoff the code cannot imply. You cannot default this. Ask.
 
 "Would a wrong default hurt" is the test throughout: it hurts when it changes behavior the user would notice, costs money, risks data, or is hard to reverse. Everything else - local names, file layout, cheap reversible choices - stays with the implementer.
 
 **Surface your assumptions; don't just avoid them.** The defaults that hurt are the ones you pick so confidently they never feel like a question. Keep a running list of what you're defaulting and confirm them for veto ("I'm assuming X and Y unless you say otherwise").
+
+### Records that outlive the feature
+
+Three things you write survive the run. The spec and the tickets are deleted when it is accepted; these are not, so each is permanent-tier and each gets its own explicit yes, asked for the moment you propose it rather than collected into a list at the end:
+
+- **A term** in `UBIQUITOUS_LANGUAGE.md`.
+- **An ADR** - shape and location in `ADR_FORMAT.md` - for a structural choice a later reader would otherwise undo without ever learning what it cost. Write it here, where the alternatives are still live and the reasoning is still true, and never autonomously: put the decision and your recommendation, and let the user say whether it becomes a record at all. List it in the spec's `## ADRs` by number and path, alongside the ones this feature is merely built under. Read the ones the project already has, the way you read `UBIQUITOUS_LANGUAGE.md` - a spec that contradicts a ratified ADR is one `/critique` will send back.
+- **A journey ratified into a workflow test** under `tests/workflows/`, which every feature after this one has to keep green. Agreeing a journey is not ratifying it: ratification is a second yes, asked separately, and it is rare. Most features walk a path the project already has and ratify nothing. Propose one only where this feature establishes a journey nothing else covers.
+
+Everything else you settle is binding for this feature or a default, and both go when the spec does.
+
+**Check hard-to-reverse external choices against a primary source** before you write them down - a version, a limit, an API's actual behaviour, whether a library still does what you remember - and cite what you read in the decision. `coding-conventions` already makes this argument for looking up a package version; it binds harder here, because a spec records the choice as settled and nothing downstream looks again.
 
 ### Finding the decisions
 
@@ -86,13 +139,25 @@ Beyond those, let the feature's shape say which usual hiding spots apply - don't
 - **UI:** the states a happy path omits (empty, loading, error, partial, disabled); what confirms an action and what a destructive one warns; layout hierarchy and responsive reflow; accessibility (focus order, labels, contrast, keyboard paths).
 - **Behavior:** error, timeout, retry, and idempotency at each external seam; validation rules and where they apply; migration of existing data; ordering, concurrency, and partial failure; non-functional limits (scale, volume, performance budget).
 
+### Survey what already exists
+
+Before the design is written, go module by module through what this feature needs and find what the codebase already has that resembles it. For each, a verdict and the reason: **reuse** it as it stands, **extend** it, **absorb** it into what this feature builds, **replace** it, or deliberately **sit beside** it.
+
+Bounded to what this feature touches - this is not an audit of the repository.
+
+Every verdict is recorded in the spec's `## Implementation decisions`, the reuse and sit-beside ones included. A verdict left unwritten reads later as a module nobody looked at, and `/trace`'s orphan sweep files a ticket to delete what you deliberately kept. Each verdict you reached with the codebase actually open in front of you is a **default**, marked as one with what in the code would overturn it.
+
+An `absorb` or `replace` that no criterion requires is scope rather than survey: park it in `IDEAS.md`. One a criterion does require is a hard-to-reverse structural choice, so it gets an ADR and its own yes.
+
 ### How to ask
 
 **End your turn at the first question mark.** The moment a turn reaches a question that seeks new information, send it - a second question or "and also" waits for the next turn. This is a rule about output shape, not a preference: one turn, one open question, so the user never has to label which part of their reply answers which question. Confirming assumptions for veto ("I'm assuming X unless you say otherwise") is not an originating question, but it gets its own turn, never mixed with a question.
 
 ### Show, don't tell
 
-When a UI decision is genuinely open, don't ask the user to picture it from prose - build a small throwaway HTML mockup with the `frontend-design` skill and have them react to something real. Show alternatives side by side when the choice is open; when one reused pattern obviously fits, just show that. Mockups are a communication device, not a deliverable: keep them in a scratch directory and delete them once the decision is recorded - unless the visual itself is the record and prose can't replace it, in which case keep it in the repo and link it from the spec's Design section.
+Build the journey, not the decision. For each journey with screens in it, make a throwaway HTML mockup of the walk - screen one through screen five, in the order the user meets them - with the `frontend-design` skill, and have them react to something real rather than picture it from prose. A layout judged on its own gets judged again the moment someone sees where it sits in the flow, and the questions that matter most - what is missing here, why am I back on this screen - are only askable of a walk. Two options side by side are for a decision still genuinely open after it.
+
+Mockups are a communication device, not a deliverable: keep them in a scratch directory and delete them once the decision is recorded. The exception is a visual that *is* the record because prose cannot carry it - keep that one in the repo and link it from the spec's `## Design`.
 
 **Reuse before invent.** Prefer an existing component over a new one, an existing pattern over a new arrangement. Introduce something new only when nothing existing fits, and keep it consistent with the design language. Greenfield, there is no language yet - establishing it (tokens, type scale, spacing, core interaction patterns) is a foundational decision; settle it with the user before building on it.
 
@@ -112,10 +177,11 @@ Discovery is done when every decision a wrong default could hurt has an answer -
 
 Before writing the summary, confirm your running list of defaults and verify none actually needed the user. Resolve any question still open now - a spec never carries an open-questions section. If a question survives, discovery isn't over.
 
-Then harden the spec into a contract an implementer can build without improvising - a closing sweep across the whole feature, now that its shape is settled:
+Then harden the spec into a contract an implementer can build without improvising - a closing sweep across the whole feature, now that its shape is settled. This sweep and the summary below are the spec lane's; a ticket lane ends at the ticket and the receipt, and a no ends at the reasoning.
 
 - **Complete the criteria.** Every behavior a wrong default could hurt gets a criterion, given/when/then or EARS; each one becomes a test `/implement` writes RED first. A story left with no criteria is where the implementer invents behavior - close it here. During the interview criteria stay loose; this is where they harden.
-- **Number everything.** Stories `US-1`, criteria `US-1.1`, constraints `C-1`. Tickets cite criteria rather than copying them, so an unnumbered criterion is one no ticket can claim and no review can check off. This is not optional at any spec size.
+- **Number everything.** Journeys `J-1`, stories `US-1`, criteria `US-1.1`, constraints `C-1`, defaults `D-1`. Tickets cite these rather than copying them, so an unnumbered one is a thing no ticket can claim and no review can check off. This is not optional at any spec size.
+- **Check every story names its journey**, and that every journey's steps are covered by stories. A story belonging to no journey is a story nobody asked for; a journey step no story covers is a hole the run will not fill.
 - **Bind the decisions.** Every decision that touches existing code names the real structure it reuses or extends, drawn from the codebase - a durable choice, not a `file:line` that drift will invalidate.
 - **Map the dependencies.** Record them as the `Depends on` notes in User Stories, so `/plan` can decompose along them.
 
@@ -125,6 +191,10 @@ The result is the complete spec `/plan` decomposes into tickets.
 
 Write the summary to a markdown spec file in the repo - propose a path and confirm it - and present the same content inline so the user can react. Before presenting, dispatch a fresh `general-purpose` subagent to read the written spec cold and report where it fights itself - a success criterion a non-goal rules out, an acceptance criterion that contradicts a domain decision, two decisions that can't both hold, or a requirement a reader could take two ways; a fresh reader catches these because your own context can't forget the intent that silently reconciles them. Resolve what it finds and pin the reading you mean, then present. Run it once on the settled spec; targeted revisions from later feedback you can recheck yourself. Follow the shape in `SPEC_FORMAT.md`, and revise from feedback until they're satisfied; the file is what `/plan` decomposes and `/implement` is checked against, so it must match what you've agreed.
 
-Then close with `/decision-brief` over the spec. The interview is long and the spec is dense, so the decisions that most deserve a veto are the easiest to lose in it - the brief ranks them by stakes and hands the call back to the user. Where a decision was theirs to make rather than yours, the spec already says so in its `_Why:_`, and the brief inherits that.
+Then close with the receipt: **at most five lines**, one per permanent-tier item this discovery produced - a term, an ADR, a ratified journey - each naming what it commits the project to, and an offer to reopen any of them now. Nothing else belongs in it.
+
+Most discoveries produce nothing permanent, and then the receipt is a single line saying so. Five is a cap rather than a target, and needing more than five is a finding in itself: say that plainly and let the user decide what to reopen.
+
+Every item in it already got its own yes when it was proposed, so the receipt is the last chance to take one back rather than the first sight of it. The ranked closing brief this replaced grew with the spec until nobody read it to the end, which is how the one item that needed a veto got skimmed past.
 
 Once they ratify it, point them at `/plan`, which decomposes the spec into tickets. From that point the spec is frozen: each ticket carries its hash, and an edit halts the loop.

@@ -91,7 +91,7 @@ A given/when/then criterion already implies its test, and `/implement` writes it
 
 ## Tickets without a spec
 
-`/propose-change` emits a single ticket with nothing beside it. The ticket *is* the requirements, so three things change:
+`/discovery` emits a single ticket with nothing beside it when the change is small enough that a spec would be ceremony. The ticket *is* the requirements, so three things change:
 
 - **`spec` and `spec_hash` are omitted.** Nothing to cite, nothing to freeze.
 - **`Satisfies` carries the criteria in full**, given/when/then, rather than pointing at them. The rule against copying exists because copies drift from a shared source; a lone ticket has no source to drift from.
