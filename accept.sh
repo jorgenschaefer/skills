@@ -105,4 +105,10 @@ finished.
 $(printf '  %s\n' "${built[@]}")
 EOF
 
+# The driver counts how many runs ended on this paper without finishing it, and
+# refuses to start once that reaches its ceiling. Accepting is the answer to
+# that count, so it goes with the paper.
+state="${XDG_STATE_HOME:-${HOME:+$HOME/.local/state}}"
+[ -z "$state" ] || rm -f "$state/loop/attempts/$(printf '%s' "$(cd "$SPEC_DIR" && pwd)" | md5sum | cut -c1-12)"
+
 echo "accepted $feature - ${#built[@]} tickets, $SPEC and $TICKETS deleted in $(git rev-parse --short HEAD)"

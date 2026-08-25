@@ -5,16 +5,23 @@
 #   ./loop.sh path/to/tickets
 #
 # Builds every ready ticket in dependency order, then checks the result against
-# the spec, reviews it, and hands it back. Stops at the first halt:
-# /implement-ticket records the reason rather than guessing past it.
+# the spec, reviews it, and hands it back. Stops at the first halt it cannot
+# answer itself: /implement-ticket records the reason rather than guessing past
+# it.
 #
 # Exit codes say what kind of stop it was, because they want opposite responses:
 #   1  the run ended somewhere other than clean: an agent halted, a build
 #      changed a ratified workflow test it was not authorised to touch, the
 #      queue has tickets nothing can reach, the spec check would not converge,
-#      or the review left blockers or a disagreement standing
+#      or the review left blockers or a disagreement standing. Re-running after
+#      resolving it is the way back, up to MAX_RUNS times.
 #   2  bad invocation - no ticket directory, not a repo, on main
 #   3  a session died in a way the driver could neither wait out nor retry
+#
+# A halt on `drift` or a stale spec hash is the exception: the code or the spec
+# moved under a ticket, and re-deriving the unbuilt tickets against what is
+# actually there is mechanical rather than a decision. The driver does that once
+# per run and carries on. Everything else it hands back.
 #
 # Neither of those is an agent decision, so neither ends a run. Running out of
 # usage is waited out: the window reopens at a time the stream names to the
@@ -48,6 +55,14 @@ TICK_MINUTES=3
 # rather than a thing to raise.
 MAX_PASSES=2
 
+# How many runs may end on the same paper before somebody has to say that is
+# deliberate. A halt is resolved by a human and then by re-running, and each
+# re-run starts the pass budget over - so without this, MAX_PASSES above is a
+# ceiling in the same sense a door is locked when the window is open. Two, plus
+# the run that reaches it, is enough to tell a bad night from work that is not
+# converging. Also not tunable: raising it is the decision it exists to force.
+MAX_RUNS=2
+
 # Which model each kind of step runs on. Reviews read code a different model
 # wrote: two sessions of one model share its blind spots, and a reviewer that
 # misses a defect for the same reason the builder wrote it is not a second
@@ -69,6 +84,7 @@ step_flags() {
   case "$1" in
     build)    printf -- '--model %s --effort high'   "$BUILD_MODEL" ;;
     review)   printf -- '--model %s --effort high'   "$REVIEW_MODEL" ;;
+    plan)     printf -- '--model %s --effort high'   "$BUILD_MODEL" ;;
     handover) printf -- '--model %s --effort medium' "$BUILD_MODEL" ;;
     *)        echo "no such kind of step: $1" >&2; exit 2 ;;
   esac
@@ -319,6 +335,13 @@ status_of() { field "$1" status; }
 deps_of() { field "$1" depends_on | tr -d '[]' | tr ',' ' '; }
 ticket_for() { ls "$TICKETS/$1"-*.md 2>/dev/null | head -1; }
 
+# The reason a build wrote into its `## Halt`. Two of the four are the code
+# having moved under a ticket, which is a re-derivation rather than a decision.
+halt_reason() {
+  sed -n '/^## Halt/,$p' "$1" \
+    | sed -n 's/^\*\*Reason:\*\*[[:space:]]*\([a-z][a-z-]*\).*/\1/p' | tail -1
+}
+
 ready() {
   local dep file
   for dep in $(deps_of "$1"); do
@@ -454,7 +477,7 @@ EOF
 }
 
 drain() {
-  local ticket name stuck before touched authorised
+  local ticket name stuck before touched authorised reason
   while ticket="$(next_ticket)"; do
     name="$(basename "$ticket" .md)"
     echo "==> [$(position)] $name"
@@ -476,6 +499,35 @@ drain() {
       return 1
     fi
     [ "$(status_of "$ticket")" = "done" ] && continue
+
+    # Drift and a stale hash are both the same thing: what the ticket assumed
+    # is no longer what the code or the spec says. Re-deriving the unbuilt
+    # tickets against what is actually there is mechanical, and the skill has
+    # documented it since before the driver existed - it simply never called it.
+    # Once, though: a refresh that drifts again has found something a
+    # re-derivation cannot fix, and a second one would only find it again.
+    reason="$(halt_reason "$ticket")"
+    case "$reason" in
+      drift|stale-spec)
+        if [ -z "$REFRESHED" ]; then
+          REFRESHED=1
+          # A stale hash means the spec moved, so what the earlier passes checked
+          # was checked against a different one. The check reads the run whole
+          # again rather than narrowing to what the last pass filed.
+          [ "$reason" = drift ] || CHECKED_AT=""
+          echo "==> $reason on $name - re-deriving the unbuilt tickets"
+          run_step plan "refresh" "$(refresh_prompt)" || return 3
+          # The refresh is a session that edits and commits like any other, and
+          # nothing authorises it to touch a ratified journey.
+          touched="$(workflows_touched "$before")"
+          if [ -n "$touched" ]; then
+            halt_for_workflows "$ticket" "$before" "$touched"
+            echo "!! the refresh changed a ratified workflow test - $ticket records it" >&2
+            return 1
+          fi
+          continue
+        fi ;;
+    esac
 
     echo
     echo "!! halted on $name - transcript: $LOG_DIR/$name.jsonl"
@@ -522,6 +574,26 @@ drain() {
 # which has had no passes and reads the branch whole, and set again between its
 # two reads.
 CHECKED_AT=""
+
+# One per run. A refresh that drifts again has found something re-deriving
+# cannot fix, and a second would only find it again.
+REFRESHED=""
+
+# Named rather than left to the skill, which was written for a human running it
+# after a halt. Two things it cannot know: this run's ticket directory may hold
+# tickets the end-of-run checks filed, which come from findings rather than from
+# the spec and are nobody's to re-derive; and there is no user here to send back
+# to /discovery.
+refresh_prompt() {
+  cat <<EOF
+/spec-to-tickets --refresh $SPEC_DIR
+Leave any ticket that a review filed during this run exactly as it is - it came
+from a finding rather than from the spec, and re-deriving it would delete work
+nothing else is tracking.
+If the halt turns out to need a spec decision rather than a re-derivation, stop
+and say so in the ticket rather than deciding it: there is nobody here to ask.
+EOF
+}
 
 check_prompt() {
   printf '/check-against-spec %s\n' "$SPEC_DIR"
@@ -639,6 +711,9 @@ report() {
 # that follows from the state the run reached.
 finish_run() {
   local state="$1" verdict="${2:-}"
+  # Written here rather than at startup: what counts is how a run ended, and
+  # this is the only place that is known.
+  if [ "$state" = clean ]; then rm -f "$ATTEMPTS"; else echo "$((ended + 1))" > "$ATTEMPTS"; fi
   report "$state" "$verdict"
   echo "==> handover"
   # A handover that dies does not change what the run reached, and the half above
@@ -671,6 +746,37 @@ drain_or_end() {
   finish_run halted
   exit 1
 }
+
+# What the last run on this paper ended as, counted against the paper rather
+# than the branch: two of the five runs that routed around MAX_PASSES were the
+# same work under a new branch name. Only an ending is counted - a session that
+# died decided nothing and re-running it resumes rather than restarts.
+ATTEMPTS="$STATE/loop/attempts/$(printf '%s' "$SPEC_DIR" | md5sum | cut -c1-12)"
+mkdir -p "$(dirname "$ATTEMPTS")" ||
+  { echo "cannot keep this run's count in $ATTEMPTS" >&2; exit 2; }
+ended=$(cat "$ATTEMPTS" 2>/dev/null || echo 0)
+case "$ended" in *[!0-9]*|'') ended=0 ;; esac
+
+case "${ANOTHER_RUN:-}" in
+  ''|1) ;;
+  *) echo "ANOTHER_RUN is set or unset, not '$ANOTHER_RUN'" >&2; exit 2 ;;
+esac
+
+if [ "$ended" -gt 0 ]; then
+  echo "attempt $((ended + 1)) on $SPEC_DIR - $ended run(s) ended without finishing it"
+  if [ "$ended" -ge "$MAX_RUNS" ]; then
+    if [ -z "${ANOTHER_RUN:-}" ]; then
+      {
+        echo "!! $ended runs have already ended on this work without finishing it, and"
+        echo "   each one started the pass budget over. Another is a decision somebody"
+        echo "   should make rather than a default. If it is deliberate:"
+        echo "     ANOTHER_RUN=1 $0 $TICKETS"
+      } >&2
+      exit 1
+    fi
+    echo "ANOTHER_RUN is set: going past the ceiling of $MAX_RUNS deliberately"
+  fi
+fi
 
 echo "logs: $LOG_DIR"
 

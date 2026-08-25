@@ -659,6 +659,120 @@ drive 0
 expect_rc 0 "a ticket authorised at planning time changes one and the run goes on"
 expect_calls 4 "the authorised ticket costs no extra step"
 
+# --- what a run recovers from -------------------------------------------------
+
+# Drift is the code moving under a ticket, which is a re-derivation rather than
+# a decision - so the driver does it, once, and hands back anything else.
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 drift
+clean.jsonl 0 refresh
+clean.jsonl 0 done
+clean.jsonl 0 -
+reviewed.jsonl 0 -
+clean.jsonl 0 -
+EOF
+drive 0
+expect_rc 0 "a drifted ticket is re-derived and the run goes on"
+expect_calls 6 "the refresh costs one step"
+expect_prompt "/spec-to-tickets --refresh" "$WORK" "the driver asks for it by name and where"
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 drift
+clean.jsonl 0 refresh
+clean.jsonl 0 drift
+clean.jsonl 0 -
+EOF
+drive 0
+expect_rc 1 "drifting again after a refresh is a halt, not a second refresh"
+expect_calls 4 "one refresh per run, then a human"
+
+expect_argv "/spec-to-tickets --refresh" "--model opus" "the refresh is planning, not reviewing"
+expect_argv "/spec-to-tickets --refresh" "--effort high" "and gets the budget for it"
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 stale-spec
+clean.jsonl 0 refresh
+clean.jsonl 0 done
+clean.jsonl 0 -
+reviewed.jsonl 0 -
+clean.jsonl 0 -
+EOF
+drive 0
+expect_rc 0 "a spec that moved under the tickets is re-derived too"
+expect_calls 6 "at the same cost"
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 blocked
+clean.jsonl 0 -
+EOF
+drive 0
+expect_rc 1 "a blocked halt is nobody's to re-derive"
+expect_calls 2 "so it is not refreshed, only handed over"
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 mystery
+clean.jsonl 0 -
+EOF
+drive 0
+expect_rc 1 "and neither is a test failing for reasons nobody knows"
+expect_calls 2 "which is a diagnosis, not a re-derivation"
+
+# Re-running is how a human resolves a halt, and it resets the pass budget. A
+# ceiling routed around without anybody deciding to is not a ceiling.
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 -
+clean.jsonl 0 -
+EOF
+drive 0
+expect_rc 1 "the first run halts"
+
+cat > "$WORK/plan" <<'EOF'
+errored.jsonl 0 -
+EOF
+drive 0
+expect_rc 3 "a session that dies decides nothing"
+expect_out "attempt 2" "it is still a re-run onto work that did not finish"
+
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 -
+clean.jsonl 0 -
+EOF
+drive 0
+expect_rc 1 "and the run after it is still attempt 2, not 3"
+expect_out "attempt 2" "because only an ending counts"
+drive 0
+expect_rc 1 "a third attempt on work two runs could not finish stops for a decision"
+expect_calls 0 "and starts nothing"
+expect_out "ANOTHER_RUN" "the stop says how to say it was deliberate"
+drive 0 ANOTHER_RUN=1
+expect_out "attempt 3" "which then runs, and says which attempt it is"
+expect_out "deliberately" "and says the ceiling was passed on purpose"
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 done
+clean.jsonl 0 -
+reviewed.jsonl 0 -
+clean.jsonl 0 -
+EOF
+drive 0
+expect_rc 0 "a clean run"
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 -
+reviewed.jsonl 0 -
+clean.jsonl 0 -
+EOF
+drive 0
+expect_no_out "attempt" "clears the count, so the next run is a first run again"
+
 # --- the skills' shared files ---------------------------------------------------
 
 # Five skills read the ticket format and each carries its own copy, because a

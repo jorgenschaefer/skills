@@ -124,10 +124,13 @@ Only what you decided. The spec's own decisions were ratified as discovery made 
 
 ## Refresh
 
-`/spec-to-tickets --refresh` re-derives the unbuilt tickets after the loop halts on `drift` or `stale-spec`. The premise is that reality moved: either the code an unbuilt ticket assumed, or the spec every ticket cites.
+`/spec-to-tickets --refresh` re-derives the unbuilt tickets after a halt on `drift` or `stale-spec`. The premise is that reality moved: either the code an unbuilt ticket assumed, or the spec every ticket cites.
+
+The driver calls this itself, once per run, with nobody present - so a question you would have asked has nowhere to go. Where the halt turns out to need a spec decision rather than a re-derivation, stop and write that into the halted ticket rather than deciding it; a human reads it when the run ends.
 
 - Leave `done` tickets untouched. They are a record of work that happened, and their `Record` sections are what the run's closing report is collected from.
-- Re-derive every `todo` and `blocked` ticket against the codebase as it actually is now - read the code, not the prose of the tickets you are replacing, which is the drifted material. Renumber nothing; ids are referenced by `depends_on` and by commit messages.
+- Leave any ticket a review filed during the run exactly as it is. It came from a finding rather than from the spec, so there is nothing to re-derive it from, and deleting it would drop work nothing else tracks.
+- Re-derive every other `todo` and `blocked` ticket against the codebase as it actually is now - read the code, not the prose of the tickets you are replacing, which is the drifted material. Renumber nothing; ids are referenced by `depends_on` and by commit messages.
 - Re-check which defaults are binding before re-stamping. A refresh moves seams, so a default one ticket owned may now be shared. Adding `(binding)` is not patching a spec decision - it records which tickets depend on one - and it goes in before the hash, as it did the first time.
 - Re-stamp `spec_hash` on everything you rewrite.
 - Run the review again. A refresh is where contracts quietly stop matching, so the pass that hunts for guesses matters more here than on the first run, not less.

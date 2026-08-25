@@ -4,7 +4,8 @@
 #
 # Each invocation consumes one line of $STUB_PLAN:
 #
-#   <fixture> <exit-code> <done|record|file|workflow|self-authorised|->
+#   <fixture> <exit-code> <done|record|file|workflow|self-authorised|refresh|->
+#                        <drift|stale-spec|blocked|mystery>
 #
 # and replays that fixture on stdout - real records, captured from runs that hit
 # the real limit - exits with that code, and then does what the third field says:
@@ -47,6 +48,21 @@ fi
 if [ "$action" = "self-authorised" ]; then
   ticket="$(printf '%s\n' "$prompt" | sed -n 's#^/implement-ticket \(.*\.md\).*#\1#p' | head -1)"
   printf '\n## Workflow tests\n- tests/workflows/journey.test - I decided this was fine\n' >> "$ticket"
+fi
+
+# A build that halts, with the reason in the ticket the way /implement-ticket
+# writes it - and a refresh, which is what puts a drifted ticket back in play.
+case "$action" in drift|stale-spec|blocked|mystery)
+  ticket="$(printf '%s\n' "$prompt" | sed -n 's#^/implement-ticket \(.*\.md\).*#\1#p' | head -1)"
+  sed -i '0,/^status:.*/s//status: blocked/' "$ticket"
+  printf '\n## Halt\n**Reason:** %s\nThe codebase says otherwise.\n' "$action" >> "$ticket"
+  git add "$ticket" && git commit -qm "halt $(basename "$ticket" .md)" ;;
+esac
+
+if [ "$action" = "refresh" ]; then
+  dir="$(printf '%s\n' "$prompt" | sed -n 's#^/spec-to-tickets --refresh \(.*\)$#\1#p' | head -1)"
+  sed -i 's/^status: blocked/status: todo/' "$dir"/tickets/[0-9]*.md
+  git add "$dir/tickets" && git commit -qm "refresh"
 fi
 
 # A finished build's Record, written out of order on purpose: what reads it has

@@ -142,9 +142,9 @@ The driver appends a `## Halt` of its own where it catches something after the f
 ```
 
 - **blocked** - the spec contradicts itself, a criterion cannot be met as written or pinned by anything, or a maintenance ticket cannot land without changing behaviour. Back to `/discovery`.
-- **drift** - `Preconditions` or `Touches` no longer match the code. Back to `/spec-to-tickets --refresh`.
+- **drift** - `Preconditions` or `Touches` no longer match the code. The driver answers this one itself, once per run, by re-deriving the unbuilt tickets with `/spec-to-tickets --refresh`; a second drift after that comes back to a human.
 - **mystery** - a test will not go green and the cause is unknown after the bounded attempts. Back to a human to diagnose.
-- **stale-spec** - `spec_hash` does not match. Back to `/spec-to-tickets --refresh`.
+- **stale-spec** - `spec_hash` does not match. Answered the same way, and counted against the same one-per-run bound.
 - **unauthorised** - written by the driver, never by a build: the ticket changed a ratified workflow test with no `## Workflow tests` section standing in it beforehand. It carries `**Commit:**` and `**Paths:**` naming what changed. Nothing is reverted; resolving it is adding the authorisation and setting `status` back to `done`.
 
 ```markdown
