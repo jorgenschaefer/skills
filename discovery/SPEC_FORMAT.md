@@ -78,7 +78,7 @@ Three tiers of commitment live in this file and a reader has to be able to tell 
 
 ## Defaults
 - **D-1** <what the builder should do absent evidence, stated as an instruction rather than a preference.> _Overturnable on: <what in the code would say otherwise.>_
-- **D-2 (binding)** <`(binding)` is added by `/spec-to-tickets`, before the spec is hashed, to every default more than one ticket has to hold to - here or wherever else it stands. It means no ticket may overturn that default alone: the evidence one ticket finds does not settle a choice the others are already built on.>
+- **D-2 (binding)** <`(binding)` is added by `/spec-to-tickets`, before the spec is hashed, to every default more than one ticket has to hold to - here or wherever else it stands. It means no ticket may overturn that default alone: the evidence one ticket finds does not settle a choice the others are already built on, so a ticket that finds such evidence stops instead.>
 
 <`D-n` is one sequence across the whole file, so a default marked in place beside a decision and one collected here never share a number.>
 ```

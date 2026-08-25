@@ -21,6 +21,7 @@ The whole-feature checks are not yours. Traceability against the spec and code r
 - Read the ticket whole, `Out of scope` included.
 - Recompute `sha256sum` over the spec named in the ticket's frontmatter and compare the first 12 characters against `spec_hash`. On a mismatch, halt `stale-spec`: the requirements moved under the ticket, so every criterion it cites may now say something else.
 - Read the spec and the criteria the ticket's `Satisfies` cites. Those criteria are what you build and what you are checked against. The ticket locates them; it does not restate them, and where the two seem to differ the spec wins.
+- Read the spec's defaults too - every `D-n`, wherever in the spec it stands. They bind you the way criteria do, with one exception: you may overturn one on evidence you find in the code, never on preference, and then the ticket records the overturn with that evidence. A default marked `(binding)` is not yours to overturn at all - other tickets are already built on it - so evidence against one stops the build.
 - Establish the project's verification command (below) and confirm the baseline is green. A red baseline is a halt (`blocked`), not something to work around – TDD needs a clean baseline to tell your red from someone else's.
 - If `UBIQUITOUS_LANGUAGE.md` exists at the repo root, read it and use those terms for names in code, tests, and commit messages.
 - Read the `coding-conventions` skill – every section of it, not the handful you would have thought of unprompted. It is the standard you build to, and the rubric both reviews apply.
@@ -43,17 +44,17 @@ A difference in shape that leaves the substance intact is not drift. Contracts a
 
 ## Stopping
 
-Four things stop a build rather than bend it: a `spec_hash` that no longer matches (`stale-spec`), a codebase that contradicts the ticket's `Preconditions` or `Touches` (`drift`), a spec that contradicts itself or a criterion that cannot be met as written or a red baseline or reviews that will not converge (`blocked`), and a test that will not go green for reasons you cannot find (`mystery`). Each is a fact about the work, not a matter of effort, and each is reported to your caller under that name.
+Four things stop a build rather than bend it: a `spec_hash` that no longer matches (`stale-spec`), a codebase that contradicts the ticket's `Preconditions` or `Touches` (`drift`), a spec that contradicts itself, a criterion that cannot be met as written or pinned by anything, a red baseline, reviews that will not converge, or evidence against a `(binding)` default (`blocked`), and a test that will not go green for reasons you cannot find (`mystery`). Each is a fact about the work, not a matter of effort, and each is reported to your caller under that name.
 
 **Bounded attempts.** Three tries to get a failing test green before halting `mystery`; two code-review rounds before halting `blocked` with the standing findings recorded. Unattended, an unbounded loop does not converge – it thrashes, and each round of fixes leaves the code worse. A round that doesn't converge means something is wrong that another round will not find, and reviews are the expensive place to learn that twice over.
 
 ## Build it
 
-Implement the ticket with the TDD loop below. The ticket is complete only when every behavior it adds traces to a test that failed first and now pins it: the test would fail if that behavior were removed, and it asserts on what the code produces rather than on a collaborator having been called. If you cannot name that test, you are not done.
+Implement the ticket with the TDD loop below. Every behavior it adds traces to a test that failed first and now pins it: the test would fail if that behavior were removed, and it asserts on what the code produces rather than on a collaborator having been called. What *completes* the ticket is narrower, and is checked below – each criterion its `Satisfies` claims, pinned by a test you can name.
 
 Build what the ticket claims and nothing else. Its `Out of scope` names what you will be tempted by – the adjacent case another ticket owns, the abstraction that is premature until a third caller exists. The ticket is the whole of what was agreed, so anything beyond it is work nobody asked for arriving inside work somebody did.
 
-As you work, keep the **decision log** described below: append an entry the moment you make a non-obvious implementation-level design decision, while the reasoning is still fresh.
+As you work, keep the **decision log** described below: append an entry the moment you make a non-obvious implementation-level design decision, while the reasoning is still fresh - and mark its stakes in the same breath. What it costs to be wrong is clearest while you are deciding; an agent re-reading the log cold at the end of a run is guessing.
 
 If a test will not go green because behavior is failing in a way you do not understand, that is a `mystery` halt after three attempts – not a licence to thrash. The diagnosis is a human's response to that halt, not a fourth attempt.
 
@@ -88,6 +89,12 @@ Do not log TDD process (which test to write next, faking a constant with the nex
 
 Append each entry the moment you make the decision, not reconstructed at the end – late reconstruction is rationalisation, and what matters is the reasoning you actually had at the time. One line per entry, anchored to a `file:line`: *facing A, chose B because C; rejected D because E.*
 
+### Prove the contract before the reviews see it
+
+**Prove the contract before you hand it to a review.** Completion is scoped to what the ticket claims, not to the diff being green: for every id in `Satisfies`, name the test that fails without that criterion. Where you wrote a RED run for it, that run is the proof and you already have it. Where you did not – the behavior turned out to exist already, or something you did not write covers it – break the behavior, watch the named test fail, and restore it.
+
+A criterion whose test you cannot name, or whose test still passes with the behavior removed, is unbuilt work: write that test now, RED first, like any other. Here rather than after the reviews, so what you add is reviewed like everything else. A criterion nothing can pin is a `blocked` halt, not a line to write around.
+
 ## Review it
 
 **Run the verification command first and fix what it reports.** It is deterministic, fast, and independent of the model that wrote the code – three things no review below is – so it goes ahead of them. A review round spent on something a typechecker would have caught is a round wasted, and a type error means the code is broken no matter what a reviewer concludes about it.
@@ -102,7 +109,7 @@ Then two reviews, in this order, each a fresh `general-purpose` subagent. Seven 
 - **Verify the review happened.** Treat the verdict as a claim to verify: a clean result counts only when the report shows the review happened – findings, or the checks it ran, cited to `file:line`, and the criteria it covered named. A bare "looks good" is not a completed review; re-dispatch it once. You don't redo the review yourself – you refuse to accept one that didn't demonstrably occur. A reviewer that fails to show its work twice is broken, not strict: halt `blocked` rather than dispatch a third.
 - **Don't pre-judge the reviewer.** Don't tell it what to conclude, what not to flag, or that a choice was already settled so it should accept it. Hand it the requirements and let it judge; adjudicate false positives afterwards, not by steering it beforehand.
 
-**1. Quality review.** Pass it the ticket, the criteria its `Satisfies` cites, and the diff. For each criterion, have it try to find a case where the implementation does not satisfy it, or a test that would still pass if the behavior were deleted. Have it check the ticket's `Out of scope` was respected – something built here that another ticket owns is as much a defect as something missing. This is not a code review; it is a check that the right thing was built. It runs first because a gap means new behavior, and that new code should then pass under the code review rather than escaping it.
+**1. Quality review.** Pass it the ticket, the criteria its `Satisfies` cites, the spec defaults this ticket relied on or overturned, and the diff. Of each overturn, have it ask whether the evidence cited is actually in the code: a default is overturnable on what the builder found there and on nothing else, so an overturn argued from taste is a finding. For each criterion, have it try to find a case where the implementation does not satisfy it, or a test that would still pass if the behavior were deleted. Have it check the ticket's `Out of scope` was respected – something built here that another ticket owns is as much a defect as something missing. This is not a code review; it is a check that the right thing was built. It runs first because a gap means new behavior, and that new code should then pass under the code review rather than escaping it.
 
 **2. Code review.** Have it read the `coding-conventions` skill and apply that rubric on top of its own judgement over the ticket's diff. Two of those properties it has to establish rather than read off the diff, so ask for both by name:
 
@@ -132,7 +139,7 @@ Don't perform agreement. No "you're absolutely right," no reflexive thanks – s
 Both reviews clean, full suite green:
 
 1. Commit the code, staging only the files this ticket touched. Never `git add -A`.
-2. Append the ticket's `## Record` – the commit sha, the decision log entries that survived as genuine spec-silent forks, and any finding left `Unresolved` with why. Omit a section rather than writing "none".
+2. Append the ticket's `## Record`: the commit sha; `**Pinned by:**`, one line per `Satisfies` id naming the test that pins it and how you proved it; `**Decisions:**`, the decision log entries that survived as genuine spec-silent forks; `**Unresolved:**`, each review finding left standing and why; and `**Left open:**`, anything you found and deliberately did not fix. Every `Decisions` and `Unresolved` entry opens with `**[high]**`, `**[medium]**` or `**[low]**` – what it costs to have been wrong, marked as you write it. Omit a section rather than writing "none".
 3. Set `status: done` and commit the ticket.
 
 The `Record` is the only channel between this run and the human who accepts the work. A fork you noticed and didn't write down is one they will discover in the code instead.
