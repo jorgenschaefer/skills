@@ -490,7 +490,7 @@ box in the same commit as the step.
 - [x] **E2** Driver resilience - *tested*
 - [x] **E3** The Abnahme
 - [x] **F1** `ARCHITECTURE.md`
-- [ ] **F2** `README.md`
+- [x] **F2** `README.md`
 
 ### Phase A - the mechanical work that depends on nothing
 
