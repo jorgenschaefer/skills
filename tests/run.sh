@@ -160,7 +160,7 @@ hours_off()  { echo $(( $(date +%s) + $1 * 3600 )); }
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 done
-clean.jsonl 0 -
+checked.jsonl 0 -
 reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF
@@ -175,7 +175,7 @@ expect_calls 4 "a clean run calls out once per step"
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 done
-clean.jsonl 0 -
+checked.jsonl 0 -
 reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF
@@ -185,7 +185,7 @@ expect_out "logs: $WORK/state/loop/" "a run's transcripts land under the state d
 expect_no_out "logs: $WORK/tmp" "a run's transcripts are not left in the temp directory"
 
 cat > "$WORK/plan" <<'EOF'
-clean.jsonl 0 -
+checked.jsonl 0 -
 reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF
@@ -216,7 +216,7 @@ workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
 rate-limited-session.jsonl 1 -
 clean.jsonl 0 done
-clean.jsonl 0 -
+checked.jsonl 0 -
 reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF
@@ -225,13 +225,13 @@ expect_rc 0 "a session limit is waited out and the run finishes"
 expect_out "waiting until" "the wait says when it will pick up again"
 expect_calls 5 "the limited step is retried, not skipped"
 expect_log "01-thing.attempt-1.jsonl" "the limited attempt's transcript is kept"
-expect_out '\$34.25' "the limited attempt's cost stays in the run total"
+expect_out '\$33.50' "the limited attempt's cost stays in the run total"
 
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
 rate-limited-session.jsonl 0 -
 clean.jsonl 0 done
-clean.jsonl 0 -
+checked.jsonl 0 -
 reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF
@@ -242,7 +242,7 @@ expect_calls 5 "a limit that exits 0 is retried too"
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
 warned.jsonl 0 done
-clean.jsonl 0 -
+checked.jsonl 0 -
 reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF
@@ -255,7 +255,7 @@ cat > "$WORK/plan" <<'EOF'
 rate-limited-session.jsonl 1 -
 errored.jsonl 0 -
 clean.jsonl 0 done
-clean.jsonl 0 -
+checked.jsonl 0 -
 reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF
@@ -316,7 +316,7 @@ workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
 errored.jsonl 0 -
 clean.jsonl 0 done
-clean.jsonl 0 -
+checked.jsonl 0 -
 reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF
@@ -397,7 +397,7 @@ expect_calls 1 "a cycle reaches nothing but the handover"
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 record
-clean.jsonl 0 -
+checked.jsonl 0 -
 reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF
@@ -424,7 +424,7 @@ expect_out "$LOOP" "the report says what resumes it"
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 record
-clean.jsonl 0 -
+checked.jsonl 0 -
 critique-blockers.jsonl 0 -
 clean.jsonl 0 -
 EOF
@@ -437,7 +437,7 @@ expect_out "re-run" "and the way back is written down"
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 record
-clean.jsonl 0 -
+checked.jsonl 0 -
 critique-standing.jsonl 0 -
 clean.jsonl 0 -
 EOF
@@ -448,7 +448,7 @@ expect_out "state: requires human review" "even with nothing filed and nothing b
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 record
-clean.jsonl 0 -
+checked.jsonl 0 -
 critique-mute.jsonl 0 -
 clean.jsonl 0 -
 EOF
@@ -456,15 +456,56 @@ drive 0
 expect_rc 1 "a review that never closed with its verdict line is not a pass"
 expect_out "no verdict line" "the report says the review did not say"
 
+# The acceptance closes the same way. What it files is built and checked again,
+# so a gap is not what ends a run - what ends one is what it would not file.
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 record
+check-standing.jsonl 0 -
+reviewed.jsonl 0 -
+clean.jsonl 0 -
+EOF
+drive 0
+expect_rc 1 "a gap the acceptance refused to reopen wants a human"
+expect_out "state: requires human review" "even with every criterion the check filed built"
+expect_out "1 standing disagreement" "the report carries what the acceptance would not file"
+expect_calls 4 "and the review still reads the branch before the run ends"
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 record
+clean.jsonl 0 -
+reviewed.jsonl 0 -
+clean.jsonl 0 -
+EOF
+drive 0
+expect_rc 1 "an acceptance that never closed with its verdict line is not a pass"
+expect_out "the acceptance did not say" "the report says which of the two was silent"
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 done
+check-gaps.jsonl 0 file
+clean.jsonl 0 done
+checked.jsonl 0 -
+reviewed.jsonl 0 -
+clean.jsonl 0 -
+EOF
+drive 0
+expect_rc 0 "gaps filed and built are the loop working, not a run to rule on"
+expect_out "state: clean" "the last pass's verdict is the one that decides"
+expect_out "acceptance: VERDICT: 0 gaps filed" "and it is printed beside the review's"
+
 # The spec check is the loop's; the review is not. It reads the whole run once
 # after the last drain, then only what it filed itself.
 
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 done
-clean.jsonl 0 file
+check-gaps.jsonl 0 file
 clean.jsonl 0 done
-clean.jsonl 0 -
+checked.jsonl 0 -
 reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF
@@ -480,7 +521,7 @@ expect_prompt "Run /critique" "from this branch's start" \
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 done
-clean.jsonl 0 -
+checked.jsonl 0 -
 clean.jsonl 0 file
 clean.jsonl 0 done
 reviewed.jsonl 0 -
@@ -511,7 +552,7 @@ mkdir -p "$WORK/docs/feature"
 mv "$WORK/tickets" "$WORK/docs/feature/tickets"
 cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 done
-clean.jsonl 0 -
+checked.jsonl 0 -
 reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF
@@ -523,11 +564,12 @@ expect_prompt "Run /critique"     docs/feature/tickets "critique is told where t
 expect_prompt /check-against-spec "Read them as leads" "the check is pointed at what the builds left behind"
 expect_prompt "Run /critique"     "Read them as leads" "the review is pointed there too"
 expect_prompt "Run /critique"     "Close with the verdict line" "the review is asked to close with a countable verdict"
+expect_prompt /check-against-spec "Close with the verdict line" "and so is the acceptance"
 
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 done
-clean.jsonl 0 -
+checked.jsonl 0 -
 reviewed.jsonl 0 -
 handover.jsonl 0 -
 EOF
@@ -544,7 +586,7 @@ expect_no_prompt /implement-ticket "authorised" "no run authorises a build to ch
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 done
-clean.jsonl 0 -
+checked.jsonl 0 -
 reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF
@@ -560,7 +602,7 @@ expect_argv /handover "--effort medium" "writing up finished work does not"
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 done
-clean.jsonl 0 -
+checked.jsonl 0 -
 reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF
@@ -580,7 +622,7 @@ expect_calls 0 "a run with no second opinion never starts a step"
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 done
-clean.jsonl 0 -
+checked.jsonl 0 -
 reviewed.jsonl 0 -
 handover.jsonl 0 -
 EOF
@@ -591,7 +633,7 @@ expect_out "status page" "the handover brief is printed whole, not just its firs
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
 handover.jsonl 0 done
-clean.jsonl 0 -
+checked.jsonl 0 -
 reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF
@@ -639,7 +681,7 @@ expect_ticket 01-thing "^status: blocked" "it is halted like any other"
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 done
-clean.jsonl 0 file
+check-gaps.jsonl 0 file
 clean.jsonl 0 workflow
 clean.jsonl 0 -
 EOF
@@ -651,7 +693,7 @@ workspace 01-thing
 printf -- '---\nstatus: todo\ndepends_on: []\n---\n\n# 01-thing\n\n## Workflow tests\n- tests/workflows/journey.test - the rename reaches it\n' > "$WORK/tickets/01-thing.md"
 cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 workflow
-clean.jsonl 0 -
+checked.jsonl 0 -
 reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF
@@ -669,7 +711,7 @@ cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 drift
 clean.jsonl 0 refresh
 clean.jsonl 0 done
-clean.jsonl 0 -
+checked.jsonl 0 -
 reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF
@@ -697,7 +739,7 @@ cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 stale-spec
 clean.jsonl 0 refresh
 clean.jsonl 0 done
-clean.jsonl 0 -
+checked.jsonl 0 -
 reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF
@@ -759,14 +801,14 @@ expect_out "deliberately" "and says the ceiling was passed on purpose"
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 done
-clean.jsonl 0 -
+checked.jsonl 0 -
 reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF
 drive 0
 expect_rc 0 "a clean run"
 cat > "$WORK/plan" <<'EOF'
-clean.jsonl 0 -
+checked.jsonl 0 -
 reviewed.jsonl 0 -
 clean.jsonl 0 -
 EOF

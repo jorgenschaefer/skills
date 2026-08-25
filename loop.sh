@@ -615,6 +615,7 @@ EOF
 The done tickets in $TICKETS carry a Record of what each build decided, left
 Unresolved, and left open. Read them as leads - places worth looking - and
 verify each for yourself. None of them is a verdict you inherit.
+Close with the verdict line the skill specifies, alone on the last line.
 EOF
 }
 
@@ -679,17 +680,29 @@ run_entries() {
       '{ print "  " ($1 == 1 ? "[high]  " : $1 == 2 ? "[medium]" : "[low]   ") "  " $2 "  " $3 }'
 }
 
-# The review closes with a fixed line so this can read a count instead of
-# spending a second agent on the first one's prose. All four fields or none: a
-# line that half matches is a review that did not close the way it was asked to,
-# and reading three of its numbers would be worse than reading none of them.
-# Singular tolerated on the way in, though the skill asks for the plural always:
-# strictness belongs in the instruction, forgiveness in the thing that reads it.
+# Both end-of-run checks close with a fixed line so this can read a count
+# instead of spending a second agent on the first one's prose. All four fields
+# or none: a line that half matches is a step that did not close the way it was
+# asked to, and reading three of its numbers would be worse than reading none of
+# them. Singular tolerated on the way in, though the skills ask for the plural
+# always: strictness belongs in the instruction, forgiveness in the thing that
+# reads it.
+#
+# The two count different things because they judge different things. The review
+# counts defects by what they cost; the acceptance counts criteria by what it
+# could establish about them - and its last field is the one nothing else in the
+# run can say, since a criterion checked by reading is a criterion nobody drove.
 VERDICT_RE='^VERDICT: [0-9]+ blockers?, [0-9]+ should-fix, [0-9]+ nits?, [0-9]+ standing disagreements?$'
-critique_verdict() {
+CHECK_VERDICT_RE='^VERDICT: [0-9]+ gaps? filed, [0-9]+ gaps? reported, [0-9]+ standing disagreements?, [0-9]+ criteria checked on evidence$'
+verdict_line() {
   jq -r 'select(.type == "assistant") | .message.content[]? | select(.type == "text") | .text' \
-     "$LOG_DIR/critique-$1.jsonl" 2>/dev/null | grep -E "$VERDICT_RE" | tail -1
+     "$LOG_DIR/$1.jsonl" 2>/dev/null | grep -E "$2" | tail -1
 }
+
+# The last acceptance pass's line, and the reason where there was none. Kept
+# here rather than passed down: every path out of the run prints it, including
+# the ones that end before the review has anything to say.
+CHECK_VERDICT=""
 
 report() {
   local state="$1" verdict="$2" entries
@@ -697,6 +710,7 @@ report() {
   echo
   echo "── the run ──────────────────────────────────────────────"
   echo "state: $state"
+  [ -z "$CHECK_VERDICT" ] || echo "acceptance: $CHECK_VERDICT"
   [ -z "$verdict" ] || echo "review: $verdict"
   ! ls "$LOG_DIR"/critique-*.jsonl >/dev/null 2>&1 \
     || echo "the review in full, nits included: $LOG_DIR/critique-*.jsonl"
@@ -790,6 +804,10 @@ for pass in $(seq "$MAX_PASSES"); do
 
   echo "==> spec check (pass $pass)"
   run_step review "spec-check-$pass" "$(check_prompt)" || exit 3
+  # Each pass overwrites the last. An earlier pass's gaps are built and checked
+  # again by the pass after it, so the only line that still stands at the end is
+  # the one from the pass that filed nothing.
+  CHECK_VERDICT="$(verdict_line "spec-check-$pass" "$CHECK_VERDICT_RE")"
 
   if ! next_ticket >/dev/null; then
     checks_clean=1
@@ -805,12 +823,28 @@ if [ -z "${checks_clean:-}" ]; then
   exit 1
 fi
 
+# The acceptance is read the same way as the review below, and for the same
+# reason: what a check refuses to file reaches nobody otherwise. A gap it did
+# file is not that - the loop above built it and the pass after it checked the
+# result - so what stands here is what it would not file, and a pass that closed
+# with nothing at all. Neither ends the run here: the review still reads the
+# branch and still files what it finds, and a human ruling on one disagreement
+# wants that reading done rather than skipped.
+check_stands=""
+check_standing="$(sed -n 's/.*, \([0-9]*\) standing disagreements*, .*/\1/p' <<< "$CHECK_VERDICT")"
+if [ -z "$CHECK_VERDICT" ]; then
+  CHECK_VERDICT="no verdict line - the acceptance did not say"
+  check_stands=1
+elif [ "$check_standing" -gt 0 ]; then
+  check_stands=1
+fi
+
 # The check narrowed its later passes to what the previous one filed. The review
 # has had no passes: it reads the branch whole, so that narrowing is not its.
 CHECKED_AT=""
 echo "==> critique"
 run_step review "critique-1" "$(critique_prompt)" || exit 3
-verdict="$(critique_verdict 1)"
+verdict="$(verdict_line critique-1 "$VERDICT_RE")"
 
 # What it filed is built, and then it reads that and nothing else.
 if next_ticket >/dev/null; then
@@ -818,12 +852,12 @@ if next_ticket >/dev/null; then
   drain_or_end
   echo "==> critique (over what it filed)"
   run_step review "critique-2" "$(critique_prompt)" || exit 3
-  verdict="$(critique_verdict 2)"
+  verdict="$(verdict_line critique-2 "$VERDICT_RE")"
 fi
 
 # A blocker that survived being filed, built and re-read is not work the loop
-# can converge on, and a disagreement it refused to reopen is not work at all.
-# Both are for a human, and neither makes the run a failure.
+# can converge on, and a disagreement either check refused to reopen is not work
+# at all. All of them are for a human, and none makes the run a failure.
 blockers="$(sed -n 's/^VERDICT: \([0-9]*\) blockers.*/\1/p' <<< "$verdict")"
 standing="$(sed -n 's/.*, \([0-9]*\) standing disagreements*$/\1/p' <<< "$verdict")"
 if next_ticket >/dev/null; then
@@ -835,7 +869,7 @@ if next_ticket >/dev/null; then
 elif [ -z "$verdict" ]; then
   finish_run "requires human review" "no verdict line - the review did not say"
   exit 1
-elif [ "${blockers:-0}" -gt 0 ] || [ "${standing:-0}" -gt 0 ]; then
+elif [ "${blockers:-0}" -gt 0 ] || [ "${standing:-0}" -gt 0 ] || [ -n "$check_stands" ]; then
   finish_run "requires human review" "$verdict"
   exit 1
 fi

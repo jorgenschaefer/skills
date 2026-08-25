@@ -98,4 +98,19 @@ Where the gap is a missing *test* over working behavior, file it as a **remediat
 
 **Report what you found**, whether or not you filed tickets. Per criterion: whether you drove it or fell back to evidence, what you did, and what came back. A silent pass and a pass with nothing to show look identical to whoever reads it next, and only one of them means anything - and the difference between "drove it, got the rejection with its reason" and "found a test called `test_rejection_reason`" is the whole of this step.
 
-If you filed tickets, the loop runs again and `/check-against-spec` runs again after it. Expect that; a run that needs a second pass is working as designed, not failing.
+Then close with the verdict line, alone on the last line and in exactly this shape:
+
+```
+VERDICT: 3 gaps filed, 2 gaps reported, 0 standing disagreements, 5 criteria checked on evidence
+```
+
+Four counts, always all four, in that order, with those words whatever the numbers are - `1 gaps filed` rather than `1 gap filed`, and `0 gaps reported` rather than a field left out. It is read by machine, and English pluralisation is the kind of detail that turns a parse into a guess.
+
+- **Gaps filed** - the tickets you wrote this pass, of all three kinds.
+- **Gaps reported** - what you found and did not file because it has no destination under the bar: a mutant with nothing behind it, a candidate that turned out to be a new requirement. Named here so a human weighs it rather than a loop building it.
+- **Standing disagreements** - gaps that clear the bar's first two tests and that you refused to file because filing them would reopen a prior ticket's adjudication. A pass with none of the first count and one of this one is not a clean run, and this line is the only place that distinction survives: your tickets are what the caller sees, and this is the finding there is no ticket for.
+- **Criteria checked on evidence** - how many you could not drive and fell back on. This is the fallback count the section above asks you to keep, and it is the one number nobody can recover from the tickets: a criterion checked by reading is a criterion nobody drove, and a report that does not say so reads exactly like one where every criterion was.
+
+Only your tickets are otherwise read mechanically, so anything you decided not to file reaches the caller through this line or not at all. A caller that has to read the prose to learn what the acceptance established spends a whole second agent on it, and gets an answer that disagrees with yours about as often as people disagree about prose.
+
+If you filed tickets, the loop runs again and `/check-against-spec` runs again after it. Expect that; a run that needs a second pass is working as designed, not failing - the count that decides anything is the one on the pass that files nothing.

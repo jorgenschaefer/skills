@@ -70,7 +70,7 @@ Both scripts have tests in `tests/run.sh` - plain bash, each case building a thr
 
 The pipeline is most of them. `cleanup-repo`, `repo-overview` and `upgrade-dependencies` stand outside it - they are things you run on a codebase rather than steps in building a feature.
 
-- **check-against-spec** - the acceptance: drive the finished feature against the spec it was built from, sweep for what no ticket could have seen, and file a ticket for each gap
+- **check-against-spec** - the acceptance: drive the finished feature against the spec it was built from, sweep for what no ticket could have seen, file a ticket for each gap, and close with a verdict line a caller can count
 - **cleanup-repo** - clean up the current project in two passes: find code to delete (dead code, code unrequired by tests/spec, absence-asserting tests) and code to refactor (YAGNI and KISS violations), then produce a reviewable plan and stop for approval before changing anything
 - **coding-conventions** - the single source of truth for this project's code-quality standards (simple design, structure and locality, domain layering, clarity and least astonishment, concurrency and shared state, cost at scale, accessibility, changing what already runs, test coverage, security, dependencies); read by `/implement` when writing code and `/critique` when reviewing it, so the rules live in one place instead of drifting across skills
 - **critique** - review code for quality against the shared `coding-conventions` standard, over a branch diff or a whole project; runs the project's checks, traces the change's callers, verifies every finding before reporting it, and closes with a verdict line a caller can count

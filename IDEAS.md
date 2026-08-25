@@ -25,17 +25,13 @@ acceptance: it drives the running feature the way a user would, and falls back
 to code and test evidence only where nobody could drive it. Today a run where
 *nothing* can be driven - the permissions do not cover starting the app, or the
 project has no way in - degrades quietly into the reading the step was rewritten
-to replace, and says so in a report that reaches nobody mechanically. A whole
-run checked on evidence should end the run somewhere other than clean.
-*Touches: check-against-spec/SKILL.md, loop.sh, tests/run.sh.*
-
-**`/check-against-spec` should close with a verdict line, as `/critique` does.**
-Only the review's verdict is machine-read, so the driver learns what the
-acceptance found only through the tickets it filed. What it refuses to file
-reaches nobody: a gap it will not reopen because a ticket already adjudicated it
-leaves the run reporting *clean* with that disagreement outstanding. The same
-four-count line, read the same way, closes it.
-*Touches: check-against-spec/SKILL.md, loop.sh, tests/run.sh.*
+to replace. A whole run checked on evidence should end the run somewhere other
+than clean. The number is now in front of the driver rather than only in the
+prose: the acceptance's verdict line closes with how many criteria it fell back
+on, and nothing reads that field yet. What it cannot say is how many there were
+altogether, so the threshold - all of them, or more than the handful the skill
+already calls a finding of its own - is the open question.
+*Touches: loop.sh, tests/run.sh, and possibly the verdict line's fourth field.*
 
 **`ARCHITECTURE.md` needs a second reader.** `/repo-overview` writes it,
 re-derived from the code and never hand-patched. `/discovery` now reads it in
