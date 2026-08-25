@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 #
-# The driver's tests.
+# The tests for the two scripts: the driver, and accepting what it produced.
 #
 #   tests/run.sh
 #
-# Plain bash, because a repo of Markdown skills and one script should not have
-# to install a test framework to check that script. Each case builds a throwaway
-# repo, puts `stub-claude` on PATH as `claude`, and runs loop.sh against it, so
-# what is under test is the driver's behaviour and not its internals.
+# Plain bash, because a repo of Markdown skills and two scripts should not have
+# to install a test framework to check them. Each case builds a throwaway repo,
+# puts `stub-claude` on PATH as `claude`, and runs loop.sh or accept.sh against
+# it, so what is under test is behaviour and not internals.
 #
 # The rate-limit fixtures are real records from runs that hit the real limit.
 # Their reset is written two seconds out - `resetsAt` a minute in the past, plus
@@ -43,11 +43,15 @@ bad()  { printf 'FAIL  %s\n' "$1"; failed=$((failed + 1))
 workspace() {
   local dir n
   dir="$(mktemp -d)"
-  git -C "$dir" init -q
+  git -C "$dir" init -q -b main
   git -C "$dir" config user.email loop@test
   git -C "$dir" config user.name loop
-  : > "$dir/README"
-  git -C "$dir" add README
+  : > "$dir/README.md"
+  # The suite's own scaffolding is not part of the repo under test, and a case
+  # about a clean tree should not have to know it is there. Anchored, so a case
+  # whose own paths happen to be named these is still visible.
+  printf '/bin/\n/tmp/\n/state/\n' > "$dir/.gitignore"
+  git -C "$dir" add README.md .gitignore
   git -C "$dir" commit -qm "first"
   git -C "$dir" checkout -qb feature
   mkdir -p "$dir/tickets" "$dir/tmp" "$dir/bin"
@@ -116,6 +120,19 @@ $(ls "$LOGS" 2>&1)"; }
 expect_file()    { [ -s "$1" ] && ok "$2" || bad "$2" "no $1
 $(ls "$(dirname "$1")" 2>&1)"; }
 expect_no_file() { [ -e "$1" ] && bad "$2" "found $1" || ok "$2"; }
+# The last commit in $WORK: what it says, and what it did to which files. Two
+# questions, asked apart, so a ticket id in the file list cannot answer for one
+# in the message.
+commit_msg()     { git -C "$WORK" log -1 --format='%B'; }
+commit_diff()    { git -C "$WORK" show --name-status --format= HEAD; }
+expect_commit()  { grep -q -- "$1" <<< "$(commit_msg)" && ok "$2" || bad "$2" "no '$1' in:
+$(commit_msg)"; }
+expect_no_commit() { grep -q -- "$1" <<< "$(commit_msg)" && bad "$2" "found '$1' in:
+$(commit_msg)" || ok "$2"; }
+expect_diff()    { grep -q -- "$1" <<< "$(commit_diff)" && ok "$2" || bad "$2" "no '$1' in:
+$(commit_diff)"; }
+expect_no_diff() { grep -q -- "$1" <<< "$(commit_diff)" && bad "$2" "found '$1' in:
+$(commit_diff)" || ok "$2"; }
 
 # A reset a minute ago: past the window, still two seconds of waiting once the
 # driver adds its slack.
@@ -524,6 +541,118 @@ EOF
 drive 0
 expect_out "Closing out the run" "a building step still narrates its first line"
 expect_no_out "status page" "a building step is still only its narration"
+
+# --- accepting a run ----------------------------------------------------------
+
+# Deleting the spec and the tickets is the pipeline's one irreversible act and
+# the only one that destroys the record of what was asked, so accept.sh refuses
+# rather than trusts, and a refusal leaves the tree exactly as it found it.
+
+# A repo holding a finished run's paper: a spec beside the tickets it produced,
+# every ticket done, and nothing uncommitted.
+accepted() {
+  workspace "$@"
+  mkdir -p "$WORK/docs/feature"
+  mv "$WORK/tickets" "$WORK/docs/feature/tickets"
+  sed -i 's/^status:.*/status: done/' "$WORK/docs/feature/tickets"/*.md
+  printf '# Reviewer rejection\n' > "$WORK/docs/feature/reviewer-rejection.md"
+  git -C "$WORK" add docs
+  git -C "$WORK" commit -qm "the run's paper"
+}
+
+# Runs accept.sh in $WORK against $1, `docs/feature` by default. Leaves its
+# output in $OUT and its exit code in $RC.
+accept() {
+  OUT="$(cd "$WORK" && timeout 60 bash "$HERE/../accept.sh" "${1-docs/feature}" 2>&1)"
+  RC=$?
+}
+
+accepted 01-thing 02-other
+accept
+expect_rc 0 "a finished run is accepted"
+expect_no_file "$WORK/docs/feature/tickets" "the tickets are gone"
+expect_no_file "$WORK/docs/feature/reviewer-rejection.md" "the spec is gone"
+expect_commit "^Accept reviewer rejection$" "the commit is named for the feature"
+expect_commit "^  01-thing$" "the commit says which tickets the run built"
+expect_diff "^D.docs/feature/tickets/02-other.md" "the deletion is what it commits"
+expect_no_diff "^[AM]" "it adds and changes nothing"
+
+accepted 01-thing
+git -C "$WORK" checkout -q main && git -C "$WORK" merge -q feature
+accept
+expect_rc 2 "a run is not accepted on the default branch"
+expect_out "refusing to accept on main" "the refusal says where it was asked to"
+expect_file "$WORK/docs/feature/reviewer-rejection.md" "a refusal deletes nothing"
+expect_no_commit "^Accept" "a refusal commits nothing"
+
+WORK="$(mktemp -d)"; WORKSPACES+=("$WORK")
+mkdir -p "$WORK/docs/feature/tickets"
+accept
+expect_rc 2 "a directory outside a repository is not a run"
+expect_out "no run's paper here" "the refusal says what is missing"
+
+accepted 01-thing 02-other
+sed -i 's/^status: done/status: todo/' "$WORK/docs/feature/tickets/02-other.md"
+git -C "$WORK" commit -qam "send one back"
+accept
+expect_rc 2 "a run with work left in it is not accepted"
+expect_out "02-other" "the refusal names the ticket that is not done"
+expect_file "$WORK/docs/feature/tickets/01-thing.md" "a refusal deletes no ticket either"
+
+accepted 01-thing
+: > "$WORK/uncommitted"
+accept
+expect_rc 2 "a dirty tree is not accepted"
+expect_out "commit or stash" "the refusal says how to get past it"
+
+accepted 01-thing
+git -C "$WORK" rm -rq docs/feature/tickets && git -C "$WORK" commit -qm "no tickets"
+accept
+expect_rc 2 "a spec with no tickets beside it is not a run"
+expect_out "no ticket directory" "the refusal says what is missing"
+expect_file "$WORK/docs/feature/reviewer-rejection.md" "and deletes the spec anyway"
+
+accepted 01-thing
+git -C "$WORK" rm -q docs/feature/tickets/01-thing.md
+git -C "$WORK" commit -qm "the last ticket goes"
+mkdir -p "$WORK/docs/feature/tickets"
+accept
+expect_rc 2 "a ticket directory with no tickets in it is not a run"
+expect_out "nothing to accept" "the refusal says what it found"
+
+accepted 01-thing
+accept ""
+expect_rc 2 "accept.sh has to be told which run"
+expect_out "usage" "it says how it wants to be called"
+
+accepted 01-thing
+git -C "$WORK" checkout -q --detach
+accept
+expect_rc 2 "a detached HEAD is nowhere to accept a run"
+expect_file "$WORK/docs/feature/reviewer-rejection.md" "a refusal there deletes nothing either"
+
+accepted 01-thing
+printf 'scratch/\n' >> "$WORK/.gitignore"
+git -C "$WORK" commit -qam "ignore scratch"
+mkdir -p "$WORK/docs/feature/scratch"
+printf 'notes\n' > "$WORK/docs/feature/scratch/notes.md"
+accept
+expect_rc 2 "a file git ignores under the spec is not left behind by deleting around it"
+expect_out "scratch" "the refusal names what it cannot delete"
+expect_file "$WORK/docs/feature/reviewer-rejection.md" "and the spec stays until someone decides"
+
+accepted 01-thing
+accept .
+expect_rc 2 "the repository itself is not one run's paper"
+expect_out "whole repository" "the refusal says what it was pointed at"
+expect_file "$WORK/docs/feature/reviewer-rejection.md" "a refusal at the root deletes nothing"
+
+accepted 01-thing
+printf '# Notes\n' > "$WORK/docs/feature/notes.md"
+git -C "$WORK" add docs && git -C "$WORK" commit -qm notes
+accept
+expect_rc 2 "two markdown files beside the tickets is a guess this will not make"
+expect_out "notes.md" "the refusal names what it found instead"
 
 # ------------------------------------------------------------------------------
 
