@@ -46,3 +46,27 @@ will sit next to, and `/spec-to-tickets`, which reads the structures the spec
 names. Both would need it treated as a lead rather than as truth, since it is
 only as current as the last run.
 *Touches: repo-overview/SKILL.md, discovery/SKILL.md, spec-to-tickets/SKILL.md.*
+
+**Make `/implement` generic.** It is the craft skill - RED-first, the project's
+checks, two adversarial reviews, bounded attempts - and none of that is about
+tickets. But it still reads like the loop's builder: `Satisfies`, `spec_hash`,
+`Preconditions`, `Out of scope`, `Record`, `status: done`, four halt codes, and
+a description that only fires for a ticket. So the most common implementation
+task in any project reaches it only if somebody types the name.
+
+It should take a requirement in whatever shape it arrives - a ticket, an issue,
+a paragraph, a failing test - and build it to the same standard, on one
+condition: the requirement is specific enough that nothing has to be guessed.
+Where it is not, the rule already in the skill holds - never build past an
+ambiguity - and C1's split says what happens next varies with who is present.
+**Open: what the default is for a caller that says nothing.** Asking is right
+with a human there and wrong in a pipe; failing is safe and annoying. The
+answer may be that a caller who supplies no resolution gets a question, and
+that `/implement-ticket` remains the one that answers it with a halt.
+
+Everything ticket-shaped moves to `/implement-ticket`: reading the frontmatter,
+the hash check, the four halt codes, the `Record` it writes back, and staging
+the ticket alone. What stays is what would be true of building anything -
+which is the test for where each line belongs.
+*Touches: implement/SKILL.md, implement-ticket/SKILL.md, and the description
+that decides when either fires.*
