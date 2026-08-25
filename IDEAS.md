@@ -474,7 +474,7 @@ box in the same commit as the step.
 - [x] **A1** Keep the run's evidence - *tested*
 - [x] **A2** Review independence, `REVIEWS=code` retired - *tested*
 - [x] **A3** `accept.sh` - *tested*
-- [ ] **B1** `SPEC_FORMAT.md` and a new `ADR_FORMAT.md`
+- [x] **B1** `SPEC_FORMAT.md` and a new `ADR_FORMAT.md`
 - [ ] **B2** `/discovery` gains everything it now owns
 - [ ] **B3** Delete `/propose-change`, `/decision-brief`, `/debug`
 - [ ] **B4** The renames - *tested*
