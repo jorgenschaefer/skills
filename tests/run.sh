@@ -99,6 +99,9 @@ prompt_for()     { awk -v c="$1" 'BEGIN { RS = "\n---\n" } index($0, c) == 1' \
 expect_prompt()  { grep -q -- "$2" <<< "$(prompt_for "$1")" && ok "$3" \
                    || bad "$3" "no '$2' in the '$1' prompt:
 $(prompt_for "$1")"; }
+expect_no_prompt() { grep -q -- "$2" <<< "$(prompt_for "$1")" \
+                   && bad "$3" "found '$2' in the '$1' prompt:
+$(prompt_for "$1")" || ok "$3"; }
 expect_log()     { local m=("$LOGS"/$1)
                    [ -e "${m[0]}" ] && ok "$2" || bad "$2" "no $1 in $LOGS
 $(ls "$LOGS" 2>&1)"; }
@@ -289,6 +292,85 @@ ticket 02-other todo 01
 drive 0
 expect_rc 1 "two tickets waiting on each other are a stop"
 expect_calls 0 "a cycle never reaches handover"
+
+# --- reviews that file work ---------------------------------------------------
+
+# A review's findings become tickets, and the same loop builds them under the
+# same discipline rather than leaving them for a human.
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 done
+clean.jsonl 0 file
+clean.jsonl 0 done
+clean.jsonl 0 -
+clean.jsonl 0 -
+EOF
+drive 0
+expect_rc 0 "a ticket a review files is built before the run ends"
+expect_out "\[2/2\] 90-filed-2" "a ticket filed mid-run counts in the position"
+expect_calls 5 "the filed ticket costs one more step, and the run still ends"
+expect_no_prompt /trace "Scope this to" "the first pass checks the whole run"
+expect_prompt "Run /critique" "from this branch's start" \
+  "the first pass reviews the whole branch"
+
+# A later pass re-reads only what the previous pass's findings added, and the
+# commit it narrows to is where the branch stood when that pass finished - here
+# the commit that built 01-thing, not the one the run started from.
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 done
+clean.jsonl 0 -
+clean.jsonl 0 file
+clean.jsonl 0 done
+clean.jsonl 0 -
+clean.jsonl 0 -
+clean.jsonl 0 -
+EOF
+drive 0
+SHA="$(git -C "$WORK" rev-parse HEAD~1)"
+expect_rc 0 "work filed by the last review of a pass opens another pass"
+expect_calls 7 "a second pass is a second trace, critique and handover"
+expect_prompt /trace "Scope this to the commits since $SHA" \
+  "the second trace is narrowed to the last pass's commits"
+expect_prompt "Run /critique" "over the diff from $SHA" \
+  "the second critique is narrowed to the same commit"
+
+# Only the last review of a pass decides whether the run has converged: a gap
+# /trace files is drained inside the pass and holds nothing up.
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 done
+clean.jsonl 0 -
+clean.jsonl 0 file
+clean.jsonl 0 done
+clean.jsonl 0 file
+clean.jsonl 0 done
+clean.jsonl 0 -
+clean.jsonl 0 -
+EOF
+drive 0
+expect_rc 0 "a gap the second pass's trace files is built, not counted against it"
+expect_calls 8 "the run converges on the pass that filed it"
+
+# Reviews that are still filing work when the passes run out are not short of
+# budget, and the run says so rather than handing over as if it were finished.
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 done
+clean.jsonl 0 -
+clean.jsonl 0 file
+clean.jsonl 0 done
+clean.jsonl 0 -
+clean.jsonl 0 file
+EOF
+drive 0
+expect_rc 1 "reviews that never converge stop for a human"
+expect_out "still filing work after 2 passes" "the stop says what would not converge"
+expect_calls 6 "a run that will not converge never reaches handover"
 
 # --- a reset that has already passed ------------------------------------------
 

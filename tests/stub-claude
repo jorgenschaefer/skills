@@ -4,13 +4,15 @@
 #
 # Each invocation consumes one line of $STUB_PLAN:
 #
-#   <fixture> <exit-code> <done|->
+#   <fixture> <exit-code> <done|file|->
 #
 # and replays that fixture on stdout - real records, captured from runs that hit
-# the real limit - exits with that code, and, when the third field says `done`,
-# marks the ticket named in the prompt done, the way a finished /implement would.
-# A call the plan did not expect is an error, not a repeat: the test wanted to
-# know how often the driver calls out, so an extra call has to be visible.
+# the real limit - exits with that code, and then does what the third field says:
+# `done` marks the ticket named in the prompt done and commits, the way a
+# finished /implement would, and `file` writes a fresh todo ticket into the
+# directory the prompt names, the way a review that found something does. A call
+# the plan did not expect is an error, not a repeat: the test wanted to know how
+# often the driver calls out, so an extra call has to be visible.
 #
 # $STUB_CALLS gets one line per call, for counting. $STUB_PROMPTS gets each
 # prompt whole, for the cases that care what the driver actually asked for.
@@ -28,9 +30,26 @@ read -r fixture rc action <<< "$line"
 
 sed "s/__RESETS_AT__/${STUB_RESETS_AT:-0}/" "$STUB_FIXTURES/$fixture"
 
+# The commit matters as much as the status: the driver narrows a later pass to
+# the commits an earlier one produced, so a run whose history never moves cannot
+# tell a case that narrowing works from one that ignores it.
 if [ "$action" = "done" ]; then
   ticket="$(printf '%s\n' "$prompt" | sed -n 's#^/implement \(.*\.md\).*#\1#p' | head -1)"
-  [ -n "$ticket" ] && sed -i 's/^status:.*/status: done/' "$ticket"
+  [ -n "$ticket" ] || { echo "stub-claude: no ticket to finish in: $prompt" >&2; exit 99; }
+  sed -i 's/^status:.*/status: done/' "$ticket"
+  git add "$ticket" && git commit -qm "$(basename "$ticket" .md)"
+fi
+
+# Both review prompts name the ticket directory - "a ticket in <dir>," - and a
+# review that filed somewhere else would be filing where the loop cannot read,
+# so the fixture takes the directory from the prompt rather than from the test.
+# The call number keeps the name unique and tells a failing case which step
+# filed it.
+if [ "$action" = "file" ]; then
+  dir="$(printf '%s\n' "$prompt" | sed -n 's/.*ticket in \([^,]*\),.*/\1/p' | head -1)"
+  [ -n "$dir" ] || { echo "stub-claude: no ticket directory in: $prompt" >&2; exit 99; }
+  printf -- '---\nstatus: todo\ndepends_on: []\n---\n\n# %s\n' \
+    "filed by call $n" > "$dir/90-filed-$n.md"
 fi
 
 exit "$rc"

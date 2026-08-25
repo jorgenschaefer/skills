@@ -470,7 +470,7 @@ with no memory of which steps landed, which is the problem the ticket format
 already solves by keeping state in the file rather than in the driver. Tick the
 box in the same commit as the step.
 
-- [ ] **A0** Pin the untested machinery - *tested*
+- [x] **A0** Pin the untested machinery - *tested*
 - [ ] **A1** Keep the run's evidence - *tested*
 - [ ] **A2** Review independence, `REVIEWS=code` retired - *tested*
 - [ ] **A3** `accept.sh` - *tested*
