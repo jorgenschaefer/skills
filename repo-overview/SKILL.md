@@ -1,26 +1,36 @@
 ---
 name: repo-overview
-description: Use when the user wants an orientation to an unfamiliar repository. Trigger on phrases like "give me an overview of this repo", "I'm new to this codebase", "what does this repo do", "onboard me to this project", or when the user has just arrived at a repo they haven't seen before.
+description: Use when someone needs an orientation to a repository — "give me an overview of this repo", "I'm new to this codebase", "what does this repo do", "onboard me to this project" — or asks to write or refresh `ARCHITECTURE.md` ("regenerate the architecture doc", "the architecture doc is stale").
 ---
 
 # Repo Overview
 
-You are a tour guide for a developer who is new to this codebase. Your job is to surface what matters fast and skip what they can discover themselves. Print a concise orientation report to the conversation — do not save it to a file.
+You are a tour guide for a developer who is new to this codebase. Your job is to surface what matters fast and skip what they can discover themselves.
 
 **Calibration is the core challenge.** Include things that require reading the code to discover; exclude things obvious from file names or standard framework knowledge. After reading your report, a new developer should be able to find any piece of functionality in the repo.
+
+## Where the report goes
+
+Present it inline, and write the same text to `ARCHITECTURE.md` at the root of the repository you explored. It is a **build artifact, not a document** — re-derived whole every time this runs — and the banner in the output format below says so, because the only reader who can act on that is the person tempted to edit it.
+
+Say in your reply that you wrote it, and where. Three cases where you do not: the working directory is not a repository, the tree is not the user's to write into, or an existing `ARCHITECTURE.md` has uncommitted edits — overwriting a committed file is what this is for, but silently taking somebody's unsaved work with it is not. In that last case say what you found and let them decide.
+
+If the project commits it, the next run's overwrite shows up as a diff, which is the most useful form this file takes: what changed since somebody last looked.
 
 ## Before starting
 
 No arguments are required. Explore the current working directory.
 
-If `ARCHITECTURE.md` or `UBIQUITOUS_LANGUAGE.md` already exist, read them first — they may contain exactly what you need and save significant exploration time.
+If `UBIQUITOUS_LANGUAGE.md` exists, read it first — it is the project's agreed vocabulary, and the report uses those words rather than inventing parallel ones.
+
+Read any existing `ARCHITECTURE.md` **yourself, and do not hand it to the agents below**. It describes the code as it was when somebody last ran this, and the reason to run again is that something has moved — an agent that reads the old claims while deriving the new ones will confirm them, which is also how a hand-edit survives the overwrite that was supposed to end it. Derive from the code, then diff what you found against what the file said. What changed is the most interesting thing you can tell the reader.
 
 ## Parallelize the reads
 
 Spawn up to 3 `Explore` subagents in parallel for steps 1-7 below. Suggested split:
 
 - **Agent A:** tech stack (step 1), directory tree (step 2), entry docs (step 3).
-- **Agent B:** existing architecture/language docs (step 4), domain/model layer (step 5).
+- **Agent B:** the project's vocabulary (step 4), domain/model layer (step 5).
 - **Agent C:** service/application layer (step 6), entry points (step 7).
 
 Each agent returns a short structured summary; the main loop synthesizes them into the report. Step 8 (one representative test file) stays in the main loop - it's small and confirms the understanding the agents have already surfaced.
@@ -34,7 +44,7 @@ Stop on each item once you have enough for its section - reading every file in a
 1. **Dependency manifest** — `package.json`, `go.mod`, `pyproject.toml`, `Gemfile`, `pom.xml`, `Cargo.toml`, etc. → identify tech stack
 2. **Directory structure** — two levels deep → code organization
 3. **Entry documentation** — `README.md`, `CLAUDE.md`, `AGENTS.md` → stated purpose and conventions
-4. **Existing architecture docs** — `ARCHITECTURE.md`, `UBIQUITOUS_LANGUAGE.md` → leverage prior art
+4. **`UBIQUITOUS_LANGUAGE.md`** → the vocabulary to reuse rather than reinvent
 5. **Domain/model layer** — directories named `domain/`, `models/`, `entities/`, or equivalent → core domain objects
 6. **Service/application layer** — directories named `services/`, `use_cases/`, `application/`, `handlers/`, or equivalent → main workflows
 7. **Entry points** — router files, CLI definitions, queue consumers → confirm workflows, find precise entry points
@@ -56,7 +66,11 @@ Stop on each item once you have enough for its section - reading every file in a
 
 ### Domain model
 
-**Include:** 5–8 entities and aggregates visible in multiple layers (API, service, persistence). One row per entity: what it represents, key relationships.
+Grouped the way the code is, which step 2 already established: by module where modules own behaviour, and by layer where the repo is layer-first — in which case the grouping column carries the layer and the rows are what a reader would otherwise have to reconstruct.
+
+Per row: the work objects it holds, and the actions it supports — an action being something an actor does to a work object, named the way the domain names it. "A reviewer rejects an application", not "calls `update()`". Where the code has no domain verbs at all and CRUD really is the whole story, say that in a line instead of inventing them; it is the most useful thing an overview can tell you about a codebase.
+
+**Include:** 5–8 work objects, the aggregates among them, and where each lives; the actor for each action; at most a handful of actions per row, the ones that carry the domain. Where an aggregate boundary is not obvious from the names, one clause on what changes together inside it.
 
 **Exclude:** value objects, enums, DTOs, request/response shapes, configuration objects, single-module internals. Do not list model fields.
 
@@ -76,7 +90,7 @@ For each workflow: name, entry point as `path/to/file:function_or_handler`, one-
 
 ### Where to start
 
-3–5 files a new developer should read first, in the order that builds understanding most efficiently. One reason per file — why this specific file, what it teaches that the others don't. If `ARCHITECTURE.md` or `UBIQUITOUS_LANGUAGE.md` exist in the repo, always include them first — they are the cross-session memory for agents and the shared domain vocabulary, and a developer (or agent) who doesn't know they exist can't benefit from them.
+3–5 files a new developer should read first, in the order that builds understanding most efficiently. One reason per file — why this specific file, what it teaches that the others don't. Where `UBIQUITOUS_LANGUAGE.md` exists, it goes first: it is the shared domain vocabulary, and a developer who doesn't know it exists can't benefit from it. Never list `ARCHITECTURE.md` itself — the reader is holding it.
 
 ### The report as a whole
 
@@ -85,6 +99,10 @@ For each workflow: name, entry point as `path/to/file:function_or_handler`, one-
 ## Output format
 
 ```
+_Re-derived from the code by `/repo-overview` on <today's date, from `date`>. Not
+hand-edited: the next run overwrites this file whole, so a correction made here is
+a correction lost. Where it is wrong, the code has moved — run it again._
+
 ## What This Is
 2–3 sentences: what the system does, who uses it, what problem it solves.
 
@@ -100,9 +118,12 @@ For each workflow: name, entry point as `path/to/file:function_or_handler`, one-
 Organizing principle: <one sentence>
 
 ## Domain Model
-| Entity | What it represents | Key relationships |
-|--------|-------------------|-------------------|
+| Module | Work objects | Actions |
+|--------|--------------|---------|
+| `review/` | Application, Decision | a reviewer approves or rejects an Application |
 ...
+
+<one line per aggregate whose boundary isn't obvious: what changes together inside it>
 
 ## Main Workflows
 1. **<Name>** — `path/to/file:entry_point` — <one sentence>
@@ -117,4 +138,4 @@ Organizing principle: <one sentence>
 ...
 ```
 
-Aim for a report that takes 5 minutes to read, not 30.
+Aim for a report that takes 5 minutes to read, not 30. One text, written once, saved and shown.

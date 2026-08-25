@@ -489,7 +489,7 @@ box in the same commit as the step.
 - [x] **E1** Terminal states, the report, and `/handover` split - *tested*
 - [x] **E2** Driver resilience - *tested*
 - [x] **E3** The Abnahme
-- [ ] **F1** `ARCHITECTURE.md`
+- [x] **F1** `ARCHITECTURE.md`
 - [ ] **F2** `README.md`
 
 ### Phase A - the mechanical work that depends on nothing
