@@ -617,6 +617,21 @@ expect_prompt "Run /critique"     "Read them as leads" "the review is pointed th
 expect_prompt "Run /critique"     "Close with the verdict line" "the review is asked to close with a countable verdict"
 expect_prompt /check-against-spec "Close with the verdict line" "and so is the acceptance"
 
+# The trailing slash a shell completes for you. It reaches every prompt and the
+# command that resumes the run, and `tickets//01-thing.md` is a path whose
+# reader has to satisfy themselves it is the same file as the one they know.
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 -
+clean.jsonl 0 -
+EOF
+TICKET_DIR=tickets/ drive 0
+unset TICKET_DIR
+expect_rc 1 "a completed directory name is how a run is started, not a bad invocation"
+expect_prompt /implement-ticket "tickets/01-thing.md" "the build is told the ticket's path"
+expect_no_prompt /implement-ticket "tickets//" "with the slash the shell added taken back off"
+expect_no_out "tickets//" "and the command that resumes the run is one to paste"
+
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
 clean.jsonl 0 done

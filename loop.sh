@@ -48,7 +48,19 @@
 
 set -uo pipefail
 
+# A shell completes a directory name with a slash on the end, so that is how
+# this is invoked as often as not - and the path goes on to be pasted into
+# every prompt an agent reads and into the command that resumes the run. Since
+# `tickets//01-thing.md` costs its reader a moment satisfying themselves it is
+# the file they think it is, the slash comes back off here rather than at each
+# of the dozen places that print it. A lone `/` keeps its own: it is still a
+# directory, a bad one to point this at, and the check further down is what
+# says so.
 TICKETS="${1:-tickets}"
+while [ "${TICKETS%/}" != "$TICKETS" ] && [ -n "${TICKETS%/}" ]; do
+  TICKETS="${TICKETS%/}"
+done
+
 TICK_MINUTES=3
 
 # Not tunable on purpose. Reviews that keep filing work after two passes are not
