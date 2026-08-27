@@ -483,24 +483,16 @@ halt_for_workflows() {
 
 # --- the loop -----------------------------------------------------------------
 
+implement_prompt() {
+  cat <<EOF
+/implement-ticket $1
+EOF
+}
+
 # /implement-ticket sets `status` in the ticket before it finishes, and that is
 # the signal - not the exit code, since a session can end without deciding anything.
 # So an unfinished ticket means one of two things, and they want opposite
 # responses: a dead session leaves work to resume, a halt leaves work to read.
-# The mutation gate is the one part of a ticket that can need a change to the
-# project itself - and a change to the project is a ticket here, never a side
-# effect of building something else. Said in the prompt rather than left to the
-# skill, because the skill cannot know that this run has a queue to file into.
-implement_prompt() {
-  cat <<EOF
-/implement-ticket $1
-The mutation gate runs on this ticket like any other. Where the project has no
-mutation testing tool configured, say so in the ticket rather than installing
-one: setting one up is a change to the project, and it comes back as a ticket
-of its own.
-EOF
-}
-
 drain() {
   local ticket name stuck before touched authorised reason
   while ticket="$(next_ticket)"; do

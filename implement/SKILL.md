@@ -90,27 +90,13 @@ Append each entry the moment you make the decision, not reconstructed at the end
 
 ### Prove the contract before the reviews see it
 
-**Prove the contract before you hand it to a review.** Completion is scoped to what the ticket claims, not to the diff being green: for every id in `Satisfies` – or, where the ticket claims none because it is meant to change no behaviour, for every behaviour its diff touches – name the test that fails without that behaviour. Where you wrote a RED run for it, that run is the proof and you already have it. Where you did not – the behavior turned out to exist already, or something you did not write covers it – break the behavior, watch the named test fail, and restore it.
+**Prove the contract before you hand it to a review.** Completion is scoped to what the ticket claims, not to the diff being green: for every id in `Satisfies` – or, where the ticket claims none because it is meant to change no behaviour, for every behaviour its diff touches – name the test that fails without that behaviour. Where you wrote a RED run for it, that run is the proof and you already have it. Where you did not – the behavior turned out to exist already, or something you did not write covers it – break the behavior, watch the named test fail, and restore it. Deciding by eye whether a test would notice a change is prediction; this executes it. Along with the verification command below, it is what a ticket has that is not a model judging work a model produced.
 
-A criterion whose test you cannot name, or whose test still passes with the behavior removed, is unbuilt work: write that test now, RED first, like any other. Here rather than after the reviews, so what you add is reviewed like everything else. A criterion nothing can pin is a `blocked` halt, not a line to write around.
+**Break it twice: remove the behavior, and move its edge.** A test can notice a behavior vanish and still pass when a comparison shifts by one, so deletion proves less than it looks like it does. Take the edges the behavior has – the value on either side of each comparison, the empty case, the single-element case – move one in the code, and watch the named test fail there too. This is `coding-conventions`' rule that the edges of the input range are pinned, executed rather than read. It applies to a criterion proved by a RED run as much as to one proved by hand: that run proved the test noticed the behavior arriving, which is a different claim from noticing its edge move.
+
+A criterion whose test you cannot name, or whose test still passes with the behavior removed or its edge moved, is unbuilt work: write that test now, RED first, like any other. Here rather than after the reviews, so what you add is reviewed like everything else. A criterion nothing can pin is a `blocked` halt, not a line to write around.
 
 On a ticket meant to change no behavior this check *is* the ticket: a test that no longer fails when you break what it was written for has stopped pinning it, and a suite that stays green because it stopped looking is the failure mode the whole exercise exists to catch.
-
-### The mutation gate
-
-Run the project's mutation testing tool over this ticket's own diff and nothing else - Stryker's `--since`, `mutmut`, PIT's incremental mode, `cargo-mutants`, Infection. Deciding by eye whether a test would notice a deletion is prediction; this executes it, and it is the only check in a ticket that is not a model judging work a model produced.
-
-It is also the slowest thing in the ticket, so it is bounded like everything else here: scoped to the diff, one run, plus one more if you killed a survivor. Where the tool has no incremental mode and the only thing available is a whole-suite run costing more than the ticket did, say that in `Left open` rather than running it - and where the project has no such tool at all, say that instead. Setting one up is a change to the project, which is a ticket of its own and not something to do inside this one. A gate that did not run is not a gate that passed, and the run's own checks read `Left open` to find out.
-
-Here rather than at the end of the run, because here the gap is on the ticket nothing is built on yet. The same survivor found after twelve tickets is found in code that eleven others now stand on.
-
-It joins the quality review; it does not stand in for one. A mutant says a test did not notice a change to the code, which is a different question from whether the right thing was built.
-
-**A survivor is a gap only where it lands on code the bar can name** - behaviour a criterion this ticket claims, a constraint, a workflow test, or one of `coding-conventions`' `## Security` or `## Changing what already runs` properties. Mutants are not a finite set: every codebase has an unbounded supply of survivors on code nobody promised anything about, so without that limit the gate becomes exactly the endless relitigation the bar exists to stop. Equivalent mutants cannot be killed at all, and a loop trying to kill one writes absurd tests until something stops it.
-
-A survivor that clears the bar is a hole in this ticket's own tests. Close it the way a criterion that already works is closed: apply the mutant by hand, write the test, watch it fail against the mutant, then restore the code and watch it pass. A test written green against code that already works proves nothing. Re-run the gate once over what you added; if survivors are still appearing after that, the ticket's tests have a shape problem another round will not fix, and it goes in `Left open` for the run's own checks.
-
-A survivor that does not clear the bar goes in `Left open` too, not into a test.
 
 ## Review it
 

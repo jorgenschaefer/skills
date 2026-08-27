@@ -27,7 +27,9 @@ Adversarial throughout: assume the feature is unbuilt and try to prove it. A cri
 Two ways a criterion fails, and the second is the one that hides:
 
 - **Nothing implements it.** Driving it finds this in seconds; reading the code can take an afternoon and still miss it.
-- **Something implements it and no test pins it.** The behavior works today and nothing stops the next change from removing it. For every criterion you drove successfully, find the test that would fail if the behavior were deleted. If you cannot name it, the criterion is unmet even though the feature works in front of you.
+- **Something implements it and no test pins it.** The behavior works today and nothing stops the next change from removing it. For every criterion you drove successfully, find the test that would fail if the behavior were deleted, and read the `Record` of the ticket that claimed it for the test it named. A behaviour one ticket pinned and a later ticket quietly unpinned surfaces here and nowhere earlier, since every build before you could see only its own diff - and where the later ticket loosened the test rather than escaping it, `Every test that left` below is what catches it. If you cannot name the test, the criterion is unmet even though the feature works in front of you.
+
+  Name it; do not break the code to prove it. Editing source here would leave the tree dirty and unacceptable, and the criterion you cannot name a test for is already going to a remediation ticket, whose build breaks the behaviour under TDD where doing so is safe.
 
 ### Where nobody can drive it
 
@@ -41,7 +43,7 @@ Both modes are required, and **which criterion got which is part of the report**
 
 The argument is where the run's paper lives - the spec file, or the directory holding it and the `tickets/` beside it. Read the spec and the full diff of the run - every commit from the branch point.
 
-**Spend the session on what nothing else could reach.** Two things may already be pinned, and where they are, they are pinned better than a reading would pin them: a journey with a test under `tests/workflows/` is walked at every ticket by the project's own check command, and a ticket whose `Record` shows the mutation gate ran has had its own diff checked by execution. Check that those are true rather than assuming them - a project may have ratified nothing, and a ticket's `Left open` may say the gate never ran.
+**Spend the session on what nothing else could reach.** Two things may already be pinned, and where they are, they are pinned better than a reading would pin them: a journey with a test under `tests/workflows/` is walked at every ticket by the project's own check command, and a criterion whose ticket `Record` names the test that pins it was checked by execution in that build. Check that those are true rather than assuming them - a project may have ratified nothing, and a `Record` may name no test for a criterion its ticket claimed.
 
 Where a journey is covered that way, confirm its test still passes and move on; drive the journeys that are not. Everything below is yours either way, because no earlier step can reach any of it: a per-ticket review is structurally blind to what no ticket claimed.
 
@@ -66,24 +68,6 @@ That list is the orphan sweep, and it is the half of this check nothing else can
 
 Delegate breadth where the spec is large - a subagent per story, each hunting for the way its criteria fail. Dispatch them with `run_in_background: false`, batched into one message so they still run at once; detached, they hand you an `agentId` and the run ends before their reports arrive. You own the verdict. Treat it as a claim to verify: a clean result counts only when the report shows the review happened - what it checked and where.
 
-## Check the tests mechanically, not by reading
-
-The second failure mode - behavior that works with nothing pinning it - is the one you should not judge by eye. Deciding whether a test would notice a deletion means simulating that deletion, and a tool does it by execution instead of prediction. Every review before this one, including your own, is a model judging work a model produced. The per-ticket gate and this one are the exceptions, and this is the only one that sees the whole run at once.
-
-**If the project already has a mutation testing tool configured**, run it over this run's diff - Stryker's `--since`, `mutmut`, PIT's incremental mode, `cargo-mutants`, Infection. Scope it to what changed: a whole-suite run is slow enough to be worth avoiding, and untouched code is not what you are checking.
-
-Read surviving mutants as evidence, not as a score to chase:
-
-- A survivor on behaviour the bar can name - a criterion, a constraint, a non-goal, a workflow test, or one of `coding-conventions`' `## Security` or `## Changing what already runs` properties - means that thing is unpinned. File a ticket; the gap is objective.
-- A survivor anywhere else has no destination under the bar, so it is not a ticket. Report it for a human to weigh. Mutants are not a finite set - every codebase has an unbounded supply of them on code nobody promised anything about - and a gate without that limit is the relitigation the bar exists to stop.
-- Never chase a score. Equivalent mutants cannot be killed by definition, and a loop trying to kill one writes absurd tests until something stops it.
-
-**Where no such tool is configured**, fall back to the crude version: revert the non-test files in the run's diff, run the suite, confirm the new tests fail, then restore. It proves less - removing everything at once tends to produce import errors rather than assertion failures, which is exactly the evidence `/implement` refuses to accept as RED - but a suite that stays green with the feature deleted is damning however it was measured.
-
-**Where the project has no tool**, file its setup as a maintenance ticket and use the fallback for this run. Adding a framework is a change to the project rather than a check on it, so it goes through the same build and the same reviews as any other change - once, and every run after this one has the gate at every ticket. This is the one gap you file that traces to no criterion: the bar's destination rule cannot see a check that does not exist yet, and leaving it unfiled is what has kept most projects on a fallback this skill itself calls "proves less". Say in your report that the real check was unavailable this time, so a clean result is never mistaken for a verified one.
-
-Where the tooling was there, each ticket has already run the same gate over its own diff. Yours is the sweep across the whole run, which sees what one ticket's tests pinned and a later ticket's change quietly unpinned - visible from nowhere else.
-
 ## Output
 
 **File a ticket for each gap.** Write it beside the tickets this run was built from – the caller names the directory, and `tickets/` beside the spec is only the default – as `NN-slug.md` in the shape `TICKET_FORMAT.md` specifies, numbered after the highest existing ticket, `status: todo`, `depends_on: []`. A gap filed where the loop doesn't read is a gap nothing builds, and the run finishes looking clean. `Satisfies` cites the criterion that failed. The gap is objective - a criterion is met or it isn't - so it goes back through the same loop that built everything else, with the same TDD and review discipline, rather than being patched by hand at the end.
@@ -107,7 +91,7 @@ VERDICT: 3 gaps filed, 2 gaps reported, 0 standing disagreements, 5 criteria che
 Four counts, always all four, in that order, with those words whatever the numbers are - `1 gaps filed` rather than `1 gap filed`, and `0 gaps reported` rather than a field left out. It is read by machine, and English pluralisation is the kind of detail that turns a parse into a guess.
 
 - **Gaps filed** - the tickets you wrote this pass, of all three kinds.
-- **Gaps reported** - what you found and did not file because it has no destination under the bar: a mutant with nothing behind it, a candidate that turned out to be a new requirement. Named here so a human weighs it rather than a loop building it.
+- **Gaps reported** - what you found and did not file because it has no destination under the bar: a test whose weakness traces to no criterion, a candidate that turned out to be a new requirement. Named here so a human weighs it rather than a loop building it.
 - **Standing disagreements** - gaps that clear the bar's first two tests and that you refused to file because filing them would reopen a prior ticket's adjudication. A pass with none of the first count and one of this one is not a clean run, and this line is the only place that distinction survives: your tickets are what the caller sees, and this is the finding there is no ticket for.
 - **Criteria checked on evidence** - how many you could not drive and fell back on. This is the fallback count the section above asks you to keep, and it is the one number nobody can recover from the tickets: a criterion checked by reading is a criterion nobody drove, and a report that does not say so reads exactly like one where every criterion was.
 

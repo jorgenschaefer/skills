@@ -642,9 +642,9 @@ EOF
 drive 0 REVIEWS=code
 expect_rc 0 "a run asks for no less than the skills' full discipline"
 expect_no_prompt /implement-ticket "quality review" "no run trades a review away for time"
-expect_prompt /implement-ticket "say so in the ticket rather than installing" \
-  "a build that finds the mutation tooling missing files it rather than fixing it"
-expect_no_prompt /implement-ticket "authorised" "no run authorises a build to change the project"
+[ "$(prompt_for /implement-ticket)" = "/implement-ticket tickets/01-thing.md" ] \
+  && ok "a build is asked for the ticket and for nothing else" \
+  || bad "a build is asked for the ticket and for nothing else" "$(prompt_for /implement-ticket)"
 
 # What each step is run as. A review reads code a different model wrote, and the
 # steps are not alike enough to think equally hard about.
@@ -894,6 +894,27 @@ copies=("$HERE"/../*/TICKET_FORMAT.md)
 [ "$(md5sum "${copies[@]}" | awk '{print $1}' | sort -u | wc -l)" = 1 ] \
   && ok "the ticket format's copies are byte-identical" \
   || bad "the ticket format's copies are byte-identical" "$(md5sum "${copies[@]}")"
+
+# The mutation gate a build used to run at every ticket is gone, and what took
+# its place is prose - a skill that starts asking for the tooling again asks for
+# something no project here has ever had, which is how the gate came to be
+# deliberated at ten tickets and run at none. Nothing else would notice.
+#
+# Every tool the retired prose named is a needle, since a regression is likelier
+# to name one than to use the word "mutation". The parking lot and the tickets
+# are where the gate is remembered on purpose, so they are the exemptions.
+
+asks="$(grep -lriE 'mutation|mutant|stryker|mutmut|cargo-mutants|infection|survivor|\bpit\b' \
+  --include='*.md' --exclude=IDEAS.md --exclude-dir=tickets --exclude-dir=.git "$HERE/..")"
+# grep says 1 for no match and 2 for a broken pattern or an unreadable path, and
+# both leave `asks` empty - so without this the check reports clean on the day it
+# stops working.
+asks_rc=$?
+case $asks_rc in
+  1) ok "no skill asks a build or an acceptance to run a mutation testing tool" ;;
+  0) bad "no skill asks a build or an acceptance to run a mutation testing tool" "$asks" ;;
+  *) bad "the check for a returning mutation gate could not run" "grep exited $asks_rc" ;;
+esac
 
 # --- accepting a run ----------------------------------------------------------
 

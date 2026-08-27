@@ -41,21 +41,22 @@ reader is `/spec-to-tickets`, which reads the structures the spec names before
 splitting along them, and it still does not.
 *Touches: spec-to-tickets/SKILL.md.*
 
-**A step that reverts the working tree has no safe way to do it.** The
-acceptance's mutation fallback runs the branch's tests against `main`'s code,
-and the two idioms that isolate that - `git worktree add` and
-`git checkout main -- <paths>` - are both denied by the auto-mode classifier,
-with nobody there to approve either. So the run of 2026-08-27 on `kh` did it by
-hand in the live tree: ten source files copied to `/tmp`, overwritten from
-`git show main:...`, one moved aside, the suite run, then copied back. That is
-non-atomic and outside git, in the middle of a step whose whole retry ladder
-exists because sessions die. A death between the overwrite and the restore
-leaves the branch ten files behind its own commit and nothing notices - the
-driver reads the tree only under `tests/workflows/`. Two halves, settleable
-separately: which commands an unattended run needs standing permission for, and
-whether the driver should refuse to carry on over a tree a non-build step left
-dirty.
-*Touches: loop.sh, check-against-spec/SKILL.md.*
+**A step that reverts the working tree has no safe way to do it.** No step
+does any more - the acceptance's fallback, which ran the branch's tests against
+`main`'s code, is gone - but the two halves under it outlived their example and
+are what the entry is now for. The run of 2026-08-27 on `kh` reverted by hand
+in the live tree, because the two idioms that isolate it - `git worktree add`
+and `git checkout main -- <paths>` - are both denied by the auto-mode
+classifier with nobody there to approve either: ten source files copied to
+`/tmp`, overwritten from `git show main:...`, one moved aside, the suite run,
+then copied back. Non-atomic and outside git, in a step whose whole retry
+ladder exists because sessions die. Two halves, settleable separately: which
+commands an unattended run needs standing permission for, and whether the
+driver should refuse to carry on over a tree a non-build step left dirty. The
+second is the half that still bites without any reverting at all - the driver
+reads the tree only under `tests/workflows/`, so a step that leaves it dirty
+for any reason reaches `accept.sh` as a refusal nobody saw coming.
+*Touches: loop.sh.*
 
 **The reviews inside a ticket cannot see what the ticket proved.** `## Record`
 is written in `## Finish`, after both reviews have read the work, so a reviewer
@@ -102,16 +103,6 @@ to prevent. The rest is the open question: which gate, if any, owns the branch
 being self-contained.
 *Touches: accept.sh, and whichever of check-against-spec/SKILL.md or
 critique/SKILL.md takes the destination.*
-
-**The mutation gate is re-decided on every ticket.** All ten tickets of the
-2026-08-27 run recorded some version of "this project has no mutation testing
-tool configured, and setting one up is a ticket of its own" - a discovery each
-build made again from scratch, and ten `Left open` entries the end-of-run
-checks then read past. The driver already knows: it appends that sentence to
-every build's prompt. Whether the answer is the driver determining it once and
-saying so, or the project stating it once where a build can read it, is the
-open part.
-*Touches: loop.sh, implement/SKILL.md's `### The mutation gate`.*
 
 **A ticket that changes no behaviour still pays for the whole apparatus.**
 Ticket 10 of the 2026-08-27 run changed eight comments and cost thirty minutes,
@@ -213,7 +204,7 @@ and none of them changes what the skill does.
 
 **`/check-against-spec` has a generic acceptance skill inside it.** Drive it
 rather than read it, the two ways a criterion fails, the test for where nobody
-can drive it, the mutation gate, the orphan sweep, the bar a gap has to clear -
+can drive it, the orphan sweep, the bar a gap has to clear -
 none of that needs a pipeline. What does: criteria numbered `US-N.M` and
 constraints `C-N`, journeys as the script, and an output that files tickets
 into a queue. A generic version reports instead of filing, and needs a fallback
