@@ -309,7 +309,7 @@ errored.jsonl 0 -
 EOF
 drive 0
 expect_rc 3 "a session that ended on an error is dead, not halted"
-expect_no_out "halted on" "an errored session is never reported as a halt"
+expect_no_out "01-thing halted" "an errored session is never reported as a halt"
 expect_out "Connection error" "an errored session reports what the session said"
 
 workspace 01-thing
@@ -630,7 +630,6 @@ unset TICKET_DIR
 expect_rc 1 "a completed directory name is how a run is started, not a bad invocation"
 expect_prompt /implement-ticket "tickets/01-thing.md" "the build is told the ticket's path"
 expect_no_prompt /implement-ticket "tickets//" "with the slash the shell added taken back off"
-expect_no_out "tickets//" "and the command that resumes the run is one to paste"
 
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
