@@ -353,7 +353,7 @@ clean.jsonl 0 -
 EOF
 drive 0 RETRY_DELAYS="0 0"
 expect_rc 1 "a ticket left unfinished by a whole session is a halt"
-expect_out "halted on 01-thing" "a halt names the ticket"
+expect_out "01-thing halted" "a halt names the ticket"
 expect_calls 2 "a halt is a decision, so it is never retried - only handed over"
 
 # --- a queue that cannot be drained -------------------------------------------
@@ -409,6 +409,7 @@ expect_calls 4 "one build, one check, one critique, one handover"
 expect_out "rejection reasons have no length ceiling" "the report carries what the builds decided"
 expect_out "the status page's two branches" "and what they left standing"
 expect_order "no length ceiling" "named the flag" "sorted by what it costs to be wrong"
+expect_no_out "reason:" "a run with nothing standing has no cause to name"
 
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
@@ -420,6 +421,9 @@ expect_rc 1 "a run that halts is a run that ended, not one that stopped"
 expect_out "state: halted" "it says so"
 expect_calls 2 "and still gets its handover - that reader needs it most"
 expect_out "$LOOP" "the report says what resumes it"
+expect_out "reason: 01-thing halted" "the box says what it halted on, not only that it halted"
+expect_order "state:" "reason:" "the cause is inside the box, not only on the line above it"
+expect_prompt /handover "01-thing halted" "and the handover is told the cause, not only the state"
 
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
@@ -433,6 +437,8 @@ expect_rc 1 "blockers left standing are a run a human has to rule on"
 expect_out "state: requires human review" "the third state says what is wanted"
 expect_out "2 blockers" "the verdict line is read rather than the prose around it"
 expect_out "re-run" "and the way back is written down"
+expect_out "reason: 2 blocker(s) survived" "and which of the counts above ended the run"
+expect_prompt /handover "2 blocker(s) survived" "which the handover is told too"
 
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
@@ -444,6 +450,8 @@ EOF
 drive 0
 expect_rc 1 "a disagreement the review refused to reopen also wants a human"
 expect_out "state: requires human review" "even with nothing filed and nothing blocking"
+expect_out "reason: the review left 1 disagreement(s) it would not reopen" \
+  "and the box names which count that was"
 
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
@@ -455,6 +463,8 @@ EOF
 drive 0
 expect_rc 1 "a review that never closed with its verdict line is not a pass"
 expect_out "no verdict line" "the report says the review did not say"
+expect_order "state:" "reason: no verdict line" "which is a cause rather than a verdict"
+expect_prompt /handover "the review did not say" "and the handover is told that is why"
 
 # The acceptance closes the same way. What it files is built and checked again,
 # so a gap is not what ends a run - what ends one is what it would not file.
@@ -471,6 +481,8 @@ expect_rc 1 "a gap the acceptance refused to reopen wants a human"
 expect_out "state: requires human review" "even with every criterion the check filed built"
 expect_out "1 standing disagreement" "the report carries what the acceptance would not file"
 expect_calls 4 "and the review still reads the branch before the run ends"
+expect_out "reason: the acceptance left 1 disagreement(s) it would not reopen" \
+  "and the box says it was the acceptance and not the review that ended it"
 
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'
@@ -482,6 +494,45 @@ EOF
 drive 0
 expect_rc 1 "an acceptance that never closed with its verdict line is not a pass"
 expect_out "the acceptance did not say" "the report says which of the two was silent"
+expect_order "state:" "reason: no verdict line" "as a cause rather than in the acceptance's own slot"
+expect_prompt /handover "the acceptance did not say" "and the handover is told that is why"
+
+# The two stops nothing in the box counts. Every verdict on the page can read
+# zero and the run still end somewhere a human has to pick it up, so these are
+# the cases the reason line exists for.
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 record
+checked.jsonl 0 -
+reviewed.jsonl 0 file
+clean.jsonl 0 done
+reviewed.jsonl 0 file
+clean.jsonl 0 -
+EOF
+drive 0
+expect_rc 1 "work filed by the second read with nothing left to build it ends the run"
+expect_calls 6 "one build, one check, two reviews with a build between them, one handover"
+expect_out "state: requires human review" "it says which ending"
+expect_out "reason: the review filed work on its second read" "and the box says what for"
+expect_out "90-filed-5" "naming what was filed, which is the thing to look at"
+expect_order "state:" "reason:" "inside the box rather than on a line above it that has scrolled"
+expect_prompt /handover "no pass is left to build it" "and the handover is told, rather than left to re-derive it"
+
+workspace 01-thing
+cat > "$WORK/plan" <<'EOF'
+clean.jsonl 0 done
+check-gaps.jsonl 0 file
+clean.jsonl 0 done
+check-gaps.jsonl 0 file
+clean.jsonl 0 -
+EOF
+drive 0
+expect_rc 1 "an acceptance still filing work when the passes run out ends the run"
+expect_calls 5 "two builds, two passes, and the handover the reader still needs"
+expect_out "state: requires human review" "it says which ending"
+expect_out "reason: the spec check filed work again" "and that it was the check that would not converge"
+expect_prompt /handover "would not converge" "which the handover is told as well"
 
 workspace 01-thing
 cat > "$WORK/plan" <<'EOF'

@@ -389,6 +389,18 @@ unreachable() {
   done
 }
 
+# The same list as one line. What ended a run has to fit beside `state:` in the
+# closing report, and a reader who is told only that something is unbuilt still
+# has to go and find out what.
+unreachable_names() {
+  local file names=""
+  while read -r file; do
+    [ -n "$file" ] || continue
+    names="${names:+$names, }$(basename "$file" .md)"
+  done < <(unreachable)
+  printf '%s\n' "$names"
+}
+
 # Recomputed each time: the end-of-run checks can file new tickets mid-run, so
 # the denominator is what exists now, not what existed at the start.
 position() {
@@ -492,10 +504,9 @@ drain() {
       halt_for_workflows "$ticket" "$before" "$touched"
       {
         echo
-        echo "!! halted on $name - it changed a ratified workflow test and the ticket"
-        echo "   carried no authorisation for that:"
+        stop_because "$name halted: it changed a ratified workflow test and carried no authorisation for that - $ticket records the halt"
         printf '%s\n' "$touched" | sed 's/^/     /'
-        echo "   Nothing was reverted, and $ticket now records the halt."
+        echo "   Nothing was reverted."
       } >&2
       return 1
     fi
@@ -523,23 +534,25 @@ drain() {
           touched="$(workflows_touched "$before")"
           if [ -n "$touched" ]; then
             halt_for_workflows "$ticket" "$before" "$touched"
-            echo "!! the refresh changed a ratified workflow test - $ticket records it" >&2
+            stop_because "the re-derivation changed a ratified workflow test, and no ticket authorises one to - $ticket records the halt"
             return 1
           fi
           continue
         fi ;;
     esac
 
-    echo
-    echo "!! halted on $name - transcript: $LOG_DIR/$name.jsonl"
     # The session ran to the end, so it had every chance to say why it stopped.
     # If it didn't, the ticket cannot tell you and the transcript has to.
-    if grep -q '^## Halt' "$ticket"; then
-      sed -n '/^## Halt/,$p' "$ticket"
-    else
-      echo "   It left status '$(status_of "$ticket")' and wrote no ## Halt section,"
-      echo "   so why it stopped is in the transcript and nowhere else."
-    fi
+    {
+      echo
+      if grep -q '^## Halt' "$ticket"; then
+        stop_because "$name halted${reason:+ on $reason} - $ticket records why"
+        sed -n '/^## Halt/,$p' "$ticket"
+      else
+        stop_because "$name halted, left status '$(status_of "$ticket")' and wrote no ## Halt section - why it stopped is in its transcript and nowhere else"
+      fi
+      echo "   transcript: $LOG_DIR/$name.jsonl"
+    } >&2
     return 1
   done
 
@@ -547,7 +560,7 @@ drain() {
   [ -n "$stuck" ] || return 0
   {
     echo
-    echo "!! nothing left the loop can build, and these are not done:"
+    stop_because "nothing left the loop can build, and these are not done: $(unreachable_names)"
     while read -r ticket; do
       printf '     %s - %s\n' "$(basename "$ticket" .md)" "$(why_stuck "$ticket")"
     done <<< "$stuck"
@@ -704,12 +717,32 @@ verdict_line() {
 # the ones that end before the review has anything to say.
 CHECK_VERDICT=""
 
+# Why the run ended where it did, kept for the two readers who were not there
+# when it was said. `state:` names the ending and this names the cause, and on
+# the stops nothing counts they are different answers: work filed with no pass
+# left to build it ends a run whose every verdict reads zero, and a box that
+# says only `requires human review` is then asking for a decision it never
+# names. Set at the point that knows, because nowhere later does.
+STOP_REASON=""
+
+# Says it once and keeps it. The `!!` on the way past is for whoever is still
+# watching; a run takes hours, and by the ending it has scrolled - so the same
+# sentence goes into the report below and into the /handover prompt, which
+# otherwise gets the state and is left to re-derive the rest if it thinks to
+# look. Word each one to survive on its own: it reaches its reader with no line
+# above it and no line below.
+stop_because() {
+  STOP_REASON="$1"
+  echo "!! $1" >&2
+}
+
 report() {
   local state="$1" verdict="$2" entries
   entries="$(run_entries)"
   echo
   echo "── the run ──────────────────────────────────────────────"
   echo "state: $state"
+  [ -z "$STOP_REASON" ] || echo "reason: $STOP_REASON"
   [ -z "$CHECK_VERDICT" ] || echo "acceptance: $CHECK_VERDICT"
   [ -z "$verdict" ] || echo "review: $verdict"
   ! ls "$LOG_DIR"/critique-*.jsonl >/dev/null 2>&1 \
@@ -720,6 +753,25 @@ report() {
     printf '%s\n' "$entries"
   fi
   echo
+}
+
+# What the run's own half of the brief cannot supply. The skill is told not to
+# restate the mechanical half, and the cause is collected from the tickets like
+# the rest of it - so handing the reason over as a line to lead with would ask
+# the skill for the one thing it is told not to do, and get an aside instead.
+# What the reader wants from this half is not the cause again but what it means:
+# a run that stopped on unbuilt work still has a branch somebody has to read,
+# and whether the rest of it stands without that work is judgement nothing here
+# can collect.
+handover_prompt() {
+  printf '/handover %s\n' "$SPEC_DIR"
+  printf "The run's state: %s. Write the pull request description for it.\n" "$1"
+  [ -z "$STOP_REASON" ] || cat <<EOF
+Why it stopped: $STOP_REASON
+That cause is printed on the driver's page beside yours, so do not restate it.
+Say what it means for the branch: what a reviewer can rely on, what is not there
+yet, and whether the rest of it stands without that.
+EOF
 }
 
 # The closing brief, on every path. What is left after it is the one command
@@ -734,9 +786,7 @@ finish_run() {
   # A handover that dies does not change what the run reached, and the half above
   # is already printed. Say so and let the state stand, rather than reporting the
   # death as the ending.
-  run_step handover "handover" \
-    "$(printf "/handover %s\nThe run's state: %s. Write the pull request description for it.\n" \
-       "$SPEC_DIR" "$state")" "$BRIEF_FILTER" \
+  run_step handover "handover" "$(handover_prompt "$state")" "$BRIEF_FILTER" \
     || echo "!! no pull request description was written - the report above stands" >&2
   echo
   case "$state" in
@@ -818,7 +868,7 @@ for pass in $(seq "$MAX_PASSES"); do
 done
 
 if [ -z "${checks_clean:-}" ]; then
-  echo "!! the spec check is still filing work after $MAX_PASSES passes" >&2
+  stop_because "the spec check filed work again after $MAX_PASSES passes, so it would not converge - what it filed last is unbuilt"
   finish_run "requires human review"
   exit 1
 fi
@@ -830,13 +880,17 @@ fi
 # with nothing at all. Neither ends the run here: the review still reads the
 # branch and still files what it finds, and a human ruling on one disagreement
 # wants that reading done rather than skipped.
+#
+# `check_stands` is not a flag: the `acceptance:` line above carries a verdict or nothing, and a
+# sentence where a verdict belongs is a field doing a second job badly. What
+# stopped the run belongs on the reason line with the rest of the causes, where
+# it can be read beside them and composed with them.
 check_stands=""
 check_standing="$(sed -n 's/.*, \([0-9]*\) standing disagreements*, .*/\1/p' <<< "$CHECK_VERDICT")"
 if [ -z "$CHECK_VERDICT" ]; then
-  CHECK_VERDICT="no verdict line - the acceptance did not say"
-  check_stands=1
+  check_stands="no verdict line - the acceptance did not say"
 elif [ "$check_standing" -gt 0 ]; then
-  check_stands=1
+  check_stands="the acceptance left $check_standing disagreement(s) it would not reopen"
 fi
 
 # The check narrowed its later passes to what the previous one filed. The review
@@ -863,13 +917,26 @@ standing="$(sed -n 's/.*, \([0-9]*\) standing disagreements*$/\1/p' <<< "$verdic
 if next_ticket >/dev/null; then
   # Filed by the last read, with nothing after it to build them. Unbuilt work
   # reported as a delivered feature is the one failure this must not produce.
-  echo "!! the review filed work on its second read, and nothing builds it" >&2
+  # Named, because every count on the page reads zero here: the review found
+  # what it found and then filed it, and the ticket is the whole of what a
+  # reader is being asked to pick up.
+  stop_because "the review filed work on its second read and no pass is left to build it: $(unreachable_names)"
   finish_run "requires human review" "$verdict"
   exit 1
 elif [ -z "$verdict" ]; then
-  finish_run "requires human review" "no verdict line - the review did not say"
+  stop_because "no verdict line - the review did not say"
+  finish_run "requires human review"
   exit 1
 elif [ "${blockers:-0}" -gt 0 ] || [ "${standing:-0}" -gt 0 ] || [ -n "$check_stands" ]; then
+  # All three can stand at once and the reason line is one line, so it says all
+  # of them. Which one ended the run is the question the counts above cannot
+  # answer: a reader looking at a clean review and a standing acceptance has to
+  # correlate two lines to find out, and this is the line that saves them that.
+  reasons=""
+  [ "${blockers:-0}" -eq 0 ] || reasons="$blockers blocker(s) survived being filed, built and re-read"
+  [ "${standing:-0}" -eq 0 ] || reasons="${reasons:+$reasons; }the review left $standing disagreement(s) it would not reopen"
+  [ -z "$check_stands" ]     || reasons="${reasons:+$reasons; }$check_stands"
+  stop_because "$reasons"
   finish_run "requires human review" "$verdict"
   exit 1
 fi
