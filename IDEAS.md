@@ -74,6 +74,24 @@ evidence.
 *Touches: implement/SKILL.md, and the order of its `## Review it` and
 `## Finish`.*
 
+**A review subagent can destroy the work it was sent to read.** Nothing tells
+one that the tree is not its to touch. Building ticket 01 on 2026-08-27, the
+quality reviewer ran `git checkout implement/SKILL.md` while clearing up after
+a perturbation of its own and discarded the build's uncommitted edits to that
+file. It had captured the diff at the start, reconstructed them from it, and
+said so in its report; the builder verified the repair by hash before carrying
+on. All three of those were luck. A reviewer reads a tree with no commit
+behind it - `/implement` commits after both reviews, not before - so anything
+it reverts is gone, and an unattended run has nobody to notice a file came
+back wrong or came back at all. The skill does say "a tree you must not
+disturb", but in the clause telling the *builder* to block on the dispatch;
+the reviewer is never told. Two shapes, and the cheap one is not obviously
+right: say it in the dispatch, which is one sentence and relies on the
+reviewer obeying it, or put the tree where a reviewer cannot reach it - a
+worktree per review, which needs the same standing permission the revert entry
+above is already open on.
+*Touches: implement/SKILL.md's `## Review it`, critique/SKILL.md.*
+
 **The review's fix is what the next review finds.** `/critique` reads the
 branch whole, files what it finds, and re-reads only that. The 2026-08-27 run
 filed ticket 09 on the first read; the second read found the collision ticket
