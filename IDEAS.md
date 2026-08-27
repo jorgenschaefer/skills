@@ -41,6 +41,104 @@ reader is `/spec-to-tickets`, which reads the structures the spec names before
 splitting along them, and it still does not.
 *Touches: spec-to-tickets/SKILL.md.*
 
+**A step that reverts the working tree has no safe way to do it.** The
+acceptance's mutation fallback runs the branch's tests against `main`'s code,
+and the two idioms that isolate that - `git worktree add` and
+`git checkout main -- <paths>` - are both denied by the auto-mode classifier,
+with nobody there to approve either. So the run of 2026-08-27 on `kh` did it by
+hand in the live tree: ten source files copied to `/tmp`, overwritten from
+`git show main:...`, one moved aside, the suite run, then copied back. That is
+non-atomic and outside git, in the middle of a step whose whole retry ladder
+exists because sessions die. A death between the overwrite and the restore
+leaves the branch ten files behind its own commit and nothing notices - the
+driver reads the tree only under `tests/workflows/`. Two halves, settleable
+separately: which commands an unattended run needs standing permission for, and
+whether the driver should refuse to carry on over a tree a non-build step left
+dirty.
+*Touches: loop.sh, check-against-spec/SKILL.md.*
+
+**The reviews inside a ticket cannot see what the ticket proved.** `## Record`
+is written in `## Finish`, after both reviews have read the work, so a reviewer
+asked to judge a ticket against its own record is judging a section that cannot
+exist yet - and the reviewer's sandbox blocks tools the builder used, so it
+cannot re-run the evidence either. In the 2026-08-27 run both fired on ticket
+01 at once: a blocker claiming the C-4 walkthrough had not run and no `Record`
+existed, neither answerable from where the reviewer stood. The builder
+adjudicated it away, correctly, and that is the cost - not the round, but a
+builder getting practice at talking a blocker down, which is the failure the
+adversarial review exists to prevent. Open: whether the evidence moves to the
+reviewer - `Pinned by` and the decision log written before the reviews, the
+verification output handed over with the diff - or the reviewer moves to the
+evidence.
+*Touches: implement/SKILL.md, and the order of its `## Review it` and
+`## Finish`.*
+
+**The review's fix is what the next review finds.** `/critique` reads the
+branch whole, files what it finds, and re-reads only that. The 2026-08-27 run
+filed ticket 09 on the first read; the second read found the collision ticket
+09 had just created, and filed ticket 10. There is no pass after that, so the
+run ended `requires human review` over a comment-only fix that wanted nothing
+from a human but another pass. Re-running drains it, at the price of a whole
+second run - `critique-1` re-reads the branch from its start - and `MAX_RUNS`
+is two. Deliberately out of scope of the stop-reason defect, which was about
+what an ending says rather than which endings there are. Open: a third read
+scoped to what the second filed, or a fourth ending that names re-running as
+the answer instead of asking for a decision nobody has to make.
+*Touches: loop.sh, tests/run.sh, README.md's three endings.*
+
+**Nothing in a run can file a finding about the repository.** The mockup under
+`docs/spec/mockups/` is referenced from the committed spec and has never been
+added to git. Tickets 02 and 03 left it open, the acceptance reported it
+without filing - no criterion, constraint or non-goal names it, so it fails the
+destination test - and `/critique` declined it too, because a file with no git
+object is in no diff. Four gates saw it, all four declined correctly, and it is
+still there two runs later. The class is wider than the file: anything true of
+the repository that is neither in the diff nor named by the spec is visible to
+every gate and filable by none. The cheap half is `accept.sh`, which already
+refuses on ignored files under the spec directory and could refuse on untracked
+ones the same way - today it deletes the spec and leaves behind the mockup that
+spec references, which is the outcome its own comment says the deletion exists
+to prevent. The rest is the open question: which gate, if any, owns the branch
+being self-contained.
+*Touches: accept.sh, and whichever of check-against-spec/SKILL.md or
+critique/SKILL.md takes the destination.*
+
+**The mutation gate is re-decided on every ticket.** All ten tickets of the
+2026-08-27 run recorded some version of "this project has no mutation testing
+tool configured, and setting one up is a ticket of its own" - a discovery each
+build made again from scratch, and ten `Left open` entries the end-of-run
+checks then read past. The driver already knows: it appends that sentence to
+every build's prompt. Whether the answer is the driver determining it once and
+saying so, or the project stating it once where a build can read it, is the
+open part.
+*Touches: loop.sh, implement/SKILL.md's `### The mutation gate`.*
+
+**A ticket that changes no behaviour still pays for the whole apparatus.**
+Ticket 10 of the 2026-08-27 run changed eight comments and cost thirty minutes,
+fifty-one turns and $8.44: a RED-first test, the mutation-gate deliberation,
+two peer-model subagent reviews, a `Record`, two commits. Ticket 09 was $6.65
+for glossary prose. Between them the two tickets the review filed were an
+eighth of the run's cost. The apparatus is not wrong - the collision was real
+and the test written for it pins it - but it is priced for a criterion, and a
+remediation ticket with no `Satisfies` may not want all of it. Which parts a
+behaviour-free ticket can skip without the maintenance lane becoming the way
+around the reviews is the question, and it is the one `/cleanup-repo` above is
+already deferred on.
+*Touches: implement/SKILL.md, implement-ticket/SKILL.md.*
+
+**The run inherits its permission mode and never records it.** `step_flags`
+sets a model and an effort for each kind of step and no permission mode, so
+what an unattended run may do is whatever the operator's ambient configuration
+happened to say. On 2026-08-27 that was auto mode, which tells an agent to
+prefer the shell over the file tools: across nine builds, 1382 Bash calls
+against 12 `Edit` and one `Write` - 289 heredocs, 266 `python3` scripts
+rewriting source files in place, 70 `sed -i`, 150 `cp` backups. Re-emitting
+whole files is most of why the builds were $121.82 of the run's $129.36, and it
+means the same invocation of `loop.sh` behaves differently on another machine.
+Naming the mode in `step_flags` and printing it beside the log path settles the
+recording; which mode is right for a run with nobody watching is the decision.
+*Touches: loop.sh.*
+
 **Make `/implement` generic.** It is the craft skill - RED-first, the project's
 checks, two adversarial reviews, bounded attempts - and none of that is about
 tickets. But it still reads like the loop's builder: `Satisfies`, `spec_hash`,
