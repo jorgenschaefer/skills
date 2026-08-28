@@ -148,6 +148,106 @@ Naming the mode in `step_flags` and printing it beside the log path settles the
 recording; which mode is right for a run with nobody watching is the decision.
 *Touches: loop.sh.*
 
+**Parking an idea is a decision nobody is asked for.** Five places send a
+finding to `IDEAS.md` and not one of them asks first. `/discovery` says "append
+it", which is a write with no turn in front of it. `/critique`,
+`/check-against-spec` and `/implement` say a finding "goes to `IDEAS.md`" or
+"belongs in `IDEAS.md`, not in this report", which is not a write at all - it
+reads as a discard, and the three gates most likely to turn something up are
+the three whose instruction stops short of writing it down. So the file grows
+unwatched and loses things at the same time, out of one sentence written two
+ways. What it should be: with a human in the room, the entry is drafted, shown
+and confirmed before it lands, because parking is a scope decision and the
+whole value of the lot is that somebody agreed the thing was worth
+resurrecting. Unattended there is nobody to ask, so the entry is held and
+surfaced in what the run hands back at the end, approved in a batch and written
+then. Open: where a held entry lives between the step that drafts it and the
+hand-off that presents it, given `./accept.sh` deletes the paper the run was
+carrying.
+*Touches: discovery/SKILL.md, critique/SKILL.md, check-against-spec/SKILL.md,
+implement/SKILL.md, handover/SKILL.md, loop.sh, README.md.*
+
+**The mockup is built on a journey the user has never seen written down.**
+`/discovery` shows the domain model back in a turn of its own, deliberately -
+"whether something is an entity or a value object is your problem, not theirs,
+and a turn spent on that vocabulary is a turn they cannot correct you in". The
+journeys get no such turn. They are identified, written into `## Journeys` with
+a trigger, steps in sequence, the domain effect of each and where the last one
+puts the user down, and the very next move is a throwaway HTML walk built with
+`frontend-design`: the most expensive artifact discovery produces, built on a
+structure nobody confirmed. The user does react to the journey, but through the
+mockup, and that is the wrong instrument for this - a walk invites questions
+about screens, and a step whose domain effect is wrong survives a walk that
+looks right. Show the journeys back before anything is drawn on top of them,
+the way the model is shown back, and confirm them. One turn, in a phase that
+has already written the material down. Stories and criteria were considered for
+the same treatment and left out: they reach the user inside the spec at
+`### Write it`, and that is soon enough.
+*Touches: discovery/SKILL.md's `### Journeys` and `### Show, don't tell`.*
+
+**The cold reads settle things nobody agreed to let them settle.** Both end the
+same way. `/discovery`: "resolve what it finds and pin the reading you mean,
+then present". `/spec-to-tickets`: "fix what it finds and re-dispatch once".
+The reader is dispatched for exactly the two things an author cannot see - what
+would have to be guessed, and where the document fights itself - and then
+whatever it finds is disposed of by the one context that already failed to see
+it, and the user is handed a document with no sign that any of it happened.
+Most of what comes back deserves that: a sentence a reader could take two ways
+is answered by writing the sentence once, and replaying every such fix is
+noise. What does not is the case the reader exists for - a genuine ambiguity,
+where pinning a reading means choosing between two things the user might have
+meant. That is a decision made on their behalf, and today it reaches them only
+if they happen to reread the clause it moved. Surface those and only those:
+what was ambiguous, which reading was pinned, and the offer to reopen - the
+shape the ratification receipt already has. Open: whether "this one was a
+judgment call" is a distinction the resolving agent can be trusted to draw
+about its own work, and the unattended fork the parking entry above has, since
+`/spec-to-tickets` runs with nobody there.
+*Touches: discovery/SKILL.md's `### Write it`, spec-to-tickets/SKILL.md.*
+
+**Nothing that writes code says the code is English.** `coding-conventions` is
+what `/implement` builds to and `/critique` judges against, and its
+`## Clarity and least astonishment` says: "If `UBIQUITOUS_LANGUAGE.md` exists
+at the repo root, names in code, tests, and comments should match its terms."
+`UBIQUITOUS_LANGUAGE_FORMAT.md` says to write the whole glossary in the domain
+language. Point those two at a German domain and the instruction a builder gets
+is to name its classes `Vertrag` and write its comments in German, which is
+what happened. The counter-rule is already written and is one line - "Code
+identifiers stay English, so when the domain language is not English, give the
+English identifier in `code-font` parentheses after the bold term" - but it
+lives in `UBIQUITOUS_LANGUAGE_FORMAT.md`, which only `/discovery` and
+`/ubiquitous-language-init` carry. Neither skill that writes or reviews code
+has ever read it, and the word "English" does not appear in
+`coding-conventions` at all. So this is small and its shape is known: say there
+that code, tests and comments are English whatever the domain language is, and
+that the glossary is where the mapping lives, so `Vertrag` in the user's mouth
+is `Contract` in the source. Considered and deliberately left out: the same
+rule for prose - a run answering in German because the domain is German, and
+coining German compounds for English technical terms while it does. Real, but
+not going into the conventions.
+*Touches: coding-conventions/SKILL.md's `## Clarity and least astonishment`.*
+
+**A comment is where the pipeline puts anything it does not want to lose.** The
+paper is temporary by design, so `/discovery` and `/handover` both route what
+must outlive it into "a comment at the code it explains", and
+`coding-conventions` admits anything that passes one test: *would a reader who
+doesn't know that story change this code wrongly without it?* That bar is low -
+close to any true statement about the code clears it - and it is aimed at
+historical rationale, so it filters nothing that merely restates what the code
+already says. The ordering that would help is present but unfindable: "as a
+name, a type, or a test case where code can hold it, otherwise as a comment" is
+a subordinate clause in the sixth sentence of a bullet headed **Comments stand
+on their own**, which is about what a comment may *point at* rather than
+whether to write one at all. A builder reading that bullet for guidance finds
+permission. Make the ordering a rule in its own right - a name, then a type,
+then a test case, and a comment only where none of the three can hold it - so
+the promotion instructions have somewhere to land other than "write a
+paragraph". Open: nothing prunes either, since no step is ever asked whether a
+comment it is reading still earns its place, but that is a separate entry's
+worth of work and this one is the source rather than the sink.
+*Touches: coding-conventions/SKILL.md, discovery/SKILL.md's "Promote what must
+outlive the code", handover/SKILL.md.*
+
 **Make `/implement` generic.** It is the craft skill - RED-first, the project's
 checks, two adversarial reviews, bounded attempts - and none of that is about
 tickets. But it still reads like the loop's builder: `Satisfies`, `spec_hash`,
