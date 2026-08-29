@@ -30,7 +30,7 @@ The spec, the tickets and any mockups the journeys were walked as are deleted wh
 Most of that already happened: terms, ADRs and ratified journeys were agreed as `/discovery` proposed them, and they live in the project rather than in the paper. What is left is the rationale a build discovered while writing the code:
 
 - **Load-bearing rationale → a comment at the code it explains.** A ticket's `Decisions` entry where a future reader would otherwise change the code wrongly. Follow the `coding-conventions` skill: the comment restates the reason in your own words and never points at the artifact, which is about to stop existing. Most rationale does not clear this bar - the test is whether someone who never read the spec would get it wrong without the comment.
-- **Vocabulary the build settled → `UBIQUITOUS_LANGUAGE.md`.** A term the code established that discovery did not name.
+- **Vocabulary the build settled → `UBIQUITOUS_LANGUAGE.md`.** A term the code established that discovery did not name. The entry is written in the glossary's own domain language with the code's English identifier in parentheses where the term has one and a statement that there is none where it does not, not in the language the identifier happens to be in. A bare entry reads as unfilled rather than as untranslatable.
 - **A structural choice the build discovered → an ADR.** Discovery writes the ones it knew about; a decision a build only reached with the code in front of it has no other route. `ADR_FORMAT.md` is the shape. Never write one autonomously - propose it, like the rest of this list.
 - **A spec `_Why:_` that still matters → a comment.** The spec goes with the tickets, and its rationale goes with it unless somebody moves it.
 

@@ -14,6 +14,12 @@ Start the file with a line declaring the domain language (see the minimal exampl
 - **Vertrag** (`Contract`) - spezifisch das Dokument, das die Nutzungsbedingungen für unsere API festhält.
 ```
 
+Leave the parentheses off only where the term genuinely has no English equivalent - a legal or regulatory word that does not translate - and say so in the entry itself. Saying it is what tells a builder to use the domain term as the identifier; a missing parenthesis on its own means only that nobody has filled it in yet. An invented English word here is worse than none, because it reads as the name the code should use.
+
+```markdown
+- **Grundschuld** - das dingliche Verwertungsrecht an einem Grundstück; kein englisches Äquivalent, daher steht der Begriff auch im Code.
+```
+
 ## Sections
 
 The file has two standing sections - **Terminology** and **Aliases to avoid** - plus two appended only when the updating rules call for them: **Flagged ambiguities** and **Retired**. Use these exact headings.

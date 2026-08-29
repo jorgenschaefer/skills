@@ -46,7 +46,7 @@ Read the following layers, aiming for breadth, not depth. Each layer is a place 
 5. **Tests** (especially `describe`/`it`/docstrings) - test names often spell out workflows and invariants in plain language.
 6. **Comments and documentation** (README, inline) - invariants, role distinctions, and intent behind names.
 
-While exploring, also detect the **domain language** (the language stakeholders use when talking about the business). It may differ from the code language: a German insurance platform may have classes named `Contract` while domain experts speak of `Vertrag`. Write the whole glossary file in the domain language, and reference the code identifier in parentheses where the gap matters: `**Vertrag** (\`Contract\`) - Eine vertragliche Vereinbarung ...`.
+While exploring, also detect the **domain language** (the language stakeholders use when talking about the business). It may differ from the code language: a German insurance platform may have classes named `Contract` while domain experts speak of `Vertrag`. Write the whole glossary file in the domain language, and give the English code identifier in parentheses after every term that has one - leaving them off only where the term has no English equivalent and saying so in the entry, since that statement is what tells a builder to use the domain term in code: `**Vertrag** (\`Contract\`) - Eine vertragliche Vereinbarung ...`.
 
 When the same concept appears under two names in different layers (e.g. `Customer` in code, `Account` in UI strings), record the rejected one in **Aliases to avoid**.
 
@@ -58,7 +58,7 @@ For each existing term, search the codebase and classify it:
 
 - **Active** - appears in code, tests, or docs and matches the documented definition.
 - **Drifted** - appears, but usage conflicts with the documented definition. Record the specific file and usage as evidence. Do not rewrite the definition without user confirmation.
-- **Absent** - not found as a code identifier, test description, or comment. Do not delete; the term may live in prose docs or in conversations with domain experts. Flag for user confirmation.
+- **Absent** - not found as a code identifier, test description, or comment. Search three forms, not one: the entry's English identifier, the term itself, and the term transliterated to ASCII. Where the domain language is not English the code usually carries the identifier rather than the term, and a term with no English equivalent reaches the code as itself with any umlaut transliterated - so searching the term alone reports compliant entries as absent, and searching term and identifier alone still misses that last case. Do not delete; the term may live in prose docs or in conversations with domain experts. Flag for user confirmation.
 
 ## Verify with scenarios
 

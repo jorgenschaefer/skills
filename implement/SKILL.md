@@ -22,7 +22,7 @@ The whole-feature checks are not yours. Once the run finishes, something drives 
 - Read the spec and the criteria the ticket's `Satisfies` cites. Those criteria are what you build and what you are checked against. The ticket locates them; it does not restate them, and where the two seem to differ the spec wins.
 - Read the spec's defaults too - every `D-n`, wherever in the spec it stands. They bind you the way criteria do, with one exception: you may overturn one on evidence you find in the code, never on preference, and then the ticket records the overturn with that evidence. A default marked `(binding)` is not yours to overturn at all - other tickets are already built on it - so evidence against one stops the build.
 - Establish the project's verification command (below) and confirm the baseline is green. A red baseline is a halt (`blocked`), not something to work around – TDD needs a clean baseline to tell your red from someone else's.
-- If `UBIQUITOUS_LANGUAGE.md` exists at the repo root, read it and use those terms for names in code, tests, and commit messages.
+- If `UBIQUITOUS_LANGUAGE.md` exists at the repo root, read it and use the English identifiers it documents for names in code, tests, and commit messages.
 - Read the `coding-conventions` skill – every section of it, not the handful you would have thought of unprompted. It is the standard you build to, and the rubric both reviews apply.
 
 ### Verification commands

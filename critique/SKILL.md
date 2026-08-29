@@ -15,7 +15,7 @@ Decide what you're reviewing:
 
 If which one is ambiguous, ask.
 
-If `UBIQUITOUS_LANGUAGE.md` exists at the repo root, read it first so vocabulary findings are grounded in the project's actual terms.
+If `UBIQUITOUS_LANGUAGE.md` exists at the repo root, read it first so vocabulary findings are grounded in the English identifiers it documents, and in the domain terms themselves only where an entry says it has no English equivalent.
 
 ## What to check
 
