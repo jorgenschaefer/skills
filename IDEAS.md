@@ -205,27 +205,22 @@ about its own work, and the unattended fork the parking entry above has, since
 `/spec-to-tickets` runs with nobody there.
 *Touches: discovery/SKILL.md's `### Write it`, spec-to-tickets/SKILL.md.*
 
-**Nothing that writes code says the code is English.** `coding-conventions` is
-what `/implement` builds to and `/critique` judges against, and its
-`## Clarity and least astonishment` says: "If `UBIQUITOUS_LANGUAGE.md` exists
-at the repo root, names in code, tests, and comments should match its terms."
-`UBIQUITOUS_LANGUAGE_FORMAT.md` says to write the whole glossary in the domain
-language. Point those two at a German domain and the instruction a builder gets
-is to name its classes `Vertrag` and write its comments in German, which is
-what happened. The counter-rule is already written and is one line - "Code
-identifiers stay English, so when the domain language is not English, give the
-English identifier in `code-font` parentheses after the bold term" - but it
-lives in `UBIQUITOUS_LANGUAGE_FORMAT.md`, which only `/discovery` and
-`/ubiquitous-language-init` carry. Neither skill that writes or reviews code
-has ever read it, and the word "English" does not appear in
-`coding-conventions` at all. So this is small and its shape is known: say there
-that code, tests and comments are English whatever the domain language is, and
-that the glossary is where the mapping lives, so `Vertrag` in the user's mouth
-is `Contract` in the source. Considered and deliberately left out: the same
-rule for prose - a run answering in German because the domain is German, and
-coining German compounds for English technical terms while it does. Real, but
-not going into the conventions.
-*Touches: coding-conventions/SKILL.md's `## Clarity and least astonishment`.*
+**A run answers in the domain's language, and coins words while it does.** A
+session about a German domain came back in German, and invented German
+compounds for English technical terms as it went - a translation of vocabulary
+that has no German form and did not need one. Two separate things: which
+language a run speaks to the user in, which should be the language they are
+prompting in and not the one the glossary happens to be written in, and whether
+technical vocabulary is ever translated at all, which it should not be. The only site that comes close is
+`/discovery`'s "in the user's language", which is about the vocabulary a model
+is shown back rather than the language a run answers in, so there is no site
+that settles this and no obvious home: the code half of this went into `coding-conventions`
+because a builder reads that file, and prose has no equivalent. Deliberately
+left out of the ticket that settled the code half, and re-parked here so the
+exclusion outlives the entry that carried it. Open: whether this belongs in the
+skills at all or in the operator's own configuration, which is where the
+question was left.
+*Touches: nothing yet - the home is the open question.*
 
 **A comment is where the pipeline puts anything it does not want to lose.** The
 paper is temporary by design, so `/discovery` and `/handover` both route what
