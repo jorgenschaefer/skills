@@ -174,24 +174,6 @@ carrying.
 *Touches: discovery/SKILL.md, critique/SKILL.md, check-against-spec/SKILL.md,
 implement/SKILL.md, handover/SKILL.md, loop.sh, README.md.*
 
-**The mockup is built on a journey the user has never seen written down.**
-`/discovery` shows the domain model back in a turn of its own, deliberately -
-"whether something is an entity or a value object is your problem, not theirs,
-and a turn spent on that vocabulary is a turn they cannot correct you in". The
-journeys get no such turn. They are identified, written into `## Journeys` with
-a trigger, steps in sequence, the domain effect of each and where the last one
-puts the user down, and the very next move is a throwaway HTML walk built with
-`frontend-design`: the most expensive artifact discovery produces, built on a
-structure nobody confirmed. The user does react to the journey, but through the
-mockup, and that is the wrong instrument for this - a walk invites questions
-about screens, and a step whose domain effect is wrong survives a walk that
-looks right. Show the journeys back before anything is drawn on top of them,
-the way the model is shown back, and confirm them. One turn, in a phase that
-has already written the material down. Stories and criteria were considered for
-the same treatment and left out: they reach the user inside the spec at
-`### Write it`, and that is soon enough.
-*Touches: discovery/SKILL.md's `### Journeys` and `### Show, don't tell`.*
-
 **The cold reads settle things nobody agreed to let them settle.** Both end the
 same way. `/discovery`: "resolve what it finds and pin the reading you mean,
 then present". `/spec-to-tickets`: "fix what it finds and re-dispatch once".
