@@ -243,6 +243,24 @@ worth of work and this one is the source rather than the sink.
 *Touches: coding-conventions/SKILL.md, discovery/SKILL.md's "Promote what must
 outlive the code", handover/SKILL.md.*
 
+**Nothing notices if the English rule goes.** `8534fe3` put it in
+`coding-conventions` and no check anywhere reads a line of it, by the direction
+that built it. Two routes back, both quiet. The two
+`UBIQUITOUS_LANGUAGE_FORMAT.md` copies each gained the untranslatable-term
+paragraph, and their byte-parity is now an unguarded invariant - the five
+`TICKET_FORMAT.md` copies have a count-and-md5 check at `tests/run.sh:889`
+precisely because a multi-way edit goes one-way by accident, and these two have
+nothing of the kind. And `coding-conventions:50`, which now sends a reader to
+the English identifiers the glossary documents, sits in `### Anchor names in the
+domain` inside `## Domain layering` - the section the stack-neutrality entry
+below queues for a split into a web-specific skill. That split moves the exact
+line, and putting it back to "the terms documented there" reinstates the
+original defect with the suite green. Recorded from the `Record` of a ticket
+since deleted, where both were `Left open`. The parity half is cheap and is the
+same shape as a check the repo already runs.
+*Touches: tests/run.sh, and whichever change does the `## Domain layering`
+split.*
+
 **Make `/implement` generic.** It is the craft skill - RED-first, the project's
 checks, two adversarial reviews, bounded attempts - and none of that is about
 tickets. But it still reads like the loop's builder: `Satisfies`, `spec_hash`,
