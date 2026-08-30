@@ -153,6 +153,17 @@ The spec lane's alone: how the chosen solution is met, end to end.
 
 Identify the journeys - the paths a user takes through the feature from end to end - and the tasks that compose each. The journey is what you write down, in the spec's `## Journeys`: its trigger, its steps in sequence, the domain effect each step has, and the screens it walks through. Say where the last step puts the user down - the screen or the state they are left looking at. A journey that ends "and it is saved" has skipped the part where anyone finds out it worked.
 
+**Then show the journeys back, in a turn of its own** - before anything is sketched or drawn on them. The screens are the walk's question and it asks better than prose can, so spend this turn on what a walk cannot ask: the trigger, what each step changes, and where the last one puts the user down.
+
+Foreground what they can veto, because a path presented as a finished sequence gets nodded at:
+
+- it does not start there - wrong occasion, or wrong actor;
+- that step does not change that;
+- those two are one step, or one of them is two;
+- the last step leaves them somewhere they would not stop.
+
+Every story below decomposes from these, and the finished feature is checked by driving them. So this is the correction to make before the walk is built on it, rather than at `### Write it` when it already has been.
+
 ### Show, don't tell
 
 **Options first, at the shape level.** Sketch two or three genuinely different ways the feature could be met - inline against modal against its own screen, wizard against single form, a new command against a flag on one that exists - and have the user pick. Cheap sketches, because what is being chosen is the shape and not the pixels. Two options that differ only in wording are not a choice: where you can only construct one honest candidate, say so rather than manufacturing a second.
