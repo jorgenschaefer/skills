@@ -132,6 +132,29 @@ Naming the mode in `step_flags` and printing it beside the log path settles the
 recording; which mode is right for a run with nobody watching is the decision.
 *Touches: loop.sh.*
 
+**The reviews run on a second model on no evidence.** `implement/SKILL.md:108`
+requires each review subagent be dispatched "with an explicit `model` other than
+the one you are running on - a peer, never a smaller one", on the argument that
+"two sessions of one model share its blind spots". `loop.sh:85-88` makes it a
+hard refusal - `BUILD_MODEL` and `REVIEW_MODEL` set to the same thing stops the
+run before any step runs - and `tests/run.sh:674-682` pins both halves. Nothing
+anywhere records a defect a same-model review actually missed, so the argument is
+a plausible story rather than a finding, and every ticket pays for it twice over
+in wall-clock and tokens.
+
+The pipeline does not even hold the rule coherently. `implement/SKILL.md:108`
+forbids a smaller reviewer in terms; `loop.sh:86` defaults `REVIEW_MODEL=sonnet`
+against `BUILD_MODEL=opus`, which is exactly that. One of the two is wrong today.
+
+Drop it - the skill's bullet, the driver's refusal, the README sentence and the
+two tests - and let a review run on whatever the caller is running, until
+somebody records a case where a same-model review confirmed code it should have
+caught. Then it comes back with the evidence attached. The cost half is a
+judgement rather than a measurement: no number in this repo isolates what the
+reviews cost, since the $121.82 of the 2026-08-27 run's $129.36 that went on
+builds includes the review subagents each build dispatched.
+*Touches: implement/SKILL.md, loop.sh, README.md, tests/run.sh.*
+
 **Parking an idea is a decision nobody is asked for.** Five places send a
 finding to `IDEAS.md` and not one of them asks first. `/discovery` says "append
 it", which is a write with no turn in front of it. `/critique`,
