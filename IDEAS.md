@@ -261,6 +261,23 @@ same shape as a check the repo already runs.
 *Touches: tests/run.sh, and whichever change does the `## Domain layering`
 split.*
 
+**A small-lane ticket's defaults bind nobody in particular.** `/discovery` says
+a default on the small lane "is marked in the ticket that carries it, with what
+in the code would overturn it, and the implementer is bound by it either way",
+and every ticket that lane emits carries a `## Defaults` section. No copy of
+`TICKET_FORMAT.md` defines one: the body it specifies runs `Satisfies`,
+`Preconditions`, `Touches`, `Provides`, `Out of scope`, `Workflow tests`,
+`Verification`, and stops. `/implement` is told to read "the spec's defaults -
+every `D-n`, wherever in the spec it stands", and a ticket with no spec has
+none; nothing tells it to read the ticket's own. So the section is written by
+one skill, defined by no format, named by no instruction to the builder, and
+binding by assertion. Found cold-reading a small-lane ticket, and it was true of
+the one before it too. Either the format gains the section or `/implement` gains
+the sentence that binds it - the second is smaller, the first is where a
+reviewer would go looking.
+*Touches: the five `TICKET_FORMAT.md` copies, or implement/SKILL.md's
+`## Before starting`.*
+
 **Make `/implement` generic.** It is the craft skill - RED-first, the project's
 checks, two adversarial reviews, bounded attempts - and none of that is about
 tickets. But it still reads like the loop's builder: `Satisfies`, `spec_hash`,
