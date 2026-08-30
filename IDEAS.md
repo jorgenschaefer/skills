@@ -58,22 +58,6 @@ reads the tree only under `tests/workflows/`, so a step that leaves it dirty
 for any reason reaches `accept.sh` as a refusal nobody saw coming.
 *Touches: loop.sh.*
 
-**The reviews inside a ticket cannot see what the ticket proved.** `## Record`
-is written in `## Finish`, after both reviews have read the work, so a reviewer
-asked to judge a ticket against its own record is judging a section that cannot
-exist yet - and the reviewer's sandbox blocks tools the builder used, so it
-cannot re-run the evidence either. In the 2026-08-27 run both fired on ticket
-01 at once: a blocker claiming the C-4 walkthrough had not run and no `Record`
-existed, neither answerable from where the reviewer stood. The builder
-adjudicated it away, correctly, and that is the cost - not the round, but a
-builder getting practice at talking a blocker down, which is the failure the
-adversarial review exists to prevent. Open: whether the evidence moves to the
-reviewer - `Pinned by` and the decision log written before the reviews, the
-verification output handed over with the diff - or the reviewer moves to the
-evidence.
-*Touches: implement/SKILL.md, and the order of its `## Review it` and
-`## Finish`.*
-
 **A review subagent can destroy the work it was sent to read.** Nothing tells
 one that the tree is not its to touch. Building ticket 01 on 2026-08-27, the
 quality reviewer ran `git checkout implement/SKILL.md` while clearing up after
