@@ -85,7 +85,7 @@ Say it with the reasoning and name what you would do instead. A no you cannot pu
 
 ### Name the lane
 
-Phase 1 ends by saying which ending this is heading for: a spec, one ticket, a maintenance ticket, or a no. It cannot be known before the problem is understood, which is exactly why it is never a question you open with - and the split test above is what tells the first from the second.
+Phase 1 ends by saying which ending this is heading for: a spec, one ticket, a maintenance ticket, or a no - and the split test above is what tells the first from the second.
 
 ## Phase 2 - The solution
 
@@ -93,7 +93,7 @@ Two or three candidates, one of them whatever the user arrived with. For each: w
 
 **The bar is asymmetric, and stating it is the point.** A solution that fits the project's existing concepts and architecture wins ties and near-ties. A diverging one has to be *much* better, not merely better, because divergence is paid for twice: once building it, and again by everyone who afterwards reads a codebase with two ways of doing one thing in it. "It fits what is already here" is a real argument, not a failure of imagination.
 
-**Recommend one, and say why the others lose.** Where the user's candidate is not the one you recommend, say so plainly, with your reasoning - once. Push back on reasoning that is weak, circular, or contradicted by the codebase. If they reaffirm after hearing it, that is their call: build it, and record in the spec that it was theirs, so nothing downstream reopens a settled argument.
+**Recommend one, and say why the others lose.** Where the user's candidate is not the one you recommend, say so plainly, with your reasoning - once. If they reaffirm after hearing it, that is their call: build it, and record in the spec that it was theirs, so nothing downstream reopens a settled argument.
 
 **A diverging winner is an ADR proposal.** It is exactly the structural choice a later reader would otherwise undo without ever learning what it cost. Propose it - the decision, your recommendation, the alternatives while they are still live - and never write one autonomously. *Records that outlive the feature*, in phase 4, says what that commits the project to.
 
@@ -127,7 +127,7 @@ Foreground what they can veto, because a model presented as a finished picture g
 - that is not what we call it here;
 - you have missed an actor, or named an event nothing reacts to.
 
-This is the cheapest correction in the pipeline; every ticket after it is built on what they agree to here.
+Every ticket after it is built on what they agree to here.
 
 ### Survey what already exists
 
