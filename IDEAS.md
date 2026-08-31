@@ -360,3 +360,38 @@ and the commands do not. Either it is renamed for what it actually covers, or
 the passes are stated once and the commands become the project's to establish,
 the way `/implement` establishes its verification command.
 *Touches: upgrade-dependencies/SKILL.md.*
+
+**`/discovery`'s spec lane builds the mockup in the session that must later
+harden the spec.** The small lane is right-sized - it skips phase 3, compresses
+phase 2 into four questions, and ends at a ticket in about five turns. The spec
+lane is the one under strain, and the strain is ordering rather than length.
+The gates it makes mandatory come to roughly sixteen user turns before anything
+is built - reflect the request back, four excavation questions, the problem
+agreed, the lane named, candidates, the domain model shown back in a turn of
+its own, the journeys shown back in another, option sketches, the walk, the
+defaults confirmed in a turn of their own, one yes per permanent-tier item, the
+spec presented and revised, the receipt - and "end your turn at the first
+question mark" multiplies every one of them. Alongside that the same session
+skims the codebase, reads `UBIQUITOUS_LANGUAGE.md`, `ARCHITECTURE.md`, the ADRs
+and this file, builds a multi-screen HTML mockup, dispatches the cold read, and
+writes the spec. The mockup is the largest consumer of that context and
+`### Harden it` is the most precision-dependent step - number everything, bind
+every decision to real structure, check every story names its journey, map the
+dependencies - and it runs after the mockup, on a codebase read fifteen turns
+old. The cold-read subagent before presenting is already a patch on the
+symptom: it exists because the session can no longer read its own output
+freshly. The move is to delegate the mockup build, not to split the skill. The
+walk is the one phase-3 artifact with a self-contained brief - the agreed
+journeys, the design language, the chosen shape are all written down by then -
+so a subagent can build it and hand back a path under `mockups/`, with the user
+still reacting to the walk in the main session. Splitting at 3/4 into a second
+skill is the tempting move and the wrong one: hardening depends on what was
+agreed in the conversation and not only on what was written, so a cold re-entry
+would re-derive decisions the user had already settled. One tension worth
+settling alongside it: the skill opens with "thoroughness is a property of what
+you write, not of the conversation", and nearly all its growth since `8c4eb61`
+has been conversational protocol - show-backs, turn shapes, per-item
+ratification, the receipt. Each is individually well-argued; the aggregate
+contradicts the opening.
+*Touches: discovery/SKILL.md's `### Show, don't tell`, and possibly `## Where
+this ends`'s framing of the two lanes.*
