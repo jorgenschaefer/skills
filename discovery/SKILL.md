@@ -89,7 +89,7 @@ Phase 1 ends by saying which ending this is heading for: a spec, one ticket, a m
 
 ## Phase 2 - The solution
 
-Two or three candidates, one of them whatever the user arrived with. For each: what it does, what it costs to build and to carry afterwards, and - the part that decides it - which existing concept it extends, or what new one it introduces.
+Two or three candidates, one of them whatever the user arrived with. For each: what it does, what it costs to build and to carry afterwards, and - the part that decides it - which existing concept it extends, or what new one it introduces. Where the codebase leaves only one honest candidate, say so and say why, rather than manufacturing a second.
 
 **The bar is asymmetric, and stating it is the point.** A solution that fits the project's existing concepts and architecture wins ties and near-ties. A diverging one has to be *much* better, not merely better, because divergence is paid for twice: once building it, and again by everyone who afterwards reads a codebase with two ways of doing one thing in it. "It fits what is already here" is a real argument, not a failure of imagination.
 
