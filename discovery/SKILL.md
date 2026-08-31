@@ -47,7 +47,7 @@ Four phases, in order, and each one's exit condition is the next one's ground:
 3. **The experience** - how the chosen solution is met: journeys, interface, criteria.
 4. **The record** - the spec or the ticket, hardened into something buildable without you.
 
-Both lanes run 1, 2 and 4. **Phase 3 belongs to the spec lane alone, and phase 2 on the small lane is four questions rather than a survey** - a bugfix that acquires a domain-model turn and a mockup walk has cost more to specify than it would have cost to fix. Where a phase says *small lane*, that paragraph is the whole of that phase for it.
+Both lanes run 1, 2 and 4. **Phase 3 belongs to the spec lane alone, and phase 2 on the small lane is four questions rather than a survey** - a bugfix that acquires a domain-model turn and a mockup walk has cost more to specify than it would have cost to fix. Two paragraphs are marked *small lane*. Phase 2's is the whole of that phase for it; phase 4's replaces only the hardening sweep and the spec file, since `### Records that outlive the feature` and the receipt run on both lanes.
 
 The order is load-bearing, not decorative. A solution discussed before the problem is agreed gets discussed twice, and an interface drawn before the solution is chosen is a drawing of the wrong thing.
 
