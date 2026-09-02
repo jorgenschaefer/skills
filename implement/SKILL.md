@@ -63,9 +63,9 @@ Follow Kent Beck's red/green/refactor loop in the smallest possible steps. Each 
 
 1. **RED.** Write one trivially small failing test for the next bit of behavior – including wiring, placement, conditional rendering, and prop pass-through (if the spec says "X appears above Y but not above Z," that placement needs a test). Run the test before writing any production code for that behavior, and confirm **the assertion itself fires and reports an expected/actual mismatch**. "Module not found", import errors, missing files, or syntax errors do not count as RED – they only prove the test couldn't run. If you hit one of those, add the minimal scaffolding (empty function, stub file, fixed import) until the assertion actually runs and fails, then proceed. If the test passes immediately, you wrote the production code first: revert it, confirm the test fails properly, then re-implement.
 2. **GREEN.** Make it pass with the simplest change that could possibly work. Faking the answer with a constant is fine – the next test will force a real implementation. If you cannot see how to make GREEN pass with a small, obvious change, the test is too big or too ambitious: revert it and write a smaller test, or add a second test that triangulates toward the general solution.
-3. **REFACTOR.** With tests green, remove duplication and improve the design. No new behavior. Re-run the tests.
+3. **REFACTOR.** With tests green, remove duplication and improve the design. No new behavior. Re-run the tests. Most cycles this is empty; don't manufacture work to fill it. The design pass below is where the diff as a whole gets refactored.
 
-Run the red/green/refactor cycles internally and bundle them into one commit for the ticket, after its tests are green and any refactor is done. Don't commit at each individual green step.
+Run the red/green/refactor cycles internally and bundle them into one commit for the ticket, after its tests are green and the design pass is done. Don't commit at each individual green step.
 
 ### Untestable boundaries
 
@@ -87,6 +87,21 @@ Implementing means making many micro-decisions. Most are trivial or forced and m
 Do not log TDD process (which test to write next, faking a constant with the next test in mind); that is rhythm, not design. And never use the log to invent past a spec-level ambiguity – those are not yours to settle, they are a `blocked` halt.
 
 Append each entry the moment you make the decision, not reconstructed at the end – late reconstruction is rationalisation, and what matters is the reasoning you actually had at the time. One line per entry, anchored to a `file:line`: *facing A, chose B because C; rejected D because E.*
+
+### The design pass
+
+After the last cycle is green and before the verification command, refactor the ticket's diff as a whole. Read it as one change, not as the sequence of cycles that produced it, against `coding-conventions` - `## Simple design`, `## Structure and locality`, `## Domain layering`, and `## Conceptual granularity, not premature abstraction`. Four things to look for:
+
+- **The second copy.** Two pieces of knowledge that will change for the same reason, written in two different cycles. Two is the trigger, not three.
+- **A name that drifted.** One domain action named one way in the cycle that created it and another in the cycle that called it.
+- **A seam that isn't one.** A boundary that relays the vocabulary and shape it received - or real translation left inline because no single cycle had enough of it to notice.
+- **Structure no cycle owned.** Order within a file, a helper above its caller, code that changes together left in two places.
+
+Three constraints:
+
+- **No new behavior**, and the *same* tests green at the end as at the start. A test you had to change is behavior: it belongs in a cycle, RED first, not here.
+- **Bounded to this ticket's diff and the code it duplicates.** A cleanup elsewhere goes in `Left open`, or to `IDEAS.md` where it is really a new requirement.
+- **Abstraction on a copy that exists, never on one you expect.** An extraction with one caller is the premature abstraction the ticket's `Out of scope` warned you about.
 
 ### Prove the contract before the reviews see it
 
