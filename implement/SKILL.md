@@ -120,6 +120,20 @@ On a ticket meant to change no behavior this check *is* the ticket: a test that 
 Then two reviews, in this order, each a fresh `general-purpose` subagent. These rules govern both:
 
 - **They block.** Dispatch with `run_in_background: false`. There is nothing useful to do while a reviewer reads a tree you must not disturb, and an `agentId` is not a review.
+- **They work in a copy.** A review mutates code to test it, so hand each one a throwaway tree and leave yours untouched. Before dispatching, from the repo:
+
+  ```bash
+  W=$(mktemp -d)/tree   # git worktree add creates this last segment itself
+  git worktree add --detach "$W" HEAD
+  git diff HEAD > "$W.patch" && (cd "$W" && git apply "$W.patch")
+  git ls-files --others --exclude-standard -z | tar -c --null -T - -f - | tar -x -C "$W"
+  ln -s "$PWD/node_modules" "$W/node_modules"   # the dependency directory the suite needs,
+                                                # linked at the same path inside the copy
+  ```
+
+  Name that path in the dispatch, say the copy is the reviewer's to break, and have its findings cite repo-relative paths. Each re-dispatch gets a fresh copy. Remove each with `git worktree remove --force "$W" && rm -rf "$(dirname "$W")"` once its review returns.
+
+  A copy isolates files, not services. Where the suite shares a database, a port or a profile with anything else running, the reviewer takes its own or reports what it could not check.
 - **They are a second opinion.** Dispatch each with an explicit `model` other than the one you are running on - a peer, never a smaller one, since a reviewer that cannot follow the code finds nothing in it. Two sessions of one model share its blind spots, and a reviewer that misses a defect for the same reason you wrote it has confirmed the code rather than reviewed it – no prompt makes it independent.
 - **They run separately.** Never fold them together, and never skip one. Both reviews run on every ticket.
 - **They are adversarial.** Each assumes the work is broken, tries to break it, and counts a requirement satisfied only when an honest attempt to break it fails. Never a confirmation pass.
