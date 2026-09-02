@@ -395,3 +395,73 @@ ratification, the receipt. Each is individually well-argued; the aggregate
 contradicts the opening.
 *Touches: discovery/SKILL.md's `### Show, don't tell`, and possibly `## Where
 this ends`'s framing of the two lanes.*
+
+**A mutation probe restores the tree without ever proving it did.** Every
+mutation in the pipeline - the deletion and moved edge in `### Prove the
+contract`, and the probes a review runs to test whether a test bites - is
+*backup, mutate, run, restore*, and the restore is the only step nothing
+checks. The run of 2026-09-02 on `dienste` shows what that costs: a compound
+`mv` restore blocked on an interactive prompt, was backgrounded after 600
+seconds, and neither the restore nor the edit chained behind it ran. The run
+reported "Restored cleanly" and carried on; the lost edit surfaced twenty
+minutes later as the code review's S1. The check is cheap because the tree is
+under git: the diff after a probe must equal the diff before it, compared
+rather than eyeballed. The stronger form makes the mutation a patch -
+`git apply p` then `git apply -R p` - which is atomic and reversible in a way a
+copy to `/tmp` is not, and which a killed session leaves either applied or not.
+*Touches: implement/SKILL.md's `### Prove the contract before the reviews see
+it`.*
+
+**A mockup lands where the project's checks lint it.** `/discovery` puts the
+walk in `mockups/` beside the spec and says nothing about the checks the next
+`/implement-ticket` will run. On `dienste` biome linted the mockup as HTML, so
+ticket 01 arrived to a red baseline - which `/implement` calls a `blocked` halt
+and not something to work around. The run worked around it anyway, excluding
+`mockups/` from biome in its own commit before any review saw it, and it was
+right to: halting an unattended pipeline over a discovery artifact's HTML lint
+is the wrong trade. Fixing the rule is the harder half and may not be needed;
+fixing where the artifact lands is a clause. The open question is whether
+`/implement` should also carry a narrow carve-out - a baseline red outside the
+code this ticket touches, repaired by a change that adds no behaviour, fixed in
+its own commit and recorded - or whether prevention upstream is enough.
+*Touches: discovery/SKILL.md's `### Show, don't tell`, and possibly
+implement/SKILL.md's `## Before starting`.*
+
+**Code enters the tree after the reviews have finished.** Both runs that found
+a defect outside their ticket on 2026-09-02 fixed it, correctly and RED-first,
+in a commit of its own after both reviews were clean: `/archive/[year]`
+rendering its data to unauthenticated callers, and `getSlackUserAction` calling
+`requireUser` without `await`. Both are real, and both are the only code in
+that day's six runs that no reviewer, ticket or spec ever touched. The rule
+wanted is about timing rather than permission: nothing enters the tree after
+the reviews except the ticket's `Record`. A defect found late is pulled into
+the diff the reviews see, or gets its own round, or goes here as a ticket - and
+a security defect never takes the third option, because leaving a live auth
+leak open to satisfy process is the wrong answer. Both of these were found
+during their run, so they would simply have landed before the reviews.
+*Touches: implement/SKILL.md's `## Finish`.*
+
+**An access-control claim is settled by reading the gate.** Three times on
+2026-09-02 a route was called protected because its guard was read rather than
+exercised: `/discovery` cleared `/archive` off `layout.tsx`, ticket 04 reasoned
+the same way about `/abwicklung`, and when a reviewer said otherwise the run
+overturned the finding on a single probe against a cold dev server - then
+reversed itself four steps later, because a Next.js layout does not stop the
+page segment from rendering and the warm probe showed the name in both the HTML
+and the RSC payload. `## Security` states the property every endpoint must have
+and not how it is established, so reading satisfies it. The method belongs
+there: request the route unauthenticated and grep the HTML *and* the streaming
+payload for a value only an authorised viewer should see, twice, because
+compile-on-demand makes the first request answer a different question.
+*Touches: coding-conventions/SKILL.md's `## Security`.*
+
+**The spec's `## Design` goes unread because the ticket cites criteria.**
+"Read the spec and the criteria the ticket's `Satisfies` cites" reads as
+permission to read those criteria and stop, and twice on 2026-09-02 that is
+what happened - tickets 03 and 04 both had placement and wording findings
+raised by the quality review from a `## Design` section the builder never
+opened. The safety net held both times, which is the argument for the small fix
+over the large one: name what else binds, rather than having `/spec-to-tickets`
+copy the design pointer into every ticket, which would put the ticket back in
+the business of restating what it is supposed to locate.
+*Touches: implement/SKILL.md's `## Before starting`.*
