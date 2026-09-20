@@ -902,8 +902,12 @@ copies=("$HERE"/../*/TICKET_FORMAT.md)
 # Every tool the retired prose named is a needle, since a regression is likelier
 # to name one than to use the word "mutation". The parking lot and the tickets
 # are where the gate is remembered on purpose, so they are the exemptions.
+#
+# "survivor" was a needle and is not one any more: it is an English word first,
+# and it fired on a sentence about criteria ranking the survivors. A regression
+# that means the mutation-testing sense says mutant or mutation too.
 
-asks="$(grep -lriE 'mutation|mutant|stryker|mutmut|cargo-mutants|infection|survivor|\bpit\b' \
+asks="$(grep -lriE 'mutation|mutant|stryker|mutmut|cargo-mutants|infection|\bpit\b' \
   --include='*.md' --exclude=IDEAS.md --exclude-dir=tickets --exclude-dir=.git "$HERE/..")"
 # grep says 1 for no match and 2 for a broken pattern or an unreadable path, and
 # both leave `asks` empty - so without this the check reports clean on the day it
