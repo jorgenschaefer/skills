@@ -32,8 +32,18 @@ headings() { grep -o '^#\{2,3\} .*' "$1" | sed 's/^#* //'; }
 if [ -f "$STANDARD" ]; then
   ok "the standard is its own skill"
 
-  # Nothing lost: every section the original carried is in exactly one half.
-  before="$(git -C "$ROOT" show c6bfc1d:coding-conventions/SKILL.md | grep -o '^#\{2,3\} .*' | sed 's/^#* //')"
+  # Nothing lost: every section the original carried is in exactly one half. The
+  # before state is a fixture rather than a `git show`: a pinned commit stops
+  # being reachable after a squash or a rebase, and a shallow clone never has it,
+  # at which point the suite fails for a reason that has nothing to do with the
+  # split and blames the split anyway.
+  BEFORE="$HERE/fixtures/coding-conventions-headings.txt"
+  if [ ! -s "$BEFORE" ]; then
+    bad "the before state is readable" "missing or empty: $BEFORE"
+    finish
+    exit
+  fi
+  before="$(cat "$BEFORE")"
   missing="" doubled=""
   while IFS= read -r h; do
     in_standard=0 in_design=0
@@ -62,12 +72,34 @@ if [ -f "$STANDARD" ]; then
   esac
 fi
 
-# Whoever names a standard must name one that is there.
+# Whoever names a standard must name one that is there - and a section of it that
+# is still in it. Sections were what moved, so a reference naming the right file
+# and the wrong half is the failure this split can cause, and the only one a
+# reader would not notice.
+BEFORE="$HERE/fixtures/coding-conventions-headings.txt"
+dangling=""
 for skill in "$ROOT"/*/SKILL.md; do
-  while read -r named; do
-    [ -d "$ROOT/$named" ] || bad "$(basename "$(dirname "$skill")") names a skill that exists" "$named"
-  done < <(grep -o '`/\?\(coding-standard\|coding-conventions\|software-design\)`' "$skill" | tr -d '`/' | sort -u)
+  from="$(basename "$(dirname "$skill")")"
+  while IFS= read -r line; do
+    named=""
+    case "$line" in *'`coding-standard`'*) named="coding-standard" ;; esac
+    case "$line" in *'`coding-conventions`'*) named="${named:-coding-conventions}" ;; esac
+    # A line naming both is ambiguous about which half it is attributing a
+    # section to, and there is a legitimate one - `/critique` reads both.
+    case "$line" in *'`coding-standard`'*'`coding-conventions`'*|*'`coding-conventions`'*'`coding-standard`'*) continue ;; esac
+    [ -n "$named" ] || continue
+    [ -d "$ROOT/$named" ] || { dangling+="$from names $named, which is not a skill"$'\n'; continue; }
+    while read -r section; do
+      # Only sections the split moved: a line may name any number of headings
+      # belonging to a spec, a ticket or a format, and those are not ours.
+      grep -qxF "$section" "$BEFORE" || continue
+      grep -q "^#\{2,3\} $section\$" "$ROOT/$named/SKILL.md" \
+        || dangling+="$from sends a reader to $named's ## $section, which is in the other half"$'\n'
+    done < <(printf '%s\n' "$line" | grep -o '`## [^`]*`' | sed 's/`## //; s/`//')
+  done < "$skill"
 done
-ok "every reference to a standard names a skill that exists"
+[ -z "$dangling" ] \
+  && ok "every reference to a standard names a section it still holds" \
+  || bad "every reference to a standard names a section it still holds" "$dangling"
 
 finish

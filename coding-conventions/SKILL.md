@@ -1,6 +1,6 @@
 ---
 name: coding-conventions
-description: How a change is shaped in this project - the domain's own names carried through every layer, where the seams are, which abstractions pay for themselves. Read while a change is being planned or its structure decided, not while code is being typed; the write-time standard is `coding-standard`.
+description: How a change is shaped in this project - the domain's own names carried through every layer, where the seams are, how few and how deep the seams should be. Read while a change is being planned or its structure decided, not while code is being typed; the write-time standard is `coding-standard`.
 ---
 
 # Shaping a change

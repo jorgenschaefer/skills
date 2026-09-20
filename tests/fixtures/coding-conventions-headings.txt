@@ -1,0 +1,15 @@
+Simple design
+Structure and locality
+Domain layering
+Anchor names in the domain
+The seams
+Domain objects across the seams
+Conceptual granularity, not premature abstraction
+Clarity and least astonishment
+Concurrency and shared state
+Cost at scale
+Accessibility
+Changing what already runs
+Test coverage
+Security
+Dependencies

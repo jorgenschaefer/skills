@@ -1,6 +1,6 @@
 ---
 name: coding-standard
-description: The code-quality standard this project holds code to - simplicity, structure, clarity, concurrency, cost, accessibility, tests, security, dependencies. Read it before writing or changing any code, and before reviewing any; it is the standard itself, not the act of building or reviewing.
+description: The code-quality standard this project holds code to - simplicity, structure, clarity, concurrency, cost, accessibility, changing what already runs, tests, security, dependencies. Read it before writing or changing any code, and before reviewing any; it is the standard itself, not the act of building or reviewing.
 ---
 
 # Coding Standard
