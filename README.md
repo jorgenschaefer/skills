@@ -14,9 +14,9 @@ npx skills add jorgenschaefer/skills
 npx skills add jorgenschaefer/skills@<skill-name>
 ```
 
-## The feature pipeline
+## The pipeline
 
-Most of these skills compose into one flow: one door in, one implementer, and three ways out. Everything goes through it - a feature, a bug, a refactor, a skill, a document - and what differs is how far along it goes, not which lane it started in.
+Most of these skills compose into one flow: one door in, one implementer, and four ways out of it. Everything goes through that door - a feature, a bug, a refactor, a skill, a document - and what differs is how far along it goes, not which lane it started in.
 
 ```
   /idea ──┬──→ intent.md ──→ /to-solution ──┬──→ solution spec ──┬──→ built with you present
