@@ -27,8 +27,9 @@ supposed to save.
 
 - Fifteen skills and two driver scripts for one pipeline, with two more retired during
   its life (`/discovery`, `/find-solution`).
-- One topic in this repo carries four documents — intent, solution, specimen, plan —
-  plus a second plan file whose job is to say the first one is not the plan.
+- One topic carried five documents — intent, solution, specimen, plan, and a second
+  plan file whose job was to say the first one is not the plan — totalling 1,308 lines.
+  They were deleted in `267625a`; `git show 267625a --stat` is the evidence.
 - The spec format requires `## Domain`, `### Ubiquitous language`, `## ADRs` and the
   `## Defaults` tiers on every run. No consumer is named for most of them, and no
   measurement has ever been attempted.

@@ -101,7 +101,8 @@ against the first.
 - Code quality of the output. `/critique` and the coding standard own that, and neither
   is being rewritten to make this work.
 - Multi-repo, multi-person, or parallel topics beyond "one topic per branch".
-- Migrating the existing `*_MERGE_LANES.md` paper. It stays in git history.
+- Migrating the old `*_MERGE_LANES.md` paper. It was deleted in `267625a` and lives in
+  git history, which is what the archive constraint says is enough.
 
 ## Accepted tradeoffs
 
