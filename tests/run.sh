@@ -901,6 +901,11 @@ done
 # skill installs without the file it was told to read, and the copies check
 # cannot see that - a format with one copy has nothing to differ from.
 
+# SKILL.md only. A format document names the other formats it sits next to -
+# SOLUTION_FORMAT.md points at ADR_FORMAT.md for a shape - and it carries those
+# mentions into every copy of itself. A mention is not a dependency; what the
+# skill's own instructions tell the agent to read is.
+
 for skill in "$HERE"/../*/SKILL.md; do
   dir="$(dirname "$skill")"
   for name in $(grep -o '[A-Z_]*_FORMAT\.md' "$skill" | sort -u); do

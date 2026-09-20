@@ -10,11 +10,19 @@ The shape of the spec `/to-solution` writes from an intent: the problem carried 
 
 Three tiers of commitment live in this file and a reader has to be able to tell them apart:
 
-- **Permanent** - the terms under `### Ubiquitous language` and the ADRs under `## ADRs`. These outlive the deliverable and the spec that carried it, so each gets its own explicit yes in the conversation at the moment it is proposed, never a brief at the end that nobody reads to the bottom of.
+- **Permanent** - the terms under `### Ubiquitous language` and the ADRs under `## ADRs`. These outlive the deliverable and the spec that carried it, so each is proposed on its own and gets its own explicit yes at the moment it comes up - never written autonomously, and never a brief at the end that nobody reads to the bottom of. `UBIQUITOUS_LANGUAGE_FORMAT.md` and `ADR_FORMAT.md` are the shapes.
 - **Defaults** - every entry marked **D-n**, wherever it stands. Most are collected under `## Defaults`; a survey verdict is marked and numbered where it is, beside the decision it qualifies. A default was decided without the evidence the builder will have, so it may be overturned on evidence found in the corpus. Never on taste, and never silently: whoever overturns one records what said otherwise.
 - **Binding for this deliverable** - everything else in the file. The build satisfies it or stops.
 
 `D-n` is one sequence across the whole file, so a default marked in place beside a decision and one collected at the end never share a number.
+
+## Where the paper lives
+
+The spec's directory holds one `.md` and nothing else beside it. `./accept.sh` refuses a spec directory holding more than one, because which file is the spec is not a guess to make where the wrong answer deletes the other one.
+
+- **The intent** stays where `/idea` put it. It is the design record rather than the run's paper, and it is never moved in beside the spec.
+- **The spec** is the one `.md`.
+- **The winning specimen** goes in `mockups/` beside it, which acceptance deletes with the rest of the paper. One kept anywhere else outlives the run it was drawn for and becomes a second source of truth nobody updates. The losing ones are deleted.
 
 Omit sections that do not apply.
 
