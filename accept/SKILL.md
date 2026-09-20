@@ -36,7 +36,9 @@ Append the routing to the intent's `## Routed back`, with the date. A list that 
 
 **Promote anything durable first.** A note that belongs in the architecture document, a domain term that belongs in the glossary. ADRs were written at plan exit, while the argument for them was still in context; what reaches you is whatever the build turned up afterwards. Deletion is the moment the rest is lost, so it is the moment to ask.
 
-**Then retire the paper**: `./accept-run.sh <topic>`. It refuses rather than trusts - in a repository, on a branch of its own, a verdict that says accepted, every ticket done, a clean tree - and every refusal changes nothing. Do not work around a refusal; it is telling you the run is not finished.
+**Commit the verdict and the promotions before you retire anything.** The script refuses a dirty tree, and it is right to: its own commit has to be deletions and nothing else, or the history cannot show what retiring a run actually removed.
+
+**Then retire the paper**: `./accept-run.sh <topic>`. It refuses rather than trusts - in a repository, on a branch of its own and not a detached HEAD, paper that exists, a verdict that says accepted, every ticket done, a clean tree, and nothing inside the paper that git has been told to ignore. Every refusal changes nothing. Do not work around one; it is telling you the run is not finished.
 
 **A topic dropped rather than finished** is `./accept-run.sh --abandon <topic>`, with a verdict that says `abandoned` and why. It waives the every-ticket-done check and nothing else. An intent nobody pursued is information about the intent, and the verdict is the only trace that survives it.
 

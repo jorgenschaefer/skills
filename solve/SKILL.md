@@ -48,6 +48,8 @@ A small change arrives as a sentence, and writing an intent document for it woul
 
 **`Accepted tradeoffs` and `Ruled out` are not optional and not decoration.** A reviewer can find a cost you failed to name; no reviewer can find the better solution you never considered. These two sections are the only thing standing between "this works" and "this was chosen".
 
+Read the `VERDICT_*.md` already in the tree before you write them: they record what the last few solutions said things would cost against what they cost, and that is the only correction available to an estimate.
+
 Write what this costs against what it was chosen over. "Adds some complexity" is a shrug. "Two round trips instead of one, bought for a schema that does not need migrating" is a tradeoff.
 
 **Where a cost the intent's constraints forbid turns up, the approach is disqualified.** Not a tradeoff to accept - a candidate to replace.

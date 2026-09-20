@@ -43,6 +43,12 @@ workspace() {  # every ticket done, tree clean, on a branch: the accepting case
 }
 
 accept() { ( cd "$WORK" && bash "$SCRIPT" "$@" > "$OUT" 2>&1 ); echo $?; }
+# A refusal that has already removed something is not a refusal. Checked where
+# there was paper to lose, which is the only place it means anything.
+untouched() {
+  [ -n "$(tracked INTENT_T.md)" ] && [ -f "$WORK/INTENT_T.md" ] \
+    && ok "nothing was deleted $1" || bad "nothing was deleted $1" "$(git -C "$WORK" status --porcelain)"
+}
 out() { cat "$OUT"; }
 tracked() { git -C "$WORK" ls-files "$1" | head -1; }
 
@@ -57,6 +63,7 @@ workspace; printf 'x\n' >> "$WORK/thing.txt"
 rc="$(accept t)"
 [ "$rc" != 0 ] && grep -qi 'clean\|uncommitted' "$OUT" \
   && ok "it refuses a dirty tree" || bad "it refuses a dirty tree" "rc=$rc $(out)"
+untouched "after refusing a dirty tree"
 
 workspace; sed -i 's/^status: .*/status:    review/' "$WORK/tickets/t/1-one.md"
 git -C "$WORK" commit -qam wip
@@ -64,6 +71,7 @@ rc="$(accept t)"
 [ "$rc" != 0 ] && grep -q '1-one' "$OUT" \
   && ok "it refuses while a ticket is unfinished, and names it" \
   || bad "it refuses while a ticket is unfinished, and names it" "rc=$rc $(out)"
+untouched "after refusing an unfinished ticket"
 
 workspace; rm "$WORK/VERDICT_T.md"; git -C "$WORK" commit -qam noverdict
 rc="$(accept t)"
@@ -78,14 +86,17 @@ git -C "$WORK" commit -qam rejected
 rc="$(accept t)"
 [ "$rc" != 0 ] && grep -qi 'rejected' "$OUT" \
   && ok "it refuses on a rejected verdict" || bad "it refuses on a rejected verdict" "rc=$rc $(out)"
+untouched "after refusing a rejected verdict"
 
 workspace
 rc="$(accept nosuchtopic)"
 [ "$rc" != 0 ] && ok "it refuses a topic with no paper" || bad "it refuses a topic with no paper" "$(out)"
 
-# every refusal changes nothing
-[ -z "$(git -C "$WORK" status --porcelain)" ] && [ -n "$(tracked INTENT_T.md)" ] \
-  && ok "a refusal deletes nothing" || bad "a refusal deletes nothing" "$(git -C "$WORK" status --porcelain)"
+# 2: the message, not merely the refusal - without the check the script falls
+# through and complains about a verdict that is not the problem.
+[ "$rc" != 0 ] && grep -q 'no paper for nosuchtopic' "$OUT" \
+  && ok "it refuses a topic with no paper, and says so" \
+  || bad "it refuses a topic with no paper, and says so" "rc=$rc $(out)"
 
 # --- and accepts
 
@@ -129,6 +140,47 @@ rc="$(accept --abandon t)"
 [ "$rc" != 0 ] && grep -qi 'abandoned' "$OUT" \
   && ok "--abandon needs a verdict that says so" \
   || bad "--abandon needs a verdict that says so" "rc=$rc $(out)"
+
+# A commit on a detached HEAD is unreachable the moment anyone switches branch.
+workspace; git -C "$WORK" checkout -q --detach
+rc="$(accept t)"
+[ "$rc" != 0 ] && grep -qi 'detached' "$OUT" \
+  && ok "it refuses on a detached HEAD" \
+  || bad "it refuses on a detached HEAD" "rc=$rc $(out)"
+
+workspace; rm -rf "$WORK/.git"
+rc="$(accept t)"
+[ "$rc" != 0 ] && grep -qi 'repository' "$OUT" \
+  && ok "it refuses outside a git repository" \
+  || bad "it refuses outside a git repository" "rc=$rc $(out)"
+
+# A commit can fail for reasons the script cannot see coming. What it must not
+# do is leave the paper deleted and call that a refusal.
+workspace
+mkdir -p "$WORK/.git/hooks"
+printf '#!/bin/sh\nexit 1\n' > "$WORK/.git/hooks/pre-commit"
+chmod +x "$WORK/.git/hooks/pre-commit"
+rc="$(accept t)"
+[ "$rc" != 0 ] && [ -f "$WORK/INTENT_T.md" ] && [ -z "$(git -C "$WORK" status --porcelain)" ] \
+  && ok "a commit that fails puts the paper back" \
+  || bad "a commit that fails puts the paper back" "rc=$rc $(git -C "$WORK" status --porcelain)"
+
+# What git ignores, git cannot delete - and the run would look retired.
+workspace
+printf 'notes.txt\n' > "$WORK/.gitignore"
+printf 'scratch\n' > "$WORK/tickets/t/notes.txt"
+git -C "$WORK" add .gitignore >/dev/null; git -C "$WORK" commit -qm ignore
+rc="$(accept t)"
+[ "$rc" != 0 ] && grep -qi 'ignore' "$OUT" \
+  && ok "it refuses when the paper holds a file git will not delete" \
+  || bad "it refuses when the paper holds a file git will not delete" "rc=$rc $(out)"
+
+# A topic is a name, not a path.
+workspace
+rc="$(accept ../..)"
+[ "$rc" != 0 ] && grep -q 'not a topic' "$OUT" \
+  && ok "it refuses a topic that is a path" \
+  || bad "it refuses a topic that is a path" "rc=$rc $(out)"
 
 printf '\n%d passed, %d failed\n' "$passed" "$failed"
 [ "$failed" -eq 0 ]

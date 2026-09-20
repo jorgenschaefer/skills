@@ -34,12 +34,21 @@ case "${1:-}" in
 esac
 TOPIC="${1:-}"
 [ -n "$TOPIC" ] || die "usage: accept-run.sh [--abandon] <topic>"
+[ "$#" -le 1 ] || die "one topic, and --abandon before it: got $*"
+# A topic is a name, not a path. `tickets/$TOPIC` with a slash in it reaches
+# anywhere in the tree, and this script deletes what it is pointed at.
+case "$TOPIC" in
+  -*|.*|*/*) die "not a topic: $TOPIC" ;;
+esac
 
 git rev-parse --is-inside-work-tree >/dev/null 2>&1 || die "not a git repository"
 
-branch="$(git rev-parse --abbrev-ref HEAD)"
+branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)" \
+  || die "this repository has no commits yet: there is nothing to accept"
 case "$branch" in
   main|master) die "refusing to accept on $branch: a run belongs on a branch of its own" ;;
+  HEAD) die "refusing to accept on a detached HEAD: the commit would be unreachable as soon as anyone switches branch" ;;
+  "") die "cannot tell which branch this is" ;;
 esac
 
 upper="$(printf '%s' "$TOPIC" | tr '[:lower:]-' '[:upper:]_')"
@@ -75,12 +84,30 @@ fi
 [ -z "$(git status --porcelain)" ] \
   || die "the tree is not clean: this commit should be deletions and nothing else"$'\n'"$(git status --porcelain)"
 
-git rm -rq "${paper[@]}" || die "could not remove the paper"
+# An ignored file inside the paper is deleted by nothing: git will not touch it,
+# and the directory it sits in survives with it. A run half-retired looks
+# finished from the history and is not.
+ignored="$(git status --porcelain --ignored=matching -- "${paper[@]}" | grep '^!!' || true)"
+[ -z "$ignored" ] \
+  || die "git ignores files inside the paper, so git cannot delete them:"$'\n'"$ignored"
+
+literal=(); for f in "${paper[@]}"; do literal+=(":(literal)$f"); done
+git rm -rq -- "${literal[@]}" || die "could not remove the paper"
+
+# From here the index is changed. An exit that leaves it that way is not a
+# refusal, whatever it exits with, so it says so rather than pretending nothing
+# happened.
+commit_failed() {
+  git reset -q HEAD -- "${literal[@]}" 2>/dev/null
+  git checkout -q -- "${literal[@]}" 2>/dev/null
+  die "could not commit the deletion - the paper has been put back, nothing was committed"
+}
+
 git commit -q -m "Retire the paper for $TOPIC
 
 $( [ "$ABANDON" = yes ] && echo "Abandoned rather than finished." || echo "Accepted." ) The
 intent, the solution and the tickets were the record of what was asked for;
 $VERDICT survives them and says what the work was for and what it cost. Git
-history keeps the rest." || die "could not commit the deletion"
+history keeps the rest." || commit_failed
 
 printf 'retired the paper for %s; %s survives\n' "$TOPIC" "$VERDICT"
