@@ -882,17 +882,27 @@ expect_no_out "attempt" "clears the count, so the next run is a first run again"
 
 # --- the skills' shared files ---------------------------------------------------
 
-# Five skills read the ticket format and each carries its own copy, because a
-# skill installs alone and cannot reach into a sibling's directory. Identical is
-# the whole point, and a five-way edit is easy to make four-way by accident.
+# A format document two skills both need is copied into each, because a skill
+# installs alone and cannot reach into a sibling's directory. Identical is the
+# whole point, and an n-way edit is easy to make (n-1)-way by accident.
+#
+# Quantified over the groups rather than over a count of any one of them: the
+# holders move as skills come and go, and an assertion pinned to a number is one
+# that gets edited to match whatever it found rather than read.
 
-copies=("$HERE"/../*/TICKET_FORMAT.md)
-[ "${#copies[@]}" -eq 5 ] \
-  && ok "every skill that reads a ticket has the format beside it" \
-  || bad "every skill that reads a ticket has the format beside it" "${copies[*]}"
-[ "$(md5sum "${copies[@]}" | awk '{print $1}' | sort -u | wc -l)" = 1 ] \
-  && ok "the ticket format's copies are byte-identical" \
-  || bad "the ticket format's copies are byte-identical" "$(md5sum "${copies[@]}")"
+names=()
+for format in "$HERE"/../*/*_FORMAT.md; do
+  name="$(basename "$format")"
+  [[ " ${names[*]} " == *" $name "* ]] || names+=("$name")
+done
+
+for name in "${names[@]}"; do
+  copies=("$HERE"/../*/"$name")
+  [ "${#copies[@]}" -ge 2 ] || continue
+  [ "$(md5sum "${copies[@]}" | awk '{print $1}' | sort -u | wc -l)" = 1 ] \
+    && ok "every copy of $name is byte-identical" \
+    || bad "every copy of $name is byte-identical" "$(md5sum "${copies[@]}")"
+done
 
 # The mutation gate a build used to run at every ticket is gone, and what took
 # its place is prose - a skill that starts asking for the tooling again asks for

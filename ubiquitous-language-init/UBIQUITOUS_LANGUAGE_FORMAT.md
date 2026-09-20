@@ -2,7 +2,7 @@
 
 The project-wide canonical vocabulary lives in `UBIQUITOUS_LANGUAGE.md` at the project root. It captures the domain language - the shared terms that mean the same thing to developers, users, and stakeholders.
 
-The discovery skill writes to it as new terms surface in interviews. Other agents and humans read it to use consistent vocabulary across code, tests, and documentation.
+`/to-solution` proposes entries as new terms surface while a change is designed, and `/handover` proposes the ones a build settled. Other agents and humans read it to use consistent vocabulary across code, tests, and documentation.
 
 Only terms with a clear, project-specific meaning that would not be immediately obvious without the entry go in here. Terms that could be misunderstood definitely belong here.
 
