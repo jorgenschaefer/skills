@@ -59,7 +59,7 @@ Inside a run, the spec check gets two passes to converge (`MAX_PASSES`). Between
 
 The reviews run on a different model from the one that built the code (`BUILD_MODEL` and `REVIEW_MODEL`, which it refuses to start with set to the same thing), since two sessions of one model share its blind spots. Nobody is there to approve a tool call either, so it needs standing permission for the edits, commands and commits a ticket makes, and for starting the app the acceptance drives. `claude -p` cannot prompt: what it cannot get approved, it declines.
 
-The tests are `tests/run.sh` - plain bash, each case building a throwaway repository with a stub standing in for `claude`. It is the one command: it covers both scripts and then runs `tests/intent-format.sh`, which checks the intent format and every intent in the tree against it. The rate-limit fixtures are real records from runs that hit the real limit.
+The tests are `tests/run.sh` - plain bash, each case building a throwaway repository with a stub standing in for `claude`. It is the one command: it covers both scripts and then runs the format suites - `tests/intent-format.sh` and `tests/solution-format.sh` - which check each format document and every intent and solution in the tree against it. The rate-limit fixtures are real records from runs that hit the real limit.
 
 ### What holds it together
 
