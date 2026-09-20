@@ -13,7 +13,7 @@ Read an intent, design several genuinely different answers to it, choose one wit
 Three things stop this run. Between them, ask only what the corpus cannot answer and you cannot defensibly decide - and where such a question changes what you would design next, ask it when it arises rather than saving it for a stop.
 
 1. **The decision criteria** - what the candidates will be ranked against, proposed ranked, before anything is scored. This one is a decision: it blocks.
-2. **The comparison** - shown before the verdict. Not a decision but a correction window: do not invent a question to make one. Where it rests on a claim about their world you could not check, ask about that claim by name.
+2. **The comparison** - shown before the verdict, with the domain model on the same turn. Not a decision but a correction window: do not invent a question to make one. Where it rests on a claim about their world you could not check, ask about that claim by name.
 3. **What is still unsettled at the close** - a standards contradiction you cannot resolve, or a problem statement your cold re-derivation disagrees with. Conditional, and most runs hit none. Where more than one is live, they go in one turn.
 
 **End your turn at the first question mark.** One turn, one open question.
@@ -75,6 +75,10 @@ A constraint already eliminated whoever it was going to eliminate; the decision 
 
 **Name every load-bearing unknown** - a claim that would flip the recommendation if it turned out false. Check it now, cheaply, from a primary source, or carry it to the close as a block. A lesser unknown goes to `## Open concerns`.
 
+**Model the domain as you weigh.** Behind every candidate is a domain, and how each one carves it up is usually what separates them: where the aggregate boundary sits dictates what can change together, and it is often the thing that makes one candidate fit and another not. Trace each thing the user will do as a domain story - this actor does this action on this work object, which raises this event - and the missing steps announce themselves: an action with no actor, a work object nobody creates, an event nothing reacts to. Note a bounded context only where the change crosses or establishes one.
+
+The model rides on stop 2 rather than getting a turn of its own, because a model presented as a finished picture gets nodded at and the comparison is already the turn where things are laid out to be corrected. Show it in the user's language - whether something is an entity or a value object is your problem, not theirs - and foreground what they can veto: these two are one thing, this may lag that, that is not what we call it here, you have missed an actor.
+
 **Show the comparison before the verdict** - stop 2. Foreground what they can overturn: a cost you have mispriced, a decision criterion that matters more than its agreed place, a candidate they recognise as something already tried.
 
 ## Phase 3 - The choice
@@ -87,6 +91,8 @@ A constraint already eliminated whoever it was going to eliminate; the decision 
 
 **Survey what already exists.** Go piece by piece through what the chosen solution needs and find what the corpus already has that resembles it. Each gets a verdict and a reason: **reuse** it as it stands, **extend** it, **absorb** it, **replace** it, or deliberately **sit beside** it. Bounded to what this deliverable touches. A survey full of *replace* says the candidate diverges more than it looked - say so before the choice hardens.
 
+Each verdict is a default: it was reached with the corpus surveyed and the builder will have evidence you did not. Number it `D-n` where it stands, beside the decision it qualifies, and say what in the corpus would say otherwise.
+
 **Break it into parts.** Walk the chosen design the way whoever builds it will. Where the walk reaches something that could be built, checked and set down on its own, that is a part - name what it depends on. A part nobody could tell was finished is not one yet: say what makes it done.
 
 The same walk finds what the design leaves undecided: at each step, what would you have to decide that the spec does not say? Answer those here rather than leaving them for whoever builds it to notice.
@@ -97,11 +103,13 @@ Write the spec beside the intent, in the shape `SOLUTION_FORMAT.md` specifies. P
 
 **The winning specimen goes beside the spec, and `## Design` links it.** Delete the losing ones.
 
+**Propose the permanent-tier items one at a time, as they arise.** A term for the project's glossary, an ADR for a structural choice this design rests on or establishes - each outlives the spec that carried it, so each gets its own yes at the moment it comes up rather than a list at the end. Never write one autonomously. `UBIQUITOUS_LANGUAGE_FORMAT.md` and `ADR_FORMAT.md` are the shapes.
+
 **Check the bar rather than assume it** - hand the finished file to a fresh `general-purpose` subagent that has not seen this conversation, and ask it two questions: *what is the first thing you would have to guess*, and *where does this fight itself*. Most of what comes back you answer by editing the spec. A finding you cannot close that way is one of two things: a decision you can still make, which you make; or a load-bearing unknown that surfaced late, which turns the ending into a block. Then the spec does not ship: say what would unblock it.
 
 ## Throughout
 
-**Sort every decision.** The corpus answers it - resolve it and move on. A wrong default would hurt but there is a defensible answer - decide it, then surface it for a veto. The answer is genuinely the user's, a tradeoff nothing else implies - ask. Keep the running list of what you defaulted and show it.
+**Sort every decision.** The corpus answers it - resolve it and move on. A wrong default would hurt but there is a defensible answer - decide it, then surface it for a veto. The answer is genuinely the user's, a tradeoff nothing else implies - ask. Keep the running list of what you defaulted and show it. In the spec each becomes a **D-n** with what in the corpus would say otherwise - a builder may overturn one on evidence, never on taste, and cannot do either without knowing what it rested on.
 
 **Push back once, on a decision that is theirs.** Say what you see and why, and then it is theirs. The three stops are not pushback and do not spend it.
 
