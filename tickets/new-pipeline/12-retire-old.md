@@ -22,6 +22,10 @@ end to end.
 
 Going: `to-solution`, `spec-to-tickets`, `check-against-spec`, `implement-ticket`,
 `handover`, `loop.sh`, `accept.sh`, and whatever remains of the old `implement`.
+
+`accept-run.sh` stays: ticket 8 kept the mechanical half of acceptance as a script
+rather than folding it into the skill, for the reason the runner is a script, and wrote
+it against the new paper layout beside the old one.
 Staying: `idea` and `critique` reshaped, `git-commit-message`, `repo-overview`,
 `improve-skill`, `cleanup-repo`, `upgrade-dependencies`, and `ubiquitous-language-init`
 if ticket 11 kept it.

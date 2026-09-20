@@ -1119,6 +1119,8 @@ printf '\n'
 "$HERE/build-contract.sh" || failed=$((failed + 1))
 printf '\n'
 "$HERE/runner.sh" || failed=$((failed + 1))
+printf '\n'
+"$HERE/accept.sh" || failed=$((failed + 1))
 
 printf '\n%d passed, %d failed, of the cases above\n' "$passed" "$failed"
 [ "$failed" -eq 0 ]
