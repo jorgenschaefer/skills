@@ -25,23 +25,49 @@ if [ ! -f "$SKILL" ]; then
   exit
 fi
 
-# A session that marks its own ticket done has reviewed itself by omission: the
-# runner sets `done` after a review it did not run. The skill is allowed to say
-# so - what it may not do is tell the agent to write it.
-told="$(grep -n 'status: *done' "$SKILL" | grep -vi 'never\|not yours\|runner owns')"
+# The instructions a session may and may not be given. Each case looks for the
+# imperative, not the token: a bare mention proves nothing, and the skill is
+# allowed - encouraged - to say what it must not do.
+#
+# The disclaimers are matched on the sentence, not the line, because a line can
+# carry an instruction and a disclaimer at once and the line-scoped version of
+# this check let exactly that through.
+sentences() { tr '\n' ' ' | sed 's/\([.!]\) /\1\n/g'; }
+
+says_to() {  # phrase -> the sentences instructing it, minus the disclaiming ones
+  sentences < "$SKILL" | grep -i -- "$1" | grep -vi "never\|not yours\|the runner\(  *owns\)\?\|cannot"
+}
+
+# Marking your own ticket done is reviewing it by omission: the runner writes
+# `done`, after a review the session did not run.
+told="$(says_to 'status: *done')$(says_to 'mark[a-z]* the ticket done')"
 [ -z "$told" ] \
   && ok "the session is never told to write status: done" \
   || bad "the session is never told to write status: done" "$told"
 
+told="$(says_to 'status: *doing')"
+[ -z "$told" ] \
+  && ok "the session is never told to claim a ticket" \
+  || bad "the session is never told to claim a ticket" "$told"
+
 for status in review halted; do
-  grep -q "status: *$status" "$SKILL" \
-    && ok "the session is told to write status: $status" \
-    || bad "the session is told to write status: $status" "not in $SKILL"
+  # Present as an instruction, and not disclaimed anywhere else: a skill can
+  # contradict itself in two sentences, and the later one is what a reader
+  # remembers.
+  told="$(sentences < "$SKILL" | grep -i "set .*status: *$status")"
+  denied="$(sentences < "$SKILL" | grep -iE "(never|not) (write|set) .*status: *$status")"
+  if [ -z "$told" ]; then
+    bad "the session is told to set status: $status" "no instruction in $SKILL"
+  elif [ -n "$denied" ]; then
+    bad "the session is told to set status: $status" "and told not to: $denied"
+  else
+    ok "the session is told to set status: $status"
+  fi
 done
 
-# The kinds a session can know about. `exhausted` and `drift` are the runner's:
-# a session out of attempts is not running, and a session never reads the
-# solution, so listing them here would be telling it to report what it cannot see.
+# The kinds a session can know about, and the two it cannot: a session out of
+# attempts is not running to report it, and a session never reads the solution,
+# so it cannot know the ticket has drifted from one.
 for kind in blocked undecided mystery; do
   grep -q "\`$kind\`" "$SKILL" \
     && ok "the session knows the $kind halt" \
@@ -49,11 +75,10 @@ for kind in blocked undecided mystery; do
 done
 
 for kind in exhausted drift; do
-  if grep -q "writes\? \`$kind\`\|raise \`$kind\`" "$SKILL"; then
-    bad "the session does not raise the $kind halt" "$SKILL tells it to"
-  else
-    ok "the session does not raise the $kind halt"
-  fi
+  told="$(says_to "\`$kind\`")"
+  [ -z "$told" ] \
+    && ok "the session is never told to raise the $kind halt" \
+    || bad "the session is never told to raise the $kind halt" "$told"
 done
 
 # The Record is the only evidence a criterion was covered rather than claimed.

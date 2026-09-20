@@ -6,6 +6,11 @@ disable-model-invocation: true
 
 # Implement Ticket
 
+**Superseded.** `/implement` was rewritten as the per-ticket build skill, and the
+runner owns the loop this file wraps. Nothing below has been updated to match: the
+halts it names and the two reviews it promises are the old skill's. It is retired with
+the rest of the old pipeline.
+
 Build the ticket at the path you were given, then hand back.
 
 The craft is `/implement`'s. Invoke it by name and follow all of it: the RED-first loop, the verification command, the two reviews, the bounded attempts, the `Record` it writes at the end. This skill supplies the one fact `/implement` cannot know on its own: **nobody is watching this run.** Everything below follows from that.

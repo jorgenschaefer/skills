@@ -465,3 +465,17 @@ over the large one: name what else binds, rather than having `/spec-to-tickets`
 copy the design pointer into every ticket, which would put the ticket back in
 the business of restating what it is supposed to locate.
 *Touches: implement/SKILL.md's `## Before starting`.*
+
+## TDD has no home outside a ticket
+
+`coding-standard` carries the outcome rules - name the test that pins a behaviour, pin
+the edges of the input range - but no red/green/refactor loop. The loop lives in
+`/implement`, put there when the standard was split because that split was forbidden
+from adding content, and `NEW_PIPELINE_IDEA.md` says the standard should carry it.
+
+The consequence is narrow and real: code written outside a ticket gets the outcome
+rules and no instruction to arrive at them test-first. Either the loop moves into
+`coding-standard` where every writer of code reads it, or the standard says plainly
+that test-first is a build discipline and it is not asking for one.
+
+*Touches: coding-standard/SKILL.md, implement/SKILL.md.*

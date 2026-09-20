@@ -15,6 +15,8 @@ One ticket. The ticket is the whole brief: it carries its criteria quoted from t
 
 **Never open the solution.** The ticket quotes what it needs; the quotation is deliberate, and going upstream for context is how a ticket quietly becomes a different ticket. If the ticket does not say enough, it is the ticket that is wrong.
 
+**Respect the ticket's `## Not here`.** It names the adjacent thing another slice owns, and building it is not generosity - it is two tickets building the same code, and a commit that claims one criterion while carrying another's work.
+
 **Find the project's verification command** - the one that runs the tests, the types and the linter. Where there is none, run what exists and say so in the `Record`.
 
 ## Build it, test first
@@ -53,9 +55,11 @@ Where it is genuinely wrong rather than merely different, that is an `undecided`
 
 ## Finish
 
-**One ticket, one unit of work.** Commit when the criteria are green and the verification command passes. A review may send it back, and the rework is another commit - the ticket is the unit, not the commit.
+**One ticket, one unit of work.** Commit when the criteria are green and the verification command passes - the code and the ticket file together, so the evidence and the work it describes arrive as one change. Stage the files this ticket touched and nothing else; never `git add -A`.
 
 **Write the ticket's `## Record`**: which test names which criterion, and the verification command you ran. It is the only evidence that a criterion was covered rather than claimed, and the acceptance stage reads it.
+
+**On a second pass, the ticket's `## Findings` is the brief.** A review sent it back; fix what it found, RED first like anything else, and leave the criteria alone - a finding is not a licence to reopen what the ticket asks for. The rework is another commit. The ticket is the unit of work, not the commit.
 
 **Set `status: review`, or `status: halted`.** Never `status: done`, and never claim a ticket by writing `status: doing` - the runner owns both ends. A session that marks its own work finished has reviewed itself by omission.
 
