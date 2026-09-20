@@ -33,7 +33,7 @@ State what the spec delivers as a release note: one line a user would care about
 - **Nothing smaller is worth shipping** - it is one feature. Continue.
 - **Nothing about it is observable outside the code** - this is maintenance, not a feature. Stop, and say so: it wants a maintenance ticket rather than a spec and a run.
 
-Stop too if the spec isn't settled: success criteria missing, decisions left open, an open-questions section surviving. Those belong to the design, and inventing the gaps here buries them in tickets nobody will re-read.
+Stop too if the spec isn't settled: success criteria missing, decisions left open, an open-questions section surviving. `## Open concerns` is not that section - what stands there was agreed as a guess, with what would settle it; an open question is one nobody has answered. Those belong to the design, and inventing the gaps here buries them in tickets nobody will re-read.
 
 One exception you flag rather than refuse: a spec that passes the split test but is plainly large. It is one feature, so splitting it produces halves that aren't independently shippable - that is the user's call, not a refusal. Say what you found, offer the choice between a long run with a big final review and two runs that don't stand alone, and take the answer.
 
