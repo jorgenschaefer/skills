@@ -1,6 +1,6 @@
 ---
 name: idea
-description: Use when a change is being worked out with the user - a feature, a bug, a refactor, or a passing idea that needs developing into something buildable. Finds the problem underneath what was asked for and writes it down as an intent, with no solution in it. The one way in; `/to-solution` is what designs against the intent afterwards.
+description: Use when a change is being worked out with the user - a feature, a bug, a refactor, or a passing idea that needs developing into something buildable. Finds the problem underneath what was asked for and writes it down as an intent, with no solution in it. The one way in.
 ---
 
 # Idea
@@ -9,7 +9,7 @@ Help the user sharpen an idea by finding the problem underneath it, and write th
 
 ## The problem
 
-Look at the project before you ask - what it already calls things, what it already has.
+Look at the project before you ask - what it already calls things, what it already has. `IDEAS.md`, where the project keeps one, is the parking lot the checks file into: what is already noted there is evidence about the problem, and sometimes it is the problem.
 
 The solution they arrived with is evidence about the problem, not the brief.
 
