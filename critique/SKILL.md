@@ -22,13 +22,15 @@ If `UBIQUITOUS_LANGUAGE.md` exists at the repo root, read it first so vocabulary
 
 The build session has committed and left the ticket at `status: review`. You were started in a context that did not write the code, which is the only reason this review is worth running.
 
-**The ticket is the standard, and the whole of it.** Its `## Done when` is what the commit had to achieve; its `## Not here` is what the commit was not allowed to touch, and work that crossed that line is a finding even when the work is good. Its `## Record` claims a test for each criterion: check the tests it names exist, and that they fail when the behaviour they pin is removed. A `Record` that names a test which passes with the behaviour gone is the most serious finding available to you, because everything downstream trusts it.
+**The ticket is the acceptance standard and the scope boundary.** Its `## Done when` is what the commit had to achieve; its `## Not here` is what the commit was not allowed to touch, and work that crossed that line is a finding even when the work is good. It does not displace `coding-standard`: the ticket says what had to be true, the standard says what the code has to look like either way, and a quality finding that traces to no criterion is still a finding. Its `## Record` claims a test for each criterion, and the claim is checked rather than read: for each one, run the named test, then break the behaviour it pins in the working tree and watch that test fail - removal, and then an edge moved, which is the bar the build was held to. **Put every one of those edits back before you report, and commit none of them.** This is the one thing in this file that touches the code, it lasts as long as a test run, and a session that leaves one behind has broken the branch it was reviewing.
+
+A `Record` naming a test that passes with the behaviour gone is the most serious finding available to you, because acceptance reads that Record as evidence the criterion was built.
 
 **Never open the solution.** The ticket quotes what it needs. A reviewer who goes upstream starts judging the approach, and the approach was settled with someone before this ticket existed - reopening it here is how the pipeline stops converging. If the criteria seem wrong, that is a finding about the ticket, not a licence to review something else.
 
 **Write what you want changed into the ticket's `## Findings`**, one entry each, in the shape the rest of this file specifies. Findings are the whole output: do not fix the code, and do not touch the frontmatter. `status`, `attempts` and `reviews` belong to the runner, which reads your verdict and decides what happens next.
 
-**Say plainly when there is nothing.** An empty `## Findings` and a clean verdict is the common case, and padding it teaches the next reader to skim.
+**A clean review writes no `## Findings` at all** - the section is absent until there is something in it. The verdict line goes to the session output as always, not into the ticket: it is what the runner reads to decide what happens next.
 
 ## What to check
 
@@ -91,6 +93,4 @@ Four counts, always all four, in that order, with those words whatever the numbe
 
 A caller that has to read the prose to learn whether the review passed spends a whole second agent on it, and gets an answer that disagrees with yours about as often as people disagree about prose.
 
-Where such a ticket's fix would reach a workflow test under `tests/workflows/`, write its `## Workflow tests` section as you file it: a build that touches one without that section stops the run.
-
-Where the caller asks for findings written up as work orders rather than reported – an unattended pipeline does – `TICKET_FORMAT.md` beside this skill is the shape, and a review finding is its *remediation ticket*. Nothing about the review changes: the caller knows what happens to a finding, and this skill still only judges code.
+Where a caller asks for findings written up as work orders to be scheduled rather than fixed now, `TICKET_FORMAT.md` beside this skill is the shape, and a finding becomes its own *remediation ticket* - including a `## Workflow tests` section where the fix would reach a workflow test under `tests/workflows/`. That is the old pipeline's arrangement and it is not the ticket mode above, which writes findings into the ticket that was being reviewed and files nothing. Nothing about the review itself changes either way: this skill judges code, and the caller decides what becomes of a finding.

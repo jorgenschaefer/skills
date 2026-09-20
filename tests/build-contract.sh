@@ -7,9 +7,9 @@
 #
 # The skill is almost entirely constraints against what a helpful agent would
 # otherwise do: work around a blocker, improve the solution it was handed,
-# review its own diff, declare itself d. Those are prose, and prose is
-# what drifts, so these cases pin the two that have a mechanical shape - the
-# statuses a session may write, and the halts it may raise.
+# review its own diff, declare itself finished. Those are prose, and prose is
+# what drifts, so these cases pin the ones with a mechanical shape: the statuses
+# each session may write, the halts each may raise, and where its output goes.
 
 set -uo pipefail
 
@@ -35,18 +35,20 @@ fi
 # this check let exactly that through.
 sentences() { tr '\n' ' ' | sed 's/\([.!]\) /\1\n/g'; }
 
-says_to() {  # phrase -> the sentences instructing it, minus the disclaiming ones
-  sentences < "$SKILL" | grep -i -- "$1" | grep -vi "never\|not yours\|the runner\(  *owns\)\?\|cannot"
+says_to() {  # file, phrase -> the sentences instructing it, minus disclaiming ones
+  # `the runner` alone is too broad a disclaimer: a sentence can name the runner
+  # and still instruct. Only the phrases that actually deny apply.
+  sentences < "$1" | grep -iE -- "$2" | grep -viE "never|not yours|the runner owns|do not|cannot"
 }
 
 # Marking your own ticket done is reviewing it by omission: the runner writes
 # `done`, after a review the session did not run.
-told="$(says_to 'status: *done')$(says_to 'mark[a-z]* the ticket done')"
+told="$(says_to "$SKILL" 'status: *done|mark[a-z]* the ticket done|ticket status to done')"
 [ -z "$told" ] \
   && ok "the session is never told to write status: done" \
   || bad "the session is never told to write status: done" "$told"
 
-told="$(says_to 'status: *doing')"
+told="$(says_to "$SKILL" 'status: *doing|claim the ticket')"
 [ -z "$told" ] \
   && ok "the session is never told to claim a ticket" \
   || bad "the session is never told to claim a ticket" "$told"
@@ -76,7 +78,7 @@ for kind in blocked undecided mystery; do
 done
 
 for kind in exhausted drift; do
-  told="$(says_to "\`$kind\`")"
+  told="$(says_to "$SKILL" "\`$kind\`")"
   [ -z "$told" ] \
     && ok "the session is never told to raise the $kind halt" \
     || bad "the session is never told to raise the $kind halt" "$told"
@@ -97,22 +99,32 @@ grep -q 'critique' "$SKILL" \
 
 REVIEW="$ROOT/critique/SKILL.md"
 
+if [ ! -f "$REVIEW" ]; then
+  bad "the review skill is there" "no $REVIEW"
+  finish
+  exit
+fi
+ok "the review skill is there"
+
 # A review that opens the solution is reviewing the approach, which was settled
 # with someone before this ticket existed.
-told="$(sentences < "$REVIEW" | grep -i 'read.*SOLUTION_\|open.*solution' | grep -vi 'never\|not yours\|do not')"
+told="$(says_to "$REVIEW" 'read.*solution|open.*solution|consult.*solution|refer to.*solution')"
 [ -z "$told" ] \
   && ok "the review is never told to read the solution" \
   || bad "the review is never told to read the solution" "$told"
 
 # Statuses and counters are the runner's, from both ends of the loop.
-told="$(sentences < "$REVIEW" | grep -i 'set .*status:\|write .*status:' | grep -vi 'never\|not yours\|the runner')"
+told="$(says_to "$REVIEW" 'status: *(done|doing|ready)|ticket status to|increment .*(attempts|reviews)|set .*(attempts|reviews)')"
 [ -z "$told" ] \
-  && ok "the review never sets a status" \
-  || bad "the review never sets a status" "$told"
+  && ok "the review never sets a status or a counter" \
+  || bad "the review never sets a status or a counter" "$told"
 
-grep -q '## Findings' "$REVIEW" \
-  && ok "the review writes the ticket's Findings" \
-  || bad "the review writes the ticket's Findings" "not named in $REVIEW"
+# AC-15's deliverable, as an instruction rather than a string: the section name
+# can appear in a sentence forbidding it.
+told="$(says_to "$REVIEW" "write.*\`## Findings\`|into the ticket's \`## Findings\`")"
+[ -n "$told" ] \
+  && ok "the review is told to write the ticket's Findings" \
+  || bad "the review is told to write the ticket's Findings" "no instruction in $REVIEW"
 
 # It has to stay the review anyone can run on a branch: the pipeline mode is an
 # addition, and a skill narrowed to tickets stops being reachable by hand.
