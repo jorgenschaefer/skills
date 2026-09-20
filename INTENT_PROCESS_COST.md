@@ -95,9 +95,14 @@ question of whether that made sense.
 - Does `ubiquitous-language-init` survive? Domain language would move into a plan-time
   skill, which leaves the glossary bootstrapper either redundant or its necessary
   counterpart.
-- Is discovery-by-description reliable enough to carry C-3? If a skill cannot be made
-  to fire on the right requests and stay quiet on the others, the single door is a
-  claim that cannot be cashed.
+- ~~Is discovery-by-description reliable enough to carry C-3?~~ **Answered, for the
+  uncontested case.** Thirty-one headless runs against a stub skill: a second-draft
+  description separated code-change planning from research, meetings and rollouts
+  cleanly, and fired without the word "plan". It is stochastic — one prompt fired 3 of
+  4 times — but a miss yields an ordinary plan and leaves no ticket directory, so it is
+  both graceful and visible. Still untested under competition from the other skills in
+  this repo, which is the case that could still overturn it. See *What the experiment
+  showed* in `NEW_PIPELINE_IDEA.md`.
 - Does losing memory across topics cost anything? Unknown, and the old pipeline never
   established that having it helped.
 

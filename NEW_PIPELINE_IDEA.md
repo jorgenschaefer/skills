@@ -421,6 +421,47 @@ and they can only be tuned by watching them miss. The software-design skill has 
 same problem one notch narrower — it should fire on a new concept or a crossed
 boundary, not on a three-line edit.
 
+#### What the experiment showed
+
+Thirty-one headless runs against a stub `/slice` in an empty project, before any of
+this was built.
+
+A first description keyed on *"a settled solution is being turned into the work that
+builds it"* scored 12 of 14, with two stable failures: "I want to refactor the payment
+module. Plan it." never fired (0 of 4), and "Plan the rollout of the new pricing page
+to customers" always did (3 of 3). Both have the same cause — the description was
+written in the vocabulary of this pipeline rather than in the vocabulary of a request,
+and its only exclusion was research.
+
+A second description fixed both, and is the starting point for the real skill:
+
+> Use when planning how to carry out a change to this codebase - a feature, a bug fix,
+> a refactor, a migration - so that the work can be built. Cuts it into vertical
+> slices, each independently buildable and testable, and writes them as tickets. Not
+> for planning research, investigation, a meeting, a rollout, or any work that does not
+> change code.
+
+**The rule:** name the shapes a request actually arrives in, and enumerate the
+exclusions concretely. Abstractions about your own process match nothing, because the
+person asking does not know them.
+
+It also fires without the word "plan" ("Add rate limiting to the API" in plan mode) and
+stays quiet in ordinary auto mode ("Add a retry to the fetch call"), which is the
+separation (c) and (d) need.
+
+**It is stochastic.** One prompt fired three times out of four — same words, same
+description. Discovery is a probability, not a switch.
+
+That is survivable here for a reason worth stating: a miss produces an ordinary plan,
+which is this design's documented floor, and it is *visible* — no ticket directory
+appears, so the runner has nothing to run. The degradation property is not only a
+convenience for small changes; it is what makes discovery safe to depend on.
+
+**What this did not test:** competition. One skill in an empty project is the easy
+case. In a repository where `/critique`, the software-design skill and the coding
+standard all overlap this territory, matching is a different problem, and that is the
+experiment that could still falsify this.
+
 ### What is deliberately dropped
 
 The old spec format carried machinery this one does not. Dropping it loudly is the

@@ -111,10 +111,11 @@ against the first.
   run of small changes leaves no trace. Accepted because the old pipeline wrote all of
   it down every time and never established that it helped — the cost of finding out is
   lower than the cost of continuing to pay.
-- **Discovery can fail silently.** `cost:C-3`'s single door rests on skill descriptions
-  matching the right requests. Fire too broadly and every plan pays; too narrowly and
-  the process quietly stops happening, with nothing detecting its own absence.
-  Accepted, and it is the first thing to test.
+- **Discovery is stochastic.** `cost:C-3`'s single door rests on skill descriptions
+  matching the right requests, and measurement says they mostly do: one prompt in the
+  trial fired 3 times of 4. Accepted, because a miss degrades to an ordinary plan and
+  announces itself by producing no tickets — but it means the door is reliable rather
+  than guaranteed, and the figure was measured with no other skills competing.
 - **The quality ceiling is whatever `/solve` proposes first.** The reviewer is a
   validator, not a selector: it can find an omitted cost but cannot know a better
   solution existed. Accepted in exchange for the middle running unattended.
