@@ -2,8 +2,8 @@
 solution:  SOLUTION_NEW_PIPELINE.md
 satisfies: AC-1
 after:
-status:    ready
-attempts:  0
+status:    review
+attempts:  1
 reviews:   0
 ---
 
@@ -33,3 +33,28 @@ no ids. Numbering is the change that makes everything downstream possible.
 
 The adversary that checks observability is `/verify`, ticket 3. `/idea` asks the
 person; it does not grade the conditions itself.
+
+## Record
+
+`tests/intent-format.sh`, 14 cases, run alongside the existing `tests/run.sh` (252,
+still green).
+
+**AC-1, the format half** — `format specifies ## Problem`, `## Evidence`,
+`## Done when`, `## Constraints`, `## Ratified`, `## Routed back`;
+`format numbers the conditions`; `format drops the unnumbered Proposed outcome`.
+
+**AC-1, the conformance half** — `INTENT_PROCESS_COST.md conforms` and
+`INTENT_WRONG_PROBLEM.md conforms`, checking required sections, contiguous `C-n`
+numbering and a non-empty `## Ratified`.
+
+**The checker itself** — `a well-formed intent passes`, `a gap in the numbering is
+caught`, `an empty ratification is caught`, `unnumbered conditions are caught`.
+
+Six of the fourteen failed before the change, all against the format document.
+
+**The ratification half of AC-1** — "ends by a person confirming they recognize their
+problem" — is instruction to a model and has no test. It is `### Ask for the
+ratification` in `idea/SKILL.md`. Nothing here can prove a model will do it.
+
+**Follow-on, not done here:** `idea/SKILL.md` still points at `/to-solution` as the
+next stage. Correct today; ticket 2 replaces it.
