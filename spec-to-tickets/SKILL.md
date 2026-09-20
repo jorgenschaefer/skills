@@ -1,18 +1,18 @@
 ---
 name: spec-to-tickets
-description: Decompose a settled /discovery spec into the tickets an unattended /implement loop consumes. --refresh re-derives the unbuilt ones after a drift halt.
+description: Decompose a settled solution spec into the tickets an unattended /implement loop consumes. --refresh re-derives the unbuilt ones after a drift halt.
 disable-model-invocation: true
 ---
 
 # Spec to Tickets
 
-Turn a settled `/discovery` spec into the `tickets/` an unattended `/implement` loop can build without asking anyone anything.
+Turn a settled solution spec into the `tickets/` an unattended `/implement` loop can build without asking anyone anything.
 
-That last clause is the job. Once the loop starts there is nobody to ask, so every question the work forces has to be answered before it does - and the questions that are yours are a narrow band. Discovery settled what the system does. You settle only what *splitting the work* forces: where the seams fall, what each ticket may rely on from the ones before it, and in what order they can be built.
+That last clause is the job. Once the loop starts there is nobody to ask, so every question the work forces has to be answered before it does - and the questions that are yours are a narrow band. `/to-solution` settled what the system does. You settle only what *splitting the work* forces: where the seams fall, what each ticket may rely on from the ones before it, and in what order they can be built.
 
-If a question would matter even for a feature built as a single ticket, it belonged in discovery. Send it back rather than answering it here.
+If a question would matter even for a deliverable built as a single ticket, it belonged in the design. Take it to the user rather than answering it here.
 
-**Expect to ask nothing.** A small feature with a clean spec decomposes without a single question. If you always find questions, your boundary with discovery is wrong and you are re-deciding what is already settled.
+**Expect to ask nothing.** A small feature with a clean spec decomposes without a single question. If you always find questions, your boundary with the design is wrong and you are re-deciding what is already settled.
 
 ## Before starting
 
@@ -20,22 +20,33 @@ If a question would matter even for a feature built as a single ticket, it belon
 - Read the spec whole, then read the codebase for the structures it names - what exists now, under what names, with what shape. Every contract you write is a claim about code, so it has to be a claim you checked.
 - Read the `coding-conventions` skill. Seams you place and contracts you declare are design decisions, and that is the standard they are held to.
 - Read `TICKET_FORMAT.md`. It is the output shape and it settles most of what would otherwise be judgement.
-- Read `SPEC_FORMAT.md`. You write one mark back into the spec - see *Promote the binding defaults* - and it says where and in what form.
-- Read `tests/workflows/`, if the project has one. Those tests are ratified journeys, and the driver halts any ticket that changes one without saying beforehand that it would - see *Authorise the workflow tests a ticket will reach*.
+- Read `SOLUTION_FORMAT.md`. It is the input shape, and it describes two states of one file: the spec as you were handed it, and the spec as you leave it.
 
 ## Audit the scope before decomposing
 
-You are the first reader of this spec who wasn't in the room while it grew. Discovery defends the scope ceiling during the conversation and has the same blind spot the user does about what accumulated - so the cold read is yours, and it comes before any decomposition work.
+You are the first reader of this spec who wasn't in the room while it grew. `/to-solution` defends the scope ceiling during the conversation and has the same blind spot the user does about what accumulated - so the cold read is yours, and it comes before any decomposition work.
 
 State what the spec delivers as a release note: one line a user would care about, no bullets, no "and". Then try to break it - **could you ship half of this, and would that half still be worth shipping?**
 
-- **Half is independently worth shipping** - the spec describes more than one feature. Stop. Send it back to `/discovery` to be split into separate specs, and say which halves you found.
+- **Half is independently worth shipping** - the spec describes more than one feature. Stop, and say which halves you found. Splitting it into separate specs is the user's call and they are here to make it.
 - **Nothing smaller is worth shipping** - it is one feature. Continue.
-- **Nothing about it is observable outside the code** - this is maintenance, not a feature. Stop, and send it back to `/discovery`, where it becomes a maintenance ticket.
+- **Nothing about it is observable outside the code** - this is maintenance, not a feature. Stop, and say so: it wants a maintenance ticket rather than a spec and a run.
 
-Stop too if the spec isn't settled: criteria missing, decisions left open, an open-questions section surviving. Those are discovery's to close, and inventing the gaps here buries them in tickets nobody will re-read.
+Stop too if the spec isn't settled: success criteria missing, decisions left open, an open-questions section surviving. Those belong to the design, and inventing the gaps here buries them in tickets nobody will re-read.
 
 One exception you flag rather than refuse: a spec that passes the split test but is plainly large. It is one feature, so splitting it produces halves that aren't independently shippable - that is the user's call, not a refusal. Say what you found, offer the choice between a long run with a big final review and two runs that don't stand alone, and take the answer.
+
+## Harden the spec before you split it
+
+You were handed a spec written for a reader, and you are about to hand tickets to a run with nobody in it. What the reader did not need and the run does, you add to that same file - with the user present to correct you - before anything cites it.
+
+- **Number what tickets will cite.** Each part's _Done when_ becomes the testable criteria `US-n.m`, with `n` the part's index; constraints become `C-n`. The `US` prefix outlives the user stories it was named for, and `TICKET_FORMAT.md` and `/check-against-spec` already read that shape. The feature-level `## Success criteria` stay as they are and stay unnumbered: `/check-against-spec` sweeps for the ones no ticket claims, and collapsing the two levels would leave it nothing to sweep.
+- **Derive the journeys, and show them.** `/check-against-spec` drives them as its script at the end of the run, and nothing else produces them. They come out of `## Design` and `## Parts` rather than out of you - a journey you invented is an acceptance script for a feature nobody designed. Show them back before you decompose: the trigger, what each step changes, and where the last one puts the user down.
+- **Map the dependencies.** `## Parts` already carries _Depends on:_, which is what you split along.
+
+Deriving is not deciding. You still do not settle what the system does - you settle what *done* is precise enough to test, where the seams fall, and what the acceptance walks.
+
+Two more marks belong to the same file and cannot go in yet, because both depend on where the seams land: `(binding)` on the shared defaults, and the hash over what you leave. Both are below.
 
 ## Decompose
 
@@ -58,13 +69,13 @@ Each ticket names what it `Touches` - existing structure it changes - and what i
 
 ## Settle what splitting forces
 
-Sort every decision the decomposition raises into one of three buckets - the same mechanic discovery uses, one altitude down:
+Sort every decision the decomposition raises into one of three buckets - the same mechanic `/to-solution` uses, one altitude down:
 
 - **The codebase answers it.** Resolve it silently. Always look before asking.
 - **A wrong default would hurt, but there's a defensible best answer** - where a seam sits, which existing structure a ticket extends rather than replaces, whether two tickets share an abstraction or each keep their own. Decide it, then surface it for a veto: the decision, your recommendation, the alternative you rejected.
-- **A wrong default would hurt and the answer isn't yours** - almost nothing lands here, because product decisions belong to discovery. When one does, it usually means the spec has a gap. Check whether it should go back rather than be answered here.
+- **A wrong default would hurt and the answer isn't yours** - almost nothing lands here, because product decisions belong to the design. When one does, it usually means the spec has a gap. Put it to the user rather than answering it here.
 
-**Promote the binding defaults.** Discovery marked its defaults as overturnable on evidence found in the code, which is safe exactly while one ticket owns the decision. The moment two do it is false: ticket 4 overturns the default on what it can see, ticket 9 was built on the original, and neither is wrong on its own evidence.
+**Promote the binding defaults.** The spec marked its defaults as overturnable on evidence found in the code, which is safe exactly while one ticket owns the decision. The moment two do it is false: ticket 4 overturns the default on what it can see, ticket 9 was built on the original, and neither is wrong on its own evidence.
 
 So go through every `D-n` in the spec - those collected under `## Defaults` and those marked in place beside a decision, the duplication survey's module verdicts included, which are the ones your seams are most likely to share - and add `(binding)` to each one that more than one ticket has to hold to. Mark it where it already stands; a verdict moved away from the decision it qualifies stops meaning anything.
 
@@ -83,7 +94,7 @@ For every ticket whose work reaches a workflow test, write into it:
 - tests/workflows/<file> - <why this ticket has to touch it>
 ```
 
-Mechanical reasons count and are the common case: a rename that reaches every caller reaches the tests that call it too. What does not count is a ticket that would change what a workflow test *asserts* - the journey it quotes is permanent-tier and was ratified with the user, so changing it is a discovery decision, not a decomposition one. Send that back rather than authorising it.
+Mechanical reasons count and are the common case: a rename that reaches every caller reaches the tests that call it too. What does not count is a ticket that would change what a workflow test *asserts* - the journey it quotes was agreed with the user, so changing it is a design decision, not a decomposition one. Put it to them rather than authorising it.
 
 ## Write the tickets
 
@@ -120,7 +131,7 @@ Do not summarise the tickets; a table of contents tells a reviewer nothing they 
 
 Rank by stakes, and state each as the tradeoff it was - what it commits to, what that buys, what it gives up. A decision that arrives with only its upside named is one the reader can agree with but not judge, and a flat unranked list is one nobody reads to the end.
 
-Only what you decided. The spec's own decisions were ratified as discovery made them, and re-raising them here spends the reader's attention on choices they have already settled - which is how the item that actually needed a veto gets skimmed past.
+Only what you decided. The spec's own decisions were agreed as `/to-solution` made them, and re-raising them here spends the reader's attention on choices they have already settled - which is how the item that actually needed a veto gets skimmed past.
 
 ## Refresh
 
@@ -135,4 +146,4 @@ The driver calls this itself, once per run, with nobody present - so a question 
 - Re-stamp `spec_hash` on everything you rewrite.
 - Run the review again. A refresh is where contracts quietly stop matching, so the pass that hunts for guesses matters more here than on the first run, not less.
 
-If a completed ticket turns out to contradict a decision the spec states - the spec was wrong, not merely unbound - stop and send the user back to `/discovery`. Never patch a spec decision from here.
+If a completed ticket turns out to contradict a decision the spec states - the spec was wrong, not merely unbound - stop and put it to the user as the design decision it is. Never patch one from here.
