@@ -1,7 +1,7 @@
 ---
 solution:  SOLUTION_NEW_PIPELINE.md
 satisfies: AC-4
-after:     4-slice
+after:     4-slice, 10-coding-standard
 status:    ready
 attempts:  0
 reviews:   0

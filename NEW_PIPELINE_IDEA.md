@@ -526,7 +526,7 @@ degenerate into hedges.
 ---
 solution:  SOLUTION_<TOPIC>.md   # for the runner's drift pre-flight only; sessions never open it
 satisfies: AC-1, AC-4
-after:     2-<slug>              # dependency, or empty
+after:     2-<slug>, 5-<slug>     # dependencies, comma-separated, or empty
 status:    ready | doing | review | done | halted
 attempts:  0                     # runner-owned
 reviews:   0                     # runner-owned

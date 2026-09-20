@@ -78,6 +78,14 @@ against the first.
 - **AC-11** On acceptance the paper is deleted in one commit, after promoting anything
   durable. The verdict survives and doubles as the pull request description.
   *(cost:C-2)*
+- **AC-12** The coding standard is its own skill, fires whenever code is written rather
+  than only under a ticket, and contains no design guidance. *(cost:C-2)*
+- **AC-13** A software-design skill carries domain language, module boundaries and what
+  deserves an ADR, surfaces while a change is being planned, and writes a ratified ADR
+  at plan exit while the argument for it is still in context. *(cost:C-2)*
+- **AC-14** Every skill and script the new pipeline replaces is deleted, in one commit,
+  after the pipeline has been run end to end once. Nothing is left behind that a person
+  or a model could invoke by mistake. *(cost:C-1, cost:C-3)*
 
 ## Edge cases
 
@@ -100,8 +108,9 @@ against the first.
 
 - Code quality of the output. `/critique` and the coding standard own the standard
   itself, and this solution does not change what either of them considers good code.
-  `/critique` does gain a mode — reviewing a commit against a ticket — which is a
-  different claim from rewriting it.
+  It does move things: `coding-conventions` splits by when it is read (AC-12, AC-13),
+  and `/critique` gains a mode — reviewing a commit against a ticket — which is a
+  different claim from rewriting either of them.
 - Multi-repo, multi-person, or parallel topics beyond "one topic per branch".
 - Migrating the old `*_MERGE_LANES.md` paper. It was deleted in `267625a` and lives in
   git history, which is what the archive constraint says is enough.

@@ -1,7 +1,7 @@
 ---
 solution:  SOLUTION_NEW_PIPELINE.md
 satisfies: AC-5, AC-11
-after:     7-runner
+after:     7-runner, 11-software-design
 status:    ready
 attempts:  0
 reviews:   0
