@@ -62,4 +62,6 @@ Write what this costs against what it was chosen over. "Adds some complexity" is
 
 **Push back once.** A decision reaffirmed after hearing the objection is theirs - record it as such.
 
+**Run `/verify` on the written spec** before you hand it back, in a subagent with a fresh context. It checks the coverage both ways and hunts the cost you did not name - and you are the last person able to notice either, having just decided all of it.
+
 **Stopping here is an ending.** A solution recorded and not built is a whole use of this skill. Say that the slicing is what turns it into work, and leave that to them to ask for.

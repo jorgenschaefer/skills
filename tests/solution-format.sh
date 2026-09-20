@@ -94,7 +94,12 @@ if [ "$#" -gt 0 ]; then
   for f in "$@"; do
     name="$(basename "$f")"
     if [ ! -f "$f" ]; then bad "$name conforms" "no such file: $f"; continue; fi
+    # The reverse walk looks for the intents this solution names, and they sit
+    # beside it - wherever it was written. Resolving them against this repo would
+    # only work for an artifact at the root.
+    ROOT="$(cd "$(dirname "$f")" && pwd)"
     problems="$(check_solution "$f")"
+    ROOT="$HERE/.."
     if [ -z "$problems" ]; then ok "$name conforms"; else bad "$name conforms" "$problems"; fi
   done
   finish
@@ -133,7 +138,7 @@ expect_counted "$solutions" "solutions"
 
 # The fixtures and the single-file case run only at the top level: that case
 # re-runs this suite, and a child that ran the fixtures would do so forever.
-if [ -z "${FORMAT_SUITE_CHILD:-}" ]; then
+[ -z "${FORMAT_SUITE_CHILD:-}" ] || { finish; exit; }
 
 # --- and the checker catches what it claims to
 
@@ -217,10 +222,10 @@ esac
 
 make_solution "- **AC-1** a *(C-1)*
 - **AC-2** b *(C-2)*" "- costs x"
-out="$(FORMAT_SUITE_CHILD=1 timeout 20 "$0" "$tmp/SOLUTION_X.md" 2>&1)"
-case "$out" in
-  *"SOLUTION_X.md conforms"*) ok "a path checks that file" ;;
-  *) bad "a path checks that file" "$out" ;;
+out="$(FORMAT_SUITE_CHILD=1 timeout 20 "$0" "$tmp/SOLUTION_X.md" 2>&1)"; rc=$?
+case "$out:$rc" in
+  *"ok    SOLUTION_X.md conforms"*":0") ok "a path checks that file" ;;
+  *) bad "a path checks that file" "rc=$rc"$'\n'"$out" ;;
 esac
 case "$out" in
   *"SOLUTION_NEW_PIPELINE"*) bad "a path checks nothing else" "the tree was walked too" ;;
@@ -228,6 +233,4 @@ case "$out" in
 esac
 
 ROOT="$ROOT_REAL"
-fi
-
 finish

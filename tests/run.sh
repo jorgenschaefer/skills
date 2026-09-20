@@ -1088,21 +1088,28 @@ expect_out "notes.md" "the refusal names what it found instead"
 # A skill that tells an agent to run a command is only as good as the command
 # still being there. The paths drift when a suite is renamed, and nothing else
 # would notice until an agent followed the instruction and found nothing.
-missing=""
+missing="" named=0
 while read -r path; do
-  [ -f "$HERE/../$path" ] || missing+="$path"$'\n'
-done < <(grep -ho 'tests/[a-z-]*\.sh' "$HERE"/../*/SKILL.md | sort -u)
+  named=$((named + 1))
+  [ -x "$HERE/../$path" ] || missing+="$path"$'\n'
+done < <(grep -hoE 'tests/[A-Za-z0-9_/-]+\.sh' "$HERE"/../*/*.md | sort -u)
+# Zero matches is zero failures, which reads as success - the same hole the
+# format suites close with their own count.
+[ "$named" -gt 0 ] || missing+="no skill names a suite at all: this check found nothing to check"$'\n'
+
 [ -z "$missing" ] \
-  && ok "every suite a skill tells you to run exists" \
-  || bad "every suite a skill tells you to run exists" "$missing"
+  && ok "every suite a skill tells you to run is there and runnable" \
+  || bad "every suite a skill tells you to run is there and runnable" "$missing"
 
 # The format suite is a separate file because what it checks is a different kind of
 # thing - documents rather than script behaviour - but a suite nobody runs is a suite
 # that goes stale, so this is the one command.
 printf '\n'
-"$HERE/intent-format.sh"   || failed=$((failed + 1))
+# env -u, because an inherited FORMAT_SUITE_CHILD would quietly cut each suite
+# to its tree cases and still exit 0.
+env -u FORMAT_SUITE_CHILD "$HERE/intent-format.sh"   || failed=$((failed + 1))
 printf '\n'
-"$HERE/solution-format.sh" || failed=$((failed + 1))
+env -u FORMAT_SUITE_CHILD "$HERE/solution-format.sh" || failed=$((failed + 1))
 
 printf '\n%d passed, %d failed, of the cases above\n' "$passed" "$failed"
 [ "$failed" -eq 0 ]

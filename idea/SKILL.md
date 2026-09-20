@@ -61,6 +61,10 @@ Present the intent in the shape `INTENT_FORMAT.md` specifies, and ask where to w
 
 Where they want no file either, that is also an ending: the problem was worth stating and it is stated. Do not write one to have something to show for the turn. There is nothing to ratify either - the section below is about a file that exists.
 
+### Check it before you ask
+
+Run `/verify` on the written intent, in a subagent with a fresh context, and fix what it finds. You have been in this conversation and cannot see the document the way someone arriving at it will - which is the whole reason the check exists. Then ask.
+
 ### Ask for the ratification
 
 Once the file is written, the last act is asking the person whether they recognize their problem in it - not whether the intent reads well, and not whether your proposal sounds reasonable. Ask about the problem.

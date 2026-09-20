@@ -93,7 +93,7 @@ expect_counted "$intents" "intents"
 
 # The fixtures and the single-file case run only at the top level: that case
 # re-runs this suite, and a child that ran the fixtures would do so forever.
-if [ -z "${FORMAT_SUITE_CHILD:-}" ]; then
+[ -z "${FORMAT_SUITE_CHILD:-}" ] || { finish; exit; }
 
 # --- and the checker itself catches what it claims to
 
@@ -156,16 +156,14 @@ esac
 # would have to re-derive by reading what a grep already knows.
 
 make_intent "- **C-1** a" "yes, by someone"
-out="$(FORMAT_SUITE_CHILD=1 timeout 20 "$0" "$tmp/INTENT_X.md" 2>&1)"
-case "$out" in
-  *"INTENT_X.md conforms"*) ok "a path checks that file" ;;
-  *) bad "a path checks that file" "$out" ;;
+out="$(FORMAT_SUITE_CHILD=1 timeout 20 "$0" "$tmp/INTENT_X.md" 2>&1)"; rc=$?
+case "$out:$rc" in
+  *"ok    INTENT_X.md conforms"*":0") ok "a path checks that file" ;;
+  *) bad "a path checks that file" "rc=$rc"$'\n'"$out" ;;
 esac
 case "$out" in
   *"INTENT_PROCESS_COST"*) bad "a path checks nothing else" "the tree was walked too" ;;
   *) ok "a path checks nothing else" ;;
 esac
-
-fi
 
 finish

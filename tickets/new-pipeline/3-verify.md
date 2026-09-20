@@ -2,9 +2,9 @@
 solution:  SOLUTION_NEW_PIPELINE.md
 satisfies: AC-8
 after:     2-solve
-status:    review
+status:    done
 attempts:  1
-reviews:   0
+reviews:   1
 ---
 
 ## Build
@@ -64,3 +64,51 @@ hangs in its red state is a test that will be deleted rather than fixed.
 **Deliberate.** `/verify` delegates the mechanical checks rather than restating them.
 The alternative — teaching the skill what a conforming artifact looks like — would put
 the same rules in two places, and the prose copy would be the one that drifted.
+
+## Findings
+
+One review round, ten findings. Eight taken, two recorded.
+
+**The two that mattered were one bug.** `a path checks that file` matched the substring
+`INTENT_X.md conforms`, which `FAIL  … conforms` contains as readily as `ok    …`, and
+it ignored the child's exit status — so it passed whatever the child decided. It was
+green over a child that was failing: in single-file mode the reverse walk resolved a
+solution's named intents against *this repo's root* rather than beside the artifact, so
+`/verify` pointed at any solution written anywhere else would have reported it
+malformed. Sharpening the assertion to require `ok` and rc 0 turned the case red
+immediately, which is how the bug surfaced. Both fixed.
+
+A test that cannot tell a pass from a failure is worse than no test: it reports the
+capability works and stops anyone looking.
+
+**`/verify` was reachable by nobody.** AC-8 says it performs every artifact review, and
+nothing invoked it — `idea` and `solve` were both already `done` and neither mentioned
+it, and `disable-model-invocation: true` means it cannot be found by description
+either. Both now run it before they hand back: `/idea` before asking for the
+ratification, `/solve` before returning the spec.
+
+**The delegation claimed more than the suites deliver.** "These check shape, numbering
+and coverage in both directions" was untrue for the intent suite, which has no coverage
+check at all, and half-true for the solution suite, which proves a tag exists and never
+that it holds. Each suite's line now says what it does, and the solution contract gains
+the reading the design assigns to nobody: take each tag and ask whether the criterion
+serves the condition it cites.
+
+**The intent contract was missing what the design says it is for** — re-deriving the
+problem from the person's own words and flagging divergence, and checking the document
+is complete and free of contradictions. Added.
+
+**Three hardenings.** The suite-exists case passed vacuously on zero matches, matched
+only depth-1 `SKILL.md` and a narrow path pattern, and checked `-f` rather than `-x`;
+it now counts, scans companion documents, and tests runnability. The child guard wrapped
+seventy lines in an unindented `if`, and an inherited `FORMAT_SUITE_CHILD` would have
+silently cut a top-level run to its tree cases and still exited 0 — flattened to an
+early exit, and `run.sh` clears the variable. The reporting section gained a bar:
+refute your own finding first, name who it is for, and return a verdict, because an
+unattended caller needs a yes or a no.
+
+**Recorded, not fixed.** The condition rules were restated from `idea/SKILL.md`; the
+skill now points at them instead, which is the same argument the delegation rests on.
+And the suite paths are repo-relative: `/verify` in a project without them is told to
+do the checks by reading and to say in its report that it did, because a reading is not
+a run.

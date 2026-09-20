@@ -18,18 +18,22 @@ Read one artifact and report what is wrong with it against the stage's own input
 
 Absences are mechanical and are already written down. Start there, so your reading is spent on what a grep cannot see:
 
-- an intent: `tests/intent-format.sh <file>`
-- a solution: `tests/solution-format.sh <file>`
+- an intent: `tests/intent-format.sh <file>` - sections, `C-n` contiguity, a ratification that says something. No coverage check; there is nothing upstream of an intent to cover.
+- a solution: `tests/solution-format.sh <file>` - sections, `AC-n` contiguity, a tag on every criterion, and the reverse walk: every condition of every intent it names carried by some criterion.
 
-These check shape, numbering, and coverage in both directions. Report what they report; do not re-derive it by eye, and do not pass an artifact they failed.
+Report what they report; do not re-derive it by eye, and do not pass an artifact they failed. Where the suites are not in this project, the checks above are yours to do by reading - say in your report that you did, because a reading is not a run.
+
+**What the suites cannot tell you is whether a tag is true.** They prove `AC-4` claims `C-2`; only you can say whether `AC-4` serves `C-2`, or merely cites it. Take each tag and ask what would have to be built for the condition to hold, then ask whether this criterion asks for that.
 
 ## The contracts
 
 ### An intent
 
-**Every condition observable.** Hold each against a finished thing months from now: could someone say true or false without asking the author what they meant? "Fast enough" is a judgement; "a cold start answers in under a second" is a condition.
+Its adversary is the weakest in the pipeline: there is no prior artifact to check against, only what the person said. So do the one thing that substitutes for it - **re-derive the problem from their own words, cold, and say where your reading and the document diverge.** A divergence is not proof the document is wrong; it is the only signal available that it might be.
 
-**Every condition about the problem.** Invent a solution the author did not think of. If it would solve the problem and still fail the condition, the condition is a mechanism in disguise.
+Then: **complete and free of contradictions** - a constraint that forbids what a condition requires is the common case, and it is fatal downstream, because the solution that satisfies both does not exist.
+
+**Every condition observable, and about the problem rather than the answer.** `idea/SKILL.md` states both rules and how to apply them; your job is to hold the document to them, not to learn them twice.
 
 **The problem names no mechanism.** "There is no X" is the solution with a *there is no* in front of it.
 
@@ -64,6 +68,12 @@ This one arrives as text rather than a file, because it is worked out before any
 ## Reporting
 
 Rank by what it would cost to be wrong. For each: where it is, what is wrong in a sentence or two, and what would fix it.
+
+**Try to refute your own finding before you file it.** A first pass produces hypotheses, and the ones that survive an attempt to kill them are the review. The rest are noise that teaches the next reader to skim.
+
+**Say who the finding is for.** A verdict routes: the author fixes it, or the person who ratified the intent decides it, or it is the pipeline's to halt on. A finding with no destination is an observation.
+
+**Return a verdict, not a mood.** Clean, or findings that must be addressed before this artifact is used. Whatever invoked you may be unattended, and an unattended caller needs a yes or a no.
 
 **Say plainly when an artifact is sound.** Padding a clean review with observations teaches the next reader to skim.
 
