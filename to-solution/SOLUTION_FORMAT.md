@@ -14,9 +14,9 @@ Omit sections that do not apply.
 
 ## Solution
 - **Chosen** - <the approach in a sentence or two, and what it extends or introduces.>
-- **Rejected** - <each candidate that lost, one line, with the criterion or constraint it lost to. Include what the user arrived with wherever that is not what was chosen, and say where they overruled the recommendation.>
+- **Rejected** - <each candidate that lost, one line, with the decision criterion or constraint it lost to. Include what the user arrived with wherever that is not what was chosen, and say where they overruled the recommendation.>
 
-## Criteria
+## What decided it
 <What the candidates were ranked against, in the order agreed before anything was scored.>
 
 ## Standards

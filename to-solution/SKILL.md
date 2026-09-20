@@ -1,6 +1,6 @@
 ---
 name: to-solution
-description: Turn an intent into a solution spec - a field of candidates, criteria agreed before scoring, one recommendation.
+description: Turn an intent into a solution spec - a field of candidates, the decision criteria they are ranked against agreed before anything is scored, one recommendation.
 disable-model-invocation: true
 ---
 
@@ -12,7 +12,7 @@ Read an intent, design several genuinely different answers to it, choose one wit
 
 Three things stop this run. Between them, ask only what the corpus cannot answer and you cannot defensibly decide - and where such a question changes what you would design next, ask it when it arises rather than saving it for a stop.
 
-1. **Criteria** - proposed ranked, before anything is scored. This one is a decision: it blocks.
+1. **The decision criteria** - what the candidates will be ranked against, proposed ranked, before anything is scored. This one is a decision: it blocks.
 2. **The comparison** - shown before the verdict. Not a decision but a correction window: do not invent a question to make one. Where it rests on a claim about their world you could not check, ask about that claim by name.
 3. **What is still unsettled at the close** - a standards contradiction you cannot resolve, or a problem statement your cold re-derivation disagrees with. Conditional, and most runs hit none. Where more than one is live, they go in one turn.
 
@@ -59,9 +59,9 @@ Each candidate says what it does, what it costs to get, and what it costs to car
 
 ## Phase 2 - The weighing
 
-**Criteria first, agreed before anything is scored** - criteria invented afterwards exist to justify a winner. Derive them from what the problem costs - the intent's instance is what prices it. Propose them ranked, and get agreement to the list and to the order; this is stop 1. Once agreed, they do not move.
+**The decision criteria first, agreed before anything is scored** - ones invented afterwards exist to justify a winner. Derive them from what the problem costs - the intent's instance is what prices it. Propose them ranked, and get agreement to the list and to the order; this is stop 1. Once agreed, they do not move.
 
-A constraint already eliminated whoever it was going to eliminate; criteria rank the survivors. One that turns out to rank rather than kill is a criterion, and it belongs here instead.
+A constraint already eliminated whoever it was going to eliminate; the decision criteria rank the survivors. One that turns out to rank rather than kill is a decision criterion, and it belongs here instead.
 
 **The bar is asymmetric.** A candidate that fits what the corpus already does wins ties and near-ties. A diverging one has to be much better, not merely better.
 
@@ -69,11 +69,11 @@ A constraint already eliminated whoever it was going to eliminate; criteria rank
 
 **Name every load-bearing unknown** - a claim that would flip the recommendation if it turned out false. Check it now, cheaply, from a primary source, or carry it to the close as a block. A lesser unknown goes to `## Open concerns`.
 
-**Show the comparison before the verdict** - stop 2. Foreground what they can overturn: a cost you have mispriced, a criterion that matters more than its agreed place, a candidate they recognise as something already tried.
+**Show the comparison before the verdict** - stop 2. Foreground what they can overturn: a cost you have mispriced, a decision criterion that matters more than its agreed place, a candidate they recognise as something already tried.
 
 ## Phase 3 - The choice
 
-**One recommendation, and a reason each loser lost** - traceable to a criterion or a constraint rather than to taste. The loser that most needs its reason said out loud is theirs.
+**One recommendation, and a reason each loser lost** - traceable to a decision criterion or a constraint rather than to taste. The loser that most needs its reason said out loud is theirs.
 
 **Or block.** The decision is not ready: here is the one load-bearing unknown, and the cheapest way to get it. A block is an ending, stated as one rather than smuggled in as a caveat, and it produces no spec.
 
