@@ -98,8 +98,10 @@ against the first.
 
 ## Non-goals
 
-- Code quality of the output. `/critique` and the coding standard own that, and neither
-  is being rewritten to make this work.
+- Code quality of the output. `/critique` and the coding standard own the standard
+  itself, and this solution does not change what either of them considers good code.
+  `/critique` does gain a mode — reviewing a commit against a ticket — which is a
+  different claim from rewriting it.
 - Multi-repo, multi-person, or parallel topics beyond "one topic per branch".
 - Migrating the old `*_MERGE_LANES.md` paper. It was deleted in `267625a` and lives in
   git history, which is what the archive constraint says is enough.
