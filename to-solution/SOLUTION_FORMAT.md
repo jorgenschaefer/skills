@@ -43,8 +43,19 @@ Omit sections that do not apply.
 ### Ubiquitous language
 - **<Term>** - <one line - include only where a reader's default reading would be wrong, or the term belongs in the project's ubiquitous language. Permanent-tier.>
 
+### Roles
+- **<Role>** - <what it can do and where that stops - include only the roles this deliverable actually gives work to, reusing the ones the corpus already has where they fit.>
+
+### Work objects
+- **<Entity>** - <its identity and what persists through state changes. Per aggregate: what changes together, and the invariant the root holds. Always present - this is the model the deliverable is built on, and leaving it out does not make it absent, only unstated.>
+
+### Domain events
+- **<Event>** - <when it fires and what reacts to it - include only where an occurrence has downstream consequences somebody has to wire up.>
+
 ## Design
-<The thing itself, in whatever form the domain uses. Where a specimen was built - a mockup, a draft, a worked example - link it rather than describing it.>
+<The thing itself, in whatever form the domain uses. Where a specimen was built - a mockup, a draft, a worked example - link it rather than describing it: whoever builds this builds against what was agreed, not against a paragraph about it.>
+
+<Then, per surface the specimen walks - a screen, a command, a section, a step: what it is made of and which parts are reused rather than new, the states it can be in, and an inline _Why: ..._ where a wrong turn was the risk. This is what the specimen shows and cannot say, and it is where the testable criteria come from - `/spec-to-tickets` reads each part's _Done when_ against this section.>
 
 ## Implementation decisions
 - <Each decision whoever builds this would otherwise have to make, and its resolution, with an inline _Why: ..._ where the rationale was load-bearing. A decision that touches what already exists names the real thing it reuses or extends - "extend the existing `ApplicationForm`, following the profile form's validation" - never a `file:line` that drift will invalidate. Where the decision was the user's rather than a reversible default, say so, so a later reader knows it is settled and not open.>
@@ -52,7 +63,7 @@ Omit sections that do not apply.
 
 ## Parts
 <Each piece the deliverable is made of, in an order that can be worked through:>
-- **<name>** - <what it is.> Depends on: <other parts, or nothing.> Done when: <what is observably true. This is what `/spec-to-tickets` derives the testable criteria from, so write it as something that could be driven.>
+- **<name>** - <what it is.> Depends on: <other parts, or nothing.> Done when: <what is observably true - as many statements as the part has ends, not one sentence per part. This is what `/spec-to-tickets` derives the testable criteria from, read against `## Design`, so write each as something that could be driven.>
 
 ## Scope
 - **Now** - <what this slice delivers.>
