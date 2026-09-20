@@ -1,7 +1,6 @@
 ---
 name: idea
-description: Find the problem underneath an idea and write it down as an intent, with no solution in it.
-disable-model-invocation: true
+description: Use when a change is being worked out with the user - a feature, a bug, a refactor, or a passing idea that needs developing into something buildable. Finds the problem underneath what was asked for and writes it down as an intent, with no solution in it. The one way in; `/to-solution` is what designs against the intent afterwards.
 ---
 
 # Idea
@@ -45,6 +44,10 @@ Test each one: would it *kill* a candidate, or only score it lower? Demote the s
 ## The record
 
 Present the intent in the shape `INTENT_FORMAT.md` specifies, and ask where to write it.
+
+**Stopping here is an ending.** Noting an idea and being done with it is a whole use of this skill, not an abandoned run. Say that `/to-solution` is what designs against the intent, and leave it at that - going on is theirs to ask for.
+
+Where they want no file either, that is also an ending: the problem was worth stating and it is stated. Do not write one to have something to show for the turn.
 
 ## Throughout
 
