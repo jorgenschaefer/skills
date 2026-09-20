@@ -896,6 +896,20 @@ for format in "$HERE"/../*/*_FORMAT.md; do
   [[ " ${names[*]} " == *" $name "* ]] || names+=("$name")
 done
 
+# The other half, and the one the count used to carry: a skill that names a
+# format document has to hold it. Byte-identical copies are worth nothing if a
+# skill installs without the file it was told to read, and the copies check
+# cannot see that - a format with one copy has nothing to differ from.
+
+for skill in "$HERE"/../*/SKILL.md; do
+  dir="$(dirname "$skill")"
+  for name in $(grep -o '[A-Z_]*_FORMAT\.md' "$skill" | sort -u); do
+    [ -e "$dir/$name" ] \
+      && ok "$(basename "$dir") holds the $name it reads" \
+      || bad "$(basename "$dir") holds the $name it reads" "missing $dir/$name"
+  done
+done
+
 for name in "${names[@]}"; do
   copies=("$HERE"/../*/"$name")
   [ "${#copies[@]}" -ge 2 ] || continue
