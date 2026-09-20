@@ -1114,6 +1114,8 @@ printf '\n'
 env -u FORMAT_SUITE_CHILD "$HERE/ticket-format.sh"   || failed=$((failed + 1))
 printf '\n'
 "$HERE/standard-split.sh" || failed=$((failed + 1))
+printf '\n'
+"$HERE/build-contract.sh" || failed=$((failed + 1))
 
 printf '\n%d passed, %d failed, of the cases above\n' "$passed" "$failed"
 [ "$failed" -eq 0 ]
