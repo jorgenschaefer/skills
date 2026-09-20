@@ -12,10 +12,23 @@ You are reviewing code for quality. You are not the acceptance: where a caller r
 Decide what you're reviewing:
 - **A set of changes** ("the branch", "this PR", "changes vs main"): review the diff (`git diff main...HEAD`, or the named range) plus enough surrounding code to judge it. The coverage rules apply to the changed code.
 - **The whole project**: review the codebase as a whole. For anything sizeable, spawn parallel `Explore` subagents across different areas and synthesize their findings. The coverage rules apply to the whole codebase.
+- **One ticket's commit**, when you are handed a ticket path: see below. Everything in this file still applies; the ticket adds a standard to judge against and a place to write.
 
 If which one is ambiguous, ask.
 
 If `UBIQUITOUS_LANGUAGE.md` exists at the repo root, read it first so vocabulary findings are grounded in the English identifiers it documents, and in the domain terms themselves only where an entry says it has no English equivalent.
+
+## Given a ticket
+
+The build session has committed and left the ticket at `status: review`. You were started in a context that did not write the code, which is the only reason this review is worth running.
+
+**The ticket is the standard, and the whole of it.** Its `## Done when` is what the commit had to achieve; its `## Not here` is what the commit was not allowed to touch, and work that crossed that line is a finding even when the work is good. Its `## Record` claims a test for each criterion: check the tests it names exist, and that they fail when the behaviour they pin is removed. A `Record` that names a test which passes with the behaviour gone is the most serious finding available to you, because everything downstream trusts it.
+
+**Never open the solution.** The ticket quotes what it needs. A reviewer who goes upstream starts judging the approach, and the approach was settled with someone before this ticket existed - reopening it here is how the pipeline stops converging. If the criteria seem wrong, that is a finding about the ticket, not a licence to review something else.
+
+**Write what you want changed into the ticket's `## Findings`**, one entry each, in the shape the rest of this file specifies. Findings are the whole output: do not fix the code, and do not touch the frontmatter. `status`, `attempts` and `reviews` belong to the runner, which reads your verdict and decides what happens next.
+
+**Say plainly when there is nothing.** An empty `## Findings` and a clean verdict is the common case, and padding it teaches the next reader to skim.
 
 ## What to check
 
