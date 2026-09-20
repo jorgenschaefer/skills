@@ -107,7 +107,7 @@ No human sees the diff between one ticket and the next, so "while I'm here" goes
 
 ### Workflow tests are touched only by permission
 
-`tests/workflows/` holds the journeys the project has ratified, one test per journey, quoting the journey in the user's own words. They run in the project's check command, so a run building feature twelve keeps feature three's journeys green at every ticket - and a build that quietly edits one has changed the record of what the product does, in the one place no review would think to question, because the test it would check against is the thing that moved.
+`tests/workflows/` holds the journeys the project has pinned, one test per journey, quoting the journey in the user's own words. They run in the project's check command, so a run building feature twelve keeps feature three's journeys green at every ticket - and a build that quietly edits one has changed the record of what the product does, in the one place no review would think to question, because the test it would check against is the thing that moved.
 
 So a ticket that will reach one says so before the run starts. `/spec-to-tickets` reads the directory and writes this section into any ticket whose work gets there, mechanical reasons included - a rename that reaches every caller reaches the tests that call it too. A review filing a remediation ticket does the same. What the section never authorises is changing what a workflow test *asserts*: the journey it quotes was agreed with the user, so that is a decision about the design and it goes to them.
 
@@ -145,7 +145,7 @@ The driver appends a `## Halt` of its own where it catches something after the f
 - **drift** - `Preconditions` or `Touches` no longer match the code. The driver answers this one itself, once per run, by re-deriving the unbuilt tickets with `/spec-to-tickets --refresh`; a second drift after that comes back to a human.
 - **mystery** - a test will not go green and the cause is unknown after the bounded attempts. Back to a human to diagnose.
 - **stale-spec** - `spec_hash` does not match. Answered the same way, and counted against the same one-per-run bound.
-- **unauthorised** - written by the driver, never by a build: the ticket changed a ratified workflow test with no `## Workflow tests` section standing in it beforehand. It carries `**Commit:**` and `**Paths:**` naming what changed. Nothing is reverted; resolving it is adding the authorisation and setting `status` back to `done`.
+- **unauthorised** - written by the driver, never by a build: the ticket changed a workflow test with no `## Workflow tests` section standing in it beforehand. It carries `**Commit:**` and `**Paths:**` naming what changed. Nothing is reverted; resolving it is adding the authorisation and setting `status` back to `done`.
 
 ```markdown
 ## Record

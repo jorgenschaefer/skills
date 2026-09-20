@@ -28,7 +28,7 @@ The driver reads `status` from the ticket to decide whether to continue, so sett
 
 ## Workflow tests are not yours to change
 
-`tests/workflows/` holds journeys the project ratified with a human. A ticket that has to touch one says so in a `## Workflow tests` section, written before the run started; the driver checks that section as it stood beforehand and stops the run over any change made without it.
+`tests/workflows/` holds journeys the project pinned, each one agreed with a human before it was written. A ticket that has to touch one says so in a `## Workflow tests` section, written before the run started; the driver checks that section as it stood beforehand and stops the run over any change made without it.
 
 So check the ticket for that section before you touch anything under there. Where the work needs it and the ticket does not carry it, halt `blocked` now rather than building the ticket and having the run stopped afterwards - the answer is the same and it costs a whole ticket less. Adding the section yourself is not an answer: it is the thing the check exists to catch.
 
