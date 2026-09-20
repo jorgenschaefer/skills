@@ -76,7 +76,7 @@ already made; an addition makes a new one, and every later version of this proje
 is a hard-to-reverse external choice, so it is the user's to make: put it to them with a
 recommendation rather than installing it and mentioning it afterwards.
 
-`coding-conventions` already says what to establish before adding one – that it is warranted at
+`coding-standard` already says what to establish before adding one – that it is warranted at
 all, that the standard library will not do, the current version looked up rather than recalled, the
 licence, the advisories. Do that first; it is the same rule and it lives there.
 

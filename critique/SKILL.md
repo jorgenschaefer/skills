@@ -1,11 +1,11 @@
 ---
 name: critique
-description: Use for any request to review code in this project - "/critique", "critique this", "review the branch", "review this PR", "review these changes", "review this codebase", "look this over before I merge" - and whenever a caller needs code judged against the project's own `coding-conventions` standard. This is the project's code review; use it in place of a generic one.
+description: Use for any request to review code in this project - "/critique", "critique this", "review the branch", "review this PR", "review these changes", "review this codebase", "look this over before I merge" - and whenever a caller needs code judged against the project's own `coding-standard`. This is the project's code review; use it in place of a generic one.
 ---
 
 # Critique
 
-You are reviewing code for quality. You are not the acceptance: where a caller runs both, `/check-against-spec` drives the feature against its criteria, so you never have to start it to judge the code in front of you. The standard you review against is the `coding-conventions` skill - read it first. **It supplements your own judgment; it does not bound it.** Apply everything you already know about good code, and never excuse or downgrade a problem you would otherwise flag just because no rule there names it.
+You are reviewing code for quality. You are not the acceptance: where a caller runs both, `/check-against-spec` drives the feature against its criteria, so you never have to start it to judge the code in front of you. The standard you review against is `coding-standard` - read it first, and `coding-conventions` with it when the change moves a seam or names a new domain concept. **It supplements your own judgment; it does not bound it.** Apply everything you already know about good code, and never excuse or downgrade a problem you would otherwise flag just because no rule there names it.
 
 ## Scope
 
@@ -19,12 +19,12 @@ If `UBIQUITOUS_LANGUAGE.md` exists at the repo root, read it first so vocabulary
 
 ## What to check
 
-Check the code in scope against every property in `coding-conventions`. A property the code lacks is a candidate finding (verify it before reporting - see below).
+Check the code in scope against every property in `coding-standard`. A property the code lacks is a candidate finding (verify it before reporting - see below).
 
 Three of these properties are the reviewer's own work to establish, not just a read of the code:
 
 - **The checks pass.** Run the project's combined check command - `npm run check`, `make check`, `just check` and their kin, which bundle typecheck, lint and tests - and confirm green. Only where the project has no such command do you assemble the pieces yourself; its CI workflow is the authoritative statement of what it gates on, so a check CI runs and you don't is one you are skipping. Report the actual result; if you can't run it, say so rather than assuming.
-- **Coverage maps.** For each piece of business logic in scope, name the test that pins it; if you can't, that's a coverage finding. The test qualifies on two counts, not one: it would fail if the behavior changed, *and* it asserts on what the code produces rather than on a collaborator having been called. A test that only checks the mock was invoked meets the first and proves nothing - count it as a gap, not as the test that pins the logic. (You don't need to mutate code; the mapping is the check.) An adapter that genuinely can't be tested is the exception `coding-conventions` allows - don't count it as a gap, but the business logic behind it must still be pinned.
+- **Coverage maps.** For each piece of business logic in scope, name the test that pins it; if you can't, that's a coverage finding. The test qualifies on two counts, not one: it would fail if the behavior changed, *and* it asserts on what the code produces rather than on a collaborator having been called. A test that only checks the mock was invoked meets the first and proves nothing - count it as a gap, not as the test that pins the logic. (You don't need to mutate code; the mapping is the check.) An adapter that genuinely can't be tested is the exception `coding-standard` allows - don't count it as a gap, but the business logic behind it must still be pinned.
 - **Callers still work.** A change can be correct in isolation and break what calls it, and nothing in the diff will show you that. For every signature, exported name, return shape, thrown error, default, and stored or serialised format the change touches - including the ones it renames or removes - go find the other side: grep the repo for the callers, for the readers of that stored shape, for the tests that construct it, and check each one against the new behavior. This costs tool calls, and that is the point - the finding is in the code you weren't shown.
 
 ## The bar a finding has to clear
@@ -32,7 +32,7 @@ Three of these properties are the reviewer's own work to establish, not just a r
 Three things hold of every finding, and a candidate that fails any one of them is not one.
 
 - **A constructed trigger.** For correctness and security: the concrete input or state that drives the code to a wrong result, a crash, or a breach. For everything else: the concrete situation in which this costs somebody - the change that will break on it, the reader who will take it the wrong way, the second caller that will have to repeat it. Either way it is a thing you can name, not an account of how it might go wrong, and whoever meets it need not be an end user. If you cannot construct one, you do not have a finding. Keep the surviving scenario with the finding; it is the proof and the reader's reproduction both.
-- **A destination.** Where the review has requirements behind it - a spec, a ticket, a set of workflow tests - the finding traces to a numbered criterion, a constraint, or a workflow test, and something tracing to none of them is a new requirement rather than a defect: it belongs in `IDEAS.md`, not in this report. Where there are none, `coding-conventions` is the destination, every section of it. Its `## Security` and `## Changing what already runs` properties bind in either mode, whether or not any paper names them.
+- **A destination.** Where the review has requirements behind it - a spec, a ticket, a set of workflow tests - the finding traces to a numbered criterion, a constraint, or a workflow test, and something tracing to none of them is a new requirement rather than a defect: it belongs in `IDEAS.md`, not in this report. Where there are none, `coding-standard` is the destination, every section of it. Its `## Security` and `## Changing what already runs` properties bind in either mode, whether or not any paper names them.
 - **No reopening.** A finding that overturns a prior ticket's `Unresolved` adjudication on the same code may not be filed. That argument was already had and its reasoning was written down. Where you think the adjudication was wrong, say so in the report as a standing disagreement and stop there – that is for a human to rule on, and it is not work to hand back to the loop.
 
 Two things the destination rule would otherwise exclude, and must not:
