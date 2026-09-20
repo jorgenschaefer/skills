@@ -87,6 +87,20 @@ check_solution() {
   printf '%s' "$problems"
 }
 
+# Given paths, check those and nothing else. This is how `/verify` asks about the
+# artifact in front of it: the mechanical half of its contract is already written
+# down here, and re-deriving it by reading would be slower and less exact.
+if [ "$#" -gt 0 ]; then
+  for f in "$@"; do
+    name="$(basename "$f")"
+    if [ ! -f "$f" ]; then bad "$name conforms" "no such file: $f"; continue; fi
+    problems="$(check_solution "$f")"
+    if [ -z "$problems" ]; then ok "$name conforms"; else bad "$name conforms" "$problems"; fi
+  done
+  finish
+  exit
+fi
+
 # --- the format document
 
 TEMPLATE="$(template_of "$FORMAT")"
@@ -116,6 +130,10 @@ for f in "$ROOT"/SOLUTION_*.md; do
   if [ -z "$problems" ]; then ok "$name conforms"; else bad "$name conforms" "$problems"; fi
 done
 expect_counted "$solutions" "solutions"
+
+# The fixtures and the single-file case run only at the top level: that case
+# re-runs this suite, and a child that ran the fixtures would do so forever.
+if [ -z "${FORMAT_SUITE_CHILD:-}" ]; then
 
 # --- and the checker catches what it claims to
 
@@ -195,5 +213,21 @@ case "$(check_solution "$tmp/SOLUTION_X.md")" in
   *) bad "an empty tradeoff list is caught" "accepted a solution that costs nothing" ;;
 esac
 
+# --- and it can be pointed at one artifact
+
+make_solution "- **AC-1** a *(C-1)*
+- **AC-2** b *(C-2)*" "- costs x"
+out="$(FORMAT_SUITE_CHILD=1 timeout 20 "$0" "$tmp/SOLUTION_X.md" 2>&1)"
+case "$out" in
+  *"SOLUTION_X.md conforms"*) ok "a path checks that file" ;;
+  *) bad "a path checks that file" "$out" ;;
+esac
+case "$out" in
+  *"SOLUTION_NEW_PIPELINE"*) bad "a path checks nothing else" "the tree was walked too" ;;
+  *) ok "a path checks nothing else" ;;
+esac
+
 ROOT="$ROOT_REAL"
+fi
+
 finish

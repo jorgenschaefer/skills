@@ -53,6 +53,20 @@ check_intent() {
   printf '%s' "$problems"
 }
 
+# Given paths, check those and nothing else. This is how `/verify` asks about the
+# artifact in front of it: the mechanical half of its contract is already written
+# down here, and re-deriving it by reading would be slower and less exact.
+if [ "$#" -gt 0 ]; then
+  for f in "$@"; do
+    name="$(basename "$f")"
+    if [ ! -f "$f" ]; then bad "$name conforms" "no such file: $f"; continue; fi
+    problems="$(check_intent "$f")"
+    if [ -z "$problems" ]; then ok "$name conforms"; else bad "$name conforms" "$problems"; fi
+  done
+  finish
+  exit
+fi
+
 # --- the format document itself
 
 TEMPLATE="$(template_of "$FORMAT")"
@@ -76,6 +90,10 @@ for f in "$ROOT"/INTENT_*.md; do
   if [ -z "$problems" ]; then ok "$name conforms"; else bad "$name conforms" "$problems"; fi
 done
 expect_counted "$intents" "intents"
+
+# The fixtures and the single-file case run only at the top level: that case
+# re-runs this suite, and a child that ran the fixtures would do so forever.
+if [ -z "${FORMAT_SUITE_CHILD:-}" ]; then
 
 # --- and the checker itself catches what it claims to
 
@@ -131,5 +149,23 @@ case "$(check_intent "$tmp/INTENT_X.md")" in
   *"no numbered conditions"*) ok "unnumbered conditions are caught" ;;
   *) bad "unnumbered conditions are caught" "accepted prose under ## Done when" ;;
 esac
+
+# --- and it can be pointed at one artifact
+#
+# `/verify` reviews the artifact of one stage, not the tree. Without this it
+# would have to re-derive by reading what a grep already knows.
+
+make_intent "- **C-1** a" "yes, by someone"
+out="$(FORMAT_SUITE_CHILD=1 timeout 20 "$0" "$tmp/INTENT_X.md" 2>&1)"
+case "$out" in
+  *"INTENT_X.md conforms"*) ok "a path checks that file" ;;
+  *) bad "a path checks that file" "$out" ;;
+esac
+case "$out" in
+  *"INTENT_PROCESS_COST"*) bad "a path checks nothing else" "the tree was walked too" ;;
+  *) ok "a path checks nothing else" ;;
+esac
+
+fi
 
 finish

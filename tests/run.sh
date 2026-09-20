@@ -1085,6 +1085,17 @@ expect_out "notes.md" "the refusal names what it found instead"
 
 # ------------------------------------------------------------------------------
 
+# A skill that tells an agent to run a command is only as good as the command
+# still being there. The paths drift when a suite is renamed, and nothing else
+# would notice until an agent followed the instruction and found nothing.
+missing=""
+while read -r path; do
+  [ -f "$HERE/../$path" ] || missing+="$path"$'\n'
+done < <(grep -ho 'tests/[a-z-]*\.sh' "$HERE"/../*/SKILL.md | sort -u)
+[ -z "$missing" ] \
+  && ok "every suite a skill tells you to run exists" \
+  || bad "every suite a skill tells you to run exists" "$missing"
+
 # The format suite is a separate file because what it checks is a different kind of
 # thing - documents rather than script behaviour - but a suite nobody runs is a suite
 # that goes stale, so this is the one command.
