@@ -21,7 +21,7 @@ One ticket. The ticket is the whole brief: it carries its criteria quoted from t
 
 ## Build it, test first
 
-Kent Beck's red/green/refactor loop, in the smallest steps that make sense. Each phase is a separate test run; bundling "write the test and the code, then run once" is not TDD even when the artifacts end up identical, because the RED run is the only thing that proves the test exercises the behaviour.
+`coding-standard` requires that no code change arrives without a failing test first. This is the loop that gets you there: Kent Beck's red/green/refactor, in the smallest steps that make sense. Each phase is a separate test run; bundling "write the test and the code, then run once" is not TDD even when the artifacts end up identical, because the RED run is the only thing that proves the test exercises the behaviour.
 
 1. **RED.** One trivially small failing test for the next bit of behaviour. Run it, and confirm **the assertion fires and reports an expected/actual mismatch**. "Module not found", an import error or a syntax error is not RED - it only proves the test could not run. Add the minimal scaffolding until the assertion itself fails, then go on. If the test passes immediately, you wrote the code first: revert it, get the failure, re-implement.
 2. **GREEN.** The simplest change that could possibly work. Faking the answer with a constant is fine; the next test forces the general case. If you cannot see a small change that passes, the test is too big - revert and write a smaller one.

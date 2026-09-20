@@ -73,6 +73,14 @@ if [ -f "$STANDARD" ]; then
     *) ok "the standard is not scoped to tickets" ;;
   esac
 
+  # The write-time half owes the rule that governs the order of the work, not
+  # only the state it ends in: every other test rule here describes a property
+  # the suite has afterwards, and none of them says when the test was written.
+  case "$(sed -n '/^## Test coverage/,/^## /p' "$STANDARD")" in
+    *"failing test"*) ok "the standard requires a failing test first" ;;
+    *) bad "the standard requires a failing test first" "## Test coverage says nothing about when the test is written" ;;
+  esac
+
   # The design half owes two things the original never had: when a decision is
   # worth an ADR, and when the record gets written. Both are prose a model acts
   # on, so this only pins that they are still there.
