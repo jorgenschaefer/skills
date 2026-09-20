@@ -48,22 +48,26 @@ Verified against the repo. Each is cheap to fix and expensive to hit blind.
 
 ## Where this stands
 
-B0 through B5 are built and committed, one commit each (plus one for a
-pre-existing red case the parity work uncovered). The suite is green at 240
-passing.
+All eight steps are built and committed, one commit each, plus two the plan
+did not name: a pre-existing red case the parity work uncovered, and the four
+findings of the paper pre-check. The suite is green at 240.
 
-B6a is built: the gate's reference material is recovered from `a09943de` and
-the rubric's left-hand columns are written - 51 criteria with their claiming
-tickets, four constraints, twenty-eight defaults with the binding ones
-marked, the seams of tickets 01-08, and the four journeys the old lane
-agreed. An isolated clone sits at `c8f509d1` on a `gate` branch with the
-edited skills symlinked into it.
+**B6b, the gate, did not run.** It was skipped by decision, not by oversight.
+The spec called P5 the gate and its stated purpose was to stop the work with
+P1-P4 standing; that did not happen, so `/discovery` and `/find-solution`
+were retired without the evidence the spec wanted for it.
 
-**B6b has not run.** It is three interactive sessions - `/idea` blocks on the
-problem statement, `/to-solution` blocks on the decision criteria, on the
-comparison and at the close - and a gate judged by whoever ran it is not a
-gate. B7 and B8 wait on its verdict, which is what the spec means by calling
-it the gate.
+What stands in its place is the paper pre-check: one spec the old lane
+produced - `zugang`, 753 lines, 51 criteria over eleven stories - walked
+section by section against the new format. It found four sections with no
+home and all four were closed. It is weaker evidence than a run and it is
+the only evidence there is.
+
+B6a's material survives and the gate is still runnable: `gate/old/` holds the
+recovered spec, mockup and eleven tickets, `gate/RUBRIC.md` holds the
+left-hand columns, and `gate/run/` is an isolated clone at `c8f509d1` on a
+`gate` branch. Running it later measures the lane as built rather than
+gating it, which is a weaker thing but not nothing.
 
 ## Sequence
 
