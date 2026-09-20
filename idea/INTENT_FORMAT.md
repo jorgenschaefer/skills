@@ -4,7 +4,7 @@
 # Intent: <the problem, in a few words>
 
 ## Problem
-<What is wrong and what would be true instead, with no mechanism in it. Who feels it, and what it costs them.>
+<What is wrong and what would be true instead, with no mechanism in it. Who feels it. What it costs them belongs below, where it can be checked.>
 
 ## Evidence
 <What makes this real: the last time it happened, what it cost, how often it recurs. Facts a reader can check, each one pointing at something they could go and look at - a file, a commit, a number.
@@ -50,4 +50,4 @@ Until someone has said yes, this section says so. An unratified intent is a draf
 
 **The conditions make the last stage possible.** Acceptance asks whether the problem was solved, and it can only ask that against something written down before the solution existed. An unnumbered paragraph cannot be cited, cannot be walked, and cannot be found to have failed.
 
-**The ratification makes the conditions binding.** They are the standard every later stage is measured against, so they need an author who is accountable for them - not the one who wrote them down.
+**The ratification makes the conditions binding.** They are the standard every later stage is measured against, so they need an owner who is accountable for them, and that is not whoever typed them.

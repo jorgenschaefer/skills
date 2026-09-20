@@ -57,35 +57,48 @@ check_intent() {
 }
 
 # --- the format document itself
+#
+# Only the fenced template counts. The prose around it discusses the sections by
+# name, so a whole-file grep would stay green after the template lost one.
+
+TEMPLATE="$(sed -n '/^```markdown$/,/^```$/p' "$FORMAT")"
 
 for section in "${REQUIRED[@]}"; do
-  if grep -q "^## $section\$" "$FORMAT"; then
-    ok "format specifies ## $section"
+  if printf '%s' "$TEMPLATE" | grep -q "^## $section\$"; then
+    ok "the template specifies ## $section"
   else
-    bad "format specifies ## $section" "not found in $FORMAT"
+    bad "the template specifies ## $section" "not in the fenced block of $FORMAT"
   fi
 done
 
-if grep -q 'C-1' "$FORMAT"; then
-  ok "format numbers the conditions"
+if printf '%s' "$TEMPLATE" | grep -q '\*\*C-1\*\*'; then
+  ok "the template numbers the conditions"
 else
-  bad "format numbers the conditions" "no C-1 in the template: nothing downstream could cite a condition"
+  bad "the template numbers the conditions" "no C-1: nothing downstream could cite a condition"
 fi
 
-if grep -q 'Proposed outcome' "$FORMAT"; then
-  bad "format drops the unnumbered Proposed outcome" "still present"
+if printf '%s' "$TEMPLATE" | grep -q 'Proposed outcome'; then
+  bad "the template drops the unnumbered Proposed outcome" "still present"
 else
-  ok "format drops the unnumbered Proposed outcome"
+  ok "the template drops the unnumbered Proposed outcome"
 fi
 
 # --- every intent in the tree
 
 shopt -s nullglob
+intents=0
 for f in "$ROOT"/INTENT_*.md; do
   name="$(basename "$f")"
+  intents=$((intents + 1))
   problems="$(check_intent "$f")"
   if [ -z "$problems" ]; then ok "$name conforms"; else bad "$name conforms" "$problems"; fi
 done
+
+# An empty glob is zero cases and zero failures, which reads as success. The two
+# worked examples are what keep the format honest, so their absence is a failure.
+[ "$intents" -gt 0 ] \
+  && ok "there are intents to check" \
+  || bad "there are intents to check" "no INTENT_*.md found: the conformance cases above checked nothing" 
 
 # --- and the checker itself catches what it claims to
 
@@ -118,9 +131,10 @@ EOF
 
 make_intent "- **C-1** a
 - **C-2** b" "yes, by someone"
-[ -z "$(check_intent "$tmp/INTENT_X.md")" ] \
+result="$(check_intent "$tmp/INTENT_X.md")"
+[ -z "$result" ] \
   && ok "a well-formed intent passes" \
-  || bad "a well-formed intent passes" "$(check_intent "$tmp/INTENT_X.md")"
+  || bad "a well-formed intent passes" "$result"
 
 make_intent "- **C-1** a
 - **C-3** b" "yes, by someone"

@@ -1085,5 +1085,11 @@ expect_out "notes.md" "the refusal names what it found instead"
 
 # ------------------------------------------------------------------------------
 
-printf '\n%d passed, %d failed\n' "$passed" "$failed"
+# The format suite is a separate file because what it checks is a different kind of
+# thing - documents rather than script behaviour - but a suite nobody runs is a suite
+# that goes stale, so this is the one command.
+printf '\n'
+"$HERE/intent-format.sh" || failed=$((failed + 1))
+
+printf '\n%d passed, %d failed, of the cases above\n' "$passed" "$failed"
 [ "$failed" -eq 0 ]

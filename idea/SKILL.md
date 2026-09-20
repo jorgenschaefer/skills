@@ -57,9 +57,13 @@ Test each one: would it *kill* a candidate, or only score it lower? Demote the s
 
 Present the intent in the shape `INTENT_FORMAT.md` specifies, and ask where to write it.
 
+**Stopping here is an ending.** Noting an idea and being done with it is a whole use of this skill, not an abandoned run. Say that `/to-solution` is what designs against the intent, and leave it at that - going on is theirs to ask for.
+
+Where they want no file either, that is also an ending: the problem was worth stating and it is stated. Do not write one to have something to show for the turn. There is nothing to ratify either - the section below is about a file that exists.
+
 ### Ask for the ratification
 
-The last act is asking the person whether they recognize their problem in what you wrote - not whether the intent reads well, and not whether your proposal sounds reasonable. Ask about the problem.
+Once the file is written, the last act is asking the person whether they recognize their problem in it - not whether the intent reads well, and not whether your proposal sounds reasonable. Ask about the problem.
 
 Record what the yes was worth, because the two are not the same:
 
@@ -69,10 +73,6 @@ Record what the yes was worth, because the two are not the same:
 **Do not ratify an intent you reconstructed after a solution already existed** without saying so in the same breath. Conditions written by someone who already knows the answer tend to describe the answer, and the person saying yes deserves to know that is the risk they are being asked about.
 
 A no is not a failure of the session. It means the problem is somewhere else, and finding that out before anything was built is the cheapest this skill ever gets.
-
-**Stopping here is an ending.** Noting an idea and being done with it is a whole use of this skill, not an abandoned run. Say that `/to-solution` is what designs against the intent, and leave it at that - going on is theirs to ask for.
-
-Where they want no file either, that is also an ending: the problem was worth stating and it is stated. Do not write one to have something to show for the turn.
 
 ## Throughout
 
