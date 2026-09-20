@@ -90,7 +90,7 @@ Append each entry the moment you make the decision, not reconstructed at the end
 
 ### The design pass
 
-After the last cycle is green and before the verification command, refactor the ticket's diff as a whole. Read it as one change, not as the sequence of cycles that produced it, against `coding-standard` - `## Simple design`, `## Structure and locality` - and `coding-conventions` - `## Domain layering`, `## Conceptual granularity, not premature abstraction`. Four things to look for:
+After the last cycle is green and before the verification command, refactor the ticket's diff as a whole. Read it as one change, not as the sequence of cycles that produced it, against `coding-standard` - `## Simple design`, `## Structure and locality` - and `software-design` - `## Domain layering`, `## Conceptual granularity, not premature abstraction`. Four things to look for:
 
 - **The second copy.** Two pieces of knowledge that will change for the same reason, written in two different cycles. Two is the trigger, not three.
 - **A name that drifted.** One domain action named one way in the cycle that created it and another in the cycle that called it.

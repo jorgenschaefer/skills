@@ -7,7 +7,7 @@ description: The code-quality standard this project holds code to - simplicity, 
 
 These are the standards this project holds code to. They apply whenever code is written - under a ticket or not - and whenever code is reviewed, and every skill that touches code reads this file rather than restating the rules.
 
-How a change should be *shaped* - what the domain calls things, where the seams are, what deserves an architectural decision - is `coding-conventions`, read while the change is being planned rather than while it is being typed.
+How a change should be *shaped* - what the domain calls things, where the seams are, what deserves an architectural decision - is `software-design`, read while the change is being planned rather than while it is being typed.
 
 **They supplement your own judgment; they do not bound it.** Apply everything you already know about good code. The rules below sharpen focus on things that are easy to miss or where this project has a specific preference. Never excuse a problem you would otherwise catch just because no rule here names it.
 

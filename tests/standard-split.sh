@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 #
-# The tests for the split of `coding-conventions` into two skills.
+# The tests for the split of the old `coding-conventions` into two skills:
+# `coding-standard`, read while code is typed, and `software-design`, read while
+# a change is shaped.
 #
 #   tests/standard-split.sh
 #
@@ -15,7 +17,7 @@ set -uo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$HERE/.."
 STANDARD="$ROOT/coding-standard/SKILL.md"
-DESIGN="$ROOT/coding-conventions/SKILL.md"
+DESIGN="$ROOT/software-design/SKILL.md"
 
 # shellcheck source=format-lib.sh
 . "$HERE/format-lib.sh"
@@ -70,6 +72,18 @@ if [ -f "$STANDARD" ]; then
     *ticket*) bad "the standard is not scoped to tickets" "its description names a ticket" ;;
     *) ok "the standard is not scoped to tickets" ;;
   esac
+
+  # The design half owes two things the original never had: when a decision is
+  # worth an ADR, and when the record gets written. Both are prose a model acts
+  # on, so this only pins that they are still there.
+  for heading in "The glossary" "What deserves an ADR"; do
+    grep -q "^## $heading\$" "$DESIGN" \
+      && ok "the design skill carries ## $heading" \
+      || bad "the design skill carries ## $heading" "not in $DESIGN"
+  done
+  grep -q 'plan exit' "$DESIGN" \
+    && ok "the design skill says when an ADR is written" \
+    || bad "the design skill says when an ADR is written" "nothing in $DESIGN names the moment"
 fi
 
 # Whoever names a standard must name one that is there - and a section of it that
@@ -83,10 +97,10 @@ for skill in "$ROOT"/*/SKILL.md; do
   while IFS= read -r line; do
     named=""
     case "$line" in *'`coding-standard`'*) named="coding-standard" ;; esac
-    case "$line" in *'`coding-conventions`'*) named="${named:-coding-conventions}" ;; esac
+    case "$line" in *'`software-design`'*) named="${named:-software-design}" ;; esac
     # A line naming both is ambiguous about which half it is attributing a
     # section to, and there is a legitimate one - `/critique` reads both.
-    case "$line" in *'`coding-standard`'*'`coding-conventions`'*|*'`coding-conventions`'*'`coding-standard`'*) continue ;; esac
+    case "$line" in *'`coding-standard`'*'`software-design`'*|*'`software-design`'*'`coding-standard`'*) continue ;; esac
     [ -n "$named" ] || continue
     [ -d "$ROOT/$named" ] || { dangling+="$from names $named, which is not a skill"$'\n'; continue; }
     while read -r section; do

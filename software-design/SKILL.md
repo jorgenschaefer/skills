@@ -1,11 +1,13 @@
 ---
-name: coding-conventions
-description: How a change is shaped in this project - the domain's own names carried through every layer, where the seams are, how few and how deep the seams should be. Read while a change is being planned or its structure decided, not while code is being typed; the write-time standard is `coding-standard`.
+name: software-design
+description: How a change is shaped before it is typed - the domain's own names carried through every layer, where the seams are, how few and how deep they should be, and which decisions are worth an ADR. Surfaces while a change is being planned or its structure decided, when it introduces a concept or crosses a boundary; the write-time standard is `coding-standard`.
 ---
 
 # Shaping a change
 
 Where `coding-standard` says what good code looks like once it is written, this says what shape it should take - decided while planning, because it is expensive to change afterwards.
+
+Read this when a change introduces a concept the codebase does not have a name for, or moves a boundary between the ones it does. A three-line edit inside an existing seam does not need it.
 
 ## Domain layering
 
@@ -74,3 +76,24 @@ The layers above describe *conceptual* granularity - the boundaries at which you
 - **Inline the trivial.** A pass-through that does nothing but forward its argument, or a 1:1 domain-to-storage mapping, can stay inline. Do not manufacture a seam for it.
 - **Abstract when it gets complex.** The moment a responsibility grows past trivial - real translation, real rules, more than one caller - pull it out along exactly these boundaries.
 - **Few, deep seams.** Prefer a small number of boundaries that each hide real substance over many thin layers that only relay calls.
+
+## The glossary
+
+`UBIQUITOUS_LANGUAGE.md`, where the project keeps one, is the source of truth for the domain's names - the English identifiers above come from it. A term you coin while planning belongs in it, and a term already there that the plan contradicts is either a mistake in the plan or a rename that has to be made everywhere at once.
+
+`/ubiquitous-language-init` bootstraps that file in a project that has none, and audits an existing one for drift. It stays a separate skill because bootstrapping a glossary is a one-off act on a codebase, not something a change needs.
+
+## What deserves an ADR
+
+A decision earns a record when it will outlive the change that produced it and someone will later wonder why. In practice:
+
+- **A boundary** - what the seams are, and what may cross them.
+- **A representation** the whole codebase has to agree on - money as integer cents, times as UTC instants.
+- **A dependency** taken on, or refused, for a reason the code cannot show.
+- **A constraint accepted** - the thing that will look like an oversight to whoever reads it next.
+
+A decision that only shapes the change in front of you is not one of these; it belongs in the solution, and is deleted with the rest of the paper when the work is accepted.
+
+**Never write one unilaterally.** `ADR_FORMAT.md` is emphatic about this and it is the rule most worth keeping: put the decision and a recommendation to the person, and write the record only once they have said yes.
+
+**Write it at plan exit**, with the tickets - while the argument that produced it is still in front of you. By the time the work is accepted, the alternatives that were live and the reason the winner won are gone, and an ADR that records only the conclusion is the half nobody needed.

@@ -92,9 +92,11 @@ question of whether that made sense.
 
 ## Open questions
 
-- Does `ubiquitous-language-init` survive? Domain language would move into a plan-time
-  skill, which leaves the glossary bootstrapper either redundant or its necessary
-  counterpart.
+- ~~Does `ubiquitous-language-init` survive?~~ **Yes.** `software-design` reads
+  `UBIQUITOUS_LANGUAGE.md` as the source of truth for the domain's names, so the skill
+  that bootstraps and drift-audits that file is its counterpart rather than a
+  duplicate. It stays separate because bootstrapping a glossary is a one-off act on a
+  codebase, not something a change needs.
 - ~~Is discovery-by-description reliable enough to carry C-3?~~ **Answered, for the
   uncontested case.** Thirty-one headless runs against a stub skill: a second-draft
   description separated code-change planning from research, meetings and rollouts
