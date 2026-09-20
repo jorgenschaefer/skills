@@ -89,8 +89,8 @@ separating them.
   deliberate exception with a named reason. This design adds copies of two
   existing format documents and creates no new shared document.
 - **`coding-conventions`** - binding only for P7's edits to `loop.sh`, which
-  are prose: one comment and one narration string naming a skill that will
-  no longer exist. No behaviour in either script changes.
+  are prose: one comment naming a skill that will no longer exist. No
+  behaviour in either script changes.
 
 No contradiction between them was left unresolved.
 
@@ -259,7 +259,7 @@ members - a term and an ADR - rather than three.
   beside, behaviourally. The tickets they consume keep their shape and their
   anchors. Each carries prose naming `/discovery` that P7 rewrites; no logic
   changes.
-- **`TICKET_FORMAT.md` × 5** - extend, textually: six references each to
+- **`TICKET_FORMAT.md` × 5** - extend, textually: seven references each to
   `/discovery` and its small lane, rewritten to name the merged lane and
   re-copied byte-identical. The ticket's shape is unchanged.
 - **`README.md`** - extend: the pipeline section rewritten around one door,
@@ -309,7 +309,8 @@ from what the repo already does.
 - **P5 The proving run.** Re-run one feature already built through the old
   lane through `/idea` → `/to-solution` → `/spec-to-tickets`. Use `zugang`:
   its spec and ticket set were deleted by the accept commit `e89d1308` in
-  `drk-barmbek/kh` and are recoverable whole from `8e91c9d0`, and its
+  `drk-barmbek/kh` and are recoverable whole from `a09943de`, the commit
+  before it - `8e91c9d0` holds the spec and one ticket of eleven - and its
   acceptance transcript records what the old lane's set achieved. Depends
   on: P4. Done when: the new ticket set has the same seams and the same
   criterion coverage as the recovered one, and nothing a builder would have
@@ -324,14 +325,17 @@ from what the repo already does.
   and a session that stops at the intent ends without being routed onward.
 
 - **P7 Retire `/discovery`.** Delete `discovery/`. Then clear every live
-  pointer to it: ten in `/spec-to-tickets`, six in each of the five
-  `TICKET_FORMAT.md` copies (re-copied byte-identical), the description in
-  `implement/SKILL.md:3`, three in `handover/SKILL.md`, one comment and one
-  narration string in `loop.sh`, and the README's pipeline section -
-  rewritten around one door, with the split's stated reason corrected.
-  Depends on: P5, P6. Done when: `grep -rn discovery` over the repo returns
-  only `IDEAS.md`, the vendored `writing-great-skills/GLOSSARY.md`, this
-  spec's own paper, and git history.
+  pointer to it - found by grep rather than by these counts: ten in
+  `/spec-to-tickets` once P4 has removed its five routes, seven in each of
+  the five `TICKET_FORMAT.md` copies (re-copied byte-identical), the
+  description in `implement/SKILL.md:3`, three in `handover/SKILL.md`, one
+  comment in `loop.sh`, and the README's pipeline section - rewritten around
+  one door, with the split's stated reason corrected. Depends on: P5, P6.
+  Done when: `grep -rn '/discovery'` over the repo returns only `IDEAS.md`,
+  the vendored `writing-great-skills/GLOSSARY.md`, this spec's own paper,
+  and git history. The bare word survives where it is the English word:
+  `README.md:114` is a frontmatter example reading *One-line description
+  used for discovery*.
 
 - **P8 Retire `/find-solution`.** Delete `find-solution/`, having absorbed
   its two moves in P2 and its recommendation-only ending into
@@ -339,6 +343,9 @@ from what the repo already does.
   remove it from the README. Depends on: P2, P5. Done when: `grep -rn
   find-solution` returns only `IDEAS.md`, this spec's paper and history, and
   `/to-solution` states three endings.
+
+  `README.md:79` is a paragraph about which skills stand outside the
+  pipeline, not a list entry: it is rewritten rather than deleted.
 
 ## Scope
 
@@ -355,8 +362,14 @@ from what the repo already does.
   prose in it that names `/discovery`, which P7 rewrites, and its
   `## Workflow tests` section, which *Later* removes. `loop.sh`'s ticket
   contract and control flow;
-  `accept.sh`; `/critique`; `coding-conventions`; `tests/run.sh`;
-  `tests/workflows/` as a working feature.
+  `accept.sh`; `/critique`; `coding-conventions`;
+  `tests/workflows/` as a working feature. `tests/run.sh`, with one stated
+  exception: its shared-file block asserts a literal five copies of
+  `TICKET_FORMAT.md`, and P7 leaves four. The assertion is generalised to
+  *every group of same-named `*_FORMAT.md` files is byte-identical*, which
+  is the convention it was always checking and stops pinning a number this
+  design moves three times. Nothing it tests about `loop.sh` or `accept.sh`
+  changes.
 
 ## Success criteria
 
