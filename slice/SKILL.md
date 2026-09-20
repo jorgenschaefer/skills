@@ -1,0 +1,47 @@
+---
+name: slice
+description: Use when planning how to carry out a change to this codebase - a feature, a bug fix, a refactor, a migration - so that the work can be built. Cuts it into vertical slices, each independently buildable and testable, and writes them as tickets. Not for planning research, investigation, a meeting, a rollout, or any work that does not change code.
+---
+
+# Slice
+
+Turn a settled solution into the tickets that build it. `SLICE_FORMAT.md` settles the shape of a ticket; this file is what you do.
+
+## The order matters, because plan mode cannot write
+
+1. **Work the slicing out in context** - the tickets, their order, what each covers.
+2. **Check it** - `/verify`, on the proposed slicing, before anyone is shown anything. This is the one review that arrives as text rather than a file: hand the subagent the slicing and the solution's path.
+3. **Present it and get approval.** What is approved is the slicing, not the files.
+4. **Write `tickets/<topic>/` to match**, once plan mode has exited.
+
+The written files are a transcription of what was approved and nothing re-checks them at the moment of writing; the runner's pre-flight is what catches a transcription that drifted. So transcribe, do not improve. An idea you have while writing the files is an idea that skipped the approval.
+
+## What a slice is
+
+**Vertical.** Buildable and testable on its own, end to end. "The database part" is not a slice; it cannot be verified without the thing above it, and it leaves the tree in a state no criterion describes.
+
+**One seam.** If two parts of the change can be built and verified independently, they are two tickets - even when one person would do both in an afternoon.
+
+**Ordered by need, not by size.** `after:` is what carries the order. Put a ticket after another only when it genuinely cannot be built first; a false dependency serialises a run for no reason.
+
+**A criterion covered by two slices is two criteria.** When you find yourself quoting half a criterion into one ticket and half into another, stop: the solution is describing two pieces of work in one sentence. Say so and get it split there, where the coverage check can see it.
+
+## Copy, never summarise
+
+A ticket quotes its criteria exactly as the solution writes them. This is what replaced the spec hash: a ticket carrying its own words cannot be redefined by an edit upstream, and the builder never opens the solution to find out what was meant.
+
+A paraphrase looks harmless and is not. It is a criterion you changed, in a file that claims to be quoting one.
+
+## Re-slicing
+
+Drift, or a verdict routing a lost criterion back, lands here against a directory that already has committed tickets.
+
+- **Committed tickets are immutable.** Their words are what the code was built against, and rewriting them makes the `Record` a lie.
+- **Numbering is append-only.** A re-slice adds tickets; it does not renumber the directory.
+- **It goes back through plan mode and its approval**, because writing tickets is what that approval authorises. Repair `after:` against the committed tickets as part of the plan.
+
+## Throughout
+
+**Every criterion lands in some ticket, and every ticket claims some criterion.** Both directions, before you present. `tests/ticket-format.sh` checks the written files; nothing checks the proposal but you and `/verify`.
+
+**Say what you are not slicing.** A solution with parts you are deliberately leaving for later is a plan; say which, so the coverage gap is a decision rather than an oversight.

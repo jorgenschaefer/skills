@@ -33,4 +33,4 @@ and the conventions would not already do? Anything that fails that test is fluff
 
 ## Not here
 
-The other half of AC-4 — `/critique` reviewing in a separate session — is ticket 6.
+`/critique` reviewing the commit is AC-15, ticket 6.

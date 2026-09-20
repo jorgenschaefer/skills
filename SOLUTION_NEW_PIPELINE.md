@@ -51,8 +51,7 @@ against the first.
   `tickets/<topic>/` only after the slicing is approved. Each ticket copies the
   criteria it covers verbatim. *(cost:C-1, cost:C-3)*
 - **AC-4** `/implement` builds one ticket and commits; it never reviews its own work
-  and never marks its own ticket done. `/critique`, in a separate session, reviews the
-  commit against the ticket. *(problem:C-4)*
+  and never marks its own ticket done. *(problem:C-4)*
 - **AC-5** `/accept` uses the finished feature, walks the `C-n` conditions, and emits
   `VERDICT_<TOPIC>.md` with a routing destination on rejection. It is the only stage
   that judges against the problem rather than against the previous artifact.
@@ -86,6 +85,8 @@ against the first.
 - **AC-14** Every skill and script the new pipeline replaces is deleted, in one commit,
   after the pipeline has been run end to end once. Nothing is left behind that a person
   or a model could invoke by mistake. *(cost:C-1, cost:C-3)*
+- **AC-15** `/critique`, in a session of its own, reviews each commit against the ticket
+  it was built from, and writes what it wants changed into that ticket. *(problem:C-4)*
 
 ## Edge cases
 

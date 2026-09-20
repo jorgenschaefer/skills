@@ -1,6 +1,6 @@
 ---
 solution:  SOLUTION_NEW_PIPELINE.md
-satisfies: AC-4
+satisfies: AC-15
 after:     5-implement
 status:    ready
 attempts:  0
@@ -14,8 +14,8 @@ without losing the thing it already is.
 
 ## Done when
 
-> **AC-4** … `/critique`, in a separate session, reviews the commit against the
-> ticket.
+> **AC-15** `/critique`, in a session of its own, reviews each commit against the ticket
+> it was built from, and writes what it wants changed into that ticket.
 
 ## Context
 
