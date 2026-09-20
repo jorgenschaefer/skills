@@ -7,6 +7,8 @@ description: Use when planning how to carry out a change to this codebase - a fe
 
 Turn a settled solution into the tickets that build it. `SLICE_FORMAT.md` settles the shape of a ticket; this file is what you do.
 
+**Where there is no solution yet, there is nothing to slice.** A request to plan a change that has not been designed is `/solve`'s, and handing it tickets derived from your own guess is the failure the whole chain exists to prevent. Say so and stop.
+
 ## The order matters, because plan mode cannot write
 
 1. **Work the slicing out in context** - the tickets, their order, what each covers.
@@ -14,7 +16,7 @@ Turn a settled solution into the tickets that build it. `SLICE_FORMAT.md` settle
 3. **Present it and get approval.** What is approved is the slicing, not the files.
 4. **Write `tickets/<topic>/` to match**, once plan mode has exited.
 
-The written files are a transcription of what was approved and nothing re-checks them at the moment of writing; the runner's pre-flight is what catches a transcription that drifted. So transcribe, do not improve. An idea you have while writing the files is an idea that skipped the approval.
+The written files are a transcription of what was approved, and nothing checks them at the moment of writing - the runner's pre-flight is what catches a transcription that drifted, one pass later. So transcribe, do not improve. An idea you have while writing the files is an idea that skipped the approval.
 
 ## What a slice is
 
@@ -28,9 +30,7 @@ The written files are a transcription of what was approved and nothing re-checks
 
 ## Copy, never summarise
 
-A ticket quotes its criteria exactly as the solution writes them. This is what replaced the spec hash: a ticket carrying its own words cannot be redefined by an edit upstream, and the builder never opens the solution to find out what was meant.
-
-A paraphrase looks harmless and is not. It is a criterion you changed, in a file that claims to be quoting one.
+A ticket quotes its criteria exactly as the solution writes them - `SLICE_FORMAT.md` says why. Exactly means exactly: a quotation that stops a sentence early has dropped a requirement, and it is the most natural way this goes wrong.
 
 ## Re-slicing
 
@@ -42,6 +42,6 @@ Drift, or a verdict routing a lost criterion back, lands here against a director
 
 ## Throughout
 
-**Every criterion lands in some ticket, and every ticket claims some criterion.** Both directions, before you present. `tests/ticket-format.sh` checks the written files; nothing checks the proposal but you and `/verify`.
+**Every criterion lands in some ticket, and every ticket claims some criterion.** Both directions, before you present - nothing checks the proposal but you and `/verify`, because there are no files yet to check.
 
 **Say what you are not slicing.** A solution with parts you are deliberately leaving for later is a plan; say which, so the coverage gap is a decision rather than an oversight.

@@ -20,6 +20,7 @@ Absences are mechanical and are already written down. Start there, so your readi
 
 - an intent: `tests/intent-format.sh <file>` - sections, `C-n` contiguity, a ratification that says something. No coverage check; there is nothing upstream of an intent to cover.
 - a solution: `tests/solution-format.sh <file>` - sections, `AC-n` contiguity, a tag on every criterion, and the reverse walk: every condition of every intent it names carried by some criterion.
+- written tickets: `tests/ticket-format.sh <file>...` - shape, the claim against the quotation, and that every criterion is quoted exactly as the solution writes it. Not for a slicing you are reading as text: that has no files yet, and the reading below is all there is.
 
 Report what they report; do not re-derive it by eye, and do not pass an artifact they failed. Where the suites are not in this project, the checks above are yours to do by reading - say in your report that you did, because a reading is not a run.
 
