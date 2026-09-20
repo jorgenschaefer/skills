@@ -108,8 +108,10 @@ question of whether that made sense.
 
 ## Ratified
 
-Not yet. Reconstructed from the conversation that produced `NEW_PIPELINE_IDEA.md`;
-these conditions are one reading of what was asked for, not a confirmed one.
+2026-09-20, by Jorgen Schäfer — asked directly whether he recognized his problem in
+this, having already corrected three of the conditions and both the evidence and the
+constraints. The conditions above are the standard everything downstream is measured
+against.
 
 ## Routed back
 

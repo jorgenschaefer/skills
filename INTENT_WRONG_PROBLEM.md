@@ -34,6 +34,11 @@ what is on the page.
   numbered conditions of any kind. Nothing downstream could cite a condition from it
   even in principle, because there is nothing to cite.
 
+All of that is structural: it shows the failure is *possible* and would be *invisible*.
+No instance of it is on record. That is the expected state — nothing ever asked the
+question, so a failure would have left no trace — but it is not the same as evidence,
+and this document should not pretend otherwise.
+
 ## Done when
 
 - **C-1** For every change, the question "did this solve the problem that was brought
@@ -82,10 +87,21 @@ measured against turned out to have a different answer than the existing pipelin
 
 ## Ratified
 
-Not yet. This one was inferred rather than reported — it was never raised as a
-complaint, which is either a sign that it is real and invisible, or a sign that it is
-the author's problem and not the customer's. Worth confirming before anything is built
-for it.
+2026-09-20, by Jorgen Schäfer — **on the argument, not on an instance.** Asked directly
+whether he had shipped work that met its spec and did not help, the answer was "not
+yet, but it will": nothing in the current pipeline could have caught such a failure, so
+having no example is what one would expect either way.
+
+That is a weaker ratification than `INTENT_PROCESS_COST.md`'s and is recorded as such,
+because it carries a standing obligation. This intent was also reconstructed after the
+solution was designed, which is the circumstance most likely to produce a problem
+statement written to justify a stage someone had already decided on.
+
+**What would falsify it:** verdicts that never once come back "met every criterion, did
+not solve the problem". If stage (e) runs across a run of changes and only ever
+confirms what the per-ticket checks already established, it is costing a document per
+change to tell us nothing, and it should go the way of the journeys and the domain
+sections.
 
 ## Routed back
 
