@@ -1,6 +1,6 @@
 ---
 name: software-design
-description: How a change is shaped before it is typed - the domain's own names carried through every layer, where the seams are, how few and how deep they should be, and which decisions are worth an ADR. Surfaces while a change is being planned or its structure decided, when it introduces a concept or crosses a boundary; the write-time standard is `coding-standard`.
+description: Use when a change being planned introduces a concept the codebase has no name for, or moves a boundary between the ones it does - the domain's own names carried through every layer, where the seams are, how few and how deep they should be, and which decisions are worth an ADR. Not for a three-line edit inside an existing seam, and not for code already being typed: that is `coding-standard`.
 ---
 
 # Shaping a change
@@ -22,7 +22,7 @@ Name after the domain action, never after the technical operation.
 - When users talk about "publishing a blog post" or "archiving it", the respective functions should be `publishPost` and `archivePost` - not `updatePost`, even though both end as a database `UPDATE`.
 - When users talk about "setting an article's category", the respective function should be `setArticleCategory`.
 - When users talk about "saving an article", the function should be `saveArticle` with the argument being a compound object of everything the users mean with "the article" in this context - that could contain the category.
-- The source of truth for these names is `UBIQUITOUS_LANGUAGE.md` if it exists. Use the English identifiers it documents; if you coin a new domain term while working, it belongs in that glossary.
+- The source of truth for these names is `UBIQUITOUS_LANGUAGE.md` if it exists - see `## The glossary`.
 
 The examples share one test: name the function at the granularity the users talk about the action, and let a compound argument carry the details. The schema does not decide the split - one action may write several columns, and one column may be written by several distinct actions.
 
@@ -79,7 +79,7 @@ The layers above describe *conceptual* granularity - the boundaries at which you
 
 ## The glossary
 
-`UBIQUITOUS_LANGUAGE.md`, where the project keeps one, is the source of truth for the domain's names - the English identifiers above come from it. A term you coin while planning belongs in it, and a term already there that the plan contradicts is either a mistake in the plan or a rename that has to be made everywhere at once.
+`UBIQUITOUS_LANGUAGE.md`, where the project keeps one, is the source of truth for the domain's names: use the identifiers it documents, and put a term you coin while planning into it. A term already there that the plan contradicts is either a mistake in the plan or a rename that has to be made everywhere at once - there is no third option where both spellings live.
 
 `/ubiquitous-language-init` bootstraps that file in a project that has none, and audits an existing one for drift. It stays a separate skill because bootstrapping a glossary is a one-off act on a codebase, not something a change needs.
 

@@ -95,12 +95,19 @@ dangling=""
 for skill in "$ROOT"/*/SKILL.md; do
   from="$(basename "$(dirname "$skill")")"
   while IFS= read -r line; do
-    named=""
-    case "$line" in *'`coding-standard`'*) named="coding-standard" ;; esac
-    case "$line" in *'`software-design`'*) named="${named:-software-design}" ;; esac
+    # Every backticked skill name, not only the two that exist: a reference to a
+    # skill that was renamed away is exactly what this is for, and matching only
+    # the live names makes the directory guard below unreachable.
+    named="" count=0
+    for candidate in $(printf '%s\n' "$line" | grep -o '`/\?[a-z][a-z-]*`' | tr -d '`/' | sort -u); do
+      [ -d "$ROOT/$candidate" ] || [ "$candidate" = coding-conventions ] || continue
+      named="$candidate" count=$((count + 1))
+    done
+    # A line naming two skills is ambiguous about which one it is attributing a
+    # section to, and there is a legitimate case: `/critique` reads both halves.
+    [ "$count" = 1 ] || continue
     # A line naming both is ambiguous about which half it is attributing a
     # section to, and there is a legitimate one - `/critique` reads both.
-    case "$line" in *'`coding-standard`'*'`software-design`'*|*'`software-design`'*'`coding-standard`'*) continue ;; esac
     [ -n "$named" ] || continue
     [ -d "$ROOT/$named" ] || { dangling+="$from names $named, which is not a skill"$'\n'; continue; }
     while read -r section; do

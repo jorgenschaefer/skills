@@ -30,7 +30,7 @@ Three things stop this run. Where a question changes what you would design next,
 
 **Read the corpus this lands in** - the terminology it already uses, the conventions it already holds, and what sits next to the thing you are about to design. Where it is a codebase, that reading is the code, `UBIQUITOUS_LANGUAGE.md` and the project's ADRs, with `ARCHITECTURE.md` as a lead rather than as truth. **Write in the language the corpus is written in.**
 
-**Find the standards this work is held to.** The intent does not name them; you work them out from what the deliverable turns out to be. A skill whose job is the standard, a file in the project that reads like a rule rather than a description, or the rule the corpus's own examples all obey. `coding-conventions` where the work is code.
+**Find the standards this work is held to.** The intent does not name them; you work them out from what the deliverable turns out to be. A skill whose job is the standard, a file in the project that reads like a rule rather than a description, or the rule the corpus's own examples all obey. `coding-standard` where the work is code.
 
 **Where two standards contradict and you cannot satisfy both**, name both, say what each would require, and hand the choice over rather than picking one quietly.
 

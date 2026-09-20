@@ -2,9 +2,9 @@
 solution:  SOLUTION_NEW_PIPELINE.md
 satisfies: AC-13
 after:     10-coding-standard
-status:    review
+status:    done
 attempts:  1
-reviews:   0
+reviews:   1
 ---
 
 ## Build
@@ -61,8 +61,11 @@ the repo's shared-format invariant requires and which also keeps the rule this s
 most depends on: an ADR is never written autonomously — the decision and a
 recommendation go to the person, and the record exists once they say yes. Its prose
 still names `/to-solution` and `/spec-to-tickets` as the skills that propose and read
-ADRs. Correcting that means editing every copy at once, so it waits for ticket 12,
-when the other copies go.
+ADRs. Editing every copy at once is what one commit does, so deferring that is a
+choice and not a constraint: the copies live in `to-solution` and `handover`, and
+changing what they tell those skills to do is not this ticket's business. The cost
+shipped is real — `software-design` carries a format document that names the skills
+being retired and never names `software-design`.
 
 **The open question is answered.** `ubiquitous-language-init` stays:
 `UBIQUITOUS_LANGUAGE.md` is the source of truth `software-design` reads for the
@@ -75,3 +78,35 @@ than `/slice`'s, which took two drafts and 31 runs to get right, and it now comp
 with `/slice` for the same phrase — both say something close to "planning a change to
 this codebase". That is ticket 9's trial, and it is the likeliest thing in this run to
 come back needing another draft.
+
+## Findings
+
+One review round, five findings. All five taken.
+
+**The same mistake as the last ticket, made worse by breaking the guard against it.**
+The rename left `spec-to-tickets`, `to-solution` and `README.md` pointing at a
+directory that no longer exists — and the reference walk I added in ticket 10 to catch
+exactly that was disarmed in the same commit: replacing the `coding-conventions` arm
+with `software-design` meant the retired name stopped being matched, and the
+directory-exists guard became unreachable dead code. A guard that only knows the names
+that still exist cannot catch a name that stopped existing. It now matches every
+backticked skill name, and mutation-testing confirms it fails on a reference to the
+retired one.
+
+**AC-13's third clause had no wire.** "Writes a ratified ADR at plan exit" lived only
+in a skill that the plan-exit skill never mentions, so it rested entirely on discovery
+firing. `/slice` step 4 now names it: write the tickets, and with them any ADR the
+change earned, because plan approval is the yes that lets one be written and the
+argument is gone by acceptance.
+
+**`## The glossary` was sixty percent restatement** of a bullet in the material that
+moved. The bullet is a pointer now and the section carries the facts.
+
+**Two descriptions.** `software-design` led with a declarative topic sentence while
+`/slice` leads with "Use when", which is how a router picks one of two overlapping
+skills. It now leads with the trigger and carries a negative clause — not a three-line
+edit, not code being typed — which is what `/slice`'s description took 31 runs to earn.
+The overlap is narrowed, not resolved; ticket 9 measures it.
+
+**The README bullet** still said the skill "becomes the design skill when the pipeline
+lands", which it had.

@@ -14,7 +14,7 @@ Turn a settled solution into the tickets that build it. `SLICE_FORMAT.md` settle
 1. **Work the slicing out in context** - the tickets, their order, what each covers.
 2. **Check it** - `/verify`, on the proposed slicing, before anyone is shown anything. This is the one review that arrives as text rather than a file: hand the subagent the slicing and the solution's path.
 3. **Present it and get approval.** What is approved is the slicing, not the files.
-4. **Write `tickets/<topic>/` to match**, once plan mode has exited.
+4. **Write `tickets/<topic>/` to match**, once plan mode has exited - and with them any ADR the change earned. `software-design` says which decisions those are; plan approval is the yes that lets one be written, and the argument for it is in front of you now and gone by acceptance.
 
 The written files are a transcription of what was approved, and nothing checks them at the moment of writing - the runner's pre-flight is what catches a transcription that drifted, one pass later. So transcribe, do not improve. An idea you have while writing the files is an idea that skipped the approval.
 
