@@ -2,9 +2,9 @@
 solution:  SOLUTION_NEW_PIPELINE.md
 satisfies: AC-5, AC-11
 after:     7-runner, 11-software-design
-status:    review
+status:    done
 attempts:  1
-reviews:   0
+reviews:   1
 ---
 
 ## Build
@@ -44,8 +44,10 @@ The merge. A person reads the verdict and merges; nothing merges on a verdict al
 ## Record
 
 `accept-run.sh`, `accept/SKILL.md`, `accept/VERDICT_FORMAT.md`, and `tests/accept.sh` —
-16 cases, invoked by `tests/run.sh` (257 + 18 + 22 + 32 + 10 + 16 + 29 + 16, green).
-Twelve were red before the script existed.
+24 cases after the review, invoked by `tests/run.sh`
+(257 + 18 + 22 + 32 + 10 + 16 + 29 + 24, green). Eleven of the original sixteen were red
+before the script existed — not twelve, as this Record first claimed; five passed
+against nothing, and two of those five were the defects below.
 
 **AC-11 is the testable half, and the tests are refusals.** Six of them: the main
 branch, a dirty tree, an unfinished ticket named by file, a missing verdict, a verdict
@@ -79,3 +81,48 @@ stays untouched for the old pipeline. Ticket 12 deletes `accept.sh` and keeps
 reading the Records as claims rather than evidence, choosing a routing destination. A
 script can refuse to delete paper; nothing in bash can tell whether a verdict was earned
 by driving the feature or written from the diff.
+
+## Findings
+
+One review round, fifteen findings, six of them blockers. Fourteen taken.
+
+**The case this Record singled out as the point of the exercise was vacuous.** `a
+refusal deletes nothing` ran once, at the end, against whatever workspace the previous
+case had left — the topic-with-no-paper one, where there was nothing to lose. A refusal
+that deleted the entire paper first passed all sixteen cases. It is a helper now, called
+after each refusal that had paper on disk to lose.
+
+**And the defect I had just fixed elsewhere, one case later.** `it refuses a topic with
+no paper` checked only the exit code, so removing the check still passed: the script
+fell through and refused about a verdict, which is not what is wrong. The same shape as
+the missing-verdict case tightened in the same commit, left unfixed beside it.
+
+**Three refusals the ticket said would survive from `accept.sh` did not.** A detached
+HEAD was accepted, and that retirement commit is unreachable the moment anyone switches
+branch. A commit that fails left the paper deleted and staged while reporting a refusal,
+against the script's own promise that a refusal changes nothing; it puts the paper back
+now. And a git-ignored file inside the paper stayed on disk while the run reported
+success, because what git ignores git cannot delete.
+
+**The skill's own order of operations could not be executed.** Promote, then run the
+script — and promoting dirties the tree, which the script refuses. It now says to commit
+the verdict and the promotions first, and why the script is right to insist.
+
+**Three fidelity defects.** AC-5 names `VERDICT_<TOPIC>.md` and nothing delivered named
+it; the derivation lived only in a `tr` inside the script. The routing list had four of
+five destinations. And `Tradeoffs paid` declared itself to have no consumer, a defect
+against AC-9 — `/solve` now reads the verdicts in the tree before writing its own
+tradeoffs, which is the only correction an estimate ever gets.
+
+**The falsification clause was in the ticket and in neither deliverable.**
+`INTENT_WRONG_PROBLEM.md` was ratified on an argument and carries what would disprove
+it: verdicts that never contradict the per-ticket checks. `VERDICT_FORMAT.md` now says
+the verdicts in the tree are where that is read off — the other reason this page survives
+the paper.
+
+**Smaller.** `git rm` was given pathspecs rather than literals; a topic was not
+validated, so `../src` resolved outside the paper; `--abandon` after the topic was
+silently ignored; the not-a-repository refusal had no case.
+
+**Recorded as thin.** `field()` in this script and in `run.sh` are identical and
+separate. They agree today because they were written together, which is not a mechanism.

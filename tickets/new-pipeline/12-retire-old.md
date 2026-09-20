@@ -26,6 +26,11 @@ Going: `to-solution`, `spec-to-tickets`, `check-against-spec`, `implement-ticket
 `accept-run.sh` stays: ticket 8 kept the mechanical half of acceptance as a script
 rather than folding it into the skill, for the reason the runner is a script, and wrote
 it against the new paper layout beside the old one.
+
+Two documents still describe `/accept --abandon`, an interface that does not exist: the
+flag belongs to `accept-run.sh`. `SOLUTION_NEW_PIPELINE.md` and `NEW_PIPELINE_IDEA.md`'s
+stage (e) both carry it. Correct them here.
+
 Staying: `idea` and `critique` reshaped, `git-commit-message`, `repo-overview`,
 `improve-skill`, `cleanup-repo`, `upgrade-dependencies`, and `ubiquitous-language-init`
 if ticket 11 kept it.
