@@ -20,6 +20,8 @@ Three things stop this run. Between them, ask only what the corpus cannot answer
 
 ## Before you design
 
+**The input is a path to the intent.** If the user did not supply one, ask where it lives before doing anything else.
+
 **Read the intent, and re-derive the problem cold.** You did not have the conversation that produced it - read it against whatever it points at and form your own account of what is wrong. Where your reading disagrees with the intent's, stop and say so before designing anything.
 
 **Take the intent's open questions as work** - closing them is part of phases 1 and 2, not a separate errand.
@@ -99,9 +101,11 @@ The same walk finds what the design leaves undecided: at each step, what would y
 
 ## The record
 
-Write the spec beside the intent, in the shape `SOLUTION_FORMAT.md` specifies. Present the same content inline.
+Ask where the spec goes, and write it in the shape `SOLUTION_FORMAT.md` specifies. Present the same content inline.
 
-**The winning specimen goes beside the spec, and `## Design` links it.** Delete the losing ones.
+**Its directory holds one `.md` and nothing else beside it.** That is the run's paper: `./accept.sh` refuses a spec directory holding more than one, because which file is the spec is not a guess to make where the wrong answer deletes the other one. So the intent stays where `/idea` put it - it is the design record rather than the run's paper - and it is not moved in beside the spec.
+
+**The winning specimen goes in `mockups/` beside the spec, and `## Design` links it.** Delete the losing ones. `mockups/` is the directory acceptance deletes with the rest of the paper, so a specimen anywhere else outlives the run it was drawn for and becomes a second source of truth nobody updates.
 
 **Propose the permanent-tier items one at a time, as they arise.** A term for the project's glossary, an ADR for a structural choice this design rests on or establishes - each outlives the spec that carried it, so each gets its own yes at the moment it comes up rather than a list at the end. Never write one autonomously. `UBIQUITOUS_LANGUAGE_FORMAT.md` and `ADR_FORMAT.md` are the shapes.
 
