@@ -21,6 +21,7 @@ If a question would matter even for a deliverable built as a single ticket, it b
 - Read the `coding-conventions` skill. Seams you place and contracts you declare are design decisions, and that is the standard they are held to.
 - Read `TICKET_FORMAT.md`. It is the output shape and it settles most of what would otherwise be judgement.
 - Read `SOLUTION_FORMAT.md`. It is the input shape, and it describes two states of one file: the spec as you were handed it, and the spec as you leave it.
+- Read `tests/workflows/`, if the project has one. The driver halts any ticket that changes a test there without saying beforehand that it would, and you are the only step that reads both the tickets and the directory before the run starts - see *Authorise the workflow tests a ticket will reach*.
 
 ## Audit the scope before decomposing
 

@@ -43,27 +43,27 @@ Both modes are required, and **which criterion got which is part of the report**
 
 The argument is where the run's paper lives - the spec file, or the directory holding it and the `tickets/` beside it. Read the spec and the full diff of the run - every commit from the branch point.
 
-**Spend the session on what nothing else could reach.** Two things may already be pinned, and where they are, they are pinned better than a reading would pin them: a journey with a test under `tests/workflows/` is walked at every ticket by the project's own check command, and a criterion whose ticket `Record` names the test that pins it was checked by execution in that build. Check that those are true rather than assuming them - a project may have ratified nothing, and a `Record` may name no test for a criterion its ticket claimed.
+**Spend the session on what nothing else could reach.** Two things may already be pinned, and where they are, they are pinned better than a reading would pin them: a journey with a test under `tests/workflows/` is walked at every ticket by the project's own check command, and a criterion whose ticket `Record` names the test that pins it was checked by execution in that build. Check that those are true rather than assuming them - a project may have pinned nothing, and a `Record` may name no test for a criterion its ticket claimed.
 
 Where a journey is covered that way, confirm its test still passes and move on; drive the journeys that are not. Everything below is yours either way, because no earlier step can reach any of it: a per-ticket review is structurally blind to what no ticket claimed.
 
 - **Every success criterion.** The spec's own account of the feature working as a whole, which no ticket claims and no criterion decomposes into. This is the one thing only an end-to-end drive can answer.
 - **Every criterion (`US-N.M`).** Met, and pinned by a test that would fail without it.
 - **Every constraint (`C-N`).** Verified the way the spec said it would be. A constraint with no check is a wish, and this is the last place that gets noticed.
-- **Every non-goal.** Respected. Something the spec ruled out that got built anyway is a defect, not a bonus.
+- **Everything `## Scope` puts under *Never*.** Respected. Something the spec ruled out that got built anyway is a defect, not a bonus. *Later* is not this: scope held back and built early is the next item down.
 - **Every binding default (`D-n`).** Held to, by all of the tickets rather than most of them. A default marked binding is one several tickets were built on; one ticket quietly going its own way is invisible from inside every ticket including that one.
 - **Every duplication-survey verdict.** The spec recorded, module by module, what this feature would reuse, extend, absorb, replace or deliberately sit beside. A `replace` or `absorb` the run did not carry out leaves the thing it was supposed to remove - file it.
 - **Everything built that traces to nothing.** Behavior in the diff that no criterion asked for is either scope creep, something off the spec's `Later` list built early, or a fork the spec left silent. All three are findings: the first two to remove, the last for the human who reads the closing report to ratify.
 - **Every test that left.** A test deleted, renamed away, or weakened over the run's diff - an assertion loosened, a case dropped, two suites consolidated into one that covers less. Coverage that existed before the run and does not exist after it is a gap even though it traces to no criterion here: the criterion it pinned belonged to a spec deleted when its own feature was accepted, so nothing you can read points at it. Consolidation is where this hides, because the diff reads as tidying.
 
-That list is the orphan sweep, and it is the half of this check nothing else can do. A criterion nobody built, a constraint nobody verified, a non-goal somebody built anyway - each is invisible from inside every ticket in the run, because the ticket that would have noticed is the ticket that does not exist.
+That list is the orphan sweep, and it is the half of this check nothing else can do. A criterion nobody built, a constraint nobody verified, something ruled out for good and built anyway - each is invisible from inside every ticket in the run, because the ticket that would have noticed is the ticket that does not exist.
 
 **Read the done tickets' `Record` sections as leads.** Each build wrote down what it decided where the spec was silent, which review findings it argued down, and what it noticed and deliberately did not fix. Those are places worth looking, and the third of them - what a build noticed and left open - is read by nothing else in the pipeline. They are not verdicts you inherit: the agent that wrote one is gone and cannot defend it, so verify each for yourself, adversarially, like anything else.
 
 **The bar a gap has to clear.** Three things hold of every one, and a candidate that fails any is not a gap:
 
 - **A constructed trigger** - the input or state that shows the criterion unmet, or the deletion the test failed to notice. Not an account of how it might be unmet.
-- **A destination** - a numbered criterion, a constraint, a non-goal, a workflow test, or one of `coding-conventions`' `## Security` or `## Changing what already runs` properties, which bind whether or not the spec names them. Anything else is a new requirement, and it goes to `IDEAS.md` rather than into a ticket. Coverage that left during the run is the exception above: file it.
+- **A destination** - a numbered criterion, a constraint, something `## Scope` rules out, a workflow test, or one of `coding-conventions`' `## Security` or `## Changing what already runs` properties, which bind whether or not the spec names them. Anything else is a new requirement, and it goes to `IDEAS.md` rather than into a ticket. Coverage that left during the run is the exception above: file it.
 - **No reopening** - a gap that overturns a prior ticket's `Unresolved` adjudication on the same code may not be filed. Say in the report that you disagree and leave it there, for a human to rule on rather than the loop to rebuild.
 
 Delegate breadth where the spec is large - a subagent per story, each hunting for the way its criteria fail. Dispatch them with `run_in_background: false`, batched into one message so they still run at once; detached, they hand you an `agentId` and the run ends before their reports arrive. You own the verdict. Treat it as a claim to verify: a clean result counts only when the report shows the review happened - what it checked and where.
@@ -72,7 +72,7 @@ Delegate breadth where the spec is large - a subagent per story, each hunting fo
 
 **File a ticket for each gap.** Write it beside the tickets this run was built from – the caller names the directory, and `tickets/` beside the spec is only the default – as `NN-slug.md` in the shape `TICKET_FORMAT.md` specifies, numbered after the highest existing ticket, `status: todo`, `depends_on: []`. A gap filed where the loop doesn't read is a gap nothing builds, and the run finishes looking clean. `Satisfies` cites the criterion that failed. The gap is objective - a criterion is met or it isn't - so it goes back through the same loop that built everything else, with the same TDD and review discipline, rather than being patched by hand at the end.
 
-Where closing the gap would reach a ratified workflow test, write the ticket's `## Workflow tests` section as you file it. The driver halts a build that touches one without it, and a remediation ticket is the case that most often needs it.
+Where closing the gap would reach a workflow test, write the ticket's `## Workflow tests` section as you file it. The driver halts a build that touches one without it, and a remediation ticket is the case that most often needs it.
 
 Name the ticket for the behavior that is missing, not for the failure: "Let a reviewer see the rejection reason", not "fix US-3.2 gap".
 
