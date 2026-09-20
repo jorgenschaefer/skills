@@ -26,6 +26,10 @@ Three things stop this run. Between them, ask only what the corpus cannot answer
 
 **Read the corpus this lands in** - the terminology it already uses, the conventions it already holds, and what sits next to the thing you are about to design.
 
+Where the corpus is a codebase, that reading is the code itself, plus `UBIQUITOUS_LANGUAGE.md` and the project's ADRs for the language it already holds, and `ARCHITECTURE.md` as a lead rather than as truth - it is only as current as the last `/repo-overview` run, and the code settles anything the two disagree on. `coding-conventions` is the standard.
+
+**Write in the language the corpus is written in.** A spec in a second language is one whose terms have to be translated back every time somebody builds from it, and the translation is where the domain's own words get lost.
+
 **Find the standards this work is held to.** The intent does not name them; you work them out from what the deliverable turns out to be. Look for a skill whose job is the standard. Look in the project for a file that reads like a rule rather than a description: a contributing guide, a style guide, a glossary, an `ADR` directory. Look at the corpus itself and infer the rule its examples all obey.
 
 **Where two standards contradict and you cannot satisfy both, stop and say so rather than picking one quietly.** Name both, say what each would require, and hand the choice over.
@@ -46,7 +50,7 @@ Apply the split test continuously rather than once at the end: **could you do ha
 
 Each candidate says what it does, what it costs to get, and what it costs to carry afterwards - naming who carries it. One that breaks a constraint from the intent leaves the field, and you say which constraint killed it.
 
-**Four kinds. Where one does not apply, say which and why.**
+**Four kinds. Where one does not apply, say which and why.** They are a floor rather than the exercise - the kinds that go missing unless something asks for them, not the ones worth having. A field that turns out to be exactly this list stopped at the checklist instead of starting from it.
 
 - **Theirs**, from the intent's account of what they arrived with, adjusted where the problem statement shows it aiming off.
 - **Do nothing.** The cost of carrying the problem is the number every other candidate has to beat, and sometimes it wins. That cost is the intent's instance, times how often it recurs; where the intent has no instance, say that doing nothing is cheap.
@@ -65,6 +69,8 @@ A constraint already eliminated whoever it was going to eliminate; the decision 
 
 **The bar is asymmetric.** A candidate that fits what the corpus already does wins ties and near-ties. A diverging one has to be much better, not merely better.
 
+**Reversibility breaks what is left.** At an honest tie, the one that is cheap to undo wins.
+
 **Score with claims, not adjectives.** "Simpler" can be said of anything. "One file instead of three, edited by whoever already edits that file" can be wrong, which is what makes it worth writing.
 
 **Name every load-bearing unknown** - a claim that would flip the recommendation if it turned out false. Check it now, cheaply, from a primary source, or carry it to the close as a block. A lesser unknown goes to `## Open concerns`.
@@ -76,6 +82,8 @@ A constraint already eliminated whoever it was going to eliminate; the decision 
 **One recommendation, and a reason each loser lost** - traceable to a decision criterion or a constraint rather than to taste. The loser that most needs its reason said out loud is theirs.
 
 **Or block.** The decision is not ready: here is the one load-bearing unknown, and the cheapest way to get it. A block is an ending, stated as one rather than smuggled in as a caveat, and it produces no spec.
+
+**Or recommend without recording.** Where the decision will not be re-argued, the recommendation goes in the conversation and no spec is written. Never write one unasked.
 
 **Survey what already exists.** Go piece by piece through what the chosen solution needs and find what the corpus already has that resembles it. Each gets a verdict and a reason: **reuse** it as it stands, **extend** it, **absorb** it, **replace** it, or deliberately **sit beside** it. Bounded to what this deliverable touches. A survey full of *replace* says the candidate diverges more than it looked - say so before the choice hardens.
 
