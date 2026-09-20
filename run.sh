@@ -36,12 +36,21 @@ case "$branch" in
   main|master) die "refusing to run on $branch: a run belongs on a branch of its own" ;;
 esac
 
+command -v claude >/dev/null || die "no claude on PATH: the runner drives sessions, it does not do the work"
+
 shopt -s nullglob
-files=("$TICKETS"/*.md)
+files=()
+for f in "$TICKETS"/*.md; do
+  # A ticket is a file with a solution behind it. Anything else in the directory
+  # is someone's notes, and reading it as a ticket fails every pass.
+  grep -q '^solution:' "$f" && files+=("$f") || printf 'ignoring %s: not a ticket\n' "$f" >&2
+done
 [ "${#files[@]}" -gt 0 ] || die "no tickets in $TICKETS"
 
-field()     { sed -n "s/^$2: *//p" "$1" | head -1; }
-set_field() { sed -i "s|^$2: .*|$2:$(printf '%*s' $((10 - ${#2})) '')$3|" "$1"; }
+field()     { sed -n "2,/^---$/s/^$2: *//p" "$1" | head -1; }
+# Scoped to the frontmatter: a ticket about the ticket format has lines in its
+# body that look exactly like fields, and this repo's tickets are full of them.
+set_field() { sed -i "2,/^---$/s|^$2:.*|$2:$(printf '%*s' $((10 - ${#2})) '')$3|" "$1"; }
 
 # The criteria a ticket quotes, and the criteria its solution carries, in the
 # one shape both can be compared in.
@@ -49,7 +58,7 @@ quoted()   { grep -o '^> \*\*AC-[0-9]\+\*\*' "$1" | grep -o 'AC-[0-9]\+' | sort 
 declared() { grep -o '^- \*\*AC-[0-9]\+\*\*' "$1" | grep -o 'AC-[0-9]\+' | sort -u; }
 text_of()  { # file, id -> the criterion as written, tag and marker stripped
   awk -v id="$2" '
-    index($0, "**" id "**") { found = 1; print; next }
+    index($0, "- **" id "**") == 1 || index($0, "> **" id "**") == 1 { found = 1; print; next }
     found && (/^[->] \*\*AC-/ || /^#/ || /^$/) { exit }
     found { print }
   ' "$1" | sed 's/\*([a-z:, C0-9-]*)\*//' \
@@ -73,11 +82,19 @@ preflight() {
         || problems+="$(basename "$t"): $id no longer matches $solution"$'\n'
     done
     for id in $(declared "$solution"); do
-      grep -ql "^> \*\*$id\*\*" "${files[@]}" \
+      grep -q "^> \*\*$id\*\*" "${files[@]}" \
         || problems+="$solution: $id is quoted by no ticket"$'\n'
     done
   done
-  [ -z "$problems" ] || { printf 'drift - the tickets and the solution disagree:\n%s' "$problems" >&2; return 1; }
+  if [ -n "$problems" ]; then
+    printf 'drift - the tickets and the solution disagree:\n%s' "$problems" >&2
+    # AC-7: the stop is named in the ticket, not only on someone's terminal. The
+    # first offender carries it, because that is where a person will look.
+    local first; first="$(printf '%s' "$problems" | sed -n '1s/:.*//p')"
+    [ -f "$TICKETS/$first" ] && halt "$TICKETS/$first" drift \
+      "the solution and this ticket no longer agree - re-slice the unbuilt tickets through plan mode"
+    return 1
+  fi
 }
 
 # --- one session
@@ -90,7 +107,7 @@ halt() {  # ticket, kind, why
 # A usage limit is not a failure of the work: the session never got to do any.
 # Waiting it out and trying again is the whole reason this is a process that
 # outlives its sessions.
-session() {  # ticket, role -> 0 ran, 1 failed, 3 hit a limit
+session() {  # ticket, role -> 0 ran, 1 failed
   local out rc waits=0
   while :; do
     out="$(claude -p --permission-mode acceptEdits \
@@ -129,7 +146,7 @@ while :; do
 
   attempts=$(( $(field "$ticket" attempts) + 1 ))
   if [ "$attempts" -gt "$MAX_ATTEMPTS" ]; then
-    halt "$ticket" exhausted "$MAX_ATTEMPTS attempts spent without reaching a review"
+    halt "$ticket" exhausted "$MAX_ATTEMPTS attempts spent, $(field "$ticket" reviews) of them after a review sent it back - read the build output, decide whether to raise the budget or re-slice"
     exit 1
   fi
   set_field "$ticket" attempts "$attempts"
@@ -148,23 +165,39 @@ while :; do
     *) set_field "$ticket" status ready; continue ;;
   esac
 
+  # Cleared before the review, not after it: what is in the ticket when the next
+  # build starts has to be this round's findings, and a section left from the
+  # last round would read as a complaint nobody made.
   sed -i '/^## Findings$/,$d' "$ticket"
   session "$ticket" critique || { set_field "$ticket" status ready; continue; }
 
   if grep -q '^## Findings' "$ticket"; then
     reviews=$(( $(field "$ticket" reviews) + 1 ))
     set_field "$ticket" reviews "$reviews"
-    if [ "$reviews" -ge "$MAX_REVIEWS" ]; then
-      halt "$ticket" exhausted "$reviews reviews without a clean one"
+    if [ "$reviews" -gt "$MAX_REVIEWS" ]; then
+      halt "$ticket" exhausted "$reviews reviews without a clean one - read the findings below and decide whether they are answerable as written"
       exit 1
     fi
     set_field "$ticket" status ready
   else
     set_field "$ticket" status done
   fi
-  # Findings belong to the round that raised them. Left in place, the next
-  # review's clean verdict reads as one more round of the same complaint.
-  sed -i '/^## Findings$/,$d' "$ticket"
 done
 
+# `break` means nothing could be selected, which is not the same as everything
+# being finished: a stale claim, a halt, or a dependency nobody can satisfy all
+# look identical from inside the loop.
+stuck=""
+for t in "${files[@]}"; do
+  case "$(field "$t" status)" in
+    done) ;;
+    doing)  stuck+="$(basename "$t"): claimed by a session that never came back"$'\n' ;;
+    halted) stuck+="$(basename "$t"): halted - $(sed -n '/^## Halt$/,$p' "$t" | sed -n '3p')"$'\n' ;;
+    *)      stuck+="$(basename "$t"): waiting on $(field "$t" after)"$'\n' ;;
+  esac
+done
+if [ -n "$stuck" ]; then
+  printf 'stopped with work left in %s:\n%s' "$TICKETS" "$stuck" >&2
+  exit 1
+fi
 printf 'every ticket in %s is done\n' "$TICKETS"

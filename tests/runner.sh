@@ -88,7 +88,8 @@ rc="$(run)"
 [ "$rc" != 0 ] && grep -qi 'branch' "$WORK/.out" \
   && ok "it refuses to run on the main branch" \
   || bad "it refuses to run on the main branch" "rc=$rc $(out)"
-[ ! -s "$STUB_CALLS" ] || bad "it launches nothing when it refuses" "$(cat "$STUB_CALLS")"
+[ ! -s "$STUB_CALLS" ] && ok "it launches nothing when it refuses" \
+                       || bad "it launches nothing when it refuses" "$(cat "$STUB_CALLS")"
 
 workspace
 rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" bash "$RUNNER" tickets/nope >"$WORK/.out" 2>&1 ); echo $?)"
@@ -104,7 +105,8 @@ rc="$(run)"
 [ "$rc" != 0 ] && grep -q 'drift' "$WORK/.out" \
   && ok "a ticket whose criterion left the solution stops the run" \
   || bad "a ticket whose criterion left the solution stops the run" "rc=$rc $(out)"
-[ ! -s "$STUB_CALLS" ] || bad "drift stops it before any session" "$(cat "$STUB_CALLS")"
+[ ! -s "$STUB_CALLS" ] && ok "drift stops it before any session" \
+                       || bad "drift stops it before any session" "$(cat "$STUB_CALLS")"
 
 workspace
 printf -- '- **AC-3** a third thing happens. *(C-3)*\n' >> "$WORK/SOLUTION_T.md"
@@ -190,6 +192,93 @@ run > /dev/null
 [ "$(field 1-one attempts)" = 1 ] \
   && ok "waiting out a limit does not spend an attempt" \
   || bad "waiting out a limit does not spend an attempt" "attempts=$(field 1-one attempts)"
+
+# --- what the review found the first version of this suite did not cover
+
+# The rework session is handed the ticket and nothing else, so the findings have
+# to still be in it when the next build starts.
+workspace
+plan "implement review" "critique findings"
+run > /dev/null
+grep -q '^## Findings' "$WORK/tickets/t/1-one.md" \
+  && ok "the findings are still there for the next build to read" \
+  || bad "the findings are still there for the next build to read" "$(cat "$WORK/tickets/t/1-one.md")"
+
+# And gone again once it is finished: a done ticket carrying findings reads as
+# work outstanding to everything downstream.
+workspace
+plan "implement review" "critique findings" "implement review" "critique clean"
+run > /dev/null
+[ "$(field 1-one status)" = done ] && ! grep -q '^## Findings' "$WORK/tickets/t/1-one.md" \
+  && ok "a finished ticket carries no findings" \
+  || bad "a finished ticket carries no findings" "$(tail -4 "$WORK/tickets/t/1-one.md")"
+
+# Nothing selectable is not the same as everything finished.
+workspace
+sed -i 's/^status: .*/status:    doing/' "$WORK/tickets/t/1-one.md"
+plan "implement review"
+rc="$(run)"
+[ "$rc" != 0 ] && grep -q 'never came back' "$WORK/.out" \
+  && ok "a stale claim is reported rather than counted as done" \
+  || bad "a stale claim is reported rather than counted as done" "rc=$rc $(out)"
+
+workspace
+sed -i 's/^after: .*/after:     9-ghost/' "$WORK/tickets/t/2-two.md"
+plan "implement review" "critique clean"
+rc="$(run)"
+[ "$rc" != 0 ] && grep -q '9-ghost' "$WORK/.out" \
+  && ok "a dependency nobody can satisfy is named" \
+  || bad "a dependency nobody can satisfy is named" "rc=$rc $(out)"
+
+# AC-7 says the stop is named in the ticket, not only on a terminal.
+workspace
+sed -i 's/the first thing happens./the first thing happens, differently./' "$WORK/tickets/t/1-one.md"
+plan "implement review"
+run > /dev/null
+grep -q 'drift' "$WORK/tickets/t/1-one.md" \
+  && ok "drift is written into the ticket" \
+  || bad "drift is written into the ticket" "$(cat "$WORK/tickets/t/1-one.md")"
+
+# Dependency order, where the numbering says the opposite.
+workspace
+sed -i 's/^after: .*/after:     2-two/' "$WORK/tickets/t/1-one.md"
+sed -i 's/^after: .*/after:     /' "$WORK/tickets/t/2-two.md"
+plan "implement review" "critique clean" "implement review" "critique clean"
+run > /dev/null
+grep -q '2-two' <(head -1 "$STUB_CALLS") \
+  && ok "after: decides the order, not the filename" \
+  || bad "after: decides the order, not the filename" "$(cat "$STUB_CALLS")"
+
+# Each ceiling has to be the one that fired.
+workspace
+plan "implement review" "critique findings" "implement review" "critique findings" \
+     "implement review" "critique findings" "implement review" "critique findings"
+( cd "$WORK" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=0 MAX_ATTEMPTS=9 MAX_REVIEWS=2 \
+    bash "$RUNNER" tickets/t > "$WORK/.out" 2>&1 )
+grep -q 'reviews without a clean one' "$WORK/tickets/t/1-one.md" \
+  && ok "the review ceiling says it was the review ceiling" \
+  || bad "the review ceiling says it was the review ceiling" "$(tail -3 "$WORK/tickets/t/1-one.md")"
+[ "$(field 1-one reviews)" = 3 ] \
+  && ok "the review counter is read from the file and kept" \
+  || bad "the review counter is read from the file and kept" "reviews=$(field 1-one reviews)"
+
+# A ticket about the ticket format has body lines that look like frontmatter.
+workspace
+printf '\n## Record\n\n```\nstatus:    review\nattempts:  7\n```\n' >> "$WORK/tickets/t/1-one.md"
+plan "implement review" "critique clean" "implement review" "critique clean"
+run > /dev/null
+[ "$(grep -c '^status:    review' "$WORK/tickets/t/1-one.md")" = 1 ] \
+  && ok "only the frontmatter is rewritten" \
+  || bad "only the frontmatter is rewritten" "$(cat "$WORK/tickets/t/1-one.md")"
+
+# Someone's notes in the ticket directory are not a ticket.
+workspace
+printf '# notes\n' > "$WORK/tickets/t/README.md"
+plan "implement review" "critique clean" "implement review" "critique clean"
+rc="$(run)"
+[ "$rc" = 0 ] \
+  && ok "a file that is not a ticket is ignored" \
+  || bad "a file that is not a ticket is ignored" "rc=$rc $(out)"
 
 printf '\n%d passed, %d failed\n' "$passed" "$failed"
 [ "$failed" -eq 0 ]

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
-# The tests for the two scripts: the driver, and accepting what it produced.
+# The tests for the scripts and the formats: the runner, the outgoing driver,
+# accepting what a run produced, and the shape of every artifact in between.
 #
 #   tests/run.sh
 #

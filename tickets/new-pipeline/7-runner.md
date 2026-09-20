@@ -2,9 +2,9 @@
 solution:  SOLUTION_NEW_PIPELINE.md
 satisfies: AC-6, AC-7
 after:     6-critique-ticket
-status:    review
+status:    done
 attempts:  1
-reviews:   0
+reviews:   1
 ---
 
 ## Build
@@ -47,7 +47,7 @@ detects and stops; it does not repair.
 
 ## Record
 
-`run.sh`, and `tests/runner.sh` — 17 cases, invoked by `tests/run.sh`
+`run.sh`, and `tests/runner.sh` — 29 cases after the review, 17 at first, invoked by `tests/run.sh`
 (256 + 18 + 22 + 32 + 10 + 16 + 17, green). Fourteen were red before the script existed;
 the three that passed were the refusals, which pass vacuously against nothing.
 
@@ -90,3 +90,47 @@ produce those outcomes. That is ticket 9's business.
 **Not carried from `loop.sh`.** The build/review model split, deliberately — the design
 dropped it in favour of a fresh context. Its state directory, its transcript logging,
 and its handover step, which is `/accept`'s now.
+
+## Findings
+
+One review round, fifteen findings, three of them blockers. Twelve taken.
+
+**The runner deleted the brief the rework needed.** `/implement` says the ticket's
+`## Findings` is what a second pass builds from. The runner cleared that section at the
+end of every round, including the round that wrote it — so a rework session saw a ticket
+identical to the one it had already built, with no reason for its return, and spent the
+budget until the ceiling halted it. The clear now happens only before a review. The
+copy at the end turned out to be unreachable, which a mutation proved: no case could be
+made to fail by removing it, because the pre-review clear had already done the work.
+Deleted rather than kept.
+
+**It reported success whenever it could not select a ticket.** A stale `doing` from a
+killed runner, a halted ticket, a dependency naming a ticket that does not exist — all
+of them ended the loop, printed "every ticket is done" and exited 0. Against this
+repository's own directory it said exactly that while eight tickets waited. It now walks
+the directory at the end and names what is unfinished and why. `loop.sh` had four
+functions for this and the Record had not noticed they were gone.
+
+**`drift` was never written into a ticket**, though AC-7 names it as one of the two the
+runner writes. It went to stderr and exited. Now the first offending ticket carries the
+halt, with what to do about it.
+
+**Five cases claimed coverage they did not have**, each proven by mutation: the review
+ceiling could be disabled entirely and the suite stayed green, because the attempt
+ceiling halted the same ticket with the same word; dependency order was pinned only by
+the filenames agreeing with it; neither counter's value was asserted. There are cases
+for each of those now, including one where the numbering says the opposite of `after:`.
+
+**Two smaller defects with real consequences.** `set_field` rewrote any line in the file
+matching the key, so a ticket documenting the ticket format — which this repository is
+full of — had its body rewritten. And a `README.md` in the ticket directory made every
+pass fail as drift.
+
+**Not fixed, recorded.** The limit predicate matches the CLI's human-readable wording
+where `loop.sh` read the structured rate-limit event; if the wording changes, every
+limit becomes a failure that spends the budget. The waiting itself and the give-up cap
+are still untested. `unrecoverable` — not logged in, expired token, empty balance — is
+gone, so those now burn every attempt and halt as `exhausted`, which is a lie about the
+work. The runner still trusts `status: review` without checking a commit happened, and
+trusts a halted ticket's `## Halt` without checking the kind is one a session may raise.
+The Record's "not carried from `loop.sh`" named three things; the true list is about ten.
