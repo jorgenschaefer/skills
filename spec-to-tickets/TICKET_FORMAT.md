@@ -1,6 +1,6 @@
 # Ticket format
 
-The shape of the work order `/spec-to-tickets` and `/discovery` emit and `/implement` consumes. One ticket is one build: one agent, one context window - and in an unattended run, nobody to ask, so everything that run needs to decide must already be decided here.
+The shape of the work order `/spec-to-tickets` emits and `/implement` consumes. One ticket is one build: one agent, one context window - and in an unattended run, nobody to ask, so everything that run needs to decide must already be decided here.
 
 Three kinds of ticket share this shape: the **feature ticket** that claims criteria from a spec, the **remediation ticket** a review files against work already built, and the **maintenance ticket** that changes no behaviour at all. Everything below describes the feature ticket unless it says otherwise; the other two get a section each, naming only what differs.
 
@@ -14,7 +14,7 @@ Tickets are scaffolding, not documentation - they are deleted along with the spe
 
 Deletion belongs to accepting the work, not to finishing it. A run that completes but is rejected still needs its tickets to re-run, and a `blocked` ticket survives until whatever blocked it is resolved.
 
-`NN` is a zero-padded sequence in dependency order. `/discovery`'s small lane emits a single ticket in the same shape - the lanes differ in how much interviewing precedes the ticket, not in what a ticket is.
+`NN` is a zero-padded sequence in dependency order. A ticket that stands alone - a maintenance ticket, or one a review filed against work already built - has the same shape. What differs is how much precedes the ticket, not what a ticket is.
 
 ## Frontmatter
 
@@ -28,7 +28,7 @@ spec_hash: a3f2c81d09e4
 
 `status` is the loop's durable state: it picks the lowest-numbered `todo` whose `depends_on` are all `done`, and stops when none qualifies. Keeping it in the file rather than in the driver is what makes a halted run resumable.
 
-`spec` and `spec_hash` are omitted when no spec stands behind the ticket - a maintenance ticket, or the single ticket `/discovery`'s small lane emits. See *Maintenance tickets* and *Tickets without a spec* below.
+`spec` and `spec_hash` are omitted when no spec stands behind the ticket - a maintenance ticket, or one a review filed. See *Maintenance tickets* and *Tickets without a spec* below.
 
 `spec_hash` is the first 12 characters of `sha256sum` over the spec file. `/spec-to-tickets` stamps it; `/implement` recomputes it on arrival and halts if it differs. This freezes the spec for the duration of a run: tickets cite requirements rather than copying them, so an edit to the spec mid-run would silently change what the remaining tickets mean. The hash turns that from a convention nobody remembers into a detected condition. Recovery is `/spec-to-tickets --refresh`, which re-derives the remaining tickets and re-stamps them.
 
@@ -109,7 +109,7 @@ No human sees the diff between one ticket and the next, so "while I'm here" goes
 
 `tests/workflows/` holds the journeys the project has ratified, one test per journey, quoting the journey in the user's own words. They run in the project's check command, so a run building feature twelve keeps feature three's journeys green at every ticket - and a build that quietly edits one has changed the record of what the product does, in the one place no review would think to question, because the test it would check against is the thing that moved.
 
-So a ticket that will reach one says so before the run starts. `/spec-to-tickets` reads the directory and writes this section into any ticket whose work gets there, mechanical reasons included - a rename that reaches every caller reaches the tests that call it too. A review filing a remediation ticket does the same. What the section never authorises is changing what a workflow test *asserts*: the journey it quotes was ratified with the user, so that is a decision to send back to `/discovery`.
+So a ticket that will reach one says so before the run starts. `/spec-to-tickets` reads the directory and writes this section into any ticket whose work gets there, mechanical reasons included - a rename that reaches every caller reaches the tests that call it too. A review filing a remediation ticket does the same. What the section never authorises is changing what a workflow test *asserts*: the journey it quotes was agreed with the user, so that is a decision about the design and it goes to them.
 
 The driver checks the section as it stood **before** the build, and halts the run over any change made without one. Writing the section during the build is not an authorisation - it is the agent answering the question it was sent to be checked on.
 
@@ -117,15 +117,15 @@ The driver checks the section as it stood **before** the build, and halts the ru
 
 A given/when/then criterion already implies its test, and `/implement` writes it RED first. This section is for the ones that don't: an EARS constraint with no natural unit test, a behavior that must be pinned at the integration level rather than in isolation, or a criterion two tickets could each plausibly test - where saying which one owns it prevents both from testing it, or neither.
 
-What it never says is that a criterion cannot be checked. "No test" is not a verification plan. A criterion nobody can pin is a defect in the spec: found while decomposing, it goes back to `/discovery`; found while building, it stops that build as `blocked`. Either way it never becomes a line in this section. The cases that look uncheckable usually are not - a criterion over a README, a glossary, a module comment or a workflow file is pinned by asserting on that file's text.
+What it never says is that a criterion cannot be checked. "No test" is not a verification plan. A criterion nobody can pin is a defect in the spec: found while decomposing, it goes back to whoever designed it; found while building, it stops that build as `blocked`. Either way it never becomes a line in this section. The cases that look uncheckable usually are not - a criterion over a README, a glossary, a module comment or a workflow file is pinned by asserting on that file's text.
 
 ## Tickets without a spec
 
-`/discovery` emits a single ticket with nothing beside it when the change is small enough that a spec would be ceremony. The ticket *is* the requirements, so three things change:
+A ticket stands alone when nothing was decomposed into it - a maintenance ticket, or one a review filed against work already built. The ticket *is* the requirements, so three things change:
 
 - **`spec` and `spec_hash` are omitted.** Nothing to cite, nothing to freeze.
 - **`Satisfies` carries the criteria in full**, given/when/then, rather than pointing at them. The rule against copying exists because copies drift from a shared source; a lone ticket has no source to drift from.
-- **A `## Why` section leads the body** - one to three sentences on the problem beneath the change. In the spec lane the spec carries intent, and an implementer who knows why is the one who notices when the literal instruction would miss the point.
+- **A `## Why` section leads the body** - one to three sentences on the problem beneath the change. Where a spec stands behind the ticket it carries the intent, and an implementer who knows why is the one who notices when the literal instruction would miss the point.
 
 `Provides` is usually empty, since no later ticket is coming to consume it. Everything else means what it means in the spec lane.
 
@@ -141,7 +141,7 @@ The driver appends a `## Halt` of its own where it catches something after the f
 <What happened, and what the human needs to decide.>
 ```
 
-- **blocked** - the spec contradicts itself, a criterion cannot be met as written or pinned by anything, or a maintenance ticket cannot land without changing behaviour. Back to `/discovery`.
+- **blocked** - the spec contradicts itself, a criterion cannot be met as written or pinned by anything, or a maintenance ticket cannot land without changing behaviour. Back to a human, as a decision about the design.
 - **drift** - `Preconditions` or `Touches` no longer match the code. The driver answers this one itself, once per run, by re-deriving the unbuilt tickets with `/spec-to-tickets --refresh`; a second drift after that comes back to a human.
 - **mystery** - a test will not go green and the cause is unknown after the bounded attempts. Back to a human to diagnose.
 - **stale-spec** - `spec_hash` does not match. Answered the same way, and counted against the same one-per-run bound.

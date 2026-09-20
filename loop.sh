@@ -600,8 +600,8 @@ REFRESHED=""
 # Named rather than left to the skill, which was written for a human running it
 # after a halt. Two things it cannot know: this run's ticket directory may hold
 # tickets the end-of-run checks filed, which come from findings rather than from
-# the spec and are nobody's to re-derive; and there is no user here to send back
-# to /discovery.
+# the spec and are nobody's to re-derive; and there is no user here to take a
+# design decision to.
 refresh_prompt() {
   cat <<EOF
 /spec-to-tickets --refresh $SPEC_DIR
