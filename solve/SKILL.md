@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Design several genuinely different answers to an intent, choose one with the user, and write it down thoroughly enough that whoever builds it needs nothing from you.
 
-`FORMAT.md` settles the shape of the spec. This file is what you do.
+`SOLVE_FORMAT.md` settles the shape of the spec. This file is what you do.
 
 ## Start from the conditions
 
@@ -34,11 +34,15 @@ A small change arrives as a sentence, and writing an intent document for it woul
 
 **Design genuinely different answers, not one answer at three sizes.** Two candidates that differ only in how much of the same thing they do is one candidate.
 
+**Agree what decides before you score anything.** Say which properties will pick the winner, and get that agreed while the candidates are still open. Criteria proposed afterwards are criteria chosen to make the answer you already like come out on top, and neither of you will be able to tell.
+
 **Kill on constraints first.** What remains is a choice, and the choice is the user's. Give a recommendation - a survey with no opinion in it is work handed back.
 
 **Look at what is already here before inventing.** What the project calls things, what it already does, what it decided before. A solution that ignores the shape of the codebase is a rewrite in disguise.
 
 ## The record
+
+**Write it to `SOLUTION_<TOPIC>.md`, and ask where it goes** if the project has not settled that. The topic is the intent's, so the paper for one change stays findable as a set.
 
 **Tag every criterion with the conditions it serves.** Then check the other direction: every condition in the intent is carried by at least one criterion. A condition with no criterion is the intent's most important sentence going unbuilt.
 
@@ -57,3 +61,5 @@ Write what this costs against what it was chosen over. "Adds some complexity" is
 **End your turn at the first question mark.** One turn, one open question.
 
 **Push back once.** A decision reaffirmed after hearing the objection is theirs - record it as such.
+
+**Stopping here is an ending.** A solution recorded and not built is a whole use of this skill. Say that the slicing is what turns it into work, and leave that to them to ask for.

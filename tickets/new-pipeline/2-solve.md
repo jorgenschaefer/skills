@@ -2,9 +2,9 @@
 solution:  SOLUTION_NEW_PIPELINE.md
 satisfies: AC-2
 after:     1-intent-format
-status:    review
+status:    done
 attempts:  1
-reviews:   0
+reviews:   1
 ---
 
 ## Build
@@ -37,7 +37,7 @@ not, and is not in this run at all.
 
 ## Record
 
-`tests/solution-format.sh`, 17 cases, invoked by `tests/run.sh` (252 + 15 + 17, green).
+`tests/solution-format.sh`, 20 cases, invoked by `tests/run.sh` (253 + 16 + 20, green).
 
 **AC-2, the format half** — `the template specifies ## Intent`, `## Approach`,
 `## Behaviour`, `## Accepted tradeoffs`, `## Ruled out`; `the template numbers the
@@ -62,13 +62,53 @@ instead of a file` in the skill. It is the single most important thing this skil
 and no bash case can hold it to it. Same for the refusal back to `/idea`, and for
 designing genuinely different candidates rather than one answer at three sizes.
 
-**A name deferred.** The format is `solve/FORMAT.md`, not `SOLUTION_FORMAT.md`. The
-repo requires every copy of a shared format file to be byte-identical, and the
-superseded copies in `to-solution/` and `spec-to-tickets/` still carry that name with
-the old shape. Renaming it here would have meant either breaking the pipeline that
-still works or weakening the guard that caught it. The name comes back in ticket 12.
+**A name.** The format is `solve/SOLVE_FORMAT.md`. `SOLUTION_FORMAT.md` would collide
+with the superseded copies in `to-solution/` and `spec-to-tickets/`, which the repo
+requires to be byte-identical; the first attempt used `FORMAT.md`, which dodged the
+collision by falling outside both format guards — including the one checking that a
+skill ships the format it tells the agent to read. `SOLVE_FORMAT.md` is unique and
+stays inside both.
 
 **Not done here.** `/to-solution` is untouched, including its reference to the intent's
 `## Proposed outcome`, a section ticket 1 deleted. It is already
 `disable-model-invocation: true`, so it does not compete with `/solve` for discovery,
 and ticket 12 deletes it.
+
+## Findings
+
+One review round. Eight findings, seven taken.
+
+**Fixed, and it was the serious one.** The conformance checker could be bypassed by
+indentation: the "criteria exist" assertion grepped the whole `## Behaviour` body while
+the loop enforcing contiguity and tags matched only top-level bullets, so a solution
+with every criterion indented and every tag stripped passed 17 of 17. The two counts
+are now compared, and a criterion the loop cannot see is a failure rather than a
+silence.
+
+**Fixed.** `SOLVE_FORMAT.md` claimed "both directions are checked" while only criterion
+→ condition was enforced. The reverse walk is now real: for every intent the solution
+names, every `C-n` must be carried by some criterion. Writing it found two further bugs
+in the checker — only the first tag of `(cost:C-1, cost:C-3)` was read, and `AC-1`
+contains the substring `C-1`, so every criterion had been quietly satisfying the
+condition of its own number. `SOLUTION_NEW_PIPELINE.md` passes the walk on its merits
+now; before the fix its pass meant nothing.
+
+**Fixed.** AC-2's own artifact name appeared nowhere in what was delivered — no
+`SOLUTION_<TOPIC>.md`, no location question, no handoff. `## The record` now names the
+file, and the ending points at the slicing.
+
+**Fixed.** `/idea` still routed to `/to-solution`, so the stage handing off to this one
+pointed at the skill it replaces. The README catalogue had no `solve` entry, and now
+marks `to-solution` superseded.
+
+**Fixed.** The suites duplicated about eighty lines of scaffold. `tests/format-lib.sh`
+now holds the counting, the fenced-template extraction, section reading, and the two
+guards every such suite needs. Done now rather than at the third copy.
+
+**Taken in part.** `/to-solution`'s method was dropped wholesale without a note: the
+decision criteria agreed before scoring, cheap specimens over descriptions, a candidate
+floor including *do nothing*, the reuse survey. One is carried — agreeing what decides
+before anything is scored, which is the same anti-post-hoc device as the ordering rule
+this skill is built around. The rest stay dropped, deliberately: they are method rather
+than shape, and this pipeline's bet is that an unproven practice is not worth its
+instruction budget.

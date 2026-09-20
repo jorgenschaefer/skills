@@ -6,7 +6,9 @@
 ## Intent
 <The intent this answers, by filename, and the conditions it takes on.
 
-Where a solution answers more than one intent, name each, and qualify every tag below with which one: `cost:C-1`, `problem:C-1`.>
+Where a solution answers more than one intent, name each, and qualify every tag below with which one: `cost:C-1`, `problem:C-1`.
+
+Where the change was small enough that no intent document was written, this section *is* the intent: the numbered conditions and the constraints, derived and confirmed before any approach existed. Everything downstream addresses them here instead of in a file of their own - acceptance judges against these sections, and `Routed back` below is where a verdict's routing lands. A verdict that routes back to the problem itself promotes this block into a real `INTENT_<TOPIC>.md`, because a problem statement under revision has outgrown being a section of the solution it just invalidated.>
 
 ## Approach
 <The chosen answer in prose. What it does, how it hangs together, why this shape.
@@ -41,6 +43,11 @@ This is what makes the tradeoffs falsifiable: a cost only means something relati
 
 ## Open concerns
 <What is still unsettled, and what would settle it. Omit when there is nothing.>
+
+## Routed back
+<Appended each time a verdict sends the work back, with the date and the reason. Starts as "Nothing yet."
+
+Where this solution links an intent, the intent carries this instead and this section is omitted. It is here for the short path, where there is no other file to carry it.>
 ```
 
 ## What this format is not

@@ -17,11 +17,8 @@ set -uo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$HERE/.."
 FORMAT="$ROOT/idea/INTENT_FORMAT.md"
-passed=0 failed=0
-
-ok()  { printf 'ok    %s\n' "$1"; passed=$((passed + 1)); }
-bad() { printf 'FAIL  %s\n' "$1"; failed=$((failed + 1))
-        [ $# -lt 2 ] || printf '%s\n' "$2" | sed 's/^/        /'; }
+# shellcheck source=format-lib.sh
+. "$HERE/format-lib.sh"
 
 # The sections every intent carries. `Not this`, `Whatever they arrived with`
 # and `Open questions` are real but conditional, so they are not checked here.
@@ -57,30 +54,15 @@ check_intent() {
 }
 
 # --- the format document itself
-#
-# Only the fenced template counts. The prose around it discusses the sections by
-# name, so a whole-file grep would stay green after the template lost one.
 
-TEMPLATE="$(sed -n '/^```markdown$/,/^```$/p' "$FORMAT")"
-
-for section in "${REQUIRED[@]}"; do
-  if printf '%s' "$TEMPLATE" | grep -q "^## $section\$"; then
-    ok "the template specifies ## $section"
-  else
-    bad "the template specifies ## $section" "not in the fenced block of $FORMAT"
-  fi
-done
+TEMPLATE="$(template_of "$FORMAT")"
+expect_sections "$TEMPLATE" "$FORMAT" "${REQUIRED[@]}"
+expect_dropped "$TEMPLATE" "Proposed outcome" "Affected"
 
 if printf '%s' "$TEMPLATE" | grep -q '\*\*C-1\*\*'; then
   ok "the template numbers the conditions"
 else
   bad "the template numbers the conditions" "no C-1: nothing downstream could cite a condition"
-fi
-
-if printf '%s' "$TEMPLATE" | grep -q 'Proposed outcome'; then
-  bad "the template drops the unnumbered Proposed outcome" "still present"
-else
-  ok "the template drops the unnumbered Proposed outcome"
 fi
 
 # --- every intent in the tree
@@ -93,12 +75,7 @@ for f in "$ROOT"/INTENT_*.md; do
   problems="$(check_intent "$f")"
   if [ -z "$problems" ]; then ok "$name conforms"; else bad "$name conforms" "$problems"; fi
 done
-
-# An empty glob is zero cases and zero failures, which reads as success. The two
-# worked examples are what keep the format honest, so their absence is a failure.
-[ "$intents" -gt 0 ] \
-  && ok "there are intents to check" \
-  || bad "there are intents to check" "no INTENT_*.md found: the conformance cases above checked nothing" 
+expect_counted "$intents" "intents"
 
 # --- and the checker itself catches what it claims to
 
@@ -155,5 +132,4 @@ case "$(check_intent "$tmp/INTENT_X.md")" in
   *) bad "unnumbered conditions are caught" "accepted prose under ## Done when" ;;
 esac
 
-printf '\n%d passed, %d failed\n' "$passed" "$failed"
-[ "$failed" -eq 0 ]
+finish
