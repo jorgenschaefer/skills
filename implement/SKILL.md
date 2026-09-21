@@ -1,66 +1,54 @@
 ---
 name: implement
-description: Build one ticket end to end - its criteria driven out test-first, the project's checks green, the evidence written back into the ticket, one commit. Fires on "/implement", "build this ticket", and whenever a runner or another skill hands you a ticket path.
+description: Write, build or change software - a feature, a fix, a refactor. Fires on "implement", "build", "write the code", "add", "fix", and on any request to change what a codebase does.
 ---
 
 # Implement
 
-One ticket. The ticket is the whole brief: it carries its criteria quoted from the solution, and everything you need to build them without opening anything upstream.
+Build the thing, to the standard, and have it reviewed by someone who did not build it.
 
-`coding-standard` is what the code has to look like, and it applies here as it applies anywhere code is written. `software-design` is for a change that moves a seam. What follows is only what is different about building under a ticket.
+`CODING_STANDARDS.md` is what the software has to look like. Read it. Its `## Shaping the change` applies when the change introduces a concept the codebase has no name for or moves a boundary between the ones it does; its `## Writing the code` applies always; its `## How it gets written` is the loop below, and is not restated here.
 
-## Before you start
+## Before you write anything
 
-**The ticket's `Done when` is the definition of done.** Not the diff, not what you would have built, not what the solution probably meant. If the criteria are not enough to build from, that is a `blocked` halt, not a gap to fill with judgement.
+**Look at what is there.** What already exists that does this, or half of it. What the project calls things. What it decided before. A change that ignores the shape of the codebase is a rewrite in disguise.
 
-**Never open the solution.** The ticket quotes what it needs; the quotation is deliberate, and going upstream for context is how a ticket quietly becomes a different ticket. If the ticket does not say enough, it is the ticket that is wrong.
+**Know what has to be true when you are finished**, specifically enough that you could hand it to someone else as the test of whether it worked. Where the request does not settle something that changes what gets built, ask. Where it settles it badly, say so once and build it.
 
-**Respect the ticket's `## Not here`.** It names the adjacent thing another slice owns, and building it is not generosity - it is two tickets building the same code, and a commit that claims one criterion while carrying another's work.
+**Find the project's verification command** - the one that runs the tests, the types and the linter. Where there is none, run what exists and say so.
 
-**Find the project's verification command** - the one that runs the tests, the types and the linter. Where there is none, run what exists and say so in the `Record`.
+## Build it
 
-## Build it, test first
+Follow `## How it gets written`: a failing test first, always, for every piece of behaviour this change is meant to have. Then the project's checks, and report the real result - if you cannot run them, say so rather than assuming.
 
-`coding-standard` requires that no code change arrives without a failing test first. This is the loop that gets you there: Kent Beck's red/green/refactor, in the smallest steps that make sense. Each phase is a separate test run; bundling "write the test and the code, then run once" is not TDD even when the artifacts end up identical, because the RED run is the only thing that proves the test exercises the behaviour.
+## Review it in a session that did not write it
 
-1. **RED.** One trivially small failing test for the next bit of behaviour. Run it, and confirm **the assertion fires and reports an expected/actual mismatch**. "Module not found", an import error or a syntax error is not RED - it only proves the test could not run. Add the minimal scaffolding until the assertion itself fails, then go on. If the test passes immediately, you wrote the code first: revert it, get the failure, re-implement.
-2. **GREEN.** The simplest change that could possibly work. Faking the answer with a constant is fine; the next test forces the general case. If you cannot see a small change that passes, the test is too big - revert and write a smaller one.
-3. **REFACTOR.** Tests green, no new behaviour, remove duplication. Most cycles this is empty. Do not manufacture work to fill it.
+**Spawn `critique` as a subagent with a fresh context.** Hand it the diff, the result of the checks, and what was asked for. Do not hand it the reasoning that produced the code.
 
-## Prove the contract before you hand it over
+That last part is the whole point. A reviewer that has already accepted every step of the reasoning is not a reviewer - it will read its own intentions into the code and find the defects it was already looking for. The subagent starts cold, which is the only reason its findings are worth anything.
 
-For every criterion the ticket claims, **name the test that fails without it**. Where you wrote a RED run, that run is the proof and you already have it. Where you did not - the behaviour turned out to exist, or something you did not write covers it - break the behaviour, watch the named test fail, and restore it. Deciding by eye whether a test *would* notice a change is prediction; this executes it.
+## Fix what comes back
 
-**Break it twice: remove the behaviour, and move its edge.** A test can notice a behaviour vanish and still pass when a comparison shifts by one. Take the edges - either side of each comparison, the empty case, the single-element case - move one in the code, and watch the named test fail there too.
+Work the blockers and the should-fix, test-first like anything else. Then review again, the same way.
 
-A criterion whose test you cannot name, or whose test still passes with the behaviour removed or its edge moved, is unbuilt work: write that test now, RED first. A criterion nothing can pin is a `blocked` halt, not a line to write around.
+**Two rounds at most.** Stop when a review comes back clean or when the second round is done, and report what is still standing: the nits, anything you disagreed with and why, anything you chose not to fix and why.
 
-## Halt rather than improvise
+**The pull is to quietly drop a finding.** A budget on the rounds makes that cheap - one more round is expensive, saying nothing is free, and a finding that goes unmentioned looks exactly like a finding that was fixed. Say what you left.
 
-A session that cannot proceed writes the halt into the ticket and stops. The kinds are yours to raise:
+## Proportion
 
-- **`blocked`** - a precondition the ticket assumed is not there.
-- **`undecided`** - a decision the ticket's criteria and the project's standards do not settle, and that is not yours to settle either. A tradeoff nobody accepted is not a detail.
-- **`mystery`** - a failure you cannot explain, which is different from one you cannot fix. Say what you observed and what you ruled out.
+A three-line change does not need two review rounds, and a typo needs none. Scale what you do to what you are changing: the fresh-context review is the floor for anything with behaviour in it, not a ritual to perform on everything.
 
-`exhausted`, `drift` and `unbuilt` are not yours. A session that has run out of attempts is not running to report it; a session never reads the solution, so it cannot know the ticket has drifted from one; and a session that reported a build and committed nothing is in no position to say so.
+This is judgement, and it is the one place here where you have it. It is not licence to skip the failing test - that holds at every size.
 
-**The pull is to work around it.** A missing precondition looks like five minutes of work, and often is - and then the ticket has built something nobody specified, in a commit that claims to build something else. Stop.
+## Stop rather than improvise
 
-## Do not reopen the solution
+Where a precondition you needed is not there, say what is missing and stop.
 
-You will see a better approach than the one the ticket implements. Sometimes you will be right. It is still not this session's decision: the approach was chosen with someone, against constraints you cannot see from here, and changing it in the build is how a pipeline stops converging.
-
-Where it is genuinely wrong rather than merely different, that is an `undecided` halt with what you saw. Where it is a smaller thing than that, `IDEAS.md` is the parking lot.
+It will look like five minutes of work, and often it is - and then the change contains something nobody asked for, in a commit that claims to do something else. The same goes for a decision the request does not settle and that is not yours to settle: a tradeoff nobody accepted is not a detail.
 
 ## Finish
 
-**One ticket, one unit of work.** Commit when the criteria are green and the verification command passes - the code and the ticket file together, so the evidence and the work it describes arrive as one change. Stage the files this ticket touched and nothing else; never `git add -A`.
+Commit when the behaviour is green and the checks pass. `git-commit-message` is the shape. Stage the files this change touched and nothing else; never `git add -A`.
 
-**Write the ticket's `## Record`**: which test names which criterion, and the verification command you ran. It is the only evidence that a criterion was covered rather than claimed, and the acceptance stage reads it.
-
-**On a second pass, the ticket's `## Findings` is the brief.** A review sent it back; fix what it found, RED first like anything else, and leave the criteria alone - a finding is not a licence to reopen what the ticket asks for. The rework is another commit. The ticket is the unit of work, not the commit.
-
-**Set `status: review`, or `status: halted`.** Never `status: done`, and never claim a ticket by writing `status: doing` - the runner owns both ends. A session that marks its own work finished has reviewed itself by omission.
-
-**You do not review your own work.** `/critique` is what reads the commit against the ticket, in a session that did not write it, because a reviewer that has already accepted every step of the reasoning is not a reviewer.
+Where you saw a better approach than the one you were asked for and it was not yours to take, say so now, once, rather than building it. Where it is smaller than that, `IDEAS.md` is the parking lot.
