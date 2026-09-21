@@ -2,7 +2,7 @@
 
 The project-wide canonical vocabulary lives in `UBIQUITOUS_LANGUAGE.md` at the project root. It captures the domain language - the shared terms that mean the same thing to developers, users, and stakeholders.
 
-`/software-design` reads it as the source of truth for the domain's names while a change is being shaped, and proposes an entry when a change coins a term. Other agents and humans read it to use consistent vocabulary across code, tests, and documentation.
+`CODING_STANDARDS.md` names it as the source of truth for the domain's names - while a change is being shaped, and again when the names are typed - and an entry is proposed when a change coins a term. Other agents and humans read it to use consistent vocabulary across code, tests, and documentation.
 
 Only terms with a clear, project-specific meaning that would not be immediately obvious without the entry go in here. Terms that could be misunderstood definitely belong here.
 
