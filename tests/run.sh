@@ -129,6 +129,8 @@ env -u FORMAT_SUITE_CHILD "$HERE/ticket-format.sh"   || failed=$((failed + 1))
 printf '\n'
 "$HERE/standard-split.sh" || failed=$((failed + 1))
 printf '\n'
+"$HERE/skill-review.sh" || failed=$((failed + 1))
+printf '\n'
 "$HERE/build-contract.sh" || failed=$((failed + 1))
 printf '\n'
 "$HERE/runner.sh" || failed=$((failed + 1))

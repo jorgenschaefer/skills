@@ -1,0 +1,30 @@
+# What the merge of `improve-skill` and the vendored `writing-great-skills` into
+# `skill-review` had to carry over, one line per idea, as `label :: regex`.
+#
+# Two skills became one, and the sections were rewritten rather than moved, so
+# there are no headings to match the way `standard-split.sh` matches them. What
+# survives a rewrite is the vocabulary: each idea is pinned by the word the
+# merged skill has to still be teaching. A line that goes missing here is a
+# lens a reviewer stops applying, and nothing else in the suite would notice.
+
+predictability is the root virtue :: [Pp]redictab
+the description decides triggering :: description
+invocation is a choice with a cost :: disable-model-invocation
+altitude: principle where it varies, step where it must not :: altitude
+over-specification that drifts :: (hardcoded|brittle|over-specif)
+the information hierarchy and what sits where :: [Ii]nformation hierarchy
+a pointer decides whether the material is reached :: pointer
+completion criteria are checkable :: [Cc]ompletion criteri
+premature completion :: [Pp]remature completion
+leading words :: [Ll]eading word
+a no-op is a line the model already obeys :: no-op
+duplication and the single source of truth :: (duplicat|single source of truth)
+sprawl and sediment :: ([Ss]prawl|[Ss]ediment)
+negation backfires; prompt the positive :: (negation|prohibition)
+match the form to the failure :: (form to the failure|recipe|structural slot)
+when a skill should be split :: split
+contradictions and ambiguous referents :: (contradict|referent)
+failure, stopping, and handing off to a sibling skill :: sibling
+the output a downstream consumer reads :: output
+evidence of how the skill actually ran :: (transcript|run)
+a behavioural claim is tested against a no-guidance control :: control
