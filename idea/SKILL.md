@@ -44,14 +44,16 @@ This is the one place you may look at solution space, and only far enough to dis
 
 ## The record
 
-Present the intent in the shape `INTENT_FORMAT.md` specifies, and ask where to write it. By default, use `intents/YYYY-MM-DD-<slug>/01-INTENT.md`
+Present the intent in the shape `INTENT_FORMAT.md` specifies, and write it to `intents/YYYY-MM-DD-<slug>/01-INTENT.md`. Everything the change produces afterwards lands in that directory beside it.
 
 ### Check it before you ask
 
-Run `/verify` on the written intent, in a subagent with a fresh context.
+Spawn a subagent with a fresh context and give it two things: `VERIFY.md` from this directory, and the path to the intent. Nothing else - an adversary holding the conversation that produced the document will read your intentions into it, which is the one failure this check exists to avoid.
 
 ## Throughout
 
 **End your turn at the first question mark.** One turn, one open question.
 
 **Push back once.** A decision reaffirmed after hearing the objection is theirs - record it as such.
+
+**Stopping here is an ending.** An intent written and never designed against is a whole use of this skill. `/find-solution` is what turns it into an approach - name it, because it will not find its own way in - and leave going on to them to ask for.
