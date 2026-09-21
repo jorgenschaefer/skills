@@ -6,11 +6,11 @@
 #
 #   tests/intent-format.sh
 #
-# An intent is the only artifact written before anything else exists, and the
-# only one a person ratifies. Every later stage addresses it by section and by
-# condition id, so a drifting intent is not a cosmetic problem: `/solve` tags
-# criteria against `C-n`, and `/accept` walks them back. These cases are those
-# expectations, written down where they can fail.
+# An intent is the only artifact written before anything else exists. Every
+# later stage addresses it by section and by condition id, so a drifting intent
+# is not a cosmetic problem: `/solve` tags criteria against `C-n`, and
+# `/accept-intent` walks them back. These cases are those expectations, written
+# down where they can fail.
 
 set -uo pipefail
 
@@ -20,9 +20,9 @@ FORMAT="$ROOT/idea/INTENT_FORMAT.md"
 # shellcheck source=format-lib.sh
 . "$HERE/format-lib.sh"
 
-# The sections every intent carries. `Not this`, `Whatever they arrived with`
+# The sections every intent carries. `Not this`, `User's solution`
 # and `Open questions` are real but conditional, so they are not checked here.
-REQUIRED=("Problem" "Evidence" "Done when" "Constraints" "Ratified" "Routed back")
+REQUIRED=("Problem" "Evidence" "Done when" "Constraints")
 
 # Reports what is wrong with one intent, or nothing at all. Kept as a function
 # rather than a script because the adversary that will do this for real is
@@ -44,11 +44,6 @@ check_intent() {
     n=$((n + 1))
     [ "$id" = "$n" ] || { problems+="conditions are not contiguous: expected C-$n, found C-$id"$'\n'; break; }
   done
-
-  # An unratified intent is a draft. Saying so is fine; saying nothing is not.
-  local ratified
-  ratified=$(sed -n '/^## Ratified$/,/^## /p' "$file" | sed '1d;/^## /d' | tr -d '[:space:]')
-  [ -n "$ratified" ] || problems+="## Ratified is empty"$'\n'
 
   printf '%s' "$problems"
 }
@@ -115,36 +110,24 @@ $1
 
 ## Constraints
 x
-
-## Ratified
-$2
-
-## Routed back
-Nothing yet.
 EOF
 }
 
 make_intent "- **C-1** a
-- **C-2** b" "yes, by someone"
+- **C-2** b"
 result="$(check_intent "$tmp/INTENT_X.md")"
 [ -z "$result" ] \
   && ok "a well-formed intent passes" \
   || bad "a well-formed intent passes" "$result"
 
 make_intent "- **C-1** a
-- **C-3** b" "yes, by someone"
+- **C-3** b"
 case "$(check_intent "$tmp/INTENT_X.md")" in
   *"not contiguous"*) ok "a gap in the numbering is caught" ;;
   *) bad "a gap in the numbering is caught" "accepted C-1 followed by C-3" ;;
 esac
 
-make_intent "- **C-1** a" ""
-case "$(check_intent "$tmp/INTENT_X.md")" in
-  *"Ratified is empty"*) ok "an empty ratification is caught" ;;
-  *) bad "an empty ratification is caught" "accepted a blank ## Ratified" ;;
-esac
-
-make_intent "Anyone could tell whether this holds." "yes, by someone"
+make_intent "Anyone could tell whether this holds."
 case "$(check_intent "$tmp/INTENT_X.md")" in
   *"no numbered conditions"*) ok "unnumbered conditions are caught" ;;
   *) bad "unnumbered conditions are caught" "accepted prose under ## Done when" ;;
@@ -155,7 +138,7 @@ esac
 # `/verify` reviews the artifact of one stage, not the tree. Without this it
 # would have to re-derive by reading what a grep already knows.
 
-make_intent "- **C-1** a" "yes, by someone"
+make_intent "- **C-1** a"
 out="$(FORMAT_SUITE_CHILD=1 timeout 20 "$0" "$tmp/INTENT_X.md" 2>&1)"; rc=$?
 case "$out:$rc" in
   *"ok    INTENT_X.md conforms"*":0") ok "a path checks that file" ;;

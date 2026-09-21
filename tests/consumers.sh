@@ -20,7 +20,7 @@ MAP="$HERE/fixtures/consumers.txt"
 # shellcheck source=format-lib.sh
 . "$HERE/format-lib.sh"
 
-FORMATS=(idea/INTENT_FORMAT.md solve/SOLVE_FORMAT.md slice/SLICE_FORMAT.md accept/VERDICT_FORMAT.md)
+FORMATS=(idea/INTENT_FORMAT.md solve/SOLVE_FORMAT.md slice/SLICE_FORMAT.md)
 
 missing="" unknown="" stale=""
 for f in "${FORMATS[@]}"; do

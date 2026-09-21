@@ -1,6 +1,6 @@
 ---
 name: idea
-description: Use when a change is being worked out with the user - a feature, a bug, a refactor, or a passing idea that needs developing into something buildable. Finds the problem underneath what was asked for and writes it down as an intent, with no solution in it. The one way in.
+description: Use when a user presents an idea for a change to establish the problem underneath the idea.
 ---
 
 # Idea
@@ -9,13 +9,11 @@ Help the user sharpen an idea by finding the problem underneath it, and write th
 
 ## The problem
 
-Look at the project before you ask - what it already calls things, what it already has. `IDEAS.md`, where the project keeps one, is the parking lot the checks file into: what is already noted there is evidence about the problem, and sometimes it is the problem.
+Look at the project before you ask anything.
 
 The solution they arrived with is evidence about the problem, not the brief.
 
-**Get one instance** - the last time this happened, what went wrong, what it cost. A problem with no instance behind it is usually a preference.
-
-Usually, not always. Some failures leave no trace by construction: nothing was watching, so the absence of an example is what you would see either way. That case is allowed, and it is the only one - say plainly in `Evidence` that there is no instance, say what makes the failure structural, and expect a weaker yes when you ask for it.
+**Get one instance** - the last time this happened, what went wrong, what it cost.
 
 **Dig until you can state the problem so that a reader who was not here could restate it from the intent alone** - as long as that takes, but only on the problem.
 
@@ -23,25 +21,18 @@ Usually, not always. Some failures leave no trace by construction: nothing was w
 
 **The mechanism they proposed must not appear in it.** "There is no skill for this", "nothing tracks it" are the solution with a *there is no* in front of it. The domain's own nouns are fine; the thing they want built is not, in any form. When the problem cannot be stated without naming it, ask what goes wrong on the days it is absent.
 
-Draft everything else the intent holds from what they have told you, and present it for correction. Ask only where you would otherwise be inventing something they alone could know.
+Draft everything else the intent holds from what they have told you, and present it for correction. Ask questions before guessing.
 
-**One problem per intent.** Could half of this be solved on its own, and would that half be worth the work? If yes, pick one and say which you parked.
+**One problem per intent.** Could part of this be solved on its own, and would that part be worth the work? If yes, pick one and say what you parked.
 
 ### The no is a finding
 
 Reached after the problem statement is agreed, and only on one of three grounds:
 
 - **Already solved.** Name the thing that does it.
-- **Cost out of proportion.** The instance, times how often it recurs, against roughly what any answer would cost to build and then to keep. Say both sides.
 - **A symptom of something else.** Name the thing underneath. This restarts the session on that problem rather than ending it - say so.
 
 This is the one place you may look at solution space, and only far enough to dismiss.
-
-## Constraints, not criteria
-
-**A constraint disqualifies a candidate outright. A criterion ranks the ones that survive.** Only the first belongs in an intent.
-
-Test each one: would it *kill* a candidate, or only score it lower? Demote the second kind and say so.
 
 ## The conditions
 
@@ -51,32 +42,13 @@ Test each one: would it *kill* a candidate, or only score it lower? Demote the s
 
 **Each condition is about the problem, not the answer.** Test it against a solution you did not think of: if that solution would solve the problem and still fail the condition, the condition is a mechanism in disguise. Rewrite it as the outcome you actually wanted.
 
-**Number them `C-1`, `C-2`.** They are append-only. Everything downstream cites them by number, so a renumbering silently repoints tags that were written against the old ones.
-
 ## The record
 
-Present the intent in the shape `INTENT_FORMAT.md` specifies, and ask where to write it.
-
-**Stopping here is an ending.** Noting an idea and being done with it is a whole use of this skill, not an abandoned run. Say that `/solve` is what designs against the intent, and leave it at that - going on is theirs to ask for.
-
-Where they want no file either, that is also an ending: the problem was worth stating and it is stated. Do not write one to have something to show for the turn. There is nothing to ratify either - the section below is about a file that exists.
+Present the intent in the shape `INTENT_FORMAT.md` specifies, and ask where to write it. By default, use `intents/YYYY-MM-DD-<slug>/01-INTENT.md`
 
 ### Check it before you ask
 
-Run `/verify` on the written intent, in a subagent with a fresh context, and fix what it finds. You have been in this conversation and cannot see the document the way someone arriving at it will - which is the whole reason the check exists. Then ask.
-
-### Ask for the ratification
-
-Once the file is written, the last act is asking the person whether they recognize their problem in it - not whether the intent reads well, and not whether your proposal sounds reasonable. Ask about the problem.
-
-Record what the yes was worth, because the two are not the same:
-
-- **On evidence** - they can point at the instance.
-- **On the argument** - they cannot, and were persuaded the failure is real and would have left no trace. Write that down as the weaker yes it is, together with what would have to keep not happening for it to have been wrong.
-
-**Do not ratify an intent you reconstructed after a solution already existed** without saying so in the same breath. Conditions written by someone who already knows the answer tend to describe the answer, and the person saying yes deserves to know that is the risk they are being asked about.
-
-A no is not a failure of the session. It means the problem is somewhere else, and finding that out before anything was built is the cheapest this skill ever gets.
+Run `/verify` on the written intent, in a subagent with a fresh context.
 
 ## Throughout
 

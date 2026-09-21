@@ -7,20 +7,18 @@
 
 idea/INTENT_FORMAT.md :: Problem :: a person, when asked to recognise their problem; verify, re-deriving it cold and checking it names no mechanism
 idea/INTENT_FORMAT.md :: Evidence :: verify, checking the argument is not dressed as an observation
-idea/INTENT_FORMAT.md :: Done when :: solve, tagging criteria to it; accept, walking it
+idea/INTENT_FORMAT.md :: Done when :: solve, tagging criteria to it; accept-intent, walking it
 idea/INTENT_FORMAT.md :: Constraints :: solve, disqualifying candidates; verify, testing severity
 idea/INTENT_FORMAT.md :: Not this :: solve, staying inside the problem it was given
-idea/INTENT_FORMAT.md :: Whatever they arrived with :: verify, re-deriving the problem cold
+idea/INTENT_FORMAT.md :: User's solution :: verify, re-deriving the problem cold
 idea/INTENT_FORMAT.md :: Open questions :: solve, which of them the approach settles
-idea/INTENT_FORMAT.md :: Ratified :: solve, refusing to design against a draft
-idea/INTENT_FORMAT.md :: Routed back :: a person, deciding an intent is unsatisfiable
 
-solve/SOLVE_FORMAT.md :: Intent :: tests/solution-format.sh, resolving the intents a solution names; accept, on the short path where this block is the intent
+solve/SOLVE_FORMAT.md :: Intent :: tests/solution-format.sh, resolving the intents a solution names
 solve/SOLVE_FORMAT.md :: Approach :: slice, cutting it into work
 solve/SOLVE_FORMAT.md :: Behaviour :: slice, copying criteria into tickets; run.sh, the drift pre-flight; tests/solution-format.sh, coverage both ways
 solve/SOLVE_FORMAT.md :: Edge cases :: slice, placing each one in the Done when of the slice that owns it
 solve/SOLVE_FORMAT.md :: Non-goals :: slice, placing each one in the Not here of the ticket a builder would wander out of
-solve/SOLVE_FORMAT.md :: Accepted tradeoffs :: accept, comparing against what it cost
+solve/SOLVE_FORMAT.md :: Accepted tradeoffs :: a person, at the merge
 solve/SOLVE_FORMAT.md :: Ruled out :: verify, checking the stated reason is true
 solve/SOLVE_FORMAT.md :: Open concerns :: slice, settling each one in a ticket or declining to cut yet
 solve/SOLVE_FORMAT.md :: Routed back :: a person, on the short path where there is no intent
@@ -29,13 +27,7 @@ slice/SLICE_FORMAT.md :: Build :: implement, what this slice is
 slice/SLICE_FORMAT.md :: Done when :: implement, the definition of done; critique, the standard; run.sh, the drift pre-flight; tests/ticket-format.sh, the verbatim check
 slice/SLICE_FORMAT.md :: Context :: implement, building without opening the solution
 slice/SLICE_FORMAT.md :: Not here :: implement, the boundary; critique, work that crossed it
-slice/SLICE_FORMAT.md :: Record :: critique, checking the tests it names; accept, as claims
+slice/SLICE_FORMAT.md :: Record :: critique, checking the tests it names
 slice/SLICE_FORMAT.md :: Findings :: implement, the brief for a second pass; run.sh, deciding whether the ticket goes back
 slice/SLICE_FORMAT.md :: Halt :: a person, when a run stops; run.sh, naming what stopped in the stuck report
 
-accept/VERDICT_FORMAT.md :: Conditions :: a person, at the merge
-accept/VERDICT_FORMAT.md :: Tradeoffs paid :: solve, before writing its own tradeoffs
-accept/VERDICT_FORMAT.md :: Routing :: a person, deciding where the work goes back to
-accept/VERDICT_FORMAT.md :: What changed :: a person, reviewing the pull request
-accept/VERDICT_FORMAT.md :: Look here :: a person, reviewing the pull request
-accept/VERDICT_FORMAT.md :: Still uncertain :: a person, reviewing the pull request

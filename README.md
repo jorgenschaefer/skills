@@ -23,7 +23,7 @@ npx skills add jorgenschaefer/skills@<skill-name>
                                                               │
                           ./run.sh ──→ /implement ──→ /critique ──→ … ──→ every ticket done
                                                               │
-                                    /accept ──→ VERDICT_<TOPIC>.md ──→ ./accept-run.sh
+                              /accept-intent ──→ VERDICT_<TOPIC>.md ──→ ./accept-run.sh
 
   /verify checks each artifact against what its stage was given, in a context
   that did not produce it: the intent, the solution, and the slicing before it
@@ -84,8 +84,8 @@ existed.
 
 **Checks that execute rather than judge.** A criterion is pinned by breaking the
 behaviour and watching its named test fail - deleted, and its edges moved - because
-deciding by eye whether a test would notice a change is prediction. `/accept` drives the
-finished feature the way its user would rather than reading the diff and concluding.
+deciding by eye whether a test would notice a change is prediction. `/accept-intent` drives
+the finished feature the way its user would rather than reading the diff and concluding.
 
 ### The tests
 
@@ -110,7 +110,7 @@ The pipeline is most of them. `cleanup-repo`, `repo-overview`, `skill-review` an
 - **solve** - turn a ratified intent into a solution spec: candidates that differ in kind, what decides between them agreed before anything is scored, one chosen, its criteria numbered and tagged with the conditions they serve, and what it costs named against what it was chosen over. Given prose rather than an intent, it derives the conditions and gets them confirmed before it designs - or hands back to `/idea` when they cannot be stated so anyone could check them
 - **slice** - cut a settled solution into the tickets that build it: vertical slices worked out in plan mode, each independently buildable, each quoting the criteria it covers verbatim so no builder has to open the solution. Typed, because it was measured never firing when the other skills are present
 - **verify** - the one adversary, with a contract per stage: an intent's conditions observable, a solution's coverage both ways and the cost it failed to name, a slicing that traces both directions. Runs in a context that did not produce what it reads
-- **accept** - use the finished feature, walk the intent's conditions by id, and write the verdict that survives the paper; then `./accept-run.sh`, which refuses to retire a run that is not finished
+- **accept-intent** - use the finished feature the way its user would, walk the intent's conditions by id, and report which of them you could find in the product and which you could not
 - **ubiquitous-language-init** - bootstrap a UBIQUITOUS_LANGUAGE.md glossary in a brownfield project by excavating domain terminology from the existing codebase
 - **upgrade-dependencies** - upgrade npm dependencies, or add one, safely and incrementally: green baseline, then `npm update`, then remaining majors one at a time, running tests/tsc/lint at every step; reconciles the Node version across `.nvmrc`, Dockerfile and `@types/node`, and treats a new dependency as the hard-to-reverse choice it is
 

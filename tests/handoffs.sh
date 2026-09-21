@@ -20,7 +20,7 @@ ROOT="$HERE/.."
 
 # A stage a person opens or closes, or one the pipeline's own path depends on
 # reaching. Each is typed, so none of them rests on being discovered.
-TYPED=(solve slice accept verify)
+TYPED=(solve slice accept-intent verify)
 for skill in "${TYPED[@]}"; do
   grep -q '^disable-model-invocation: true' "$ROOT/$skill/SKILL.md" \
     && ok "$skill is typed rather than discovered" \
@@ -40,15 +40,13 @@ handoff() {
     && ok "$1 names $3" \
     || bad "$1 names $3" "no mention of $3 in $1/SKILL.md"
 }
-handoff idea   '/solve'        "the stage that designs against the intent"
 handoff solve  '/slice'        "the stage that turns the spec into work"
 handoff slice  'run.sh'        "the runner that builds the tickets"
 handoff implement '/critique'    "the session that reviews what it built"
-handoff accept    'accept-run.sh' "the script that retires the paper"
 
 # (d) to (e): the runner finishes, and something has to say what closes the run.
-grep -q '/accept' "$ROOT/run.sh" \
+grep -q '/accept-intent' "$ROOT/run.sh" \
   && ok "the runner names the stage that closes the run" \
-  || bad "the runner names the stage that closes the run" "nothing in run.sh names /accept"
+  || bad "the runner names the stage that closes the run" "nothing in run.sh names /accept-intent"
 
 finish

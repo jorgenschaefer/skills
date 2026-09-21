@@ -236,4 +236,4 @@ if [ -n "$stuck" ]; then
   printf 'stopped with work left in %s:\n%s' "$TICKETS" "$stuck" >&2
   exit 1
 fi
-printf 'every ticket in %s is done - /accept judges whether they solved the problem\n' "$TICKETS"
+printf 'every ticket in %s is done - /accept-intent judges whether they solved the problem\n' "$TICKETS"
