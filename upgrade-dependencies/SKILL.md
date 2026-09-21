@@ -6,38 +6,25 @@ disable-model-invocation: true
 
 # Upgrade Dependencies
 
-You are a senior developer changing this project's dependencies – upgrading what is there, or
-adding something new. Work in three passes – baseline, easy updates, then remaining updates one at a
-time – and keep the project green after every pass so any breakage is traceable to the single change
-that caused it. Commit each pass separately.
-
-Inside the pipeline this is a **maintenance ticket**: no new behaviour, the suite green throughout,
-the same two reviews as any other ticket. Two things then differ from the passes below. The commits
-are the ticket's, not this skill's – one commit for the work, staged to the files it touched, as
-`/implement` finishes any ticket – and the branch is the run's, already made. And *adding* a
-dependency is not maintenance at all until somebody has agreed to it: it is a decision, and with
-nobody present the ticket halts `blocked` rather than making it.
+Upgrade this project's dependencies without breaking it.
 
 Before making any commits, create a dedicated branch (e.g. `upgrade-dependencies`) if you are on the
 default branch – never commit these upgrades straight to `main`.
 
-The three checks referenced throughout are the project's **tests**, **type check** (`tsc` /
-`tsc --noEmit`), and **lint**. Find the actual commands in `package.json` scripts and use those; if
-any is missing, say so and run the ones that exist.
+Find the project's check commands that run type-checks, lint and tests.
 
 ## 1. Baseline
 
-Make sure dependencies are installed first (`npm ci`), then run all three checks before touching
-anything. Everything must be green.
+Make sure dependencies are installed first (`npm ci`), then run the checks before touching anything.
 
-If something is already red, stop and report it. A pre-existing failure is not yours to fix here,
-but you must not start on top of it – otherwise you can't tell an upgrade regression from noise. Note
-any failure explicitly so it isn't later mistaken for upgrade damage.
+Everything must be green.
+
+If something is already red, stop and report it.
 
 ## 2. Easy updates (`npm update`)
 
 Run `npm update` to pull in everything allowed by the existing semver ranges in `package.json`
-(minor and patch bumps). Then run all three checks again.
+(minor and patch bumps). Then run the checks again.
 
 - Still green: commit this pass on its own.
 - Red: the culprit is within this batch. Read the failure, fix it if it's a small adjustment, or
@@ -51,13 +38,13 @@ Run `npm update` to pull in everything allowed by the existing semver ranges in 
 failure). Handle these **one package at a time** – never batch majors, since a red result must
 point at exactly one upgrade.
 
-For each package, in order (leaf/dev dependencies first, framework/core last):
+For each package, in order:
 
 1. Read its changelog or migration notes for breaking changes – a major bump usually means the API
    changed, not just the version number.
-2. Bump it (`npm install pkg@latest`, or edit the range and `npm install`).
+2. Bump it (edit the range in `package.json` and `npm install`).
 3. Apply any migration the changelog calls for.
-4. Run all three checks. Green: commit this single upgrade. Red and not a quick fix: revert this one
+4. Run the checks. Green: commit this single upgrade. Red and not a quick fix: revert this one
    package and move on, noting it as needing manual follow-up. Revert cleanly so the lockfile stays
    consistent: `git checkout package.json package-lock.json && npm install`.
 
@@ -68,30 +55,6 @@ those mask the conflict instead of resolving it, and leave the tree in a state t
 
 If a major bump implies real code changes or a behavior shift rather than a mechanical migration,
 stop and surface it rather than guessing at the intended behavior.
-
-## Adding a dependency
-
-Adding one is this skill's job too, and it is the harder half. An upgrade moves a decision somebody
-already made; an addition makes a new one, and every later version of this project inherits it. It
-is a hard-to-reverse external choice, so it is the user's to make: put it to them with a
-recommendation rather than installing it and mentioning it afterwards.
-
-`coding-standard` already says what to establish before adding one – that it is warranted at
-all, that the standard library will not do, the current version looked up rather than recalled, the
-licence, the advisories. Do that first; it is the same rule and it lives there.
-
-Three things are this skill's:
-
-- **Check it against a primary source** – the registry entry, the repository, the changelog – and
-  **cite what you read** in the decision the ticket records. Nothing downstream looks again, so the
-  next person to ask "why this one, and when?" gets an answer with a date on it rather than a shrug.
-- **Say what it costs to keep and to remove**, not only what it does. Install size, transitive
-  count, and what taking it back out would mean once callers exist.
-- **Let the user decide.** Present the choice and your recommendation. Nobody is a default here –
-  with no user present this is a halt, not a judgement call you make on their behalf.
-
-Once it is agreed, install it exactly as pass 3 installs an upgrade: on its own, all three checks
-green.
 
 ## Node version alignment
 
@@ -110,15 +73,4 @@ point it out and propose aligning them all on one current LTS (verify which rele
 is rather than assuming from memory) rather than silently picking one.
 
 As part of pass 3, bump `@types/node` to match the Node major the project actually runs on **today**
-– not a higher LTS you have only proposed moving to. Types ahead of the runtime let `tsc` pass code
-that fails at runtime, which defeats the point of the checks. `@types/node` moves up only in lockstep
-with an approved runtime bump.
-
-## Output
-
-Report what moved: packages upgraded (with from → to versions), grouped by pass; anything held back
-and why; and the Node-version reconciliation. Confirm the final state of all three checks, and
-report the `npm audit` status (before vs after) so any remaining known vulnerabilities are visible –
-without silently running `npm audit fix`, which can itself pull in breaking changes. If you made
-commits, list them. Leave anything requiring a judgment call about behavior for the user to
-decide – don't merge breaking upgrades on assumption.
+– not a higher LTS you have only proposed moving to.
