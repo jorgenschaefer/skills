@@ -2,24 +2,27 @@
 #
 # Drive a ticket directory to completion with nobody watching.
 #
-#   ./run.sh tickets/<topic>
+#   ./run.sh intents/<slug>/tickets
 #
 # Everything here is something that has to hold when a session is dead or
 # misbehaving, which is why it is a script and not a skill. A session cannot
 # enforce a budget it is spending, cannot reset a claim it is holding when it
 # dies, and cannot wait out a limit that has already stopped it.
 #
-# The loop per ticket: claim it, build it, review what was built in a session
-# that did not write it, and either finish it or send it back. The runner owns
-# both ends of the status - a session writes `review` or `halted` and nothing
-# else - because a ticket left at `doing` by a crash is indistinguishable from
-# one being worked on, and only the process that launched it knows which.
+# The loop per ticket: claim it, build it, and either finish it or send it
+# back. The runner owns both ends of the status - a session writes `review` or
+# `halted` and nothing else - because a ticket left at `doing` by a crash is
+# indistinguishable from one being worked on, and only the process that
+# launched it knows which.
+#
+# There is no review pass here. `/implement` spawns its own reviewer in a
+# subagent that did not write the code, which is the property a second session
+# used to buy, and a second review of a reviewed commit reviews a review.
 
 set -uo pipefail
 
 TICKETS="${1:-}"
 MAX_ATTEMPTS="${MAX_ATTEMPTS:-3}"     # builds of one ticket before it is exhausted
-MAX_REVIEWS="${MAX_REVIEWS:-2}"       # times a review may send the same ticket back
 WAIT_SECONDS="${WAIT_SECONDS:-900}"   # between hitting a usage limit and trying again
 MAX_WAITS="${MAX_WAITS:-8}"
 
@@ -27,7 +30,7 @@ die() { printf '%s\n' "$*" >&2; exit 2; }
 
 # --- refusals, before anything is launched
 
-[ -n "$TICKETS" ] || die "usage: run.sh tickets/<topic>"
+[ -n "$TICKETS" ] || die "usage: run.sh intents/<slug>/tickets"
 [ -d "$TICKETS" ] || die "no ticket directory: $TICKETS"
 git rev-parse --is-inside-work-tree >/dev/null 2>&1 || die "not a git repository"
 # The branch refusal just above passes by accident in a repository with no
@@ -83,7 +86,10 @@ text_of()  { # file, id -> the criterion as written, tag and marker stripped
 preflight() {
   local t solution id problems=""
   for t in "${files[@]}"; do
-    solution="$(field "$t" solution)"
+    # Resolved beside the tickets/ directory, not from the working directory:
+    # the frontmatter says `02-SOLUTION.md` and means the one this slicing came
+    # from, whatever the runner was invoked from.
+    solution="$(dirname "$TICKETS")/$(field "$t" solution)"
     [ -f "$solution" ] || { problems+="$t names $solution, which is not there"$'\n'; continue; }
     for id in $(quoted "$t"); do
       [ "$(text_of "$t" "$id")" = "$(text_of "$solution" "$id")" ] \
@@ -112,11 +118,27 @@ halt() {  # ticket, kind, why
   set_field "$1" status halted
 }
 
-# A usage limit is not a failure of the work: the session never got to do any.
-# Waiting it out and trying again is the whole reason this is a process that
-# outlives its sessions.
-session() {  # ticket, role -> 0 ran, 1 failed
-  local out rc waits=0
+# The ticket protocol is stated here rather than in the skill. `/implement` is
+# the generic build skill - it fires when anyone asks for code and knows nothing
+# about tickets, statuses or halt kinds. A runner that needs those has to say so
+# itself, which is the cost of the skill staying general.
+#
+# The retry loop below is for a usage limit, which is not a failure of the work:
+# the session never got to do any. Waiting it out and trying again is the whole
+# reason this is a process that outlives its sessions.
+session() {  # ticket -> 0 ran, 1 failed
+  local out rc waits=0 prompt
+  prompt="Use /implement on the work described in $1.
+
+That file is the whole brief. Its \`## Done when\` is the definition of done - not the diff, not what you would have built, not what the solution probably meant. Its \`## Not here\` names what a neighbouring ticket owns, and building it is two tickets building the same code. Its \`## Plan\` is how it was decided this gets built; where you find the plan wrong, say so rather than following it off a cliff.
+
+Do not open the solution the frontmatter names. The ticket quotes what it needs, and going upstream is how a ticket quietly becomes a different one.
+
+When the criteria are green and the project's checks pass, write the ticket's \`## Record\` - which test names which criterion, and the command you ran - then commit the code and the ticket together and set \`status: review\` in the frontmatter.
+
+If you cannot proceed, append a \`## Halt\` section naming the kind and stop: \`blocked\` (a precondition the ticket assumed is not there), \`undecided\` (a decision the ticket's criteria do not settle and that is not yours to settle), or \`mystery\` (a failure you cannot explain, which is different from one you cannot fix). Then set \`status: halted\`.
+
+Never write \`status: doing\` or \`status: done\`. Both ends belong to the runner."
   while :; do
     # Nobody is here to approve a tool call, and `claude -p` cannot prompt: what
     # it cannot get approved it declines, and a session that could not run the
@@ -125,7 +147,7 @@ session() {  # ticket, role -> 0 ran, 1 failed
     # rather than left to whatever the operator has in settings.
     out="$(claude -p --permission-mode acceptEdits \
              --allowedTools Bash Edit Write Read Glob Grep Skill TodoWrite \
-             -- "Use /$2 on $1" 2>&1)"; rc=$?
+             -- "$prompt" 2>&1)"; rc=$?
     printf '%s\n' "$out"
     case "$out" in
       *"usage limit reached"*)
@@ -160,7 +182,7 @@ while :; do
 
   attempts=$(( $(field "$ticket" attempts) + 1 ))
   if [ "$attempts" -gt "$MAX_ATTEMPTS" ]; then
-    halt "$ticket" exhausted "$MAX_ATTEMPTS attempts spent, $(field "$ticket" reviews) of them after a review sent it back - read the build output, decide whether to raise the budget or re-slice"
+    halt "$ticket" exhausted "$MAX_ATTEMPTS attempts spent without a build that stuck - read the build output, decide whether to raise the budget or re-slice"
     exit 1
   fi
   set_field "$ticket" attempts "$attempts"
@@ -170,7 +192,7 @@ while :; do
   # what the session did rather than only against what it says it did.
   head_before="$(git rev-parse HEAD)"
 
-  if ! session "$ticket" implement; then
+  if ! session "$ticket"; then
     # The session did not get to say what happened, so the runner says it: the
     # claim goes back, and the attempt is spent either way.
     [ "$(field "$ticket" status)" = doing ] && set_field "$ticket" status ready
@@ -183,9 +205,10 @@ while :; do
     *) set_field "$ticket" status ready; continue ;;
   esac
 
-  # A session that says `review` without a commit built nothing: there is no
-  # work for the review to read, and accepting it is how a ticket reaches done
-  # unbuilt. Given the same tolerance as a crash, because it is the same kind of
+  # A session that says `review` without a commit built nothing, and accepting
+  # it is how a ticket reaches done unbuilt - which matters more now that the
+  # runner promotes `review` straight to `done` and nothing else looks at the
+  # commit. Given the same tolerance as a crash, because it is the same kind of
   # failure - a session that did not do what it was launched for - and the
   # halt at the end of it says that, rather than that a budget ran out. Which is
   # why the edge here is `-ge` where the selection above is `-gt`: this fires on
@@ -201,23 +224,7 @@ while :; do
     continue
   fi
 
-  # Cleared before the review, not after it: what is in the ticket when the next
-  # build starts has to be this round's findings, and a section left from the
-  # last round would read as a complaint nobody made.
-  sed -i '/^## Findings$/,$d' "$ticket"
-  session "$ticket" critique || { set_field "$ticket" status ready; continue; }
-
-  if grep -q '^## Findings' "$ticket"; then
-    reviews=$(( $(field "$ticket" reviews) + 1 ))
-    set_field "$ticket" reviews "$reviews"
-    if [ "$reviews" -gt "$MAX_REVIEWS" ]; then
-      halt "$ticket" exhausted "$reviews reviews without a clean one - read the findings below and decide whether they are answerable as written"
-      exit 1
-    fi
-    set_field "$ticket" status ready
-  else
-    set_field "$ticket" status done
-  fi
+  set_field "$ticket" status done
 done
 
 # `break` means nothing could be selected, which is not the same as everything
@@ -236,4 +243,21 @@ if [ -n "$stuck" ]; then
   printf 'stopped with work left in %s:\n%s' "$TICKETS" "$stuck" >&2
   exit 1
 fi
-printf 'every ticket in %s is done - /accept-intent judges whether they solved the problem\n' "$TICKETS"
+# Every ticket done is not the same as the problem solved, and nothing so far
+# has asked the second question: each pass compared a commit to the ticket that
+# asked for it. The walk is the only stage that reads a statement written before
+# the solution existed. It is printed and not acted on - a condition nobody
+# could find is for a person to look at, and the runner does not get to decide
+# that the change is good.
+printf 'every ticket in %s is done\n' "$TICKETS"
+
+intent="$(dirname "$TICKETS")/01-INTENT.md"
+if [ -f "$intent" ]; then
+  printf 'walking %s\n\n' "$intent"
+  claude -p --permission-mode acceptEdits \
+    --allowedTools Bash Edit Write Read Glob Grep Skill TodoWrite \
+    -- "Use /accept-intent on $intent"
+else
+  printf 'no %s, so the walk is skipped: the conditions are in %s and somebody has to read them\n' \
+    "$intent" "$(dirname "$TICKETS")/02-SOLUTION.md" >&2
+fi
