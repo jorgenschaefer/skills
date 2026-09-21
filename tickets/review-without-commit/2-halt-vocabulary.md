@@ -3,8 +3,8 @@ solution:  SOLUTION_REVIEW_WITHOUT_COMMIT.md
 satisfies: AC-3
 after:     1-head-check
 status:    review
-attempts:  3
-reviews:   2
+attempts:  4
+reviews:   3
 ---
 
 ## Build
@@ -97,64 +97,60 @@ kinds now report that the count sentence was not found, watched by rewording
 `exhausted drift unbuilt` was written out in both document loops; it is the oracle, so it
 is one `runner_kinds` above them. No behaviour change - 27 passed, 0 failed either way.
 
+**Fourth pass, answering the findings.** The idea doc's case asked whether a kind appears
+among the runner's bullets and nothing more, so the half of the split the skill's case had
+already been rewritten around was open here: the doc could say `unbuilt` is the runner's
+and hand it to a session in the same section. It now reads both lists - `idea_theirs` from
+the runner's sentence to the next heading, `idea_mine` from *The kinds a session writes*
+down to that sentence - and a kind in both is a `bad` naming which. The finding's
+construction was reproduced green at 28 passed first, then RED against the scoped case;
+the same duplicate bullet written for `exhausted` and for `drift` fails their cases too.
+Its edge is that boundary: moving the runner's `unbuilt` bullet verbatim up into the
+session's list fails it, and renaming the bullet still fails this case and the stop count's.
+
+The non-empty guard is `expect_counted` from `tests/format-lib.sh`, which this file already
+sources and which exists for this rule; the hand-rolled version restated its comment. Same
+verdict on the renamed heading - 20 passed, 1 failed - under the helper's case name.
+
 ## Findings
 
-**Blocker — `tests/build-contract.sh:91-101` still passes on a skill that tells the
-session to raise `unbuilt`.** The bullet-shaped regression is closed; the prose-shaped
-one is not. `told` comes from `says_to`, whose disclaimer filter drops any sentence
-containing `cannot` - and an instruction to raise this kind naturally contains it,
-because the kind is *about* a commit that could not be made.
+One review round: one should-fix, one nit. `tests/run.sh` is 257 passed / 0 failed with
+`tests/build-contract.sh` at 27. Every `Record` claim was checked by mutation and every
+one held - dropping `unbuilt` from the not-yours sentence, adding it as a bullet to the
+yours-list with that sentence intact, and adding "If the build cannot be committed, raise
+`unbuilt`." above it each fail the skill case; renaming the idea's bullet fails two cases;
+dropping `unbuilt` from the count sentence fails one; rewording `conditional and named`
+fails all six with the cause named; and renaming `### Halts` now fails on the empty
+extraction at 20 passed / 1 failed rather than at 20 passed / 0 failed.
 
-Constructed: in `implement/SKILL.md`, leave the not-yours sentence exactly as it is and
-add one line above it, in the same Halts section:
+**Should-fix — `tests/build-contract.sh:116-120` asks whether the idea doc mentions a
+kind as the runner's, not which side of its split the kind is on.** The previous round
+established that the side is the criterion and the skill's case was rewritten around it -
+`mine` and `theirs`, with a bullet on the wrong side failing. The other of the two places
+AC-3 names kept the old shape: `grep -q "^- \`$kind\`"` inside the runner's bullets, and
+nothing looks at the list above them.
 
-    If the build cannot be committed, raise `unbuilt`.
+Constructed: in `NEW_PIPELINE_IDEA.md`, leave the runner's `unbuilt` bullet exactly as it
+is and add one to *The kinds a session writes*, above `mystery`:
 
-The skill now says both things: `unbuilt` is not yours, and raise `unbuilt`. Nothing
-sees it. `mine` misses it because it is not a `- ` bullet, `theirs` is untouched, and
-`says_to` swallows the instruction on `cannot`. `tests/build-contract.sh` reports 26
-passed, 0 failed.
+    - `unbuilt` — the build produced no commit.
 
-This is not a contrived phrasing. `implement/SKILL.md` already uses `cannot` five times,
-including in the sentence that introduces the yours-list ("A session that cannot proceed
-writes the halt"), so the sentence a future edit writes is likely to be exactly this
-shape. The same hole is open on `exhausted` and `drift` through the same filter.
+The doc now says both things, and the doc is where the next skill is written from.
+`tests/build-contract.sh` reports **28 passed, 0 failed** - a case more than before,
+because `idea_halts` extracts `unbuilt` twice and the stop-count loop runs seven times.
+The one number a reader might compare against a previous run moves in the reassuring
+direction. The identical edit to `implement/SKILL.md` fails, which is the whole of the
+asymmetry: the same regression is caught in one document and rewarded in the other.
 
-`cannot` is the odd one in that filter: the others - `never`, `not yours`, `the runner
-owns`, `do not` - deny, and `cannot` is just a common word. Dropping it from the
-`grep -viE` on line 41 keeps the suite at 26 passed, 0 failed and turns the construction
-above red. Scoping `told` to the section outside the not-yours sentence would do it too;
-either way the case should hold the property its name claims.
+The fix is the shape the skill case already has - the kinds a session writes are a
+sed range away, and a kind found in both lists is a `bad`.
 
-**Should-fix — `tests/build-contract.sh:121` is a case that can disappear without
-failing.** The stop-count loop iterates over kinds extracted from the doc, so when the
-extraction finds nothing the loop body never runs, no `ok` and no `bad` is written, and
-the suite reports green with the pinning gone. The two loops above it are literal and
-cannot do this; only the derived one can.
-
-Constructed: rename `### Halts` to `### Halt kinds` in `NEW_PIPELINE_IDEA.md` - an
-ordinary edit to a design doc, and not a violation of anything this suite is for.
-`sed -n '/^### Halts/,/^### /p'` matches nothing, `idea_halts` is empty, and
-`tests/build-contract.sh` reports **20 passed, 0 failed**. Six cases vanished and the
-only trace is a number nobody is comparing against a previous run. The agreement the
-Record says is "now pinned rather than done by hand" is unpinned from that moment on.
-
-The derived loops elsewhere in `tests/` (`consumers.sh:53`, `standard-split.sh:110`) sit
-inside an outer loop that reports per line either way, so an empty extraction there still
-produces a verdict. This one is the whole case. It wants the extraction asserted
-non-empty before the loop.
-
-**Nit — `tests/build-contract.sh:118` reports the wrong cause when the count sentence is
-renamed.** `counted` is found by grepping the whole file for `conditional and named`. If
-that wording changes, `counted` is empty and all six kinds fail with "in the Halts
-section of NEW_PIPELINE_IDEA.md, not in the count" - which sends the reader to a count
-sentence that does in fact list every kind. The sibling case one block up names its own
-cause precisely; this one should say that the count sentence was not found.
-
-**Nit — `tests/build-contract.sh:91` and `:109` state the runner's kinds twice.** Both
-loops are `for kind in exhausted drift unbuilt`, and both change for the same reason: a
-fourth runner kind means editing both. Editing only one leaves the other document
-unpinned, silently and in green. The list is the oracle and belongs in one variable above
-the two loops. (The third loop already derives its list, so this is two copies, not
-three.)
+**Nit — `tests/build-contract.sh:133-135` hand-rolls the guard `tests/format-lib.sh:53`
+already provides.** `expect_counted` exists for exactly this - its comment is "An empty
+glob is zero cases and zero failures, which reads as success", which is the sentence the
+new guard's own comment restates - and this file already sources `format-lib.sh`. Two
+representations of one rule: the next suite that grows a derived loop greps
+`expect_counted`, finds the three format suites, and does not find this. It wants
+`expect_counted "$(printf '%s\n' "$idea_halts" | grep -c .)" "halt kinds"`, or - if the
+more specific case name is worth keeping - a note saying why the helper did not fit.
 

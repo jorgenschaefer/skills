@@ -111,12 +111,21 @@ done
 # The other place the vocabulary is taught. A split that disagrees with the
 # skill's is two answers to which kinds a session may raise, and the doc is
 # where the next skill is written from.
+#
+# Both sides of its split are read, for the reason the skill's case above is
+# read that way: a kind in the runner's list is only half the claim while the
+# same kind may also sit in the list a session writes from.
 IDEA="$ROOT/NEW_PIPELINE_IDEA.md"
-runners="$(sed -n "/kinds are the \*\*runner's\*\*/,/^### /p" "$IDEA")"
+idea_theirs="$(sed -n "/kinds are the \*\*runner's\*\*/,/^### /p" "$IDEA" | grep '^- ')"
+idea_mine="$(sed -n "/The kinds a session writes:/,/kinds are the \*\*runner's\*\*/p" "$IDEA" | grep '^- ')"
 for kind in $runner_kinds; do
-  printf '%s' "$runners" | grep -q -- "^- \`$kind\`" \
-    && ok "the idea's halt list has $kind as the runner's" \
-    || bad "the idea's halt list has $kind as the runner's" "not in the runner's kinds in $IDEA"
+  if ! printf '%s\n' "$idea_theirs" | grep -q -- "^- \`$kind\`"; then
+    bad "the idea's halt list has $kind as the runner's" "not in the runner's kinds in $IDEA"
+  elif printf '%s\n' "$idea_mine" | grep -q -- "^- \`$kind\`"; then
+    bad "the idea's halt list has $kind as the runner's" "also among the kinds a session writes"
+  else
+    ok "the idea's halt list has $kind as the runner's"
+  fi
 done
 
 # The doc counts the stops a person makes a few hundred lines above the Halts
@@ -125,14 +134,12 @@ done
 # itself about when a run stops, and the count is the half a reader meets first.
 #
 # Both halves are found by their wording, and a doc may reword either. The
-# kinds are asserted before the loop because a loop over an empty extraction
+# kinds are counted before the loop because a loop over an empty extraction
 # writes no verdict at all: renaming the heading takes these cases with it and
 # leaves a green suite six cases shorter.
 idea_halts="$(sed -n '/^### Halts/,/^### /p' "$IDEA" | sed -n 's/^- `\([a-z]*\)`.*/\1/p')"
 counted="$(sentences < "$IDEA" | grep -i 'conditional and named')"
-[ -n "$idea_halts" ] \
-  && ok "the idea's halt kinds are there to count against" \
-  || bad "the idea's halt kinds are there to count against" "no kind bullets under ### Halts in $IDEA"
+expect_counted "$(printf '%s' "$idea_halts" | grep -c .)" "halt kinds"
 for kind in $idea_halts; do
   if [ -z "$counted" ]; then
     bad "the stop count names the $kind halt" "no sentence naming the conditional stops in $IDEA"
