@@ -11,7 +11,7 @@
 # true of the repository as a whole, and then runs them.
 #
 # It used to hold nine hundred lines of cases for `loop.sh` and `accept.sh`,
-# which the new pipeline replaced. Those went with the scripts.
+# and later a suite for `accept-run.sh`. Those went with the scripts.
 
 set -uo pipefail
 
@@ -134,8 +134,6 @@ printf '\n'
 "$HERE/build-contract.sh" || failed=$((failed + 1))
 printf '\n'
 "$HERE/runner.sh" || failed=$((failed + 1))
-printf '\n'
-"$HERE/accept.sh" || failed=$((failed + 1))
 printf '\n'
 "$HERE/consumers.sh" || failed=$((failed + 1))
 printf '\n'

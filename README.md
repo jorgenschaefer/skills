@@ -23,38 +23,33 @@ npx skills add jorgenschaefer/skills@<skill-name>
                                                               │
                           ./run.sh ──→ /implement ──→ /critique ──→ … ──→ every ticket done
                                                               │
-                              /accept-intent ──→ VERDICT_<TOPIC>.md ──→ ./accept-run.sh
+                                                      /accept-intent
 
   /verify checks each artifact against what its stage was given, in a context
   that did not produce it: the intent, the solution, and the slicing before it
   is written.
 ```
 
-`run.sh` and `accept-run.sh` are scripts rather than skills, and that is the whole
-distinction: everything that has to hold when a session is dead or lying is a script,
-and everything that is judgement is a skill. A session cannot enforce a budget it is
+`run.sh` is a script rather than a skill, and that is the whole distinction:
+everything that has to hold when a session is dead or lying is a script, and
+everything that is judgement is a skill. A session cannot enforce a budget it is
 spending, reset a claim it is holding when it dies, or wait out a limit that has
 already stopped it.
 
-**Five stages, each emitting one artifact, each checked against what the stage was
-given.** `/verify` is the one adversary, with a contract per stage, run in a context
+**Five stages, each checked against what the stage was given.** `/verify` is the one adversary, with a contract per stage, run in a context
 that did not produce the thing it reads. Only the last stage judges against the
 problem: every check before it compares an artifact to the one before it, and a chain
 of sound links still proves nothing about what started it.
 
 **Four stops for a person, whatever the size of the change.** Recognise the problem,
-choose between candidates, approve the slicing, read the verdict and merge. Everything
+choose between candidates, approve the slicing, read what acceptance found and
+merge. Everything
 else is conditional and named - a halt, a ceiling raised, an intent declared
 unsatisfiable, a topic abandoned, a re-slice approved.
 
 **Stopping anywhere is an ending.** An intent written and not designed against, a
 solution recorded and not built, are whole uses of the thing. Going on is always
 something you ask for.
-
-**The paper is temporary.** The intent, the solution and the tickets are deleted when a
-run is accepted, in one commit, and git history keeps them. The verdict survives,
-because it is the only durable answer to what the work was for - which makes it the
-pull request description too.
 
 ### The runner
 
@@ -91,8 +86,8 @@ the finished feature the way its user would rather than reading the diff and con
 
 `tests/run.sh` is the one command. It holds what is true of the repository as a whole
 and then runs a suite per artifact - the intent, solution and ticket formats, the
-runner, acceptance, the consumer map, the handoffs between stages, and the check that
-no live instruction points at something that is not there. Plain bash: each case builds
+runner, the consumer map, the handoffs between stages, and the check that no live
+instruction points at something that is not there. Plain bash: each case builds
 what it needs in a throwaway directory and cleans up after itself.
 
 ## Available skills
