@@ -4,6 +4,17 @@ What good software looks like. Any software project is held to this standard.
 
 This extends your existing standards, it does not replace them.
 
+## What matters, in order
+
+Six properties, and where two of them pull against each other the earlier one wins.
+
+- **Correct.** Does the code do what it is supposed to do? What that is may have to be derived from the context first - the ticket, the callers, the domain - before it can be checked, and it is checked for the general case *and* the edge cases, not the one input somebody had in mind.
+- **Secure.** Does it protect against a malicious user? Can it leak what they should not see, or let them act as somebody they are not?
+- **Usable.** Can the next caller use this correctly without reading its insides, and does a failure tell them what to do about it? A name, a signature or a message that reliably leads someone to the wrong move is a defect; one you would merely have written differently is not.
+- **Fast enough.** Performance is not an absolute requirement. 10 ms to 5 ms is a performance improvement and an irrelevant one; 500 ms to 250 ms is not.
+- **Reliable enough.** When it fails, is the failure handled - and handled in proportion? The less likely the failure, the less elaborate the handling has to be, and "error, try again" is often the whole of it.
+- **Maintainable.** When a bug is reported, can its location be found quickly? When a change is asked for, is every place it touches easy to find?
+
 ## Ubiquitous language
 
 `UBIQUITOUS_LANGUAGE.md`, where the project keeps one, is the source of truth for the domain's names. If a concept has a name in there already, use it before inventing your own. If a concept is new, confirm with the user what it is called in the domain and add it there before using it.
@@ -35,7 +46,7 @@ Prefer a small number of layers that each hide real substance over many thin lay
 - **YAGNI.** Production code should contain only code and abstractions that are needed now, not in an imagined future.
 - **KISS.** Prefer the simplest thing that works over "clever" designs or needless optimization.
 - **Duplication is justified or removed.** Two copies that will change for the same reason belong in one place. Duplication is acceptable only when the copies will change for *different* reasons - then prefer it over the wrong abstraction. There is no count of copies that decides this.
-- **No optimization without measurement.** Never make code "more efficient" without having measured it and defined the efficiency as a problem. Two costs are the exception, because they follow from the shape of the code plus a number you can go and look up: a query inside a loop, and a query with no bound or no index on what it filters or sorts.
+- **No optimization without measurement.** Never make code "more efficient" without having measured it and defined the efficiency as a problem - a win that does not cross the threshold above is not one. Two costs are the exception, because they follow from the shape of the code plus a number you can go and look up: a query inside a loop, and a query with no bound or no index on what it filters or sorts.
 - **No dead code.** Code that is not used anywhere outside of its tests should not be in the repository. Note what only *looks* dead but is live: dynamic or reflective access, DI registration, string-referenced routes, config and env, framework entry points, and exported API consumed from outside this repo - an exported symbol with no internal caller is not dead.
 
 ## File and directory layout
