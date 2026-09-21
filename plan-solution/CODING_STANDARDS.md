@@ -93,6 +93,8 @@ A decision earns a record when it will outlive the change that produced it and s
 
 ## Test coverage
 
+**Every piece of business logic is pinned by a test:** removing or changing it would make a test fail. For each piece, you should be able to name the test that pins it; where you cannot, that is a coverage gap.
+
 Use TDD when writing code.
 
 **No code change without a failing test first.** Write the test, watch it fail for the reason you expect, then write the code that makes it pass.
