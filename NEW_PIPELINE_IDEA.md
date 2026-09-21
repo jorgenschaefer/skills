@@ -67,7 +67,7 @@ checking it: `/solve` asks twice in every ordinary run, once to agree what decid
 between candidates and once to choose, and folding those into "designing the solution"
 would make the number smaller and the claim false. Every other stop is
 conditional and named: the `undecided` interrupt at (b) or mid-build, a `blocked`,
-`mystery`, `exhausted` or `drift` halt, raising a ceiling, declaring an intent
+`mystery`, `exhausted`, `drift` or `unbuilt` halt, raising a ceiling, declaring an intent
 unsatisfiable, abandoning a topic, and the second approval a re-slice needs. None of
 them grows with the size of the change, which is what `cost:C-6` asks. The plan gate is worth its cost: it is cheap, it
 lands exactly where bad slicing is still catchable, and it is where an ADR gets
@@ -670,7 +670,7 @@ does not improvise. The kinds a session writes:
   rather than at (b). The session cannot ratify a new constraint, so it stops.
 - `mystery` — a failure the agent cannot explain, as distinct from one it cannot fix.
 
-Two kinds are the **runner's**, because in both cases the party that would report it
+Three kinds are the **runner's**, because in each case the party that would report it
 is not in a position to:
 
 - `exhausted` — the attempt or review-round budget ran out. A session that has run out
@@ -678,6 +678,9 @@ is not in a position to:
 - `drift` — a ticket and the solution no longer agree. A session never reads the
   solution, and a committed ticket is revisited by nobody. It is a pre-flight refusal,
   checked before any session starts.
+- `unbuilt` — a session reported a build and committed nothing. Only the runner can see
+  that, by reading `HEAD` either side of the session; the session that did it reported
+  the opposite.
 
 A halt is addressed to a person. Reading halts is not one of the three happy-path
 touchpoints — it belongs to the conditional class, because a run that halts has

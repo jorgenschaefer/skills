@@ -43,7 +43,7 @@ A session that cannot proceed writes the halt into the ticket and stops. The kin
 - **`undecided`** - a decision the ticket's criteria and the project's standards do not settle, and that is not yours to settle either. A tradeoff nobody accepted is not a detail.
 - **`mystery`** - a failure you cannot explain, which is different from one you cannot fix. Say what you observed and what you ruled out.
 
-`exhausted` and `drift` are not yours. A session that has run out of attempts is not running to report it, and a session never reads the solution, so it cannot know the ticket has drifted from one.
+`exhausted`, `drift` and `unbuilt` are not yours. A session that has run out of attempts is not running to report it; a session never reads the solution, so it cannot know the ticket has drifted from one; and a session that reported a build and committed nothing is in no position to say so.
 
 **The pull is to work around it.** A missing precondition looks like five minutes of work, and often is - and then the ticket has built something nobody specified, in a commit that claims to build something else. Stop.
 

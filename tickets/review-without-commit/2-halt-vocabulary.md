@@ -2,8 +2,8 @@
 solution:  SOLUTION_REVIEW_WITHOUT_COMMIT.md
 satisfies: AC-3
 after:     1-head-check
-status:    ready
-attempts:  0
+status:    review
+attempts:  1
 reviews:   0
 ---
 
@@ -37,3 +37,24 @@ solution records this as an accepted tradeoff.
 ## Not here
 
 The check itself, and the halt being written. Ticket 1.
+
+## Record
+
+`tests/run.sh` - 257 passed, 0 failed of its own cases, every child suite green, with
+`tests/build-contract.sh` at 20 passed, 0 failed.
+
+AC-3, the skill: **the unbuilt halt is named as the runner's** in
+`tests/build-contract.sh`. The existing `exhausted`/`drift` case only asked that the
+session is never *told* to raise the kind, which a skill that has never heard of it
+passes, so the case now asks for both - named, and not instructed. RED before the edit;
+dropping `unbuilt` from the sentence fails it again, and turning the sentence into an
+instruction fails all three kinds.
+
+AC-3, the idea doc: **the idea's halt list has unbuilt as the runner's**, same file,
+reading the bullets between the runner's-kinds sentence and the next heading. RED before
+the edit. Its edge is that boundary: renaming the bullet fails it, and moving the same
+bullet one line up - into the kinds a session writes - fails it too.
+
+The doc's other enumeration of halt kinds, in the four-touchpoints count, got `unbuilt`
+as well; it lists the conditional stops and would otherwise now contradict the Halts
+section a few hundred lines below it.

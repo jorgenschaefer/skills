@@ -77,11 +77,29 @@ for kind in blocked undecided mystery; do
     || bad "the session knows the $kind halt" "not named in $SKILL"
 done
 
-for kind in exhausted drift; do
+# The runner's kinds have to be named as its, not merely left out: a session
+# that has never heard of `unbuilt` reaches for the nearest kind it does know,
+# and absence alone would let this case pass on a skill that says nothing.
+for kind in exhausted drift unbuilt; do
   told="$(says_to "$SKILL" "\`$kind\`")"
-  [ -z "$told" ] \
-    && ok "the session is never told to raise the $kind halt" \
-    || bad "the session is never told to raise the $kind halt" "$told"
+  if ! grep -q "\`$kind\`" "$SKILL"; then
+    bad "the $kind halt is named as the runner's" "not named in $SKILL"
+  elif [ -n "$told" ]; then
+    bad "the $kind halt is named as the runner's" "the session is told to raise it: $told"
+  else
+    ok "the $kind halt is named as the runner's"
+  fi
+done
+
+# The other place the vocabulary is taught. A split that disagrees with the
+# skill's is two answers to which kinds a session may raise, and the doc is
+# where the next skill is written from.
+IDEA="$ROOT/NEW_PIPELINE_IDEA.md"
+runners="$(sed -n "/kinds are the \*\*runner's\*\*/,/^### /p" "$IDEA")"
+for kind in exhausted drift unbuilt; do
+  printf '%s' "$runners" | grep -q -- "^- \`$kind\`" \
+    && ok "the idea's halt list has $kind as the runner's" \
+    || bad "the idea's halt list has $kind as the runner's" "not in the runner's kinds in $IDEA"
 done
 
 # The Record is the only evidence a criterion was covered rather than claimed.
