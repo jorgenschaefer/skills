@@ -8,11 +8,11 @@ disable-model-invocation: true
 
 You are given an intent - `intents/<slug>/01-INTENT.md`, or the `## Intent` section of the solution beside it where no intent document was written. Say whether the problem it describes was solved.
 
-This is the only stage that asks that question. Every check before it compared an artifact to the one before it, and a chain of sound links proves nothing about what started it.
-
 ## Drive the feature
 
 **Use it the way its user would**, in the running product. Do not read the diff and conclude: deciding by eye whether code would behave a certain way is prediction, and prediction is what this stage exists to replace.
+
+Where you cannot get the product running at all, stop and say so - that is the report, and every condition is unchecked.
 
 ## Walk the conditions
 
@@ -28,4 +28,4 @@ Where a Record names a test for a criterion whose condition you could not find i
 
 ## Report
 
-Which conditions you found, which you did not, and what you did to check each. No verdict on whether to merge: that is the reader's.
+One entry per condition id, including every id you could not check: what you did to check it, and what you saw. No verdict on whether to merge: that is the reader's.
