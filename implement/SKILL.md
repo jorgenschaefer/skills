@@ -35,11 +35,11 @@ Work the blockers and the should-fix, test-first like anything else. Then review
 
 **The pull is to quietly drop a finding.** A budget on the rounds makes that cheap - one more round is expensive, saying nothing is free, and a finding that goes unmentioned looks exactly like a finding that was fixed. Say what you left.
 
-## Proportion
+## Every change gets one, whatever its size
 
-A three-line change does not need two review rounds, and a typo needs none. Scale what you do to what you are changing: the fresh-context review is the floor for anything with behaviour in it, not a ritual to perform on everything.
+The fresh-context review runs on every change this skill builds, down to the three-line one. The failing test holds at every size in the same way.
 
-This is judgement, and it is the one place here where you have it. It is not licence to skip the failing test - that holds at every size.
+The size of a diff is not evidence about the size of what it can break, and a build driven with nobody watching has nothing behind this review - what it does not catch is what ships.
 
 ## Stop rather than improvise
 
