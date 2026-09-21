@@ -51,7 +51,15 @@ each one exists because the alternative is a machine deciding something it has n
 standing to decide.
 
 The middle runs unattended *after plan approval*, as long as nothing halts. That is
-the honest version of the claim. The plan gate is worth its cost: it is cheap, it
+the honest version of the claim.
+
+Counted against the pipeline as built, a change of any size stops for a person exactly
+three times: the ratification at the close of (a), the plan approval at the close of
+(c), and the verdict-and-merge at (e). Nothing in between asks. Every other stop is
+conditional and named: the `undecided` interrupt at (b) or mid-build, a `blocked`,
+`mystery`, `exhausted` or `drift` halt, raising a ceiling, declaring an intent
+unsatisfiable, abandoning a topic, and the second approval a re-slice needs. None of
+them grows with the size of the change, which is what `cost:C-6` asks. The plan gate is worth its cost: it is cheap, it
 lands exactly where bad slicing is still catchable, and it is where an ADR gets
 ratified.
 
