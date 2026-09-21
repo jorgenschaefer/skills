@@ -68,9 +68,8 @@ for status in review halted; do
   fi
 done
 
-# The kinds a session can know about, and the two it cannot: a session out of
-# attempts is not running to report it, and a session never reads the solution,
-# so it cannot know the ticket has drifted from one.
+# The kinds a session raises. It has to know them by name to reach for the right
+# one; the kinds it may not raise are the loop below.
 for kind in blocked undecided mystery; do
   grep -q "\`$kind\`" "$SKILL" \
     && ok "the session knows the $kind halt" \
@@ -79,11 +78,22 @@ done
 
 # The runner's kinds have to be named as its, not merely left out: a session
 # that has never heard of `unbuilt` reaches for the nearest kind it does know,
-# and absence alone would let this case pass on a skill that says nothing.
+# and absence alone would let this case pass on a skill that says nothing. The
+# third reason for the split is that the session that committed nothing is the
+# one that reported a build, so it is in no position to report the opposite.
+#
+# Which side of the section a kind sits on is the whole criterion, so the lookup
+# is scoped to the sides: a mention anywhere in the file passes just as happily
+# when the kind has been moved into the list a session raises from.
+halts="$(sed -n '/^## Halt rather than improvise/,/^## /p' "$SKILL")"
+mine="$(printf '%s\n' "$halts" | grep '^- ')"
+theirs="$(printf '%s\n' "$halts" | sentences | grep -iE 'not yours')"
 for kind in exhausted drift unbuilt; do
   told="$(says_to "$SKILL" "\`$kind\`")"
-  if ! grep -q "\`$kind\`" "$SKILL"; then
-    bad "the $kind halt is named as the runner's" "not named in $SKILL"
+  if ! printf '%s\n' "$theirs" | grep -q -- "\`$kind\`"; then
+    bad "the $kind halt is named as the runner's" "not named as the runner's in $SKILL"
+  elif printf '%s\n' "$mine" | grep -q -- "\`$kind\`"; then
+    bad "the $kind halt is named as the runner's" "also listed among the kinds a session raises"
   elif [ -n "$told" ]; then
     bad "the $kind halt is named as the runner's" "the session is told to raise it: $told"
   else
@@ -100,6 +110,18 @@ for kind in exhausted drift unbuilt; do
   printf '%s' "$runners" | grep -q -- "^- \`$kind\`" \
     && ok "the idea's halt list has $kind as the runner's" \
     || bad "the idea's halt list has $kind as the runner's" "not in the runner's kinds in $IDEA"
+done
+
+# The doc counts the stops a person makes a few hundred lines above the Halts
+# section, and names the halt kinds there as the conditional ones. The two lists
+# have to agree: a kind added to one and not the other is the doc contradicting
+# itself about when a run stops, and the count is the half a reader meets first.
+idea_halts="$(sed -n '/^### Halts/,/^### /p' "$IDEA")"
+counted="$(sentences < "$IDEA" | grep -i 'conditional and named')"
+for kind in $(printf '%s\n' "$idea_halts" | sed -n 's/^- `\([a-z]*\)`.*/\1/p'); do
+  printf '%s\n' "$counted" | grep -q -- "\`$kind\`" \
+    && ok "the stop count names the $kind halt" \
+    || bad "the stop count names the $kind halt" "in the Halts section of $IDEA, not in the count"
 done
 
 # The Record is the only evidence a criterion was covered rather than claimed.
