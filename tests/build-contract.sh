@@ -37,8 +37,10 @@ sentences() { tr '\n' ' ' | sed 's/\([.!]\) /\1\n/g'; }
 
 says_to() {  # file, phrase -> the sentences instructing it, minus disclaiming ones
   # `the runner` alone is too broad a disclaimer: a sentence can name the runner
-  # and still instruct. Only the phrases that actually deny apply.
-  sentences < "$1" | grep -iE -- "$2" | grep -viE "never|not yours|the runner owns|do not|cannot"
+  # and still instruct. Only the phrases that actually deny apply - `cannot` was
+  # in this list and denies nothing, so "if the build cannot be committed, raise
+  # `unbuilt`" read as a disclaimer of the instruction it is.
+  sentences < "$1" | grep -iE -- "$2" | grep -viE "never|not yours|the runner owns|do not"
 }
 
 # Marking your own ticket done is reviewing it by omission: the runner writes
@@ -85,10 +87,15 @@ done
 # Which side of the section a kind sits on is the whole criterion, so the lookup
 # is scoped to the sides: a mention anywhere in the file passes just as happily
 # when the kind has been moved into the list a session raises from.
+#
+# The list itself is the oracle both documents are held to, so it is written
+# once: a fourth kind added to one loop and not the other leaves the other
+# document unpinned, in green.
+runner_kinds="exhausted drift unbuilt"
 halts="$(sed -n '/^## Halt rather than improvise/,/^## /p' "$SKILL")"
 mine="$(printf '%s\n' "$halts" | grep '^- ')"
 theirs="$(printf '%s\n' "$halts" | sentences | grep -iE 'not yours')"
-for kind in exhausted drift unbuilt; do
+for kind in $runner_kinds; do
   told="$(says_to "$SKILL" "\`$kind\`")"
   if ! printf '%s\n' "$theirs" | grep -q -- "\`$kind\`"; then
     bad "the $kind halt is named as the runner's" "not named as the runner's in $SKILL"
@@ -106,7 +113,7 @@ done
 # where the next skill is written from.
 IDEA="$ROOT/NEW_PIPELINE_IDEA.md"
 runners="$(sed -n "/kinds are the \*\*runner's\*\*/,/^### /p" "$IDEA")"
-for kind in exhausted drift unbuilt; do
+for kind in $runner_kinds; do
   printf '%s' "$runners" | grep -q -- "^- \`$kind\`" \
     && ok "the idea's halt list has $kind as the runner's" \
     || bad "the idea's halt list has $kind as the runner's" "not in the runner's kinds in $IDEA"
@@ -116,12 +123,24 @@ done
 # section, and names the halt kinds there as the conditional ones. The two lists
 # have to agree: a kind added to one and not the other is the doc contradicting
 # itself about when a run stops, and the count is the half a reader meets first.
-idea_halts="$(sed -n '/^### Halts/,/^### /p' "$IDEA")"
+#
+# Both halves are found by their wording, and a doc may reword either. The
+# kinds are asserted before the loop because a loop over an empty extraction
+# writes no verdict at all: renaming the heading takes these cases with it and
+# leaves a green suite six cases shorter.
+idea_halts="$(sed -n '/^### Halts/,/^### /p' "$IDEA" | sed -n 's/^- `\([a-z]*\)`.*/\1/p')"
 counted="$(sentences < "$IDEA" | grep -i 'conditional and named')"
-for kind in $(printf '%s\n' "$idea_halts" | sed -n 's/^- `\([a-z]*\)`.*/\1/p'); do
-  printf '%s\n' "$counted" | grep -q -- "\`$kind\`" \
-    && ok "the stop count names the $kind halt" \
-    || bad "the stop count names the $kind halt" "in the Halts section of $IDEA, not in the count"
+[ -n "$idea_halts" ] \
+  && ok "the idea's halt kinds are there to count against" \
+  || bad "the idea's halt kinds are there to count against" "no kind bullets under ### Halts in $IDEA"
+for kind in $idea_halts; do
+  if [ -z "$counted" ]; then
+    bad "the stop count names the $kind halt" "no sentence naming the conditional stops in $IDEA"
+  elif printf '%s\n' "$counted" | grep -q -- "\`$kind\`"; then
+    ok "the stop count names the $kind halt"
+  else
+    bad "the stop count names the $kind halt" "in the Halts section of $IDEA, not in the count"
+  fi
 done
 
 # The Record is the only evidence a criterion was covered rather than claimed.
