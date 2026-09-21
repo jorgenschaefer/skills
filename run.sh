@@ -84,28 +84,47 @@ text_of()  { # file, id -> the criterion as written, tag and marker stripped
 # upstream and a slicing that lost something need different answers.
 
 preflight() {
-  local t solution id problems=""
+  local t solution id problems="" culprit="" solutions=()
   for t in "${files[@]}"; do
     # Resolved beside the tickets/ directory, not from the working directory:
     # the frontmatter says `02-SOLUTION.md` and means the one this slicing came
     # from, whatever the runner was invoked from.
     solution="$(dirname "$TICKETS")/$(field "$t" solution)"
-    [ -f "$solution" ] || { problems+="$t names $solution, which is not there"$'\n'; continue; }
+    if [ ! -f "$solution" ]; then
+      problems+="$(basename "$t"): names $solution, which is not there"$'\n'
+      [ -n "$culprit" ] || culprit="$t"
+      continue
+    fi
+    [[ " ${solutions[*]-} " == *" $solution "* ]] || solutions+=("$solution")
     for id in $(quoted "$t"); do
-      [ "$(text_of "$t" "$id")" = "$(text_of "$solution" "$id")" ] \
-        || problems+="$(basename "$t"): $id no longer matches $solution"$'\n'
+      if [ "$(text_of "$t" "$id")" != "$(text_of "$solution" "$id")" ]; then
+        problems+="$(basename "$t"): $id no longer matches $solution"$'\n'
+        [ -n "$culprit" ] || culprit="$t"
+      fi
     done
+  done
+  # Once per solution, not once per ticket: this direction asks something of the
+  # directory as a whole, and asking it inside the loop above reported a lost
+  # criterion once for every ticket that had not lost it.
+  for solution in ${solutions[@]+"${solutions[@]}"}; do
     for id in $(declared "$solution"); do
-      grep -q "^> \*\*$id\*\*" "${files[@]}" \
-        || problems+="$solution: $id is quoted by no ticket"$'\n'
+      if ! grep -q "^> \*\*$id\*\*" "${files[@]}"; then
+        problems+="$solution: $id is quoted by no ticket"$'\n'
+        [ -n "$culprit" ] || culprit="${files[0]}"
+      fi
     done
   done
   if [ -n "$problems" ]; then
     printf 'drift - the tickets and the solution disagree:\n%s' "$problems" >&2
-    # AC-7: the stop is named in the ticket, not only on someone's terminal. The
-    # first offender carries it, because that is where a person will look.
-    local first; first="$(printf '%s' "$problems" | sed -n '1s/:.*//p')"
-    [ -f "$TICKETS/$first" ] && halt "$TICKETS/$first" drift \
+    # The stop is named in the ticket, not only on someone's terminal - nobody is
+    # watching the terminal, which is the whole premise. The first offender
+    # carries it, because that is where a person will look; where the offence
+    # belongs to the directory rather than to one ticket, the first ticket does.
+    #
+    # Carried alongside the message rather than parsed back out of it. Reading
+    # the ticket off the text meant two of the three messages named no ticket
+    # the `-f` guard could find, and both fell through it silently.
+    [ -n "$culprit" ] && halt "$culprit" drift \
       "the solution and this ticket no longer agree - re-slice the unbuilt tickets through plan mode"
     return 1
   fi

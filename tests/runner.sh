@@ -153,6 +153,13 @@ rc="$(run)"
 if [ "$rc" != 0 ] && grep -q 'drift' "$WORK/.out"; then
   ok "a criterion in no ticket stops the run"
 else bad "a criterion in no ticket stops the run" "rc=$rc $(out)"; fi
+if grep -q 'drift' <(tkt 1-one) && [ "$(field 1-one status)" = halted ]; then
+  ok "drift is written into the ticket: a criterion no ticket quotes"
+else bad "drift is written into the ticket: a criterion no ticket quotes" "$(tkt 1-one)"; fi
+# Reported once, not once per ticket in the directory.
+if [ "$(grep -c 'AC-3 is quoted by no ticket' "$WORK/.out")" = 1 ]; then
+  ok "an uncovered criterion is reported once, not once per ticket"
+else bad "an uncovered criterion is reported once, not once per ticket" "$(out)"; fi
 
 workspace
 rm "$WORK/intents/x/02-SOLUTION.md"
@@ -161,6 +168,9 @@ rc="$(run)"
 if [ "$rc" != 0 ] && grep -q 'not there' "$WORK/.out"; then
   ok "a ticket whose solution is gone stops the run"
 else bad "a ticket whose solution is gone stops the run" "rc=$rc $(out)"; fi
+if grep -q 'drift' <(tkt 1-one) && [ "$(field 1-one status)" = halted ]; then
+  ok "drift is written into the ticket: the solution is gone"
+else bad "drift is written into the ticket: the solution is gone" "$(tkt 1-one)"; fi
 
 # --- the ordinary pass
 
