@@ -87,6 +87,15 @@ Every unattended stop is a named halt written into the ticket: `blocked`, `undec
 and `mystery` from a session; `exhausted`, `drift` and `unbuilt` from the runner,
 because in each of those three the party that would report it is in no position to.
 
+### The sync
+
+`./sync.sh` links every directory here that holds a `SKILL.md` into
+`~/.claude/skills`, so editing a skill in this repository is editing the one a session
+reads. Then it removes the links that no longer resolve, because a skill that gets
+renamed leaves one behind and a dangling link fails silently - the agent reads nothing
+and carries on. It only ever removes symlinks: the real directories in there are skills
+synced from elsewhere or written in place, and this is not their owner.
+
 ### The tests
 
 `./test.sh`. Everything the runner does is something that has to be true when a session

@@ -60,6 +60,8 @@ printf '\n'
 "$HERE/tests/runner.sh"     || failed=$((failed + 1))
 printf '\n'
 "$HERE/tests/no-dangling.sh" || failed=$((failed + 1))
+printf '\n'
+"$HERE/tests/sync.sh"        || failed=$((failed + 1))
 
 printf '\n%d passed, %d failed, of the cases in this file\n' "$passed" "$failed"
 [ "$failed" -eq 0 ]
