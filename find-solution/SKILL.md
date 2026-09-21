@@ -1,14 +1,14 @@
 ---
-name: solve
+name: find-solution
 description: Turn a ratified intent into a solution spec - candidates weighed, one chosen, its criteria tagged to the conditions they serve and its costs named. Typed, not inferred.
 disable-model-invocation: true
 ---
 
-# Solve
+# Find a solution
 
 Design several genuinely different answers to an intent, choose one with the user, and write it down thoroughly enough that whoever builds it needs nothing from you.
 
-`SOLVE_FORMAT.md` settles the shape of the spec. This file is what you do.
+`SOLUTION_FORMAT.md` settles the shape of the spec. This file is what you do.
 
 ## Start from the conditions
 
@@ -50,13 +50,13 @@ A small change arrives as a sentence, and writing an intent document for it woul
 
 ## The record
 
-**Write it to `SOLUTION_<TOPIC>.md`, and ask where it goes** if the project has not settled that. The topic is the intent's, so the paper for one change stays findable as a set.
+**Write it to `02-SOLUTION.md`, in the intent's own directory** - `intents/YYYY-MM-DD-<slug>/`, beside the `01-INTENT.md` it answers. The paper for one change stays together, and the numbers say what order it was written in.
+
+Where there is no intent document - the short path above - make that directory yourself and write `02-SOLUTION.md` into it alone. The conditions live in the solution's own `## Intent` section, and nothing downstream needs to know the difference.
 
 **Tag every criterion with the conditions it serves.** Then check the other direction: every condition in the intent is carried by at least one criterion. A condition with no criterion is the intent's most important sentence going unbuilt.
 
 **`Accepted tradeoffs` and `Ruled out` are not optional and not decoration.** A reviewer can find a cost you failed to name; no reviewer can find the better solution you never considered. These two sections are the only thing standing between "this works" and "this was chosen".
-
-Read the `VERDICT_*.md` already in the tree before you write them: they record what the last few solutions said things would cost against what they cost, and that is the only correction available to an estimate.
 
 Write what this costs against what it was chosen over. "Adds some complexity" is a shrug. "Two round trips instead of one, bought for a schema that does not need migrating" is a tradeoff.
 
@@ -72,6 +72,6 @@ Write what this costs against what it was chosen over. "Adds some complexity" is
 
 **Push back once.** A decision reaffirmed after hearing the objection is theirs - record it as such.
 
-**Run `/verify` on the written spec** before you hand it back, in a subagent with a fresh context. It checks the coverage both ways and hunts the cost you did not name - and you are the last person able to notice either, having just decided all of it.
+**Check the spec before you hand it back.** Spawn a subagent with a fresh context and give it three things: `VERIFY.md` from this directory, the path to the solution, and the path to the intent. Nothing else - a reviewer that has your reasoning will read your intentions into the words. It checks the coverage both ways and hunts the cost you did not name, and you are the last person able to notice either, having just decided all of it.
 
-**Stopping here is an ending.** A solution recorded and not built is a whole use of this skill. Say that `/slice` is what turns it into work - name it, because it will not find its own way in - and leave going on to them to ask for.
+**Stopping here is an ending.** A solution recorded and not built is a whole use of this skill. Say that `/plan-solution` is what turns it into work - name it, because it will not find its own way in - and leave going on to them to ask for.
