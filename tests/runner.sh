@@ -313,6 +313,12 @@ else bad "only the frontmatter is rewritten" "$(tkt 1-one)"; fi
 workspace
 plan review review walk
 run > /dev/null
+# `accept-intent` is disable-model-invocation, so the model cannot reach it from
+# prose - the prompt has to *start* with the slash command for the harness to
+# expand it. The stub cannot prove the expansion happens; it pins the shape.
+if grep -q '^/accept-intent ' <(tail -1 "$STUB_CALLS"); then
+  ok "the walk prompt starts with the slash command that reaches the skill"
+else bad "the walk prompt starts with the slash command that reaches the skill" "$(tail -1 "$STUB_CALLS")"; fi
 if grep -q '01-INTENT.md' <(tail -1 "$STUB_CALLS"); then ok "the walk is given the intent"
 else bad "the walk is given the intent" "$(tail -1 "$STUB_CALLS")"; fi
 

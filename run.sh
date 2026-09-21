@@ -273,9 +273,13 @@ printf 'every ticket in %s is done\n' "$TICKETS"
 intent="$(dirname "$TICKETS")/01-INTENT.md"
 if [ -f "$intent" ]; then
   printf 'walking %s\n\n' "$intent"
+  # The prompt starts with the slash command, and has to. `accept-intent` is
+  # `disable-model-invocation`, so it is not among the skills a session can
+  # reach on its own - naming it in a sentence gets a session that improvises
+  # the one stage that asks whether the problem was solved.
   claude -p --permission-mode acceptEdits \
     --allowedTools Bash Edit Write Read Glob Grep Skill TodoWrite \
-    -- "Use /accept-intent on $intent"
+    -- "/accept-intent $intent"
 else
   printf 'no %s, so the walk is skipped: the conditions are in %s and somebody has to read them\n' \
     "$intent" "$(dirname "$TICKETS")/02-SOLUTION.md" >&2
