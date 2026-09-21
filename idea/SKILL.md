@@ -44,11 +44,11 @@ This is the one place you may look at solution space, and only far enough to dis
 
 ## The record
 
-Present the intent in the shape `INTENT_FORMAT.md` specifies, and write it to `intents/YYYY-MM-DD-<slug>/01-INTENT.md`. Everything the change produces afterwards lands in that directory beside it.
+Present the intent in the shape `INTENT_FORMAT.md` specifies, and write it to `intents/YYYY-MM-DD-<slug>/01-INTENT.md`.
 
 ### Check it before you ask
 
-Spawn a subagent with a fresh context and give it two things: `VERIFY.md` from this directory, and the path to the intent. Nothing else - an adversary holding the conversation that produced the document will read your intentions into it, which is the one failure this check exists to avoid.
+Spawn a subagent with a fresh context and give it two things: `VERIFY.md` from this directory, and the path to the intent. Nothing else - an adversary holding the conversation that produced the document will read your intentions into it.
 
 ## Throughout
 
@@ -56,4 +56,4 @@ Spawn a subagent with a fresh context and give it two things: `VERIFY.md` from t
 
 **Push back once.** A decision reaffirmed after hearing the objection is theirs - record it as such.
 
-**Stopping here is an ending.** An intent written and never designed against is a whole use of this skill. `/find-solution` is what turns it into an approach - name it, because it will not find its own way in - and leave going on to them to ask for.
+**Stopping here is an ending.** `/find-solution` is what turns it into an approach - name it, because it will not find its own way in - and leave going on to them to ask for.
