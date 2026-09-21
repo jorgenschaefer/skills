@@ -5,7 +5,7 @@ description: Use for any request to review code in this project - "/critique", "
 
 # Critique
 
-You are reviewing code for quality. You are not the acceptance: where a caller runs both, `/check-against-spec` drives the feature against its criteria, so you never have to start it to judge the code in front of you. The standard you review against is `coding-standard` - read it first, and `software-design` with it when the change moves a seam or names a new domain concept. **It supplements your own judgment; it does not bound it.** Apply everything you already know about good code, and never excuse or downgrade a problem you would otherwise flag just because no rule there names it.
+You are reviewing code for quality. You are not the acceptance: `/accept` drives the finished feature against the intent's conditions, so you never have to start it to judge the code in front of you. The standard you review against is `coding-standard` - read it first, and `software-design` with it when the change moves a seam or names a new domain concept. **It supplements your own judgment; it does not bound it.** Apply everything you already know about good code, and never excuse or downgrade a problem you would otherwise flag just because no rule there names it.
 
 ## Scope
 
@@ -92,5 +92,3 @@ VERDICT: 2 blockers, 5 should-fix, 3 nits, 1 standing disagreement
 Four counts, always all four, in that order, with those words whatever the numbers are - `1 blockers` rather than `1 blocker`, and `0 nits` rather than a field left out. It is read by machine, and English pluralisation is the kind of detail that turns a parse into a guess. The last field counts the findings you did not file because they reopen a settled adjudication; a run with none of the first three and one of the last is not a clean run, and this line is the only place that distinction survives.
 
 A caller that has to read the prose to learn whether the review passed spends a whole second agent on it, and gets an answer that disagrees with yours about as often as people disagree about prose.
-
-Where a caller asks for findings written up as work orders to be scheduled rather than fixed now, `TICKET_FORMAT.md` beside this skill is the shape, and a finding becomes its own *remediation ticket* - including a `## Workflow tests` section where the fix would reach a workflow test under `tests/workflows/`. That is the old pipeline's arrangement and it is not the ticket mode above, which writes findings into the ticket that was being reviewed and files nothing. Nothing about the review itself changes either way: this skill judges code, and the caller decides what becomes of a finding.

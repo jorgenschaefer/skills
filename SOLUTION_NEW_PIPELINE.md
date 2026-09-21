@@ -102,8 +102,8 @@ against the first.
   claim or release their own work.
 - **A condition turns out to be uncheckable.** The verdict marks it `unverifiable` and
   routes back to (a). It is a defect in the intent, not in the work.
-- **A topic is dropped.** `/accept --abandon` waives the every-ticket-done check, and
-  only that one, and records why.
+- **A topic is dropped.** `./accept-run.sh --abandon` waives the every-ticket-done
+  check, and only that one, and records why.
 
 ## Non-goals
 

@@ -1,6 +1,6 @@
 # ADR format
 
-The shape of an architecture decision record: one choice, the alternatives that were live when it was made, and what it costs. `/to-solution` proposes them while a change is designed and `/handover` proposes the ones a build only reached with the code in front of it; `/spec-to-tickets` and `/critique` read them.
+The shape of an architecture decision record: one choice, the alternatives that were live when it was made, and what it costs. `/software-design` says which decisions earn one and puts the decision to a person; `/slice` writes the ratified record at plan exit, while the argument for it is still in context. `/critique` reads them, and so does anyone planning the next change.
 
 An ADR is permanent-tier. It outlives the feature that produced it and the spec that carried it, so it is never written autonomously - the decision and a recommendation are put to the user, and the ADR exists only once they say yes to it. What does not clear that bar is an implementation decision and belongs in the spec, where it is deleted with the rest of the paper on acceptance.
 

@@ -335,8 +335,8 @@ written at (c), while the argument that produced them is still in context; what 
 lost, so it is the moment to ask.
 
 **Abandonment is the same act with one check waived.** A topic dropped without being
-built has tickets that are not done; `/accept --abandon` skips that check and only that
-one, writes a verdict of `abandoned` with the reason, and deletes the paper. An intent
+built has tickets that are not done; `./accept-run.sh --abandon` skips that check and
+only that one, writes a verdict of `abandoned` with the reason, and deletes the paper. An intent
 nobody pursued is information about the intent, and the verdict is the only trace that
 survives it.
 
@@ -706,7 +706,7 @@ that the intent is unsatisfiable as written, and that too is a person's call.
 
 ### Abandonment
 
-A topic can be dropped mid-run. It is `/accept --abandon`, described under (e): the
+A topic can be dropped mid-run. It is `./accept-run.sh --abandon`, described under (e): the
 same deletion with the every-ticket-done check waived, and a verdict of `abandoned`
 recording why. Deciding to abandon is a person's; nothing in the runner may conclude
 it.
