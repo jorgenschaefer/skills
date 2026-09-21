@@ -164,8 +164,14 @@ Never write \`status: doing\` or \`status: done\`. Both ends belong to the runne
     # tests halts as if the work were impossible. The first live run of this
     # script halted exactly that way. So the tools a build needs are named here
     # rather than left to whatever the operator has in settings.
+    #
+    # `Task` and `Agent` are the subagent tool under its two names, and they are
+    # what makes the review real: `/implement` reviews its own diff by spawning
+    # `critique` in a session that did not write it, and there is no review pass
+    # here to fall back on. Without them the build declines the spawn and every
+    # ticket reaches `done` unreviewed.
     out="$(claude -p --permission-mode acceptEdits \
-             --allowedTools Bash Edit Write Read Glob Grep Skill TodoWrite \
+             --allowedTools Bash Edit Write Read Glob Grep Skill Task Agent TodoWrite \
              -- "$prompt" 2>&1)"; rc=$?
     printf '%s\n' "$out"
     case "$out" in
@@ -278,7 +284,7 @@ if [ -f "$intent" ]; then
   # reach on its own - naming it in a sentence gets a session that improvises
   # the one stage that asks whether the problem was solved.
   claude -p --permission-mode acceptEdits \
-    --allowedTools Bash Edit Write Read Glob Grep Skill TodoWrite \
+    --allowedTools Bash Edit Write Read Glob Grep Skill Task Agent TodoWrite \
     -- "/accept-intent $intent"
 else
   printf 'no %s, so the walk is skipped: the conditions are in %s and somebody has to read them\n' \
