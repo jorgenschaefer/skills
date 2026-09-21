@@ -1,6 +1,7 @@
 ---
 name: slice
-description: Use when planning how to carry out a change to this codebase - a feature, a bug fix, a refactor, a migration - so that the work can be built. Cuts it into vertical slices, each independently buildable and testable, and writes them as tickets. Not for planning research, investigation, a meeting, a rollout, or any work that does not change code.
+description: Cut a settled solution into the tickets that build it - vertical slices, each independently buildable and testable, worked out in plan mode and written once the slicing is approved. Typed, because a stage reached only by description is a stage that stops being reached.
+disable-model-invocation: true
 ---
 
 # Slice
@@ -8,6 +9,15 @@ description: Use when planning how to carry out a change to this codebase - a fe
 Turn a settled solution into the tickets that build it. `SLICE_FORMAT.md` settles the shape of a ticket; this file is what you do.
 
 **Where there is no solution yet, there is nothing to slice.** A request to plan a change that has not been designed is `/solve`'s, and handing it tickets derived from your own guess is the failure the whole chain exists to prevent. Say so and stop.
+
+## Why this one is typed
+
+Its description was measured twice: about three firings in four in a project holding
+only this skill, and none at all in five runs in a project holding the twelve this
+pipeline ships. What beat it was not a rival skill but the model deciding no skill was
+needed. So the pipeline does not rely on being found here - `/solve` names this stage
+when it finishes, and a person can type it. Entering plan mode without it still gives an
+ordinary plan, which is the floor and is fine.
 
 ## The order matters, because plan mode cannot write
 
@@ -41,6 +51,10 @@ Drift, or a verdict routing a lost criterion back, lands here against a director
 - **It goes back through plan mode and its approval**, because writing tickets is what that approval authorises. Repair `after:` against the committed tickets as part of the plan.
 
 ## Throughout
+
+**Hand off when the tickets are written.** `./run.sh tickets/<topic>` drives them with
+nobody watching; a small change is just as well built by working through them yourself.
+Either way the tickets are the unit, and nothing merges until the verdict.
 
 **Every criterion lands in some ticket, and every ticket claims some criterion.** Both directions, before you present - nothing checks the proposal but you and `/verify`, because there are no files yet to check.
 

@@ -465,31 +465,3 @@ over the large one: name what else binds, rather than having `/spec-to-tickets`
 copy the design pointer into every ticket, which would put the ticket back in
 the business of restating what it is supposed to locate.
 *Touches: implement/SKILL.md's `## Before starting`.*
-
-## /slice does not fire when the other skills are present
-
-Measured twice. In an empty project with one skill, the description fires on natural
-planning requests about three times in four. In a project holding the twelve skills this
-pipeline ships, across five runs of three prompts — "Plan how to add rate limiting to
-the API", "I want to refactor the payment module. Plan it.", "We need a new concept - a
-Subscription that spans several Accounts. Plan how to add it." — it fired **zero**
-times. It fires on "Cut this solution into tickets so it can be built", which is the
-pipeline's own vocabulary, and which nobody outside the pipeline would type.
-
-What did fire: `idea` on the new-concept prompt and on an idea stated as one, `critique`
-and `coding-standard` on a review request, `coding-standard` on a request that named the
-conventions. Those are right. The gap is stage (c) specifically.
-
-This falsifies the claim `cost:C-3` rests on — one way in, with the slicing discovered
-rather than typed. The floor still holds: a miss yields an ordinary plan and no ticket
-directory, so nothing silently half-happens. But "no change is too small for the
-process" is not true of a process whose middle stage nobody reaches.
-
-Three answers, none of them free. Make `/slice` typed like `/solve` and `/accept`, and
-drop the claim to "two ways in, both deliberate". Rewrite the description again and
-re-measure, knowing that what beat it was not a rival skill but the model deciding no
-skill was needed. Or have `/solve` end by naming the next step, so the slicing is
-reached from the stage before it rather than from a description.
-
-*Touches: slice/SKILL.md, INTENT_PROCESS_COST.md's C-3, NEW_PIPELINE_IDEA.md's
-discovery section.*

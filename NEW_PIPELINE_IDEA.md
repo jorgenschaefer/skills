@@ -6,10 +6,12 @@ adversarial agent that checks that artifact against what it was given. Stage (e)
 no adversary because it *is* one.
 
 The pipeline is not a track you enter. Stages (c) and (d) happen inside the harness
-modes you would already be using — plan mode and auto mode — with their skills
-discovered by description rather than invoked by name. The mode is a *correlation*,
-not a scoping mechanism: nothing lets a skill fire on "the user is in plan mode", only
-on what the request looks like. What the arrangement buys is the design's most
+modes you would already be using — plan mode and auto mode. The mode is a
+*correlation*, not a scoping mechanism: nothing lets a skill fire on "the user is in
+plan mode", only on what the request looks like — and measurement showed that is not
+enough to reach stage (c) at all, so `/slice` is typed and `/solve` names it. What is
+discovered is the door (`/idea`), the coding standard, the design skill, and
+`/critique`; what is typed is every stage a run must not silently skip. What the arrangement buys is the design's most
 important property: **every stage degrades to the unaided harness.** Load no skills at
 all and plan mode plus auto mode still produce a sane result on a quick bug fix; the
 skills only add. A pipeline you can forget to invoke is a pipeline that gets
@@ -378,12 +380,14 @@ does not get answered by the pipeline at all — it becomes the interrupt at (b)
 names are reused where the act is the same, but every one of these is a new skill
 against a new set of artifacts; nothing is a drop-in rename.
 
-They divide by how they are reached. **`/idea`, `/solve` and `/accept` are typed** —
-each opens or closes something a person is accountable for, and that should be
-deliberate rather than inferred. **`/slice`, the software-design skill, the coding
-standard, `/implement` and `/critique` are discovered** from the work already
-happening, though `/critique` is also typed constantly, because reviewing a branch is
-a thing people want on its own.
+They divide by how they are reached, and the division was settled by measurement rather
+than by taste. **`/solve`, `/slice`, `/verify` and `/accept` are typed** — three of them
+open or close something a person is accountable for, and `/slice` is typed because it
+was measured never firing when the other skills are present. Each stage names the next,
+so the chain is walked by hand and not by hope. **`/idea`, the software-design skill,
+the coding standard, `/implement` and `/critique` are discovered**: `/idea` is the door
+and was measured firing on an idea stated as one, and `/critique` is also typed
+constantly, because reviewing a branch is a thing people want on its own.
 
 Two more skills exist that are not stages, because the knowledge they carry is
 consumed at moments rather than in a sequence:
