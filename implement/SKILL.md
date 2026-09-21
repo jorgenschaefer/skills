@@ -7,7 +7,7 @@ description: Write, build or change software - a feature, a fix, a refactor. Fir
 
 Build the thing, to the standard, and have it reviewed by someone who did not build it.
 
-`CODING_STANDARDS.md` is what the software has to look like. Read it. Its `## Shaping the change` applies when the change introduces a concept the codebase has no name for or moves a boundary between the ones it does; its `## Writing the code` applies always; its `## How it gets written` is the loop below, and is not restated here.
+`CODING_STANDARDS.md` is what the software has to look like. Read it whole and apply all of it - it is one page, and no part of it is for somebody else. It says how the work is ordered as well as how the code ends up, and neither is restated here.
 
 ## Before you write anything
 
@@ -15,11 +15,11 @@ Build the thing, to the standard, and have it reviewed by someone who did not bu
 
 **Know what has to be true when you are finished**, specifically enough that you could hand it to someone else as the test of whether it worked. Where the request does not settle something that changes what gets built, ask. Where it settles it badly, say so once and build it.
 
-**Find the project's verification command** - the one that runs the tests, the types and the linter. Where there is none, run what exists and say so.
+**Find the project's verification command** - the one that runs the tests, the type check and the linter. Where there is none, run what exists and say so.
 
 ## Build it
 
-Follow `## How it gets written`: a failing test first, always, for every piece of behaviour this change is meant to have. Then the project's checks, and report the real result - if you cannot run them, say so rather than assuming.
+Build it to the standard, in the order the standard says the work happens. Then the project's checks, and report the real result - if you cannot run them, say so rather than assuming.
 
 ## Review it in a session that did not write it
 

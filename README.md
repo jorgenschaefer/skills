@@ -58,10 +58,9 @@ something you ask for.
 
 ### The standard
 
-`CODING_STANDARDS.md` is what good software looks like here and how it gets written, in
-four parts ordered by when a reader needs them: shaping the change, writing the code,
-how it gets written, and what does not belong. It was four skills, read at different
-moments by different readers, which meant four places for a rule to drift.
+`CODING_STANDARDS.md` is what good software looks like, and it is written to hold of any
+project rather than only this one. It was four skills, read at different moments by
+different readers, which meant four places for a rule to drift.
 
 `implement`, `critique` and `plan-solution` each hold an identical copy, because a skill
 installs alone and cannot reach a sibling's directory. **An edit to one is an edit to

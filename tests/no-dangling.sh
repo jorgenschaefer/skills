@@ -13,11 +13,13 @@
 # documents beside them, and README.md. The intents and the ticket records are
 # history and name retired things on purpose.
 #
-# What this cannot see: a reference to a *section* of another document. Resolving
-# one means knowing which document the section is supposed to be in, which is
-# often a different skill's directory and nowhere stated - and a check that just
-# grepped for `## Something` would fire on every heading in the repository. Those
-# are read by a person, and by `skill-review`.
+# Sections are checked the other way round. Naming a section of a document was
+# only ever done to CODING_STANDARDS.md, and that is now the thing being
+# forbidden rather than resolved, so there is nothing left to resolve. A section
+# of some other document - an intent's `## Done when` - names a document the
+# skill writes or reads; which one it means is often nowhere stated, and
+# grepping for it would fire on every heading in the repository. Those are read
+# by a person, and by `skill-review`.
 
 set -uo pipefail
 
@@ -27,7 +29,14 @@ ROOT="$HERE/.."
 # shellcheck source=lib.sh
 . "$HERE/lib.sh"
 
-dangling="" docs=0 refs=0 missing=""
+dangling="" docs=0 refs=0 missing="" coupled="" sectokens=0
+
+# The standard is read whole or not at all. A document that names one of its
+# sections is telling a reader which part to apply, which is the same as telling
+# them the rest is optional - and it pins the wording of a heading it does not
+# own. The three copies are identical and `test.sh` is what holds them so, so
+# whichever ones exist give the same answer.
+standard="$(cat "$ROOT"/*/CODING_STANDARDS.md 2>/dev/null | grep '^#\{1,\} ' | sort -u)"
 
 # One list for both checks: the narrower of the two used to miss a format
 # document telling someone to run a script that was gone.
@@ -59,6 +68,18 @@ while IFS= read -r doc; do
     [ -f "$ROOT/$script" ] || missing+="$from -> $script"$'\n'
   done < <(grep -o '`\.\{0,1\}/\{0,1\}[a-z][a-z0-9-]*\.sh`' "$doc" \
              | tr -d '`' | sed 's|^\./||' | sort -u)
+
+  # And no section of the standard, named anywhere at all. A section of some
+  # other document - an intent's `## Done when`, a ticket's `## Record` - is a
+  # skill specifying a document it writes or reads, which is its own business.
+  while IFS= read -r tok; do
+    [ -n "$tok" ] || continue
+    sectokens=$((sectokens + 1))
+    heading="${tok#\`}"; heading="${heading%\`}"
+    ! printf '%s\n' "$standard" | grep -Fxq "$heading" \
+      || coupled+="$from -> $heading"$'\n'
+  done < <(grep -oE '`#+ [^`]+`' "$doc" | sort -u)
+
 done < <(find "$ROOT" -name SKILL.md -o -name '*_FORMAT.md' -o -name README.md \
            | grep -v '/\.git/' | sort)
 
@@ -70,9 +91,14 @@ done < <(find "$ROOT" -name SKILL.md -o -name '*_FORMAT.md' -o -name README.md \
   && ok "every script a document names is there" \
   || bad "every script a document names is there" "$missing"
 
-# Both checks above are "no failures found", which is what an empty tree also
+[ -z "$coupled" ] \
+  && ok "no document names a section of CODING_STANDARDS.md" \
+  || bad "no document names a section of CODING_STANDARDS.md" "$coupled"
+
+# The checks above are all "no failures found", which is what an empty tree also
 # looks like.
 expect_counted "$docs" "documents"
 expect_counted "$refs" "references"
+expect_counted "$sectokens" "named sections"
 
 finish
