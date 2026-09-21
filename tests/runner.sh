@@ -96,6 +96,21 @@ rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" bash "$RUNNER" tickets/nope >"$WO
 [ "$rc" != 0 ] && ok "it refuses a ticket directory that is not there" \
                || bad "it refuses a ticket directory that is not there" "$(out)"
 
+# A repository with nothing committed yet is inside a work tree and has a branch
+# name, so both refusals above pass it - and there is no HEAD to compare a build
+# against, which would make every build look like it moved nothing.
+workspace
+rm -rf "$WORK/.git"
+git -C "$WORK" init -q -b topic
+git -C "$WORK" config user.email t@t; git -C "$WORK" config user.name t
+plan "implement review"
+rc="$(run)"
+[ "$rc" != 0 ] && grep -q 'no commits' "$WORK/.out" \
+  && ok "it refuses a repository with no commits" \
+  || bad "it refuses a repository with no commits" "rc=$rc $(out)"
+[ ! -s "$STUB_CALLS" ] && ok "a repository with no commits launches nothing" \
+                       || bad "a repository with no commits launches nothing" "$(cat "$STUB_CALLS")"
+
 # --- the drift pre-flight, in both directions
 
 workspace
@@ -153,6 +168,35 @@ run > /dev/null
   && ok "the attempt ceiling halts the ticket as exhausted" \
   || bad "the attempt ceiling halts the ticket as exhausted" "$(field 1-one status) $(cat "$WORK/tickets/t/1-one.md" | tail -3)"
 
+# --- a build that committed nothing
+#
+# `review` is a session's account of itself, and a session that wrote no code
+# can still write it. The commit is the part that cannot be claimed, so the
+# runner believes the one and checks the other.
+
+workspace
+plan "implement claim-only" "implement review" "critique clean" "implement review" "critique clean"
+run > /dev/null
+[ "$(field 1-one status)" = done ] \
+  && ok "a ticket whose session committed nothing is picked up again" \
+  || bad "a ticket whose session committed nothing is picked up again" "$(field 1-one status)"
+[ "$(field 1-one attempts)" = 2 ] \
+  && ok "a session that committed nothing still spends an attempt" \
+  || bad "a session that committed nothing still spends an attempt" "$(field 1-one attempts)"
+
+workspace
+plan "implement claim-only" "implement claim-only"
+rc="$(run)"
+[ "$rc" != 0 ] && [ "$(field 1-one status)" = halted ] \
+  && ok "a build that never commits halts once the budget is spent" \
+  || bad "a build that never commits halts once the budget is spent" "rc=$rc status=$(field 1-one status)"
+grep -q 'unbuilt' "$WORK/tickets/t/1-one.md" \
+  && ok "the halt is named for what happened, not for the budget" \
+  || bad "the halt is named for what happened, not for the budget" "$(tail -3 "$WORK/tickets/t/1-one.md")"
+grep -q 'committed nothing' "$WORK/tickets/t/1-one.md" \
+  && ok "and says the session claimed a build and committed nothing" \
+  || bad "and says the session claimed a build and committed nothing" "$(tail -3 "$WORK/tickets/t/1-one.md")"
+
 # --- review findings send it back, bounded
 
 workspace
@@ -161,6 +205,17 @@ run > /dev/null
 [ "$(field 1-one reviews)" = 1 ] && [ "$(field 1-one status)" = done ] \
   && ok "findings send the ticket back and it can still finish" \
   || bad "findings send the ticket back and it can still finish" "reviews=$(field 1-one reviews) status=$(field 1-one status)"
+
+# A rework commits onto the commit the first pass left, which is a HEAD that
+# moved for the second time rather than one that never moved.
+workspace
+plan "implement review" "critique findings" "implement review" "critique clean" \
+     "implement review" "critique clean"
+rc="$(run)"
+[ "$rc" = 0 ] && ! grep -q '^## Halt' "$WORK/tickets/t/1-one.md" \
+  && ok "a rework that commits again is not read as a build that committed nothing" \
+  || bad "a rework that commits again is not read as a build that committed nothing" \
+         "rc=$rc $(tail -3 "$WORK/tickets/t/1-one.md")"
 
 workspace
 plan "implement review" "critique findings" "implement review" "critique findings" "implement review" "critique findings"
