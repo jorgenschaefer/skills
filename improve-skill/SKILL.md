@@ -1,11 +1,11 @@
 ---
 name: improve-skill
-description: Cut an existing agent skill down to what changes what the agent does - "improve this skill", "tighten this SKILL.md", "this skill is too long", "make this skill more concise", "clean up my skill". Use it on any skill that reads as bloated, repetitive or vague, and on a skill you have just finished writing. It edits the file and leaves the change uncommitted, so the author reads a diff rather than a report.
+description: Cut an existing agent skill down to what changes what the agent does - "improve this skill", "tighten this SKILL.md", "this skill is too long", "make this skill more concise", "clean up my skill", "my skill never triggers", "fix this skill's description". Use it on any skill that reads as bloated, repetitive or vague, on one that never fires when it should, and on a skill you have just finished writing. It edits the file and leaves the change uncommitted, so the author reads a diff rather than a report.
 ---
 
 # Improve Skill
 
-Cut the skill to what changes what the agent does. What you would *add* is a proposal in the report, never an edit - so the file comes out shorter every time, and a skill that was already tight comes back nearly untouched instead of quietly growing a section nobody asked for.
+Cut the skill to what changes what the agent does. What you would *add* is a proposal in the report, never an edit, and a skill that was already tight comes back nearly untouched.
 
 Every edit is a deletion, or a replacement by something shorter - a clause out of the middle of a sentence counts, and is usually where the most is available. That is the whole of your licence over the file.
 
@@ -13,9 +13,7 @@ A replacement is legitimate when nobody can name an instruction the short versio
 
 Never change `name:` or the directory name. People have that word in their prompts and their other skills.
 
-Every file the skill carries is in scope, not just SKILL.md. Where one of them exists word for word under another skill it is a copy kept identical by hand, because a skill installs alone and cannot reach a sibling's directory. Cut it, then write the result over every other holder in the same change - a copy that drifts is worse than the sentence you tightened. Where the other holders are not in front of you, name the file you changed and say it has copies, so whoever can see them finishes it.
-
-The other holders are not out of scope. They are the same file, and improving a skill that carries it means improving it - a shared file left alone because touching it "also affects the siblings" is the one file in the skill that never gets better.
+Every file the skill carries is in scope, not just SKILL.md. Where one of them exists word for word under another skill it is a copy kept identical by hand, because a skill installs alone and cannot reach a sibling's directory. Cut it, then write the result over every other holder in the same change - a copy that drifts is worse than the sentence you tightened. Where the other holders are not in front of you, name the file you changed and say it has copies, so whoever can see them finishes it. The other holders are not out of scope: a shared file left alone because touching it "also affects the siblings" is the one file in the skill that never gets better.
 
 ## Read it whole first
 
@@ -57,7 +55,7 @@ Where you cannot tell from the text whether a line is load-bearing, don't guess 
 
 Read the samples rather than counting them. Converged samples mean the wording binds; five readings across five samples mean it does not, and the fix is a tighter form, not more words.
 
-This costs real time, so spend it only on the cuts you would otherwise be guessing at. Everything else you can settle by reading.
+This costs real time, so spend it only on the cuts you would otherwise be guessing at.
 
 ## Review in a session that did not rewrite it
 
@@ -67,13 +65,13 @@ Spawn a subagent with a fresh context. Hand it the original text, your rewrite, 
 - Every difference in what the skill will do that your declared list does not name.
 - Any passage the rewrite made harder to follow.
 
-Then fix what it found, and check that every file the skill still points at exists and every pointer still fires.
+Then put back every instruction it found missing, or, where you meant the loss, name it in the behaviour list - one or the other for each finding, with nothing argued away. Check that every file the skill still points at exists and every pointer still fires.
 
 Run the project's checks and report what they said. Where you cannot find them, say so. The pull here is to decide from the outside that they do not apply to you - that the suite is about the real repository rather than this copy, that the environment is not set up, that nothing you touched could have broken them. Run them and find out; the guess is free to make and wrong about half the time.
 
 ## Report
 
-- What it weighed before and after, in characters. Lines understate a pass that worked mostly inside them, and a rewrite that removed no whole line can still be a tenth shorter. It is shorter, or you have something to explain.
+- What it weighed before and after, in characters. Lines understate a pass that worked mostly inside them. It is shorter, or you have something to explain.
 - **What you changed about its behaviour**, as a list. Scope, a judgment call, the output shape, when it fires. This is the author's territory and a behaviour change smuggled in as cleanup is the outcome this whole skill exists to avoid - when you cannot tell which kind an edit was, list it.
 - **What you would add**, as wording ready to paste. Say what each one fixes.
 - What you tested, and what you cut on reading alone.
