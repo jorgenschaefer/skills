@@ -2,9 +2,9 @@
 solution:  SOLUTION_NEW_PIPELINE.md
 satisfies: AC-14
 after:     9-first-run
-status:    review
+status:    done
 attempts:  1
-reviews:   0
+reviews:   1
 ---
 
 ## Build
@@ -52,7 +52,7 @@ Deleting the paper of this run. `/accept` does that on the verdict, ticket 8.
 ## Record
 
 `tests/no-dangling.sh`, 2 cases, invoked by `tests/run.sh`
-(8 + 18 + 22 + 32 + 11 + 27 + 37 + 24 + 3 + 11 + 2, green).
+(9 + 18 + 22 + 32 + 10 + 27 + 37 + 24 + 3 + 11 + 4, green).
 
 **AC-14's check is "nothing invocable remains", so that is what was written, before
 anything was deleted.** Every `SKILL.md`, every format document beside one, and
@@ -92,3 +92,53 @@ everything that is judgement is a skill.
 **What stays.** `idea` and `critique`, reshaped; `git-commit-message`, `repo-overview`,
 `improve-skill`, `cleanup-repo`, `upgrade-dependencies`, `ubiquitous-language-init`; and
 `accept-run.sh`, which ticket 8 kept as a script for the reason the runner is one.
+
+## Findings
+
+One review round, twelve findings plus a minor. Eleven taken, one reported.
+
+**AC-14 was not met, and the check written to prevent exactly this missed it.**
+`improve-skill` — on the stays list — still told an agent that `loop.sh`'s transcripts
+are the evidence for improving a skill. The guard required a `./` prefix, so
+`` `./loop.sh` `` would have failed it and `` `loop.sh` ``, which is what was actually
+written, passed. The pattern now matches both, and it found the leftover the moment it
+was broadened.
+
+The section had no replacement as written: `run.sh` keeps no transcripts. It now points
+at what does survive a run — a halted ticket's own words, a `## Findings` that recurs
+across tickets, a `## Record` naming the same awkward test shape twice — and says to be
+slower to remove a line when none of that exists, because nothing then establishes that
+a run went right without it.
+
+**The guard could also pass against an empty tree**, which is the hole every other suite
+in this repository closes deliberately and this one did not, despite sourcing the
+library that exists for it. It counts documents and references now. And its two checks
+walked different file lists, so a format document telling someone to run a missing
+script was invisible.
+
+**An invariant had been hollowed out by the deletion without saying so.** Every format
+document now has exactly one copy, so the byte-identical check skipped all six and
+printed nothing — a green suite where a reader would assume the invariant held. It now
+prints one case saying no format is shared, which is the true state.
+
+**A live routing rule still named workflow tests**, a concept the old pipeline took with
+it, in the same file this commit edited to remove a different mention of them.
+
+**The Record's own arithmetic was wrong** — the fourth suite reports 10, not 11.
+
+**Three in the README:** the diagram omitted `/verify`, the one adversary the paragraph
+below it calls out; the only statement of how to run the tests went with the rewrite;
+and removed catalogue entries left blank lines splitting one list into five.
+
+**The parking lot was the largest surviving description of the dead pipeline**, and
+`/idea` reads it as evidence at the start of the next change. Its own header pointed at
+`/discovery`, retired before this run began. The header is corrected and the entries are
+marked as history rather than deleted: an observation about why something was awkward
+outlives the thing it was about, and several of them describe problems the replacement
+may well share.
+
+**Reported, not fixed.** `.claude/skills/` on this machine — gitignored, so outside any
+commit — holds five broken symlinks to retired skills and none for `solve`, `slice`,
+`verify`, `accept`, `software-design` or `coding-standard`. If that is where this
+pipeline is installed, the new skills are not installed and the retired ones still are.
+That is the operator's to change, not a commit's.

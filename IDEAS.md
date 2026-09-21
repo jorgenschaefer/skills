@@ -2,12 +2,19 @@
 
 The parking lot. Work worth doing that no current feature covers, each with
 enough context to resurrect it: the problem, why it is not being built now, and
-what it would touch. `/discovery` reads this at the start of a feature and
+what it would touch. `/idea` reads this when a change is being worked out and
 raises what fits, because a parking lot nobody revisits is a slower way of
 forgetting.
 
 The build list that rebuilt this pipeline lived here until it was finished. It
 is in git history at commit `cfbd959` and the twenty commits before it.
+
+**Entries written before 2026-09-21 concern the pipeline retired in `c7f8990`.** They
+name `loop.sh`, `accept.sh`, `/spec-to-tickets`, `/check-against-spec`,
+`/implement-ticket` and `/handover`, none of which exist now. They are kept because an
+observation about why something was awkward outlives the thing it was about, and
+several describe problems the replacement may well share - but they are history. Read
+them as evidence about the past, not as work waiting.
 
 ---
 

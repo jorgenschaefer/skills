@@ -22,6 +22,11 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 
 # --- the skills' shared files ---------------------------------------------------
 
+# After the old pipeline was retired every format document has exactly one copy,
+# so the loop below skips them all and prints nothing. A section that asserts
+# nothing should say so rather than look green.
+shared=0
+
 # A format document two skills both need is copied into each, because a skill
 # installs alone and cannot reach into a sibling's directory. Identical is the
 # whole point, and an n-way edit is easy to make (n-1)-way by accident.
@@ -58,6 +63,7 @@ done
 for name in "${names[@]}"; do
   copies=("$HERE"/../*/"$name")
   [ "${#copies[@]}" -ge 2 ] || continue
+  shared=$((shared + 1))
   [ "$(md5sum "${copies[@]}" | awk '{print $1}' | sort -u | wc -l)" = 1 ] \
     && ok "every copy of $name is byte-identical" \
     || bad "every copy of $name is byte-identical" "$(md5sum "${copies[@]}")"
@@ -87,6 +93,9 @@ case $asks_rc in
   0) bad "no skill asks a build or an acceptance to run a mutation testing tool" "$asks" ;;
   *) bad "the check for a returning mutation gate could not run" "grep exited $asks_rc" ;;
 esac
+
+[ "$shared" -gt 0 ] \
+  || ok "no format document is held by two skills, so there is nothing to keep identical"
 
 # ------------------------------------------------------------------------------
 

@@ -4,8 +4,7 @@
 # section, and the two guards every such suite needs - that the document says
 # what the checker expects, and that the tree had something to check at all.
 #
-# Sourced, never run. `tests/intent-format.sh`, `tests/solution-format.sh` and
-# `tests/ticket-format.sh` are the callers.
+# Sourced, never run. Every suite is a caller, including `tests/run.sh` itself.
 
 passed=0 failed=0
 

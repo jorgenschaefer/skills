@@ -16,7 +16,11 @@ Operate on the one skill the user names (or the current skill directory). Read a
 
 ## Read the runs
 
-If `loop.sh` runs the skill you are improving, every run it made left its transcripts under `${XDG_STATE_HOME:-~/.local/state}/loop`, one directory per run and accumulating. They are the only evidence of how the skill behaved rather than how it reads, so let them set the agenda: an instruction stepped around, a halt reason that recurs, a finding filed run after run, a section no run ever reached. A run that went right is grounds for *removing* a line – the one thing reading the prose can never establish. Where no run exercised the skill, say so and work from the text.
+Evidence of how a skill behaved, rather than how it reads, is the only thing that can tell you a line is not needed - and the pipeline no longer keeps any. `run.sh` writes no transcripts; what survives a run is the tickets, their `## Record` and `## Findings`, and the verdict, until acceptance deletes all but the verdict.
+
+So read what is still there, and say which it was. A halted ticket names what stopped a session in its own words. A `## Findings` that recurs across tickets is a rule being stepped around. A `## Record` that names the same awkward test shape twice is a skill asking for something the project cannot give. Git history holds the rest, including the paper that was deleted.
+
+Where none of that exists for the skill in front of you, say so and work from the text - and be slower to remove a line, because nothing here can establish that a run went right without it.
 
 ## Evaluate against these lenses
 

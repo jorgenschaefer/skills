@@ -21,9 +21,14 @@ ROOT="$HERE/.."
 # shellcheck source=format-lib.sh
 . "$HERE/format-lib.sh"
 
-dangling=""
+dangling="" docs=0 refs=0 missing=""
+
+# One list for both checks: the narrower of the two used to miss a format
+# document telling someone to run a script that was gone.
 while IFS= read -r doc; do
+  docs=$((docs + 1))
   from="${doc#$ROOT/}"
+
   # `/name` and `name/SOMETHING.md` in backticks: the two shapes these documents
   # use to send a reader somewhere.
   while IFS= read -r ref; do
@@ -32,12 +37,22 @@ while IFS= read -r doc; do
     # slash or a placeholder segment means the document is describing a path
     # rather than sending a reader to one.
     case "$ref" in */|*NN*|*'<'*) continue ;; esac
+    refs=$((refs + 1))
     case "$ref" in
       */*) [ -e "$ROOT/$ref" ] || dangling+="$from -> $ref"$'\n' ;;
       *)   [ -d "$ROOT/$ref" ] || dangling+="$from -> /$ref"$'\n' ;;
     esac
-  done < <(grep -o '`/[a-z][a-z-]*`\|`[a-z][a-z-]*/[A-Za-z_.-]*`' "$doc" \
+  done < <(grep -o '`/[a-z][a-z0-9-]*`\|`[a-z][a-z0-9-]*/[A-Za-z0-9_.-]*`' "$doc" \
              | tr -d '`' | sed 's|^/||' | sort -u)
+
+  # And the scripts. With or without the `./`: the leftover that got through
+  # this check the first time was written `loop.sh`, not `./loop.sh`.
+  while IFS= read -r script; do
+    [ -n "$script" ] || continue
+    refs=$((refs + 1))
+    [ -f "$ROOT/$script" ] || missing+="$from -> $script"$'\n'
+  done < <(grep -o '`\.\{0,1\}/\{0,1\}[a-z][a-z0-9-]*\.sh`' "$doc" \
+             | tr -d '`' | sed 's|^\./||' | sort -u)
 done < <(find "$ROOT" -name SKILL.md -o -name '*_FORMAT.md' -o -name README.md \
            | grep -v '/\.git/' | sort)
 
@@ -45,14 +60,13 @@ done < <(find "$ROOT" -name SKILL.md -o -name '*_FORMAT.md' -o -name README.md \
   && ok "no live instruction points at something that is not there" \
   || bad "no live instruction points at something that is not there" "$dangling"
 
-# And the scripts a document tells someone to run.
-missing=""
-while IFS= read -r script; do
-  [ -f "$ROOT/$script" ] || missing+="$script"$'\n'
-done < <(grep -rho '`\./[a-z-]*\.sh`' "$ROOT"/*/SKILL.md "$ROOT"/README.md 2>/dev/null \
-           | tr -d '`' | sed 's|^\./||' | sort -u)
 [ -z "$missing" ] \
-  && ok "every script a document tells someone to run is there" \
-  || bad "every script a document tells someone to run is there" "$missing"
+  && ok "every script a document names is there" \
+  || bad "every script a document names is there" "$missing"
+
+# Both checks above are "no failures found", which is what an empty tree also
+# looks like.
+expect_counted "$docs" "documents"
+expect_counted "$refs" "references"
 
 finish
