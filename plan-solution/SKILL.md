@@ -47,8 +47,6 @@ thing to discover mid-build.
 
 **Every criterion lands in some slice, and every slice claims some criterion.** Both directions, before you present anything.
 
-**Say what you are not slicing.** A solution with parts you are deliberately leaving for later is a plan; say which, so the coverage gap is a decision rather than an oversight.
-
 ## Then the count decides the path
 
 **One slice: plan it in plan mode, and write no ticket.**
