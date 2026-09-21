@@ -1,6 +1,6 @@
 ---
 name: upgrade-dependencies
-description: Upgrade npm dependencies, or add a new one, safely and incrementally - keeping the project green after every step.
+description: Upgrade npm dependencies safely and incrementally - keeping the project green after every step.
 disable-model-invocation: true
 ---
 

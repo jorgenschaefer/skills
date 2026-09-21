@@ -13,12 +13,11 @@
 # documents beside them, and README.md. The intents and the ticket records are
 # history and name retired things on purpose.
 #
-# What this cannot see: a reference to a *section* of another document, the way
-# `find-solution/SKILL.md` gates on an intent's `## Ratified`. Resolving one
-# means knowing which document the section is supposed to be in, which is a
-# different skill's directory and nowhere stated - and a check that just grepped
-# for `## Something` would fire on every heading in the repository. Those are
-# read by a person, and by `skill-review`.
+# What this cannot see: a reference to a *section* of another document. Resolving
+# one means knowing which document the section is supposed to be in, which is
+# often a different skill's directory and nowhere stated - and a check that just
+# grepped for `## Something` would fire on every heading in the repository. Those
+# are read by a person, and by `skill-review`.
 
 set -uo pipefail
 

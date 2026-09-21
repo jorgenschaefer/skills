@@ -133,7 +133,7 @@ change.
 - **skill-review** - the review for agent skills: read one skill whole, judge it against the lenses that decide whether it fires at the right moment and binds the agent once it does - triggering, altitude, the information hierarchy, completion criteria, leading words, pruning, the form a piece of guidance takes - and report what would make it work better. It changes nothing, constructs the failing run behind every finding, and labels each one as wording or as behaviour, which is the author's call
 - **repo-overview** - orient a new developer to an unfamiliar codebase - tech stack, code organization, work objects and the actions each part supports, main workflows, where to start reading - and leave it in `ARCHITECTURE.md`, re-derived whole every run rather than maintained by hand
 - **ubiquitous-language-init** - bootstrap a UBIQUITOUS_LANGUAGE.md glossary in a brownfield project by excavating domain terminology from the existing codebase
-- **upgrade-dependencies** - upgrade npm dependencies, or add one, safely and incrementally: green baseline, then `npm update`, then remaining majors one at a time, running tests/tsc/lint at every step; reconciles the Node version across `.nvmrc`, Dockerfile and `@types/node`, and treats a new dependency as the hard-to-reverse choice it is
+- **upgrade-dependencies** - upgrade npm dependencies safely and incrementally: green baseline, then `npm update`, then remaining majors one at a time, running tests/tsc/lint at every step; reconciles the Node version across `.nvmrc`, Dockerfile and `@types/node`; taking a new dependency on is a decision rather than maintenance, and is not this skill's to make
 
 ## Adding a new skill
 

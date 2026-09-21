@@ -27,7 +27,7 @@ Draft everything else the intent holds from what they have told you, and present
 
 ### The no is a finding
 
-Reached after the problem statement is agreed, and only on one of three grounds:
+Reached after the problem statement is agreed, and only on one of two grounds:
 
 - **Already solved.** Name the thing that does it.
 - **A symptom of something else.** Name the thing underneath. This restarts the session on that problem rather than ending it - say so.
