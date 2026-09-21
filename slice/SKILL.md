@@ -34,6 +34,16 @@ The written files are a transcription of what was approved, and nothing checks t
 
 **One seam.** If two parts of the change can be built and verified independently, they are two tickets - even when one person would do both in an afternoon.
 
+**The solution's `## Non-goals` and `## Edge cases` are yours to place.** A non-goal
+belongs in the `## Not here` of whichever ticket a builder would otherwise wander out of
+- that is how it reaches the person who needs it, since nobody downstream opens the
+solution. An edge case belongs in the `## Done when` of the slice that owns it, or it is
+work nobody claimed.
+
+**Read the solution's `## Open concerns` before you cut.** Something unsettled either
+lands in a ticket as a thing to settle, or it is a reason not to slice yet. It is not a
+thing to discover mid-build.
+
 **Ordered by need, not by size.** `after:` is what carries the order. Put a ticket after another only when it genuinely cannot be built first; a false dependency serialises a run for no reason.
 
 **A criterion covered by two slices is two criteria.** When you find yourself quoting half a criterion into one ticket and half into another, stop: the solution is describing two pieces of work in one sentence. Say so and get it split there, where the coverage check can see it.

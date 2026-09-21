@@ -10,8 +10,10 @@ modes you would already be using — plan mode and auto mode. The mode is a
 *correlation*, not a scoping mechanism: nothing lets a skill fire on "the user is in
 plan mode", only on what the request looks like — and measurement showed that is not
 enough to reach stage (c) at all, so `/slice` is typed and `/solve` names it. What is
-discovered is the door (`/idea`), the coding standard, the design skill, and
-`/critique`; what is typed is every stage a run must not silently skip. What the arrangement buys is the design's most
+discovered is the door (`/idea`), the coding standard, the design skill, `/implement`
+and `/critique`; what is typed is every stage a run must not silently skip.
+
+What the arrangement buys is the design's most
 important property: **every stage degrades to the unaided harness.** Load no skills at
 all and plan mode plus auto mode still produce a sane result on a quick bug fix; the
 skills only add. A pipeline you can forget to invoke is a pipeline that gets
@@ -56,8 +58,14 @@ The middle runs unattended *after plan approval*, as long as nothing halts. That
 the honest version of the claim.
 
 Counted against the pipeline as built, a change of any size stops for a person exactly
-three times: the ratification at the close of (a), the plan approval at the close of
-(c), and the verdict-and-merge at (e). Nothing in between asks. Every other stop is
+four times: the ratification at the close of (a), the choice between candidates inside
+(b) - `/solve` proposes and recommends, and picking is the person's - the plan approval
+at the close of (c), and the verdict-and-merge at (e).
+
+Four rather than three because the count is only worth stating if it survives someone
+checking it: `/solve` asks twice in every ordinary run, once to agree what decides
+between candidates and once to choose, and folding those into "designing the solution"
+would make the number smaller and the claim false. Every other stop is
 conditional and named: the `undecided` interrupt at (b) or mid-build, a `blocked`,
 `mystery`, `exhausted` or `drift` halt, raising a ceiling, declaring an intent
 unsatisfiable, abandoning a topic, and the second approval a re-slice needs. None of

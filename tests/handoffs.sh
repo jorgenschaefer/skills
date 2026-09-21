@@ -43,6 +43,12 @@ handoff() {
 handoff idea   '/solve'        "the stage that designs against the intent"
 handoff solve  '/slice'        "the stage that turns the spec into work"
 handoff slice  'run.sh'        "the runner that builds the tickets"
-handoff accept 'accept-run.sh' "the script that retires the paper"
+handoff implement '/critique'    "the session that reviews what it built"
+handoff accept    'accept-run.sh' "the script that retires the paper"
+
+# (d) to (e): the runner finishes, and something has to say what closes the run.
+grep -q '/accept' "$ROOT/run.sh" \
+  && ok "the runner names the stage that closes the run" \
+  || bad "the runner names the stage that closes the run" "nothing in run.sh names /accept"
 
 finish

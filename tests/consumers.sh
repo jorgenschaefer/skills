@@ -42,14 +42,18 @@ done < <(grep -v '^#' "$MAP" | grep ' :: ' | awk -F' :: ' '{print $1 "\t" $2}')
   || bad "no consumer waits for a section that was removed" "$stale"
 
 # A reader has to be something that exists.
+# Each clause of a multi-reader mapping, not just the first: six of them name a
+# second reader, and truncating at the semicolon left those unchecked.
 while IFS= read -r reader; do
+  reader="${reader# }"
   case "$reader" in
-    "a person"*) continue ;;
+    "a person,"*) continue ;;
+    "a person"*) unknown+="$reader (a person, at which moment?)"$'\n'; continue ;;
   esac
-  for name in $(printf '%s' "$reader" | grep -o '^[a-z][a-z.-]*'); do
+  for name in $(printf '%s' "$reader" | grep -o '^[a-z][a-z/.-]*'); do
     [ -d "$ROOT/$name" ] || [ -f "$ROOT/$name" ] || unknown+="$reader"$'\n'
   done
-done < <(grep -v '^#' "$MAP" | grep ' :: ' | sed 's/.* :: //' | sed 's/;.*//' | sort -u)
+done < <(grep -v '^#' "$MAP" | grep ' :: ' | sed 's/.* :: //' | tr ';' '\n' | sort -u)
 [ -z "$unknown" ] \
   && ok "every named consumer is a skill, a script or a person" \
   || bad "every named consumer is a skill, a script or a person" "$unknown"

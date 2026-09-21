@@ -14,6 +14,14 @@ Design several genuinely different answers to an intent, choose one with the use
 
 **Read the intent's `Done when` before anything else, and take its numbers with you.** Those conditions are what your criteria will tag, and what the acceptance stage will walk back. A criterion that serves no condition is work nobody asked for.
 
+**Read `Not this` as the fence it is.** It names the adjacent problems someone decided
+this run does not solve. A solution that quietly answers one of them has widened the
+work past what was ratified.
+
+**Read `Open questions` and say what the approach does with each.** Settled by the
+design, deferred with a reason, or still open - a question the intent raised and the
+solution ignores is the intent's author left waiting.
+
 **Read `Constraints` as disqualifiers, not preferences.** They are what makes a choice between candidates decidable without asking. A candidate that violates one is out, whatever else it has going for it.
 
 **An unratified intent is a draft.** If `## Ratified` says nobody has confirmed it, stop and ask for that first. Everything you are about to write is measured against conditions no one has agreed to.

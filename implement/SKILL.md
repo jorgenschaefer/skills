@@ -63,4 +63,4 @@ Where it is genuinely wrong rather than merely different, that is an `undecided`
 
 **Set `status: review`, or `status: halted`.** Never `status: done`, and never claim a ticket by writing `status: doing` - the runner owns both ends. A session that marks its own work finished has reviewed itself by omission.
 
-**You do not review your own work.** `/critique` reads the commit against the ticket, in a session that did not write it, because a reviewer that has already accepted every step of the reasoning is not a reviewer.
+**You do not review your own work.** `/critique` is what reads the commit against the ticket, in a session that did not write it, because a reviewer that has already accepted every step of the reasoning is not a reviewer.
