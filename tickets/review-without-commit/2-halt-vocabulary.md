@@ -2,9 +2,9 @@
 solution:  SOLUTION_REVIEW_WITHOUT_COMMIT.md
 satisfies: AC-3
 after:     1-head-check
-status:    review
+status:    done
 attempts:  4
-reviews:   3
+reviews:   4
 ---
 
 ## Build
@@ -114,43 +114,58 @@ verdict on the renamed heading - 20 passed, 1 failed - under the helper's case n
 
 ## Findings
 
-One review round: one should-fix, one nit. `tests/run.sh` is 257 passed / 0 failed with
+One review round: one should-fix. `tests/run.sh` is 257 passed / 0 failed with
 `tests/build-contract.sh` at 27. Every `Record` claim was checked by mutation and every
 one held - dropping `unbuilt` from the not-yours sentence, adding it as a bullet to the
 yours-list with that sentence intact, and adding "If the build cannot be committed, raise
-`unbuilt`." above it each fail the skill case; renaming the idea's bullet fails two cases;
-dropping `unbuilt` from the count sentence fails one; rewording `conditional and named`
-fails all six with the cause named; and renaming `### Halts` now fails on the empty
-extraction at 20 passed / 1 failed rather than at 20 passed / 0 failed.
+`unbuilt`." above it each fail the skill's case; renaming the idea's runner bullet fails
+two cases; the duplicate bullet the last round constructed now fails at 27 passed / 1
+failed; dropping `unbuilt` from the count sentence fails one; adding a seventh kind to
+the Halts section and not the count fails one; rewording `conditional and named` fails
+all six with the cause named; and renaming `### Halts` fails on the empty extraction at
+20 passed / 1 failed.
 
-**Should-fix — `tests/build-contract.sh:116-120` asks whether the idea doc mentions a
-kind as the runner's, not which side of its split the kind is on.** The previous round
-established that the side is the criterion and the skill's case was rewritten around it -
-`mine` and `theirs`, with a bullet on the wrong side failing. The other of the two places
-AC-3 names kept the old shape: `grep -q "^- \`$kind\`"` inside the runner's bullets, and
-nothing looks at the list above them.
+**Should-fix — `tests/build-contract.sh:120` reads the session's list by a prose
+lead-in, and an empty read disables the duplicate check in green.** The guard this pass
+added covers `idea_halts` and nothing else. `idea_mine` is extracted from *The kinds a
+session writes:*, one sentence of ordinary prose in a document this ticket series has
+been rewording for four passes, and when that sentence moves the `elif` never fires:
+`idea_theirs` still matches, so all three cases report `ok` and the regression the pass
+exists to catch is unwatched again.
 
-Constructed: in `NEW_PIPELINE_IDEA.md`, leave the runner's `unbuilt` bullet exactly as it
-is and add one to *The kinds a session writes*, above `mystery`:
+Constructed, in `NEW_PIPELINE_IDEA.md:666`: change `The kinds a session writes:` to
+`The kinds a session raises:` - a reword, not a removal, with both lists still intact -
+and add the same bullet the last round constructed to that list, above `mystery`:
 
     - `unbuilt` — the build produced no commit.
 
-The doc now says both things, and the doc is where the next skill is written from.
-`tests/build-contract.sh` reports **28 passed, 0 failed** - a case more than before,
-because `idea_halts` extracts `unbuilt` twice and the stop-count loop runs seven times.
-The one number a reader might compare against a previous run moves in the reassuring
-direction. The identical edit to `implement/SKILL.md` fails, which is the whole of the
-asymmetry: the same regression is caught in one document and rewarded in the other.
+The doc again says `unbuilt` is both the runner's and a session's, and
+`tests/build-contract.sh` reports **28 passed, 0 failed** - the reassuring direction, a
+case more than the run before it, because the stop-count loop reads the duplicate twice.
 
-The fix is the shape the skill case already has - the kinds a session writes are a
-sed range away, and a kind found in both lists is a `bad`.
+The skill's half of the same split does not have this hole: reformat its bullets so
+`mine` comes back empty and the `told` branch catches the added kind anyway. The idea
+doc has no third branch, so the extraction is the whole check.
 
-**Nit — `tests/build-contract.sh:133-135` hand-rolls the guard `tests/format-lib.sh:53`
-already provides.** `expect_counted` exists for exactly this - its comment is "An empty
-glob is zero cases and zero failures, which reads as success", which is the sentence the
-new guard's own comment restates - and this file already sources `format-lib.sh`. Two
-representations of one rule: the next suite that grows a derived loop greps
-`expect_counted`, finds the three format suites, and does not find this. It wants
-`expect_counted "$(printf '%s\n' "$idea_halts" | grep -c .)" "halt kinds"`, or - if the
-more specific case name is worth keeping - a note saying why the helper did not fit.
+The fix is the one already on the line above: `expect_counted` against `idea_mine`.
+`idea_theirs` needs no such guard - an empty read there fails all three cases, which is
+the loud half of the same asymmetry.
+
+## Accepted with the findings open
+
+Four review rounds, each finding something real and smaller than the last, all of them
+about how a case extracts a sentence of prose rather than about the change. The
+criterion is delivered: `implement/SKILL.md` tells a session `unbuilt` is not its to
+raise and says why, `NEW_PIPELINE_IDEA.md` lists it as the runner's third kind, and
+`tests/build-contract.sh` is at 27 green.
+
+The last finding stands and is worth keeping: the session's kinds are read by a prose
+lead-in, so if that sentence moves the extraction empties and a duplicate check passes
+in green - the failing-open shape this repository has been bitten by twice. A fifth
+round would find a sixth thing.
+
+Accepted by the person the halt was addressed to, on the ground the halt names: the
+findings are not answerable as written. What is actually wrong is the instrument - a
+documentation criterion pinned by greps over prose has no natural stopping point, and
+that is a finding about this pipeline rather than about this ticket.
 
