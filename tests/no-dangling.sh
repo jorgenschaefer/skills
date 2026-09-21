@@ -19,7 +19,7 @@
 # of some other document - an intent's `## Done when` - names a document the
 # skill writes or reads; which one it means is often nowhere stated, and
 # grepping for it would fire on every heading in the repository. Those are read
-# by a person, and by `skill-review`.
+# by a person.
 
 set -uo pipefail
 
