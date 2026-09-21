@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+#
+# Stands in for `claude` while the runner's own tests run.
+#
+# Each invocation consumes one line of $STUB_PLAN and does to the ticket what
+# that session would have done:
+#
+#   review       commit, and set status: review
+#   claim-only   set status: review having committed nothing
+#   halt:<kind>  write the halt and set status: halted
+#   die          exit 1 having touched nothing, as a crash does
+#   limit        exit 1 with the usage-limit message on stdout
+#   walk         the acceptance call - record it and exit 0
+#
+# There is one role now where there were two. The runner used to launch a second
+# session to review what the first built; `/implement` spawns that reviewer
+# itself, so a plan line no longer has to say which of the two is being answered.
+#
+# A call the plan did not expect is an error rather than a repeat: a test that
+# cares how often the runner calls out needs the extra call to be visible.
+
+set -uo pipefail
+
+prompt="${*: -1}"
+ticket="$(printf '%s' "$prompt" | grep -o '[^ ]*tickets/[^ ]*\.md' | head -1)"
+
+# One line per call, whitespace flattened, so a test can count calls and read
+# the first one to see which ticket went first.
+n=$(( $(wc -l < "$STUB_CALLS") + 1 ))
+printf '%s\n' "$prompt" | tr '\n' ' ' >> "$STUB_CALLS"
+printf '\n' >> "$STUB_CALLS"
+
+line="$(sed -n "${n}p" "$STUB_PLAN")"
+[ -n "$line" ] || { echo "stub: no plan line $n for: $prompt" >&2; exit 99; }
+
+set_status() { sed -i "s/^status: .*/status:    $1/" "$ticket"; }
+
+case "$line" in
+  walk)
+    # The acceptance call names no ticket, which is how the stub tells it apart.
+    [ -n "$ticket" ] && { echo "stub: expected the walk, got a ticket: $prompt" >&2; exit 97; }
+    echo "the walk ran"
+    ;;
+  review)
+    printf 'built\n' >> "$ticket"
+    set_status review
+    git add -A >/dev/null 2>&1
+    git commit -qm "build $(basename "$ticket")" >/dev/null 2>&1
+    ;;
+  claim-only)
+    printf 'built\n' >> "$ticket"
+    set_status review
+    ;;
+  halt:*)
+    printf '\n## Halt\n\n%s - the stub was told to\n' "${line#halt:}" >> "$ticket"
+    set_status halted
+    ;;
+  die) exit 1 ;;
+  limit)
+    echo "Claude usage limit reached. Your limit will reset at 9pm."
+    exit 1
+    ;;
+  *) echo "stub: bad plan line: $line" >&2; exit 98 ;;
+esac

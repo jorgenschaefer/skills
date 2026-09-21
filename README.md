@@ -65,8 +65,8 @@ moments by different readers, which meant four places for a rule to drift.
 
 `implement`, `critique` and `plan-solution` each hold an identical copy, because a skill
 installs alone and cannot reach a sibling's directory. **An edit to one is an edit to
-all three, in the same commit.** Nothing enforces that any more - the suite that did is
-gone - so `md5sum */CODING_STANDARDS.md` is how you check.
+all three, in the same commit.** `./test.sh` is what enforces it, over whatever turns
+out to be shared rather than over that file by name.
 
 ### The runner
 
@@ -85,6 +85,16 @@ the code.
 Every unattended stop is a named halt written into the ticket: `blocked`, `undecided`
 and `mystery` from a session; `exhausted`, `drift` and `unbuilt` from the runner,
 because in each of those three the party that would report it is in no position to.
+
+### The tests
+
+`./test.sh`. Everything the runner does is something that has to be true when a session
+is dead or lying, so every case builds a throwaway repository - an intent, the solution
+beside it, a ticket directory - puts a stub where `claude` goes, and runs the real
+script against it: the refusals, the drift pre-flight in both directions, the claim a
+crashed session leaves behind, both budgets, and the halt each one writes. Alongside
+them, the two checks the documents need: that the copies of a shared file are identical,
+and that no live instruction points at something that is not there.
 
 ### What holds it together
 
@@ -145,8 +155,9 @@ description: One-line description used for discovery.
 A skill installs on its own and cannot read a sibling's directory. So a reference file
 two skills both need is **copied into each of them**, byte for byte, rather than shared -
 `CODING_STANDARDS.md` lives in three places for exactly this reason. The copies have to
-be edited together, in one commit, and nothing checks that but you.
+be edited together, in one commit, and `./test.sh` fails when they are not.
 
 `VERIFY.md` is the deliberate exception: three skills hold one, and the three are
 different documents on purpose. An adversary written generically enough to serve all
-three stages says less at each of them.
+three stages says less at each of them. `test.sh` exempts it by name, and a new
+exception has to be added there as well as here.
