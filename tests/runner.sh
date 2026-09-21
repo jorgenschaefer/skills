@@ -322,14 +322,19 @@ else bad "the walk prompt starts with the slash command that reaches the skill" 
 if grep -q '01-INTENT.md' <(tail -1 "$STUB_CALLS"); then ok "the walk is given the intent"
 else bad "the walk is given the intent" "$(tail -1 "$STUB_CALLS")"; fi
 
+# A change small enough that no intent document was written keeps its conditions
+# in the solution's own `## Intent` section, and `/accept-intent` reads them
+# there. So the walk follows the conditions rather than the filename: skipping it
+# here dropped the only stage that asks whether the problem was solved.
 workspace
 rm "$WORK/intents/x/01-INTENT.md"
-plan review review
+plan review review walk
 rc="$(run)"
-if [ "$rc" = 0 ] && grep -q '02-SOLUTION.md' "$WORK/.out"; then
-  ok "with no intent the walk is skipped, and it says where the conditions are"
-else bad "with no intent the walk is skipped, and it says where the conditions are" "rc=$rc $(out)"; fi
-if [ "$(wc -l < "$STUB_CALLS")" = 2 ]; then ok "with no intent nothing is launched for the walk"
-else bad "with no intent nothing is launched for the walk" "$(calls)"; fi
+if [ "$rc" = 0 ] && [ "$(wc -l < "$STUB_CALLS")" = 3 ]; then
+  ok "with no intent the walk still runs"
+else bad "with no intent the walk still runs" "rc=$rc $(calls)"; fi
+if grep -q '^/accept-intent .*02-SOLUTION.md' <(tail -1 "$STUB_CALLS"); then
+  ok "with no intent the walk is given the solution that carries the conditions"
+else bad "with no intent the walk is given the solution that carries the conditions" "$(tail -1 "$STUB_CALLS")"; fi
 
 finish

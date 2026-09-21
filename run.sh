@@ -277,16 +277,19 @@ fi
 printf 'every ticket in %s is done\n' "$TICKETS"
 
 intent="$(dirname "$TICKETS")/01-INTENT.md"
-if [ -f "$intent" ]; then
-  printf 'walking %s\n\n' "$intent"
-  # The prompt starts with the slash command, and has to. `accept-intent` is
-  # `disable-model-invocation`, so it is not among the skills a session can
-  # reach on its own - naming it in a sentence gets a session that improvises
-  # the one stage that asks whether the problem was solved.
-  claude -p --permission-mode acceptEdits \
-    --allowedTools Bash Edit Write Read Glob Grep Skill Task Agent TodoWrite \
-    -- "/accept-intent $intent"
-else
-  printf 'no %s, so the walk is skipped: the conditions are in %s and somebody has to read them\n' \
-    "$intent" "$(dirname "$TICKETS")/02-SOLUTION.md" >&2
-fi
+# Where the change was small enough that no intent document was written,
+# `/find-solution` puts the conditions in the solution's own `## Intent` section
+# and `/accept-intent` reads them there. So the walk follows the conditions
+# rather than the filename: skipping it on a missing `01-INTENT.md` dropped the
+# only stage that asks whether the problem was solved, on a route the pipeline
+# offers on purpose, with a line on a terminal nobody is watching.
+[ -f "$intent" ] || intent="$(dirname "$TICKETS")/$(field "${files[0]}" solution)"
+
+printf 'walking %s\n\n' "$intent"
+# The prompt starts with the slash command, and has to. `accept-intent` is
+# `disable-model-invocation`, so it is not among the skills a session can
+# reach on its own - naming it in a sentence gets a session that improvises
+# the one stage that asks whether the problem was solved.
+claude -p --permission-mode acceptEdits \
+  --allowedTools Bash Edit Write Read Glob Grep Skill Task Agent TodoWrite \
+  -- "/accept-intent $intent"
