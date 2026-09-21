@@ -1,6 +1,6 @@
 ---
 name: find-solution
-description: Turn a ratified intent into a solution spec - candidates weighed, one chosen, its criteria tagged to the conditions they serve and its costs named. Typed, not inferred.
+description: Turn an intent into a solution spec - candidates weighed, one chosen, its criteria tagged to the conditions they serve and its costs named. Typed, not inferred.
 disable-model-invocation: true
 ---
 
@@ -23,8 +23,6 @@ design, deferred with a reason, or still open - a question the intent raised and
 solution ignores is the intent's author left waiting.
 
 **Read `Constraints` as disqualifiers, not preferences.** They are what makes a choice between candidates decidable without asking. A candidate that violates one is out, whatever else it has going for it.
-
-**An unratified intent is a draft.** If `## Ratified` says nobody has confirmed it, stop and ask for that first. Everything you are about to write is measured against conditions no one has agreed to.
 
 ### Given prose instead of a file
 
