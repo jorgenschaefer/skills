@@ -97,8 +97,11 @@ rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" bash "$RUNNER" tickets/nope >"$WO
                || bad "it refuses a ticket directory that is not there" "$(out)"
 
 # A repository with nothing committed yet is inside a work tree and has a branch
-# name, so both refusals above pass it - and there is no HEAD to compare a build
-# against, which would make every build look like it moved nothing.
+# name, so the refusals above pass it: `--is-inside-work-tree` succeeds and
+# `--abbrev-ref HEAD` prints the branch that has no commits on it yet. The build
+# check below would in fact get both cases right there - `rev-parse HEAD` prints
+# the literal `HEAD` when it fails, and a session that commits makes the second
+# read a sha - but resting it on that echo is not something to leave standing.
 workspace
 rm -rf "$WORK/.git"
 git -C "$WORK" init -q -b topic
@@ -106,8 +109,9 @@ git -C "$WORK" config user.email t@t; git -C "$WORK" config user.name t
 plan "implement review"
 rc="$(run)"
 [ "$rc" != 0 ] && grep -q 'no commits' "$WORK/.out" \
-  && ok "it refuses a repository with no commits" \
-  || bad "it refuses a repository with no commits" "rc=$rc $(out)"
+  && grep -q 'branch refusal' "$WORK/.out" \
+  && ok "it refuses a repository with no commits, for the reason it gives" \
+  || bad "it refuses a repository with no commits, for the reason it gives" "rc=$rc $(out)"
 [ ! -s "$STUB_CALLS" ] && ok "a repository with no commits launches nothing" \
                        || bad "a repository with no commits launches nothing" "$(cat "$STUB_CALLS")"
 
@@ -201,17 +205,14 @@ grep -q 'committed nothing' "$WORK/tickets/t/1-one.md" \
 
 workspace
 plan "implement review" "critique findings" "implement review" "critique clean" "implement review" "critique clean"
-run > /dev/null
+rc="$(run)"
 [ "$(field 1-one reviews)" = 1 ] && [ "$(field 1-one status)" = done ] \
   && ok "findings send the ticket back and it can still finish" \
   || bad "findings send the ticket back and it can still finish" "reviews=$(field 1-one reviews) status=$(field 1-one status)"
 
-# A rework commits onto the commit the first pass left, which is a HEAD that
-# moved for the second time rather than one that never moved.
-workspace
-plan "implement review" "critique findings" "implement review" "critique clean" \
-     "implement review" "critique clean"
-rc="$(run)"
+# The same run, read for the other thing it proves: the rework's commit lands on
+# the one the first pass left, which is a HEAD that moved for the second time
+# rather than one that never moved.
 [ "$rc" = 0 ] && ! grep -q '^## Halt' "$WORK/tickets/t/1-one.md" \
   && ok "a rework that commits again is not read as a build that committed nothing" \
   || bad "a rework that commits again is not read as a build that committed nothing" \

@@ -30,10 +30,14 @@ die() { printf '%s\n' "$*" >&2; exit 2; }
 [ -n "$TICKETS" ] || die "usage: run.sh tickets/<topic>"
 [ -d "$TICKETS" ] || die "no ticket directory: $TICKETS"
 git rev-parse --is-inside-work-tree >/dev/null 2>&1 || die "not a git repository"
-# There is no HEAD to compare a build against here, and every check below reads
-# one: the branch refusal passes by accident, and a session that committed
-# nothing would look exactly like one that did.
-git rev-parse HEAD >/dev/null 2>&1 || die "no commits here: a run needs a HEAD to tell a build from a claim"
+# The branch refusal just above passes by accident in a repository with no
+# commits: it reads the branch that has nothing on it yet. The HEAD check below
+# would survive there - `rev-parse HEAD` prints the literal `HEAD` when it
+# fails, so a build still moves it and a claim still does not - but a
+# correctness check resting on a command echoing its own argument back is not
+# one to leave standing.
+git rev-parse HEAD >/dev/null 2>&1 \
+  || die "no commits here: the branch refusal passes in an empty repository, and the build check would rest on rev-parse echoing HEAD back - commit something first"
 
 branch="$(git rev-parse --abbrev-ref HEAD)"
 case "$branch" in
@@ -183,7 +187,10 @@ while :; do
   # work for the review to read, and accepting it is how a ticket reaches done
   # unbuilt. Given the same tolerance as a crash, because it is the same kind of
   # failure - a session that did not do what it was launched for - and the
-  # halt at the end of it says that, rather than that a budget ran out.
+  # halt at the end of it says that, rather than that a budget ran out. Which is
+  # why the edge here is `-ge` where the selection above is `-gt`: this fires on
+  # the attempt that spends the last of the budget, because falling through to
+  # the next pass would halt as `exhausted` and lose the thing worth saying.
   if [ "$(git rev-parse HEAD)" = "$head_before" ]; then
     if [ "$attempts" -ge "$MAX_ATTEMPTS" ]; then
       halt "$ticket" unbuilt "the session reported a build and committed nothing, and the last of $MAX_ATTEMPTS attempts is spent - read the build output for what stopped it committing"

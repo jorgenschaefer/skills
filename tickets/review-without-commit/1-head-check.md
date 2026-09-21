@@ -2,8 +2,8 @@
 solution:  SOLUTION_REVIEW_WITHOUT_COMMIT.md
 satisfies: AC-1, AC-2, AC-4, AC-5, AC-6
 after:
-status:    ready
-attempts:  2
+status:    review
+attempts:  3
 reviews:   1
 ---
 
@@ -72,18 +72,28 @@ which is why none of the suite's cases could reach this.
 
 **AC-5** — `a rework that commits again is not read as a build that committed nothing`.
 A rework's commit lands on the one the first pass left, so HEAD has moved twice rather
-than not at all; the case runs findings, a second build and a clean review and asserts
-no `## Halt`.
+than not at all; it is asserted on the run the findings case already makes — findings, a
+second build, a clean review — which is the run this criterion is about.
 
-**AC-6** — `it refuses a repository with no commits`, `a repository with no commits
-launches nothing`. `git rev-parse HEAD` beside the other pre-launch refusals, above the
-branch check that passes there by accident.
+**AC-6** — `it refuses a repository with no commits, for the reason it gives`, `a
+repository with no commits launches nothing`. `git rev-parse HEAD` beside the other
+pre-launch refusals, above the branch check that passes there by accident.
 
 **Each criterion was broken and watched to fail.** Deleting the refusal fails AC-6's two
-cases; inverting the HEAD comparison fails the rework case and sixteen more; moving the
-budget edge from `-ge` to `-gt` fails the two that name the halt — and, worth saying,
-*not* the case asserting it halted at all, which the wrong halt satisfies. The kind and
-its wording are what pin AC-2, not the status.
+cases; inverting the HEAD comparison fails the rework case and sixteen more; removing the
+unbuilt block fails four; moving the budget edge from `-ge` to `-gt` fails the two that
+name the halt — and, worth saying, *not* the case asserting it halted at all, which the
+wrong halt satisfies. The kind and its wording are what pin AC-2, not the status.
+
+**Second pass, answering the findings.** The refusal's stated reason was false — an empty
+repository's `rev-parse HEAD` prints the literal `HEAD`, so the comparison in fact tells a
+build from a claim there. The comment and the `die` message now give the reason that holds:
+the branch refusal passes by accident, and a correctness check should not rest on a command
+echoing its own argument back. `it refuses a repository with no commits, for the reason it
+gives` is the case that pins it — it went RED on the old message before the new one was
+written. The `-ge` against the selection's `-gt` now says in the comment why it differs, and
+the rework case no longer repeats the setup of the one above it: both assertions read the
+same run, so the plan has one place to change.
 
 ## Findings
 
