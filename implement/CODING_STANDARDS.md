@@ -19,20 +19,15 @@ Six properties, and where two of them pull against each other the earlier one wi
 
 `UBIQUITOUS_LANGUAGE.md`, where the project keeps one, is the source of truth for the domain's names. If a concept has a name in there already, use it before inventing your own. If a concept is new, confirm with the user what it is called in the domain and add it there before using it.
 
-
 ## Function and method names follow domain actions
 
-When users talk about "publishing a blog post" or "archiving it", the respective functions should be `publishPost` and `archivePost` - not `updatePost`, even though both end as a database `UPDATE`.
-
-When users talk about "setting an article's category", the respective function should be `setArticleCategory`. When users talk about "saving an article" on the other hand, the function should be `saveArticle` with the argument being a compound object of everything the users mean with "the article" in this context - that could contain the category.
+When users talk about "publishing a blog post" or "archiving it", the respective functions should be `publishPost` and `archivePost` - not `updatePost`, even though both end as a database `UPDATE`. When they talk about "setting an article's category", it should be `setArticleCategory`; when they talk about "saving an article", it should be `saveArticle`, with the argument a compound object of everything the users mean by "the article" in this context - which could contain the category.
 
 ## Business logic works with domain objects
 
 Entities, value objects and aggregates the domain talks about are defined explicitly as local domain objects (for example, classes or interfaces).
 
-External seams - database interfaces, components, etc. - translate their respective external data into a local domain objects. The rest of the code (the business logic) works with those local domain objects.
-
-External representations, ORM types, data transfer objects etc. do not leak into the business logic. They are validated at the boundaries and translated to domain objects.
+External seams - database interfaces, components, etc. - validate their external data at the boundaries and translate it into those objects; the rest of the code (the business logic) works only with them, and ORM types, data transfer objects and other external representations do not leak into it.
 
 ## Layers
 
@@ -77,9 +72,7 @@ A new file is judged against the spec. Everything else is judged against what is
 
 ## Comments
 
-Comments should be rare, as they are outdated the moment they are written.
-
-The intent of code should be obvious. Before adding a comment, try to make the code more explicit and the intent more obvious by adding well-named helper functions. Only if that fails, and a future reader would have trouble understanding the intent of a piece of code, add a comment. Reluctantly.
+Comments should be rare, as they are outdated the moment they are written. The intent of code should be obvious: make it explicit with well-named helper functions before writing one. Only if that fails, and a future reader would have trouble understanding the intent, add a comment. Reluctantly.
 
 ## Language
 
@@ -87,14 +80,11 @@ Code is in English. Identifiers, test names, comments and commit messages are En
 
 Where an entry says its term has no English equivalent - a legal or regulatory word that does not translate - the domain term is the identifier, verb or noun alike, in the glossary's canonical form rather than re-inflected for the call site, transliterated to ASCII (`ä`, `ö`, `ü` and `ß` become `ae`, `oe`, `ue` and `ss`) and cased like any other name here, with everything around it that the entry does not cover staying English.
 
-If an entry does not have an English identifier and does not explicitly say that there is no English equivalent is just missing a translation. Ask the user for the correct term, do not invent one.
+An entry with no English identifier that does not explicitly say its term has no English equivalent is just missing its translation. Ask the user for the correct term, do not invent one.
 
 ## Dependencies
 
-When adding a dependency, do not rely on your training data. Check:
-
-- **Package name.** Check the registry before adding it, you might misremember the name.
-- **Latest stable release.** Look the version up rather than relying on memory - memory is almost always stale.
+When adding a dependency, do not rely on your training data - it is almost always stale. Before adding it, check the registry for the package name, which you might misremember, and look the latest stable release up.
 
 ## Architecture decisions
 
@@ -105,8 +95,6 @@ A decision earns a record when it will outlive the change that produced it and s
 ## Test coverage
 
 **Every piece of business logic is pinned by a test:** removing or changing it would make a test fail. For each piece, you should be able to name the test that pins it; where you cannot, that is a coverage gap.
-
-Use TDD when writing code.
 
 **No code change without a failing test first.** Write the test, watch it fail for the reason you expect, then write the code that makes it pass.
 
@@ -130,7 +118,7 @@ Deleting code can happen without a failing test first.
 
 Code that works, is referenced, and is correct can still not be worth what it costs to carry. Weigh **what it brings** - how much it matters to what the project does, and to whether the project is usable - against **what it costs** - how complex it is, how hard to understand, how hard to change. Where the cost clearly outweighs the value, it does not belong, *even though nothing above it is violated*.
 
-This is the one property here that can take working functionality away, so it is handled differently from everything else in this document:
+It is the one thing here that can take working functionality away, so it is handled differently from everything else in this document:
 
 - It is **always a tradeoff put to a person**, never a defect to fix. State the value, the cost, and what is lost if it goes; then let them choose.
 - It is **never applied without its own explicit go-ahead**, even when the rest of a cleanup has been approved.
