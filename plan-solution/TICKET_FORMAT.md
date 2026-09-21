@@ -1,15 +1,14 @@
 # Ticket format
 
-One file per slice, in `tickets/<topic>/`, numbered for identity rather than for order - `after:` carries the order, and the numbers are append-only so a re-slice adds rather than renumbers.
+One file per slice, in the intent's own `tickets/` directory - `intents/YYYY-MM-DD-<slug>/tickets/NN-<slug>.md` - numbered for identity rather than for order. `after:` carries the order, and the numbers are append-only so a re-slice adds rather than renumbers. Two digits, because a long slicing that starts at `1-` sorts `10-` before `2-`.
 
 ```markdown
 ---
-solution:  SOLUTION_<TOPIC>.md   # for the runner's drift check; sessions never open it
+solution:  02-SOLUTION.md        # resolved next to the tickets/ directory, not from the cwd
 satisfies: AC-1, AC-4            # the criteria this slice covers
-after:     2-<slug>, 5-<slug>    # dependencies, comma-separated, or empty
+after:     02-<slug>, 05-<slug>  # dependencies, comma-separated, or empty
 status:    ready                 # ready | doing | review | done | halted
 attempts:  0                     # runner-owned
-reviews:   0                     # runner-owned
 ---
 
 ## Build
@@ -25,14 +24,16 @@ Copied, never summarised. This is what replaced the spec hash: a ticket carrying
 ## Context
 <Enough to build this without reading the solution - what exists already, what decided the approach, where the seam is. A session gets this file and the code, nothing else.>
 
+## Plan
+<How this gets built: the steps in order, the files each one touches, and what proves each one worked. `PLANNING.md` is the shape.
+
+Written before the build, by whoever cut the slice, against the code as it actually is. It is not binding the way `Done when` is - a builder who finds the plan wrong says so - but it is the difference between a ticket that has been thought about and one that has been described.>
+
 ## Not here
 <The boundary against the neighbouring tickets, and where the excluded thing lives instead. This is what stops two slices building the same thing twice.>
 
 ## Record
 <Written by the build: which test names which criterion. The only evidence that a criterion was covered rather than claimed.>
-
-## Findings
-<Written by the review: what it wants changed. Absent until there are some.>
 
 ## Halt
 <Written by whoever stopped - the session or the runner - naming the kind and what it was blocked on. Absent unless something stopped.>
@@ -44,4 +45,4 @@ Copied, never summarised. This is what replaced the spec hash: a ticket carrying
 
 **`status` belongs to the runner, except at its two ends.** The runner writes `doing` and `done`; a session writes `review` when it has committed, or `halted` when it has stopped. A session never claims its own work and never declares it finished.
 
-**`attempts` and `reviews` are counters the runner owns.** They live in the file because the runner is expected to die and resume - it waits out usage limits - and a count that does not survive that is not a ceiling.
+**`attempts` is a counter the runner owns.** It lives in the file because the runner is expected to die and resume - it waits out usage limits - and a count that does not survive that is not a ceiling.
