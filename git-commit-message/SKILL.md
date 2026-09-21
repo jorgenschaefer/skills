@@ -5,7 +5,7 @@ description: Use when writing a git commit message before running `git commit`.
 
 # Git Commit Message
 
-**The repo's existing history is the baseline; these seven rules are the floor.** Read a few recent messages (`git log --oneline -20`, then a full one or two) and match their conventions — a Conventional Commits prefix (`feat:`, `fix:`), a ticket reference, a casing scheme. Where the repo pins a choice, follow it; for everything it leaves open, apply the rules below. When a convention genuinely conflicts with a rule (e.g. Conventional Commits lowercases the subject, against rule 3), the convention wins for that rule only — every non-conflicting rule still holds.
+**The repo's existing history is the baseline; these seven rules are the floor.** Read a few recent messages (`git log --oneline -20`, then a full one or two) and match their conventions — a Conventional Commits prefix (`feat:`, `fix:`), a ticket reference, a casing scheme. Where the repo pins a choice, follow it. When a convention genuinely conflicts with a rule (e.g. Conventional Commits lowercases the subject, against rule 3), the convention wins for that rule only — every non-conflicting rule still holds.
 
 ## The seven rules
 
