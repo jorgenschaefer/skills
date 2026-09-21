@@ -110,8 +110,14 @@ halt() {  # ticket, kind, why
 session() {  # ticket, role -> 0 ran, 1 failed
   local out rc waits=0
   while :; do
+    # Nobody is here to approve a tool call, and `claude -p` cannot prompt: what
+    # it cannot get approved it declines, and a session that could not run the
+    # tests halts as if the work were impossible. The first live run of this
+    # script halted exactly that way. So the tools a build needs are named here
+    # rather than left to whatever the operator has in settings.
     out="$(claude -p --permission-mode acceptEdits \
-             "Use /$2 on $1" 2>&1)"; rc=$?
+             --allowedTools Bash Edit Write Read Glob Grep Skill TodoWrite \
+             -- "Use /$2 on $1" 2>&1)"; rc=$?
     printf '%s\n' "$out"
     case "$out" in
       *"usage limit reached"*)

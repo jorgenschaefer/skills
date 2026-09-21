@@ -3,7 +3,7 @@ solution:  SOLUTION_REVIEW_WITHOUT_COMMIT.md
 satisfies: AC-1, AC-2, AC-4, AC-5, AC-6
 after:
 status:    ready
-attempts:  0
+attempts:  1
 reviews:   0
 ---
 
@@ -52,3 +52,4 @@ the branch check passes by accident today.
 
 The halt kind's appearance in `implement/SKILL.md` and `NEW_PIPELINE_IDEA.md` is ticket
 2. Write the halt; do not teach it.
+
