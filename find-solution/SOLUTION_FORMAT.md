@@ -13,6 +13,8 @@ Where the change was small enough that no intent document was written, this sect
 ## Approach
 <The chosen answer in prose. What it does, how it hangs together, why this shape.
 
+Where a specimen was built for it, link it; it sits beside this file.
+
 One approach; what did not survive is in `Ruled out`.>
 
 ## Behaviour

@@ -21,6 +21,10 @@ By reading; there is no suite. Say in your report that you read it.
 
 **Look for the candidate nobody considered.** You cannot say a better solution exists - that has no ground truth. You can say the field was too small to have chosen from.
 
+**Walk it as the builder and name what you would have to guess.** Step through the change the way whoever builds it will. The author walked this too, with the whole conversation in their head - which is why their walk closed gaps this one will not. Where two readings of a sentence would build different things, say both.
+
+**A gap the rest of the change gets built on top of is one of those unlisted costs.** A decision a builder can undo in an afternoon is a note; a format, a name that spreads or a dependency taken on is not.
+
 ## Then place the severity
 
 Test each cost you found against the intent's `Constraints`, and report which of three it is:

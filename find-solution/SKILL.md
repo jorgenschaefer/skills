@@ -37,6 +37,8 @@ A small change arrives as a sentence, and writing an intent document for it woul
 
 **Design genuinely different answers, not one answer at three sizes.** Two candidates that differ only in how much of the same thing they do is one candidate. At least three, or say why the space held fewer.
 
+**Show the candidates, do not describe them.** For each one the constraints did not kill, build a cheap specimen - the screen as an HTML mockup, the section as written text, the interface as a sketch of its signatures, one real case walked through the flow. Two approaches described in prose collapse into the thorough one and the simple one, and the user is left choosing between adjectives. Cheap is the point: most of these are about to lose. Where a candidate cannot be shown, say why rather than letting prose stand in unremarked.
+
 **Agree what decides before you score anything.** Say which properties will pick the winner, and get that agreed while the candidates are still open. Criteria proposed afterwards are criteria chosen to make the answer you already like come out on top, and neither of you will be able to tell.
 
 **Kill on constraints first.** What remains is a choice, and the choice is the user's. Give a recommendation.
@@ -45,9 +47,13 @@ A small change arrives as a sentence, and writing an intent document for it woul
 
 ## The record
 
+**Walk the approach the way whoever builds it will, before you write it down.** Step through the change as the builder, and at each step ask what you would have to decide that the approach does not say. Every one of those is a question you are about to make someone else guess at. Where it turns up nothing, say so.
+
 **Write it to `02-SOLUTION.md`, in the intent's own directory** - `intents/YYYY-MM-DD-<slug>/`, beside the `01-INTENT.md` it answers.
 
 Where there is no intent document - the short path above - make that directory yourself and write `02-SOLUTION.md` into it alone. The conditions live in the solution's own `## Intent` section.
+
+**Keep the winning specimen beside the solution; delete the losers.** `SOLUTION_FORMAT.md` says where it is linked from.
 
 **Every open question the intent raised appears in the solution** - settled in `Approach`, deferred in `Open concerns`, or named as still open.
 
@@ -65,7 +71,9 @@ Write what this costs against what it was chosen over. "Adds some complexity" is
 
 **Do not reopen the problem.** The intent is ratified. Where you are convinced the problem is wrong, say so plainly and stop - that is a route back to `/idea`, not something to design around.
 
-**End your turn at the first question mark.** One turn, one open question.
+**Every decision has an answer before you write anything down.** What the intent, the project or the codebase already answers, you answer. What you can defensibly decide, you decide - and where being wrong would be expensive to undo, you decide it and put it in the list for a veto, because being sure is not what makes a one-way door safe. What is genuinely theirs, a tradeoff nothing else implies, you ask. Only what neither of you can settle reaches `Open concerns`, and it says what would settle it.
+
+**End your turn at the first question mark.** One turn, one open question - except the walk's, which go back as one list.
 
 **Push back once.** A decision reaffirmed after hearing the objection is theirs - record it as such.
 
