@@ -22,9 +22,13 @@ Each step says:
 
 **Say what this slice does not do**, and where the excluded thing lives instead. This becomes the ticket's `## Not here`, and it is what stops two slices building the same code twice.
 
-## What is still unknown
+## Rehearse the build
 
-**Name what you could not settle from reading**, and what would settle it - a file to look at, a question for a person, a thing to try. A plan that pretends to a certainty it does not have costs more than one that flags the gap, because the builder discovers the gap anyway and has to decide alone.
+**Walk the finished plan as if you were building it, step by step.** At each step, two questions: do you know enough to build the right thing, and enough to build it right. The first is what the step is for, the second is how it is made. A step that leaves either open has produced a question - the builder hits the same gap anyway, alone, with nobody left to ask.
+
+**Collect what you decided that would be expensive to reverse** - a format other code will be written against, a name that spreads, a dependency taken on. Say in the plan that you decided it. Being uncertain is not the only reason to surface something.
+
+The questions go back at the approval, and `SKILL.md` says how. Carry into the ticket only what nobody there could settle, with what would settle it - a file to look at, a thing to try.
 
 ## No new requirements
 

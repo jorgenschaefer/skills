@@ -32,6 +32,14 @@ Each slice's plan is steps against real files, and every step should trace to a 
 
 Check, too, that the files a plan names exist, or are marked as new. A plan written against an imagined codebase is the failure worth catching here rather than in the build.
 
+## Could a builder execute it
+
+Tracing is not buildability. Every step can trace to a criterion, every file can exist, and the builder can still be stuck on step three because it does not say which of two things it means.
+
+**Walk each plan as the builder, step by step, and name what you would have to guess.** Where a step admits two readings that would produce different code, report both readings - that is the finding, not your preference between them.
+
+**Name the decisions taken silently that a later step will be built on.** A format, a name that will spread, a dependency taken on. They are unflagged because the planner was confident, and confidence is not what makes them cheap to reverse.
+
 ## Reporting
 
 Rank by what it would cost to be wrong. For each: where it is, what is wrong in a sentence or two, and what would fix it.

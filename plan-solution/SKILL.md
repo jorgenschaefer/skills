@@ -57,11 +57,19 @@ Enter plan mode and produce the plan there. A single slice has no dependency to 
 
 Plan mode cannot be entered once per slice without stopping a person once per slice, so the planning happens here. Work through the slices in order, following `PLANNING.md` for each, and write each plan into its ticket at `tickets/NN-<slug>.md` inside the intent's directory - beside the `01-INTENT.md` and `02-SOLUTION.md` it descends from.
 
+## What the rehearsal turns up
+
+`PLANNING.md` has you walk each plan as its builder.
+
+**What to build is the solution's.** A criterion that could mean two things, a behaviour nobody specified, an edge case the slice runs into and the solution is silent on. None of these can be settled here: answering one is inventing a requirement. Put it to the person at the approval, and then it splits. Where the answer is a sentence, amend `02-SOLUTION.md` and quote the amended words - the solution stays the one file everything downstream reads. Where the answer would change the cut, stop and hand back to `/find-solution`: the slicing in your hands was made against a solution that no longer says what it said.
+
+**How to build it is yours.** Which file it lives in, the order of the steps, what to reuse - decide those and move on, and surface the ones that would be expensive to reverse.
+
 ## The order matters, because plan mode cannot write
 
 1. **Work the slicing out in context** - the slices, their order, what each covers. Where a slice introduces a concept the codebase has no name for, or moves a boundary between the ones it does, `CODING_STANDARDS.md` binds the names the ticket will write.
 2. **Check it.** Spawn a subagent with a fresh context and give it `VERIFY.md` from this directory, the slicing as text, and the solution's path. This is the one review that arrives before there is a file to read, so it is the only thing standing between a bad cut and a directory full of tickets.
-3. **Present it and get approval.** What is approved is the slicing, not the files.
+3. **Present it and get approval** - the slicing, and the rehearsal's questions as one list. What is approved is the slicing, not the files.
 4. **Write the tickets to match**, once plan mode has exited - and with them any ADR the change earned. `CODING_STANDARDS.md` says which decisions those are and `ADR_FORMAT.md` is the shape; plan approval is the yes that lets one be written, and the argument for it is in front of you now and gone by acceptance.
 
 The written files are a transcription of what was approved, and nothing checks them at the moment of writing - the runner's pre-flight is what catches a transcription that drifted, one pass later. So transcribe, do not improve. An idea you have while writing the files is an idea that skipped the approval.
