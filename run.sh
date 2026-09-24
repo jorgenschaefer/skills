@@ -66,14 +66,17 @@ set_field() { sed -i "2,/^---$/s|^$2:.*|$2:$(printf '%*s' $((10 - ${#2})) '')$3|
 # The criteria a ticket quotes, and the criteria its solution carries, in the
 # one shape both can be compared in.
 quoted()   { grep -o '^> \*\*AC-[0-9]\+\*\*' "$1" | grep -o 'AC-[0-9]\+' | sort -u; }
-declared() { grep -o '^- \*\*AC-[0-9]\+\*\*' "$1" | grep -o 'AC-[0-9]\+' | sort -u; }
+# A withdrawn criterion keeps its number, struck through, so that the number is
+# never handed out again. It is still in the solution and owed to no ticket.
+declared() { grep '^- \*\*AC-[0-9]\+\*\*' "$1" | grep -v '^- \*\*AC-[0-9]\+\*\* ~~' \
+               | grep -o '^- \*\*AC-[0-9]\+\*\*' | grep -o 'AC-[0-9]\+' | sort -u; }
 text_of()  { # file, id -> the criterion as written, tag and marker stripped
   awk -v id="$2" '
     index($0, "- **" id "**") == 1 || index($0, "> **" id "**") == 1 { found = 1; print; next }
     found && (/^[->] \*\*AC-/ || /^#/ || /^$/) { exit }
     found { print }
-  ' "$1" | sed 's/\*([a-z:, C0-9-]*)\*//' \
-         | sed 's/^[[:space:]]*[->][[:space:]]*//' | tr '\n' ' ' | sed 's/  */ /g; s/ *$//'
+  ' "$1" | sed 's/^[[:space:]]*[->][[:space:]]*//' | tr '\n' ' ' | sed 's/  */ /g; s/ *$//' \
+         | sed 's/ *\*([^*]*)\*$//'
 }
 
 # --- the drift pre-flight

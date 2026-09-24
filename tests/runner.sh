@@ -161,6 +161,50 @@ if [ "$(grep -c 'AC-3 is quoted by no ticket' "$WORK/.out")" = 1 ]; then
   ok "an uncovered criterion is reported once, not once per ticket"
 else bad "an uncovered criterion is reported once, not once per ticket" "$(out)"; fi
 
+# A criterion withdrawn in the solution keeps its number, struck through, because
+# numbers are never handed out twice. Nothing is left for a ticket to quote.
+workspace
+printf -- '- **AC-3** ~~a third thing happens.~~ Withdrawn: replaced by AC-2.\n' \
+  >> "$WORK/intents/x/02-SOLUTION.md"
+git -C "$WORK" commit -qam withdraw
+plan review review walk
+rc="$(run)"
+if [ "$rc" = 0 ] && ! grep -q 'drift' "$WORK/.out"; then
+  ok "a withdrawn criterion is quoted by no ticket, and that is no drift"
+else bad "a withdrawn criterion is quoted by no ticket, and that is no drift" "rc=$rc $(out)"; fi
+
+# Withdrawing a criterion a ticket still quotes is the upstream edit the check
+# exists for, and skipping withdrawn ones in the other direction must not hide it.
+workspace
+sed -i 's/^- \*\*AC-1\*\* .*/- **AC-1** ~~the first thing happens.~~ Withdrawn./' \
+  "$WORK/intents/x/02-SOLUTION.md"
+git -C "$WORK" commit -qam withdraw
+plan review
+rc="$(run)"
+if [ "$rc" != 0 ] && grep -q 'AC-1 no longer matches' "$WORK/.out"; then
+  ok "a ticket quoting a withdrawn criterion stops the run"
+else bad "a ticket quoting a withdrawn criterion stops the run" "rc=$rc $(out)"; fi
+
+# The tag is what the ticket leaves off, whatever it says: a decision taken by
+# the user rather than for a condition, a constraint named in words.
+workspace
+sed -i 's/\*(C-1)\*/*(Nutzer)*/' "$WORK/intents/x/02-SOLUTION.md"
+git -C "$WORK" commit -qam retag
+plan review review walk
+rc="$(run)"
+if [ "$rc" = 0 ] && ! grep -q 'drift' "$WORK/.out"; then
+  ok "a tag of any word is left off the comparison"
+else bad "a tag of any word is left off the comparison" "rc=$rc $(out)"; fi
+
+workspace
+sed -i 's/ \*(C-2)\*/ *(C-2; Constraint\n  „the groups the tool knows")*/' "$WORK/intents/x/02-SOLUTION.md"
+git -C "$WORK" commit -qam retag
+plan review review walk
+rc="$(run)"
+if [ "$rc" = 0 ] && ! grep -q 'drift' "$WORK/.out"; then
+  ok "a tag with punctuation, broken over two lines, is left off the comparison"
+else bad "a tag with punctuation, broken over two lines, is left off the comparison" "rc=$rc $(out)"; fi
+
 workspace
 rm "$WORK/intents/x/02-SOLUTION.md"
 plan review
