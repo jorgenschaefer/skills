@@ -161,29 +161,32 @@ if [ "$(grep -c 'AC-3 is quoted by no ticket' "$WORK/.out")" = 1 ]; then
   ok "an uncovered criterion is reported once, not once per ticket"
 else bad "an uncovered criterion is reported once, not once per ticket" "$(out)"; fi
 
-# A criterion withdrawn in the solution keeps its number, struck through, because
-# numbers are never handed out twice. Nothing is left for a ticket to quote.
+# A criterion that no longer holds is deleted, and its number goes with it: the
+# gap is what keeps the number from being handed out twice.
 workspace
-printf -- '- **AC-3** ~~a third thing happens.~~ Withdrawn: replaced by AC-2.\n' \
-  >> "$WORK/intents/x/02-SOLUTION.md"
-git -C "$WORK" commit -qam withdraw
-plan review review walk
+sed -i '/^- \*\*AC-1\*\*/d' "$WORK/intents/x/02-SOLUTION.md"
+rm "$WORK/intents/x/tickets/1-one.md"
+sed -i 's/^after: .*/after:/' "$WORK/intents/x/tickets/2-two.md"
+git -C "$WORK" commit -qam delete
+plan review walk
 rc="$(run)"
 if [ "$rc" = 0 ] && ! grep -q 'drift' "$WORK/.out"; then
-  ok "a withdrawn criterion is quoted by no ticket, and that is no drift"
-else bad "a withdrawn criterion is quoted by no ticket, and that is no drift" "rc=$rc $(out)"; fi
+  ok "a criterion deleted from the solution leaves a gap, and that is no drift"
+else bad "a criterion deleted from the solution leaves a gap, and that is no drift" "rc=$rc $(out)"; fi
 
-# Withdrawing a criterion a ticket still quotes is the upstream edit the check
-# exists for, and skipping withdrawn ones in the other direction must not hide it.
+# Deleting a criterion a ticket still quotes is the upstream edit the check
+# exists for, and it says so rather than reporting a mismatch against nothing.
 workspace
-sed -i 's/^- \*\*AC-1\*\* .*/- **AC-1** ~~the first thing happens.~~ Withdrawn./' \
-  "$WORK/intents/x/02-SOLUTION.md"
-git -C "$WORK" commit -qam withdraw
+sed -i '/^- \*\*AC-1\*\*/d' "$WORK/intents/x/02-SOLUTION.md"
+git -C "$WORK" commit -qam delete
 plan review
 rc="$(run)"
-if [ "$rc" != 0 ] && grep -q 'AC-1 no longer matches' "$WORK/.out"; then
-  ok "a ticket quoting a withdrawn criterion stops the run"
-else bad "a ticket quoting a withdrawn criterion stops the run" "rc=$rc $(out)"; fi
+if [ "$rc" != 0 ] && grep -q 'AC-1 is gone from' "$WORK/.out"; then
+  ok "a ticket quoting a deleted criterion stops the run"
+else bad "a ticket quoting a deleted criterion stops the run" "rc=$rc $(out)"; fi
+if grep -q 'drift' <(tkt 1-one) && [ "$(field 1-one status)" = halted ]; then
+  ok "drift is written into the ticket: its criterion was deleted"
+else bad "drift is written into the ticket: its criterion was deleted" "$(tkt 1-one)"; fi
 
 # The tag is what the ticket leaves off, whatever it says: a decision taken by
 # the user rather than for a condition, a constraint named in words.
@@ -215,6 +218,40 @@ else bad "a ticket whose solution is gone stops the run" "rc=$rc $(out)"; fi
 if grep -q 'drift' <(tkt 1-one) && [ "$(field 1-one status)" = halted ]; then
   ok "drift is written into the ticket: the solution is gone"
 else bad "drift is written into the ticket: the solution is gone" "$(tkt 1-one)"; fi
+
+# A ticket with nothing left to build is deleted, and whatever came after it has
+# to be told, or it waits for a ticket that will never be done.
+workspace
+rm "$WORK/intents/x/tickets/1-one.md"
+sed -i '/^- \*\*AC-1\*\*/d' "$WORK/intents/x/02-SOLUTION.md"
+git -C "$WORK" add -A >/dev/null; git -C "$WORK" commit -qm delete
+plan review
+rc="$(run)"
+if [ "$rc" != 0 ] && grep -q 'names 1-one, which is not a ticket' "$WORK/.out"; then
+  ok "a ticket whose after: names a deleted ticket stops the run"
+else bad "a ticket whose after: names a deleted ticket stops the run" "rc=$rc $(out)"; fi
+if [ "$(field 2-two status)" = halted ] && [ ! -s "$STUB_CALLS" ]; then
+  ok "a dangling after: halts its ticket before any session"
+else bad "a dangling after: halts its ticket before any session" "$(tkt 2-two) $(calls)"; fi
+
+# A built ticket whose criterion changed is re-sliced in place: its words
+# updated and its status put back, so the runner builds it again.
+workspace
+plan review review walk
+run > /dev/null
+sed -i 's/the first thing happens./the first thing happens, differently./' \
+  "$WORK/intents/x/02-SOLUTION.md" "$WORK/intents/x/tickets/1-one.md"
+sed -i 's/^status: .*/status:    ready/; s/^attempts: .*/attempts:  0/' "$WORK/intents/x/tickets/1-one.md"
+git -C "$WORK" commit -qam reslice
+: > "$STUB_CALLS"
+plan review walk
+rc="$(run)"
+if [ "$rc" = 0 ] && [ "$(wc -l < "$STUB_CALLS")" = 2 ] && grep -q '1-one' <(head -1 "$STUB_CALLS"); then
+  ok "a done ticket put back to ready is built again, and only it"
+else bad "a done ticket put back to ready is built again, and only it" "rc=$rc $(calls) $(out)"; fi
+if [ "$(field 1-one status)" = done ] && [ "$(field 2-two status)" = done ]; then
+  ok "the rebuilt ticket ends done beside the one left alone"
+else bad "the rebuilt ticket ends done beside the one left alone" "$(field 1-one status) / $(field 2-two status)"; fi
 
 # --- the ordinary pass
 

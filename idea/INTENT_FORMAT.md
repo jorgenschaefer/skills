@@ -15,7 +15,7 @@
 - **C-1** <One condition, checkable true or false.>
 - **C-2** <...>
 
-The numbers are the intent's contract with everything downstream: acceptance walks them back, and a condition renumbered cannot be cited. They are append-only - never renumbered, never reused, struck through rather than deleted.>
+The numbers are the intent's contract with everything downstream: acceptance walks them back, and a condition renumbered cannot be cited. They are never renumbered and never reused. A condition that no longer holds is deleted, and its number goes with it; the gap stays.>
 
 ## Constraints
 <What disqualifies a candidate outright - a budget, a deadline, a property that must not break, what we are optimizing for. Each one says what it would kill. What only ranks the survivors is a criterion, and belongs to whoever chooses between them.>

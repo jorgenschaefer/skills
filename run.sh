@@ -66,10 +66,7 @@ set_field() { sed -i "2,/^---$/s|^$2:.*|$2:$(printf '%*s' $((10 - ${#2})) '')$3|
 # The criteria a ticket quotes, and the criteria its solution carries, in the
 # one shape both can be compared in.
 quoted()   { grep -o '^> \*\*AC-[0-9]\+\*\*' "$1" | grep -o 'AC-[0-9]\+' | sort -u; }
-# A withdrawn criterion keeps its number, struck through, so that the number is
-# never handed out again. It is still in the solution and owed to no ticket.
-declared() { grep '^- \*\*AC-[0-9]\+\*\*' "$1" | grep -v '^- \*\*AC-[0-9]\+\*\* ~~' \
-               | grep -o '^- \*\*AC-[0-9]\+\*\*' | grep -o 'AC-[0-9]\+' | sort -u; }
+declared() { grep -o '^- \*\*AC-[0-9]\+\*\*' "$1" | grep -o 'AC-[0-9]\+' | sort -u; }
 text_of()  { # file, id -> the criterion as written, tag and marker stripped
   awk -v id="$2" '
     index($0, "- **" id "**") == 1 || index($0, "> **" id "**") == 1 { found = 1; print; next }
@@ -82,12 +79,12 @@ text_of()  { # file, id -> the criterion as written, tag and marker stripped
 # --- the drift pre-flight
 #
 # Before each pass, in both directions. A session never reads the solution and a
-# committed ticket is revisited by nobody, so this is the only place the two can
+# committed ticket is revisited by nobody but a re-slice, so this is the only place the two can
 # be found to disagree - and the report has to say which way, because an edit
 # upstream and a slicing that lost something need different answers.
 
 preflight() {
-  local t solution id problems="" culprit="" solutions=()
+  local t solution id dep problems="" culprit="" solutions=()
   for t in "${files[@]}"; do
     # Resolved beside the tickets/ directory, not from the working directory:
     # the frontmatter says `02-SOLUTION.md` and means the one this slicing came
@@ -99,8 +96,21 @@ preflight() {
       continue
     fi
     [[ " ${solutions[*]-} " == *" $solution "* ]] || solutions+=("$solution")
+    # A deleted ticket leaves the ones after it waiting on something that will
+    # never be done, and the loop would only say so once it had run out of work.
+    for dep in $(field "$t" after | tr ',' ' '); do
+      if ! grep -qs '^solution:' "$TICKETS/$dep.md"; then
+        problems+="$(basename "$t"): after: names $dep, which is not a ticket"$'\n'
+        [ -n "$culprit" ] || culprit="$t"
+      fi
+    done
     for id in $(quoted "$t"); do
-      if [ "$(text_of "$t" "$id")" != "$(text_of "$solution" "$id")" ]; then
+      # A criterion deleted upstream and one reworded need the same re-slice,
+      # but the person reading the halt should not have to diff to tell which.
+      if [ -z "$(text_of "$solution" "$id")" ]; then
+        problems+="$(basename "$t"): $id is gone from $solution"$'\n'
+        [ -n "$culprit" ] || culprit="$t"
+      elif [ "$(text_of "$t" "$id")" != "$(text_of "$solution" "$id")" ]; then
         problems+="$(basename "$t"): $id no longer matches $solution"$'\n'
         [ -n "$culprit" ] || culprit="$t"
       fi

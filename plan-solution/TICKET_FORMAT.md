@@ -1,6 +1,6 @@
 # Ticket format
 
-One file per slice, in the intent's own `tickets/` directory - `intents/YYYY-MM-DD-<slug>/tickets/NN-<slug>.md` - numbered for identity rather than for order. `after:` carries the order, and the numbers are append-only so a re-slice adds rather than renumbers. Two digits, because a long slicing that starts at `1-` sorts `10-` before `2-`.
+One file per slice, in the intent's own `tickets/` directory - `intents/YYYY-MM-DD-<slug>/tickets/NN-<slug>.md` - numbered for identity rather than for order. `after:` carries the order. A number is never reused: commits and `after:` lines name tickets by it. A ticket with nothing left to build is deleted, and its number goes with it. Two digits, because a long slicing that starts at `1-` sorts `10-` before `2-`.
 
 ```markdown
 ---

@@ -8,7 +8,7 @@ You are reading one solution against the intent it answers, and reporting what i
 
 By reading; there is no suite. Say in your report that you read it.
 
-- Every criterion is numbered `AC-n`, contiguously from 1, and carries at least one condition tag - except a withdrawn one, struck through directly after its number as `SOLUTION_FORMAT.md` shows, which carries none and says why it was withdrawn.
+- Every criterion is numbered `AC-n`, with no number used twice, and carries at least one condition tag. A gap is a criterion that was deleted, not a defect.
 - Every condition in the intent's `Done when` is carried by at least one criterion. A condition with no criterion is the intent's most important sentence going unbuilt.
 
 **Then the half no suite could do: is the tag true?** Take each tag, ask what would have to be built for that condition to hold, then ask whether this criterion asks for that. A tag that cites without serving is worse than a missing one, because the coverage check reads as satisfied.

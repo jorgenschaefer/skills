@@ -23,11 +23,9 @@ One approach; what did not survive is in `Ruled out`.>
 - **AC-1** <Observable behaviour, stated so a test could name it.> *(C-1, C-3)*
 - **AC-2** <...> *(C-2)*
 
-The numbers are append-only, for the same reason the intent's are: tickets copy them, and a renumbering repoints a tag that was written against the old number.
+The numbers are never renumbered and never reused, for the same reason the intent's are: tickets copy them, and a renumbering repoints a tag that was written against the old number.
 
-A criterion that no longer holds is withdrawn, not deleted or reworded: its text struck through directly after the number, then why, and what replaces it. It carries no tag, and the runner owes it to no ticket - it looks for `~~` right after the number, so spell it exactly so:
-
-- **AC-3** ~~<the old text>~~ Withdrawn <date>: <why>. Replaced by AC-7.>
+A criterion that no longer holds is deleted, and its number is not handed out again. Where a ticket already quotes it, the runner halts on drift and the unbuilt tickets are re-sliced.>
 
 ## Edge cases
 <What happens at the boundaries - the empty case, the concurrent case, the case where the thing it depends on is missing. Omit when there are none, which is rare.>

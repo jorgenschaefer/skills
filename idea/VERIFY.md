@@ -27,7 +27,7 @@ A divergence between your reading and the document's is not proof the document i
 There is no suite to run; check these by reading, and say in your report that you read them, because a reading is not a run.
 
 - The sections the format requires are present, and none is empty or a placeholder.
-- The conditions are numbered `C-1`, `C-2`, … contiguously from 1, with no gaps and no number used twice.
+- The conditions are numbered `C-n`, with no number used twice. A gap is a condition that was deleted, not a defect.
 - `Not this`, `User's solution` and `Open questions` may be absent; the rest may not.
 
 ## Reporting

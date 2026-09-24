@@ -8,17 +8,17 @@ An ADR is permanent-tier. It outlives the feature that produced it and the spec 
 
 `docs/adr/NNNN-kebab-title.md`, numbered from `0001` in the order they were accepted. A project that already keeps ADRs somewhere else keeps them there - follow what is in the repository rather than moving it.
 
-Numbers are never reused and never renumbered: an ADR is cited by number and path - from other ADRs, from a spec's `## ADRs`, and from comments in the code it explains. A superseded ADR stays where it is with its status changed and the record that replaced it named, because the reasoning that was superseded is half of why the new decision is right.
+Numbers are never reused: an ADR is cited by number and path - from other ADRs, from a spec's `## ADRs`, and from comments in the code it explains - and a reused number points those citations at a decision they were not written about.
 
-There is no status for a decision that has quietly stopped fitting. One that no longer holds is answered by a new record saying what holds now, and becomes `Superseded by` it - so the question "does this still apply?" is settled in writing by whoever asked it rather than left as a suspicion in the file.
+A decision that changes is rewritten in place to say what holds now, and the decision it replaces moves into `## Alternatives` with why it lost this time. A decision that no longer applies at all is deleted, and its number goes with it. Either way, find every citation of it - its number and its filename, in the code, the other ADRs and the specs - and fix them in the same change. The file says what holds; git says what used to.
 
 ## The record
 
 ```markdown
 # NNNN. <the decision, as a short statement - "Store money as integer cents", not "Money representation">
 
-- **Status:** Accepted | Superseded by [NNNN](NNNN-slug.md)
-- **Date:** <YYYY-MM-DD, the day it was accepted>
+- **Status:** Accepted
+- **Date:** <YYYY-MM-DD, the day it was last decided>
 
 ## Context
 

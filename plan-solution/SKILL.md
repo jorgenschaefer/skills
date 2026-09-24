@@ -75,9 +75,10 @@ The same holds of the plan you write under it: it implements the criteria quoted
 
 Drift, or a verdict routing a lost criterion back, lands here against a directory that already has committed tickets.
 
-- **Committed tickets are immutable.** Their words are what the code was built against, and rewriting them makes the `Record` a lie.
-- **Numbering is append-only.** A re-slice adds tickets; it does not renumber the directory.
-- **It goes back through plan mode and its approval**, because writing tickets is what that approval authorises. Repair `after:` against the committed tickets as part of the plan.
+- **Edit the tickets the change touches, in place.** An unbuilt ticket gets its new quote and plan, loses its `## Halt`, and goes back to `status: ready` with `attempts: 0`.
+- **A built ticket whose criterion changed is rebuilt, not annotated.** Its words are what the code was built against, so new words need a new build: update the quote and plan, clear its `## Record`, and set `status: ready` with `attempts: 0`. The build writes the `Record` again.
+- **Delete a ticket with nothing left to build; add tickets for new work.** Never reuse a number, and fix every `after:` that named a deleted ticket - the runner halts on one that names nothing.
+- **It goes back through plan mode and its approval**, because writing tickets is what that approval authorises.
 
 ## Hand off
 
