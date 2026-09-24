@@ -29,7 +29,7 @@ Quote it where it is there. Where it is not, derive it and write it in - a skill
 
 ## Cut
 
-Aggressively. Most of the weight of a bloated skill is here.
+Most of the weight of a bloated skill is here.
 
 - **Lines the model already obeys.** Read one sentence in isolation: would a competent agent behave differently without it - not on the run you are imagining, but across five of them? A skill is there to get the same process out of a stochastic system, so a line that only narrows what a bad run does is load-bearing, however redundant it looks against a good one. Encouragement ("be thorough", "think carefully"), descriptions of the agent's own tools, and principles any competent agent brings with it fail even that test. Delete the sentence whole - tightening a no-op leaves a shorter no-op.
 - **Consequences of the base.** From the pass above.

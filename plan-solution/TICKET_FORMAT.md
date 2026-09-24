@@ -19,7 +19,7 @@ attempts:  0                     # runner-owned
 
 > **AC-1** <exactly as the solution writes it, tag omitted>
 
-Copied, never summarised. This is what replaced the spec hash: a ticket carrying its own words cannot be redefined by an edit upstream, and the builder never opens the solution to find out what was meant. A paraphrase is a criterion quietly changed, in a file that claims to be quoting one.>
+Copied, never summarised. A ticket carrying its own words cannot be redefined by an edit upstream, and the builder never opens the solution to find out what was meant. A paraphrase is a criterion quietly changed, in a file that claims to be quoting one.>
 
 ## Context
 <Enough to build this without reading the solution - what exists already, what decided the approach, where the seam is. A session gets this file and the code, nothing else.>

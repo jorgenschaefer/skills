@@ -22,7 +22,7 @@ Leave the parentheses off only where the term genuinely has no English equivalen
 
 ## Sections
 
-The file has two standing sections - **Terminology** and **Aliases to avoid** - plus two appended only when the updating rules call for them: **Flagged ambiguities** and **Retired**. Use these exact headings.
+The file always has **Terminology**; **Aliases to avoid** is there once there is an alias to record. Two more are appended only when the updating rules call for them: **Flagged ambiguities** and **Retired**. Use these exact headings.
 
 Within each section, entries are bullets sorted alphabetically by the bold canonical term. Each entry starts with the **canonical term in bold**; references to other glossary terms inside an entry are also bolded so the cross-references jump out.
 
@@ -49,7 +49,7 @@ Created on demand by the updating rules below - Flagged ambiguities holds unreso
 
 ## Updating rules
 
-- **Add, don't rewrite.** Never modify an existing definition without explicit user confirmation. New terms are appended to the right section.
+- **Add, don't rewrite.** Never modify an existing definition without explicit user confirmation. New terms go into the right section.
 - **Sort alphabetically within each section.** Insert in place, keyed on the bold canonical term.
 - **Cross-reference, don't redefine.** If a definition names another domain term, that term must have its own entry in **Terminology**. If you find an unresolved reference, add a stub entry and flag it as needing user input.
 - **Flag conflicts, don't overwrite.** If a new term contradicts an existing one, append a `## Flagged ambiguities` section at the bottom describing the conflict, and ask the user to resolve before merging.

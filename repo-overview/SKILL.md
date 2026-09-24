@@ -70,13 +70,13 @@ Grouped the way the code is, which step 2 already established: by module where m
 
 Per row: the work objects it holds, and the actions it supports — an action being something an actor does to a work object, named the way the domain names it. "A reviewer rejects an application", not "calls `update()`". Where the code has no domain verbs at all and CRUD really is the whole story, say that in a line instead of inventing them; it is the most useful thing an overview can tell you about a codebase.
 
-**Include:** 5–8 work objects, the aggregates among them, and where each lives; the actor for each action; at most a handful of actions per row, the ones that carry the domain. Where an aggregate boundary is not obvious from the names, one clause on what changes together inside it.
+**Include:** the work objects that carry the domain, the aggregates among them, and where each lives; the actor for each action; at most a handful of actions per row, the ones that carry the domain. Where an aggregate boundary is not obvious from the names, one clause on what changes together inside it.
 
 **Exclude:** value objects, enums, DTOs, request/response shapes, configuration objects, single-module internals. Do not list model fields.
 
 ### Main workflows
 
-**Include:** 3–7 flows invoked by users or external callers (HTTP, CLI, queue); the primary stated purpose of the system; flows crossing module boundaries or involving multiple domain objects; background jobs central to the system's function.
+**Include:** the flows invoked by users or external callers (HTTP, CLI, queue); the primary stated purpose of the system; flows crossing module boundaries or involving multiple domain objects; background jobs central to the system's function.
 
 **Exclude:** pure CRUD flows with no domain logic; admin/debug/health-check endpoints; operational background jobs (cleanup, reindex); flows internal to one module; auth flow mechanics — a pointer to where auth lives is enough.
 
@@ -90,7 +90,7 @@ For each workflow: name, entry point as `path/to/file:function_or_handler`, one-
 
 ### Where to start
 
-3–5 files a new developer should read first, in the order that builds understanding most efficiently. One reason per file — why this specific file, what it teaches that the others don't. Where `UBIQUITOUS_LANGUAGE.md` exists, it goes first: it is the shared domain vocabulary, and a developer who doesn't know it exists can't benefit from it. Never list `ARCHITECTURE.md` itself — the reader is holding it.
+The few files a new developer should read first, in the order that builds understanding most efficiently. One reason per file — why this specific file, what it teaches that the others don't. Where `UBIQUITOUS_LANGUAGE.md` exists, it goes first: it is the shared domain vocabulary, and a developer who doesn't know it exists can't benefit from it. Never list `ARCHITECTURE.md` itself — the reader is holding it.
 
 ### The report as a whole
 

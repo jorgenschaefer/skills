@@ -16,15 +16,6 @@ A solution: `02-SOLUTION.md`, or a description in the conversation of an approac
 
 **Prose describing a problem is not that.** A request to plan a change nobody has designed is `/find-solution`'s, and handing it slices derived from your own guess is the failure the whole chain exists to prevent. Say so and stop.
 
-## Why this one is typed
-
-Its description was measured twice: about three firings in four in a project holding
-only this skill, and none at all in five runs in a project holding the full set. What
-beat it was not a rival skill but the model deciding no skill was needed. So the
-pipeline does not rely on being found here - `/find-solution` names this stage when it
-finishes, and a person can type it. Entering plan mode without it still gives an
-ordinary plan, which is the floor and is fine.
-
 ## What a slice is
 
 **Vertical.** Buildable and testable on its own, end to end. "The database part" is not a slice; it cannot be verified without the thing above it, and it leaves the tree in a state no criterion describes.
