@@ -27,6 +27,7 @@ WAIT_SECONDS="${WAIT_SECONDS:-900}"   # between hitting a usage limit and trying
 MAX_WAITS="${MAX_WAITS:-8}"
 
 die() { printf '%s\n' "$*" >&2; exit 2; }
+say() { printf '%s %s\n' "$(date +%H:%M:%S)" "$*"; }
 
 # --- refusals, before anything is launched
 
@@ -145,6 +146,39 @@ preflight() {
 
 # --- one session
 
+# Where each session's full event stream goes. Inside the git directory, so a
+# session that commits everything it sees cannot commit its own transcript.
+LOG_DIR="${LOG_DIR:-$(git rev-parse --absolute-git-dir)/run-logs}"
+mkdir -p "$LOG_DIR"
+
+# A session's event stream, cut to one line per tool call, remark and result.
+# Subagents are left out - their spawn shows, their insides are in the log.
+# Lines that are not JSON are the CLI talking rather than the session, and are
+# passed through as they are.
+narrate() {
+  jq -R --unbuffered -r '
+    def line(n): tostring | split("\n")[0] | .[0:n];
+    (fromjson? // {type: "raw", line: .})
+    | select(.parent_tool_use_id == null)
+    | if .type == "raw" then "    \(.line)"
+      elif .type == "assistant" then
+        .message.content[]?
+        | if .type == "tool_use" then
+            "    \(.name): \(.input | (.description // .file_path // .pattern // .skill // .command // "") | line(100))"
+          elif .type == "text" then "    > \(.text | line(120))"
+          else empty end
+      elif .type == "result" then
+        "    = \(.subtype)\(if .is_error then " (error)" else "" end), \(.num_turns // "?") turns, $\(.total_cost_usd // 0 | . * 100 | round / 100)"
+      else empty end'
+}
+
+claude_run() {  # log, prompt -> claude's exit status
+  claude -p --output-format stream-json --verbose --permission-mode acceptEdits \
+    --allowedTools Bash Edit Write Read Glob Grep Skill Agent TodoWrite \
+    -- "$2" </dev/null 2>&1 | tee "$1" | narrate
+  return "${PIPESTATUS[0]}"
+}
+
 halt() {  # ticket, kind, why
   printf '\n## Halt\n\n%s - %s\n' "$2" "$3" >> "$1"
   set_field "$1" status halted
@@ -159,7 +193,7 @@ halt() {  # ticket, kind, why
 # the session never got to do any. Waiting it out and trying again is the whole
 # reason this is a process that outlives its sessions.
 session() {  # ticket -> 0 ran, 1 failed
-  local out rc waits=0 prompt
+  local log rc waits=0 prompt
   prompt="Use /implement on the work described in $1.
 
 That file is the whole brief. Its \`## Done when\` is the definition of done - not the diff, not what you would have built, not what the solution probably meant. Its \`## Not here\` names what a neighbouring ticket owns, and building it is two tickets building the same code. Its \`## Plan\` is how it was decided this gets built; where you find the plan wrong, say so rather than following it off a cliff.
@@ -183,17 +217,17 @@ Never write \`status: doing\` or \`status: done\`. Both ends belong to the runne
     # did not write it, and there is no review pass here to fall back on.
     # Without it the build declines the spawn and every ticket reaches `done`
     # unreviewed.
-    out="$(claude -p --permission-mode acceptEdits \
-             --allowedTools Bash Edit Write Read Glob Grep Skill Agent TodoWrite \
-             -- "$prompt" 2>&1)"; rc=$?
-    printf '%s\n' "$out"
-    case "$out" in
-      *"usage limit reached"*)
-        waits=$((waits + 1))
-        [ "$waits" -le "$MAX_WAITS" ] || { echo "gave up waiting out the limit" >&2; return 1; }
-        sleep "$WAIT_SECONDS"
-        continue ;;
-    esac
+    log="$LOG_DIR/$(basename "$1" .md)-$(date +%Y%m%d-%H%M%S).jsonl"
+    say "session on $(basename "$1"), full log in $log"
+    claude_run "$log" "$prompt"; rc=$?
+    if grep -q "usage limit reached" "$log"; then
+      waits=$((waits + 1))
+      [ "$waits" -le "$MAX_WAITS" ] || { echo "gave up waiting out the limit" >&2; return 1; }
+      say "usage limit - waiting ${WAIT_SECONDS}s ($waits of $MAX_WAITS)"
+      sleep "$WAIT_SECONDS"
+      continue
+    fi
+    say "session ended, exit $rc, ticket says status: $(field "$1" status)"
     return $rc
   done
 }
@@ -225,6 +259,7 @@ while :; do
   fi
   set_field "$ticket" attempts "$attempts"
   set_field "$ticket" status doing
+  say "claimed $(basename "$ticket"), attempt $attempts of $MAX_ATTEMPTS"
 
   # Where HEAD was before the build, so that `review` can be checked against
   # what the session did rather than only against what it says it did.
@@ -234,13 +269,15 @@ while :; do
     # The session did not get to say what happened, so the runner says it: the
     # claim goes back, and the attempt is spent either way.
     [ "$(field "$ticket" status)" = doing ] && set_field "$ticket" status ready
+    say "session failed - $(basename "$ticket") goes back to ready"
     continue
   fi
 
   case "$(field "$ticket" status)" in
     halted) echo "halted: $ticket" >&2; exit 1 ;;
     review) ;;
-    *) set_field "$ticket" status ready; continue ;;
+    *) say "session left $(basename "$ticket") at $(field "$ticket" status) - back to ready"
+       set_field "$ticket" status ready; continue ;;
   esac
 
   # A session that says `review` without a commit built nothing, and accepting
@@ -263,6 +300,7 @@ while :; do
   fi
 
   set_field "$ticket" status done
+  say "done: $(basename "$ticket") at $(git rev-parse --short HEAD)"
 done
 
 # `break` means nothing could be selected, which is not the same as everything
@@ -303,6 +341,9 @@ printf 'walking %s\n\n' "$intent"
 # `disable-model-invocation`, so it is not among the skills a session can
 # reach on its own - naming it in a sentence gets a session that improvises
 # the one stage that asks whether the problem was solved.
-claude -p --permission-mode acceptEdits \
-  --allowedTools Bash Edit Write Read Glob Grep Skill Agent TodoWrite \
-  -- "/accept-intent $intent"
+log="$LOG_DIR/accept-intent-$(date +%Y%m%d-%H%M%S).jsonl"
+say "full log in $log"
+claude_run "$log" "/accept-intent $intent"
+# The walk's report is the one thing here meant to be read in full.
+printf '\n'
+jq -R -r 'fromjson? | select(.type == "result") | .result // empty' "$log"
