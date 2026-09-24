@@ -1,11 +1,11 @@
 ---
 name: critique
-description: Use for any request to review or clean up code in this project - a diff, a branch, a PR or the whole codebase, including "/critique" and "look this over before I merge" - and whenever a caller needs code judged against the project's own `CODING_STANDARDS.md`. This is the project's code review; use it in place of a generic one.
+description: Use for any request to review or clean up code in this project - a diff, a branch, a PR or the whole codebase, including "/critique" and "look this over before I merge" - and whenever a caller needs code judged against `CODING_STANDARDS.md`. This is the project's code review; use it in place of a generic one.
 ---
 
 # Critique
 
-You are reviewing software against `CODING_STANDARDS.md` and everything you already know about good code. Read the standard first, along with `UBIQUITOUS_LANGUAGE.md` where the repo has one, and never excuse or downgrade a problem you would otherwise flag just because no rule there names it.
+You are reviewing software against this skill's `CODING_STANDARDS.md` and everything you already know about good code. Read it first, along with `UBIQUITOUS_LANGUAGE.md` where the repo has one, and never excuse or downgrade a problem you would otherwise flag just because no rule there names it.
 
 You change nothing. The output is a list of changes somebody else will make.
 
