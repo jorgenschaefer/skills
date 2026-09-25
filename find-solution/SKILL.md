@@ -39,6 +39,8 @@ A small change arrives as a sentence, and writing an intent document for it woul
 
 **Show the candidates, do not describe them.** For each one the constraints did not kill, build a cheap specimen - the screen as an HTML mockup, the section as written text, the interface as a sketch of its signatures, one real case walked through the flow. Two approaches described in prose collapse into the thorough one and the simple one, and the user is left choosing between adjectives. Cheap is the point: most of these are about to lose. Where a candidate cannot be shown, say why rather than letting prose stand in unremarked.
 
+**Build the specimens in `specimens/` inside the intent's directory, and nowhere else** - `intents/YYYY-MM-DD-<slug>/specimens/`. That holds for every file they touch: a staging folder for publishing them, and a file fetched back to edit. On the short path, make the intent's directory now. A specimen built anywhere else is left behind there, in the way of every build that follows.
+
 **Agree what decides before you score anything.** Say which properties will pick the winner, and get that agreed while the candidates are still open. Criteria proposed afterwards are criteria chosen to make the answer you already like come out on top, and neither of you will be able to tell.
 
 **Kill on constraints first.** What remains is a choice, and the choice is the user's. Give a recommendation.
@@ -51,9 +53,9 @@ A small change arrives as a sentence, and writing an intent document for it woul
 
 **Write it to `02-SOLUTION.md`, in the intent's own directory** - `intents/YYYY-MM-DD-<slug>/`, beside the `01-INTENT.md` it answers.
 
-Where there is no intent document - the short path above - make that directory yourself and write `02-SOLUTION.md` into it alone. The conditions live in the solution's own `## Intent` section.
+Where there is no intent document - the short path above - that directory is the one you made for the specimens, or make it now if none were built; `02-SOLUTION.md` is the only document in it. The conditions live in the solution's own `## Intent` section.
 
-**Keep the winning specimen beside the solution; delete the losers.** `SOLUTION_FORMAT.md` says where it is linked from.
+**Once the choice is made, `specimens/` holds the chosen candidate and nothing else.** Delete the losers, the picture of today and every board that only served the comparison. Where the specimens were published, cut the published copy to the same files. `SOLUTION_FORMAT.md` says where they are linked from.
 
 **Every open question the intent raised appears in the solution** - settled in `Approach`, deferred in `Open concerns`, or named as still open.
 

@@ -13,7 +13,7 @@ Where the change was small enough that no intent document was written, this sect
 ## Approach
 <The chosen answer in prose. What it does, how it hangs together, why this shape.
 
-Where a specimen was built for it, link it; it sits beside this file.
+Where a specimen was built for it, link it: it is in `specimens/` beside this file, the chosen candidate only, and at its published address too where it has one.
 
 One approach; what did not survive is in `Ruled out`.>
 
