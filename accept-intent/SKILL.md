@@ -28,7 +28,7 @@ Each ticket's `## Record` names the test that pins each criterion. Read them as 
 
 Where a Record names a test for a criterion whose condition you could not find in the product, say so plainly. That gap - green tests, absent behaviour - is the most useful thing this stage can report.
 
-Each Record also says what its build left standing: findings not fixed, checks not run, departures from the plan. Collect them. You are the only reader they have, and an item nobody passes on is an item nobody decides.
+Each Record also says what its build left standing: findings not fixed, checks not run, departures from the plan.
 
 ## Report
 

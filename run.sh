@@ -269,7 +269,7 @@ session() {  # ticket -> 0 ran, EX_LIMIT gave up on a limit, anything else faile
   # one in a subdirectory looked for a relative path at the repository root.
   prompt="Use /implement on the work described in $(realpath "$1").
 
-The project's checks are \`$VERIFY\`, and they passed on this commit before the run started. A check that fails now failed because of this build.
+The project's checks are \`$VERIFY\`, and they passed when this run started. A check that fails now failed because of this build.
 
 That file is the whole brief. Its \`## Done when\` is the definition of done - not the diff, not what you would have built, not what the solution probably meant. Its \`## Not here\` names what a neighbouring ticket owns, and building it is two tickets building the same code. Its \`## Plan\` is how it was decided this gets built; where you find the plan wrong, say so rather than following it off a cliff.
 

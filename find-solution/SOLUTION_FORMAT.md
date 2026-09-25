@@ -13,7 +13,7 @@ Where the change was small enough that no intent document was written, this sect
 ## Approach
 <The chosen answer in prose. What it does, how it hangs together, why this shape.
 
-Where a specimen was built for it, link it: it is in `specimens/` beside this file, the chosen candidate only, and at its published address too where it has one.
+Where a specimen was built for it, link it: it is in `specimens/` beside this file, and at its published address too where it has one.
 
 One approach; what did not survive is in `Ruled out`.>
 
@@ -25,7 +25,7 @@ One approach; what did not survive is in `Ruled out`.>
 
 The numbers are never renumbered and never reused, for the same reason the intent's are: tickets copy them, and a renumbering repoints a tag that was written against the old number.
 
-A criterion that no longer holds is deleted, and its number is not handed out again. Where a ticket already quotes it, the runner halts on drift and the unbuilt tickets are re-sliced.>
+A criterion that no longer holds is deleted, number and all. Where a ticket already quotes it, the runner halts on drift and the unbuilt tickets are re-sliced.>
 
 ## Edge cases
 <What happens at the boundaries - the empty case, the concurrent case, the case where the thing it depends on is missing. Omit when there are none, which is rare.>

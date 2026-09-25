@@ -23,7 +23,7 @@ This skill's `CODING_STANDARDS.md` is what the software has to look like. Read i
 
 Build it to the standard, in the order the standard says the work happens. Then the project's checks, and report the real result - if you cannot run them, say so rather than assuming.
 
-**Keep your own context for the build.** Side work whose result is a conclusion - surveying code you do not know, a manual check in the running app, chasing a failure you cannot yet explain - goes to a subagent with the question, and only the answer comes back. The red-green cycles stay here. Every turn pays for the whole context again, and a session resumed after a usage limit pays for it from the start.
+**Keep your own context for the build.** Side work whose result is a conclusion - surveying code you do not know, a manual check in the running app, chasing a failure you cannot yet explain - goes to a subagent with the question, and only the answer comes back - a large context is paid for on every turn, and again on every resume. The red-green cycles stay here.
 
 ## Review it in a session that did not write it
 

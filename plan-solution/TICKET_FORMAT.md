@@ -35,7 +35,7 @@ Written before the build, by whoever cut the slice, against the code as it actua
 ## Record
 <Written by the build: which test names which criterion. The only evidence that a criterion was covered rather than claimed.
 
-And what the build left standing - review findings not fixed and why, checks not run, departures from the plan. The walk reads it; nobody reads a build's closing message.>
+And what the build left standing - review findings not fixed and why, checks not run, departures from the plan.>
 
 ## Halt
 <Written by whoever stopped - the session or the runner - naming the kind and what it was blocked on. Absent unless something stopped.>
@@ -45,6 +45,6 @@ And what the build left standing - review findings not fixed and why, checks not
 
 **`satisfies` and the quotation have to agree.** A criterion claimed and not quoted is one the builder never sees; a criterion quoted and not claimed is work no coverage check knows about.
 
-**`status` belongs to the runner, except at its two ends.** The runner writes `doing` and `done`; a session writes `review` when it has committed, or `halted` when it has stopped. A session never claims its own work and never declares it finished. The runner writes `done` into the session's commit, by amending it.
+**`status` belongs to the runner, except at its two ends.** The runner writes `doing` and `done`; a session writes `review` when it has committed, or `halted` when it has stopped.
 
 **`attempts` is a counter the runner owns.** It lives in the file because the runner is expected to die and resume - it waits out usage limits - and a count that does not survive that is not a ceiling.

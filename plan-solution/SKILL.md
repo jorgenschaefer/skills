@@ -75,13 +75,16 @@ The same holds of the plan you write under it: it implements the criteria quoted
 
 Drift, or a verdict routing a lost criterion back, lands here against a directory that already has committed tickets.
 
-- **Edit the tickets the change touches, in place.** An unbuilt ticket gets its new quote and plan, loses its `## Halt`, and goes back to `status: ready` with `attempts: 0`.
-- **A built ticket whose criterion changed is rebuilt, not annotated.** Its words are what the code was built against, so new words need a new build: update the quote and plan, clear its `## Record`, and set `status: ready` with `attempts: 0`. The build writes the `Record` again.
-- **Delete a ticket with nothing left to build; add tickets for new work.** Never reuse a number, and fix every `after:` that named a deleted ticket - the runner halts on one that names nothing.
+- **Edit the tickets the change touches, in place:** the new quote and plan, no `## Halt`, no `## Record`, `status: ready`, `attempts: 0`. A built ticket whose criterion changed is rebuilt this way, not annotated - its words are what the code was built against.
+- **Delete a ticket with nothing left to build; add tickets for new work.** Fix every `after:` that named a deleted ticket - the runner halts on one that names nothing.
 - **It goes back through plan mode and its approval**, because writing tickets is what that approval authorises.
+- **Commit the re-slice before the runner starts again** - the runner refuses a dirty tree, and its own halts are uncommitted too.
 
 ## Hand off
 
 `./run.sh intents/<slug>/tickets` drives the directory with nobody watching; a small
 change is just as well built by working through the tickets yourself. Either way the
 ticket is the unit, and nothing merges until the intent has been walked.
+
+Commit the intent's directory - intent, solution, specimens, tickets, ADRs - before
+handing off; the runner refuses a dirty tree.
