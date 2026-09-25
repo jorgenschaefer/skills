@@ -76,8 +76,8 @@ name the project's checks and runs them itself - a run that starts red does not 
 and every build is told the checks were green. It checks before every pass that the
 tickets and their solution still agree, enforces the attempt budget from a counter in the ticket file, and waits
 out a usage limit rather than spending the budget on it. When every ticket is done it
-walks the conditions with `/accept-intent` and prints what that found - without merging,
-marking, or ruling on it. It walks `01-INTENT.md` where there is one and the solution
+walks the conditions with `/accept-intent` and prints what that found, along with what
+the builds' Records say they left standing - without merging, marking, or ruling on it. It walks `01-INTENT.md` where there is one and the solution
 where there is not, because the short path keeps its conditions in the solution's own
 `## Intent` section and the walk follows the conditions rather than the filename.
 

@@ -33,7 +33,9 @@ Written before the build, by whoever cut the slice, against the code as it actua
 <The boundary against the neighbouring tickets, and where the excluded thing lives instead. This is what stops two slices building the same thing twice.>
 
 ## Record
-<Written by the build: which test names which criterion. The only evidence that a criterion was covered rather than claimed.>
+<Written by the build: which test names which criterion. The only evidence that a criterion was covered rather than claimed.
+
+And what the build left standing - review findings not fixed and why, checks not run, departures from the plan. The walk reads it; nobody reads a build's closing message.>
 
 ## Halt
 <Written by whoever stopped - the session or the runner - naming the kind and what it was blocked on. Absent unless something stopped.>

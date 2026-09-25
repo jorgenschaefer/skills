@@ -25,6 +25,8 @@
 # asks its answer in, consumes no plan line and is not recorded: it answers
 # $STUB_VERIFY as the command, or no command at all where that is empty.
 #
+# Every call's arguments go to $STUB_ARGS, the verification call's included.
+#
 # Every call's session is written to $STUB_SESSIONS as `start <id> <ticket>` or
 # `resume <id>`. A resumed call names no ticket in its prompt - the real session
 # remembers what it was doing - so the stub looks the ticket up by the id.
@@ -37,6 +39,10 @@
 # cares how often the runner calls out needs the extra call to be visible.
 
 set -uo pipefail
+
+# Every call's arguments, one line each, for the tests that care how the
+# runner launches a session rather than what the session did.
+printf '%s\n' "$*" >> "$STUB_ARGS"
 
 if [[ " $* " == *" --json-schema "* ]]; then
   jq -nc --arg c "$STUB_VERIFY" \

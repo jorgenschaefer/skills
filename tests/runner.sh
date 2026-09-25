@@ -50,9 +50,10 @@ EOF
   # this every case would be refused as a dirty tree.
   printf '/.*\n' >> "$WORK/.git/info/exclude"
   STUB_CALLS="$WORK/.calls"; STUB_PLAN="$WORK/.plan"; STUB_SESSIONS="$WORK/.sessions"
-  : > "$STUB_CALLS"; : > "$STUB_PLAN"; : > "$STUB_SESSIONS"
+  STUB_ARGS="$WORK/.args"
+  : > "$STUB_CALLS"; : > "$STUB_PLAN"; : > "$STUB_SESSIONS"; : > "$STUB_ARGS"
   STUB_VERIFY=true
-  export STUB_CALLS STUB_PLAN STUB_SESSIONS STUB_VERIFY
+  export STUB_CALLS STUB_PLAN STUB_SESSIONS STUB_ARGS STUB_VERIFY
   mkdir -p "$WORK/.bin" && ln -sf "$HERE/stub-session" "$WORK/.bin/claude"
   # How long the runner asked to wait, one line per wait, and no wait at all.
   SLEPT="$WORK/.slept"; : > "$SLEPT"
@@ -324,6 +325,17 @@ if [ -z "$(git -C "$WORK" status --porcelain)" ] \
    && [ "$(git -C "$WORK" show HEAD:intents/x/tickets/2-two.md | sed -n 's/^status: *//p')" = done ]; then
   ok "a clean run leaves nothing uncommitted, and done is committed"
 else bad "a clean run leaves nothing uncommitted, and done is committed" "$(git -C "$WORK" status --porcelain)"; fi
+# Sessions run where the runner was started, which need not be where the path
+# was written from: a session in a subdirectory looked for a relative ticket
+# path at the repository root first.
+if grep -qF "$(realpath "$WORK")/intents/x/tickets/1-one.md" <(head -1 "$STUB_CALLS"); then
+  ok "the build is given the ticket by its absolute path"
+else bad "the build is given the ticket by its absolute path" "$(head -1 "$STUB_CALLS")"; fi
+# A session that runs its checks in the background has to be able to wait on
+# them, and `sleep` is refused.
+if grep -q -- '--allowedTools .*Monitor' <(grep 'Use /implement' "$STUB_ARGS" | head -1); then
+  ok "a build may use Monitor to wait on its background checks"
+else bad "a build may use Monitor to wait on its background checks" "$(head -2 "$STUB_ARGS")"; fi
 if grep -q '1-one' <(head -1 "$STUB_CALLS"); then ok "it builds in dependency order"
 else bad "it builds in dependency order" "$(calls)"; fi
 # Two builds and the walk. There is one session per ticket now: the runner used

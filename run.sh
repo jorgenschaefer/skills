@@ -243,9 +243,13 @@ limit_reset() {  # log -> the epoch the limit lifts, 0 where it named none; noth
 # `/implement` reviews its own diff by spawning `critique` in a session that did
 # not write it, and there is no review pass here to fall back on. Without it the
 # build declines the spawn and every ticket reaches `done` unreviewed.
+#
+# `Monitor` is how a session waits on checks it put in the background: `sleep`
+# is refused, and without it a build that backgrounded its test run had no way
+# to wait for the result.
 claude_run() {  # log, --session-id or --resume, session id, prompt, claude's own options... -> claude's exit status
   claude -p --output-format stream-json --verbose --permission-mode acceptEdits \
-    --allowedTools Bash Edit Write Read Glob Grep Skill Agent TodoWrite \
+    --allowedTools Bash Edit Write Read Glob Grep Skill Agent TodoWrite Monitor \
     "$2" "$3" "${@:5}" -- "$4" </dev/null 2>&1 | tee "$1" | narrate
   return "${PIPESTATUS[0]}"
 }
@@ -261,7 +265,9 @@ halt() {  # ticket, kind, why
 # itself, which is the cost of the skill staying general.
 session() {  # ticket -> 0 ran, EX_LIMIT gave up on a limit, anything else failed
   local rc prompt
-  prompt="Use /implement on the work described in $1.
+  # By its absolute path: a session runs wherever the runner was started, and
+  # one in a subdirectory looked for a relative path at the repository root.
+  prompt="Use /implement on the work described in $(realpath "$1").
 
 The project's checks are \`$VERIFY\`, and they passed on this commit before the run started. A check that fails now failed because of this build.
 
@@ -269,7 +275,7 @@ That file is the whole brief. Its \`## Done when\` is the definition of done - n
 
 Do not open the solution the frontmatter names. The ticket quotes what it needs, and going upstream is how a ticket quietly becomes a different one.
 
-When the criteria are green and the project's checks pass, write the ticket's \`## Record\` - which test names which criterion, and the command you ran - and set \`status: review\` in the frontmatter. Then commit the code and the ticket file together, in one commit.
+When the criteria are green and the project's checks pass, write the ticket's \`## Record\` - which test names which criterion, the command you ran, and what you left standing: review findings you did not fix and why, checks you did not run, and where you departed from the plan. Nobody reads your closing message in an unattended run; the walk reads the Record. Set \`status: review\` in the frontmatter and commit the code and the ticket file together, in one commit.
 
 If you cannot proceed, append a \`## Halt\` section naming the kind and stop: \`blocked\` (a precondition the ticket assumed is not there), \`undecided\` (a decision the ticket's criteria do not settle and that is not yours to settle), or \`mystery\` (a failure you cannot explain, which is different from one you cannot fix). Then set \`status: halted\`.
 
