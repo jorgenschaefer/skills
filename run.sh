@@ -23,8 +23,9 @@ set -uo pipefail
 
 TICKETS="${1:-}"
 MAX_ATTEMPTS="${MAX_ATTEMPTS:-3}"     # builds of one ticket before it is exhausted
-WAIT_SECONDS="${WAIT_SECONDS:-900}"   # between hitting a usage limit and trying again
-MAX_WAITS="${MAX_WAITS:-8}"
+WAIT_SECONDS="${WAIT_SECONDS:-300}"   # after a usage limit that names no reset time
+LIMIT_MARGIN="${LIMIT_MARGIN:-120}"   # past a limit's reset time, before carrying on
+MAX_WAITS="${MAX_WAITS:-8}"           # limits in a row before the run gives up
 
 die() { printf '%s\n' "$*" >&2; exit 2; }
 say() { printf '%s %s\n' "$(date +%H:%M:%S)" "$*"; }
@@ -167,15 +168,77 @@ narrate() {
             "    \(.name): \(.input | (.description // .file_path // .pattern // .skill // .command // "") | line(100))"
           elif .type == "text" then "    > \(.text | line(120))"
           else empty end
+      elif .type == "rate_limit_event" then
+        select(.rate_limit_info.status == "rejected")
+        | "    ! usage limit, resets \(.rate_limit_info.resetsAt // 0 | strflocaltime("%a %H:%M"))"
       elif .type == "result" then
         "    = \(.subtype)\(if .is_error then " (error)" else "" end), \(.num_turns // "?") turns, $\(.total_cost_usd // 0 | . * 100 | round / 100)"
       else empty end'
 }
 
-claude_run() {  # log, prompt -> claude's exit status
+# One session, carried through every usage limit that stops it. A limit is not a
+# failure of the work - it stops a session wherever it happens to be, often with
+# a build done and its review half run - so the session is waited out to the
+# reset the limit names and then resumed, not started over. Each round gets its
+# own log, and LOG names the last one.
+#
+# Returns the session's exit status, or EX_LIMIT when the limit outlasted
+# MAX_WAITS: that is nobody's failure, and the caller must not charge it to the
+# work.
+EX_LIMIT=75
+claude_through_limits() {  # log name, prompt
+  local id reset delay rc waits=0 how=--session-id prompt="$2"
+  id="$(new_session_id)"
+  while :; do
+    LOG="$LOG_DIR/$1-$(date +%Y%m%d-%H%M%S)$([ "$waits" = 0 ] || printf -- '-resumed-%s' "$waits").jsonl"
+    say "full log in $LOG"
+    claude_run "$LOG" "$how" "$id" "$prompt"; rc=$?
+    reset="$(limit_reset "$LOG")"
+    [ -n "$reset" ] || return "$rc"
+    waits=$((waits + 1))
+    [ "$waits" -le "$MAX_WAITS" ] \
+      || { echo "gave up waiting out the limit after $MAX_WAITS waits" >&2; return "$EX_LIMIT"; }
+    if [ "$reset" -gt 0 ]; then delay=$(( reset + LIMIT_MARGIN - $(date +%s) )); else delay="$WAIT_SECONDS"; fi
+    [ "$delay" -gt 0 ] || delay=0
+    say "usage limit - waiting until $(date -d "@$(( $(date +%s) + delay ))" '+%a %H:%M') ($waits of $MAX_WAITS)"
+    sleep "$delay"
+    how=--resume
+    prompt="You were stopped by a usage limit, which has now reset. Carry on with the task from where you stopped; redo any step the limit cut short, a subagent included."
+  done
+}
+
+new_session_id() {
+  cat /proc/sys/kernel/random/uuid 2>/dev/null || uuidgen | tr '[:upper:]' '[:lower:]'
+}
+
+# Read off the events the CLI writes, never its wording: the message changed
+# once already, and a runner matching the old one relaunched a limited session
+# three times in four seconds and halted the ticket as exhausted. A session that
+# still finished was not stopped, whatever was rejected on the way - a subagent's
+# window, or one that overage paid for.
+limit_reset() {  # log -> the epoch the limit lifts, 0 where it named none; nothing when there was no limit
+  jq -R -s -r '[split("\n")[] | fromjson? | select(.parent_tool_use_id == null)]
+    | if any(.[]; .type == "result" and .is_error == false) then empty
+      else [.[] | if .type == "rate_limit_event" and .rate_limit_info.status == "rejected" then .rate_limit_info.resetsAt // 0
+                  elif .error == "rate_limit" then 0
+                  else empty end]
+           | max // empty end' "$1"
+}
+
+# Nobody is here to approve a tool call, and `claude -p` cannot prompt: what it
+# cannot get approved it declines, and a session that could not run the tests
+# halts as if the work were impossible. The first live run of this script halted
+# exactly that way. So the tools a build needs are named here rather than left
+# to whatever the operator has in settings.
+#
+# `Agent` is the subagent tool, and it is what makes the review real:
+# `/implement` reviews its own diff by spawning `critique` in a session that did
+# not write it, and there is no review pass here to fall back on. Without it the
+# build declines the spawn and every ticket reaches `done` unreviewed.
+claude_run() {  # log, --session-id or --resume, session id, prompt -> claude's exit status
   claude -p --output-format stream-json --verbose --permission-mode acceptEdits \
     --allowedTools Bash Edit Write Read Glob Grep Skill Agent TodoWrite \
-    -- "$2" </dev/null 2>&1 | tee "$1" | narrate
+    "$2" "$3" -- "$4" </dev/null 2>&1 | tee "$1" | narrate
   return "${PIPESTATUS[0]}"
 }
 
@@ -188,12 +251,8 @@ halt() {  # ticket, kind, why
 # the generic build skill - it fires when anyone asks for code and knows nothing
 # about tickets, statuses or halt kinds. A runner that needs those has to say so
 # itself, which is the cost of the skill staying general.
-#
-# The retry loop below is for a usage limit, which is not a failure of the work:
-# the session never got to do any. Waiting it out and trying again is the whole
-# reason this is a process that outlives its sessions.
-session() {  # ticket -> 0 ran, 1 failed
-  local log rc waits=0 prompt
+session() {  # ticket -> 0 ran, EX_LIMIT gave up on a limit, anything else failed
+  local rc prompt
   prompt="Use /implement on the work described in $1.
 
 That file is the whole brief. Its \`## Done when\` is the definition of done - not the diff, not what you would have built, not what the solution probably meant. Its \`## Not here\` names what a neighbouring ticket owns, and building it is two tickets building the same code. Its \`## Plan\` is how it was decided this gets built; where you find the plan wrong, say so rather than following it off a cliff.
@@ -205,31 +264,10 @@ When the criteria are green and the project's checks pass, write the ticket's \`
 If you cannot proceed, append a \`## Halt\` section naming the kind and stop: \`blocked\` (a precondition the ticket assumed is not there), \`undecided\` (a decision the ticket's criteria do not settle and that is not yours to settle), or \`mystery\` (a failure you cannot explain, which is different from one you cannot fix). Then set \`status: halted\`.
 
 Never write \`status: doing\` or \`status: done\`. Both ends belong to the runner."
-  while :; do
-    # Nobody is here to approve a tool call, and `claude -p` cannot prompt: what
-    # it cannot get approved it declines, and a session that could not run the
-    # tests halts as if the work were impossible. The first live run of this
-    # script halted exactly that way. So the tools a build needs are named here
-    # rather than left to whatever the operator has in settings.
-    #
-    # `Agent` is the subagent tool, and it is what makes the review real:
-    # `/implement` reviews its own diff by spawning `critique` in a session that
-    # did not write it, and there is no review pass here to fall back on.
-    # Without it the build declines the spawn and every ticket reaches `done`
-    # unreviewed.
-    log="$LOG_DIR/$(basename "$1" .md)-$(date +%Y%m%d-%H%M%S).jsonl"
-    say "session on $(basename "$1"), full log in $log"
-    claude_run "$log" "$prompt"; rc=$?
-    if grep -q "usage limit reached" "$log"; then
-      waits=$((waits + 1))
-      [ "$waits" -le "$MAX_WAITS" ] || { echo "gave up waiting out the limit" >&2; return 1; }
-      say "usage limit - waiting ${WAIT_SECONDS}s ($waits of $MAX_WAITS)"
-      sleep "$WAIT_SECONDS"
-      continue
-    fi
-    say "session ended, exit $rc, ticket says status: $(field "$1" status)"
-    return $rc
-  done
+  say "session on $(basename "$1")"
+  claude_through_limits "$(basename "$1" .md)" "$prompt"; rc=$?
+  say "session ended, exit $rc, ticket says status: $(field "$1" status)"
+  return $rc
 }
 
 # --- the loop
@@ -265,7 +303,19 @@ while :; do
   # what the session did rather than only against what it says it did.
   head_before="$(git rev-parse HEAD)"
 
-  if ! session "$ticket"; then
+  session "$ticket"; rc=$?
+  if [ "$rc" = "$EX_LIMIT" ]; then
+    # A limit that outlasted every wait says nothing about the ticket, so it is
+    # handed back as it was claimed, attempt and all, rather than left for the
+    # budget to halt.
+    if [ "$(field "$ticket" status)" = doing ]; then
+      set_field "$ticket" status ready
+      set_field "$ticket" attempts "$((attempts - 1))"
+    fi
+    echo "$(basename "$ticket") is at $(field "$ticket" status) - run again once the limit has lifted" >&2
+    exit 1
+  fi
+  if [ "$rc" != 0 ]; then
     # The session did not get to say what happened, so the runner says it: the
     # claim goes back, and the attempt is spent either way.
     [ "$(field "$ticket" status)" = doing ] && set_field "$ticket" status ready
@@ -341,9 +391,8 @@ printf 'walking %s\n\n' "$intent"
 # `disable-model-invocation`, so it is not among the skills a session can
 # reach on its own - naming it in a sentence gets a session that improvises
 # the one stage that asks whether the problem was solved.
-log="$LOG_DIR/accept-intent-$(date +%Y%m%d-%H%M%S).jsonl"
-say "full log in $log"
-claude_run "$log" "/accept-intent $intent"
+claude_through_limits accept-intent "/accept-intent $intent"
+[ $? = "$EX_LIMIT" ] && exit 1
 # The walk's report is the one thing here meant to be read in full.
 printf '\n'
-jq -R -r 'fromjson? | select(.type == "result") | .result // empty' "$log"
+jq -R -r 'fromjson? | select(.type == "result") | .result // empty' "$LOG"

@@ -9,8 +9,20 @@
 #   claim-only   set status: review having committed nothing
 #   halt:<kind>  write the halt and set status: halted
 #   die          exit 1 having touched nothing, as a crash does
-#   limit        exit 1 with the usage-limit message on stdout
+#   limit        be rejected by a usage limit, in the events the CLI really
+#                writes: a rejected rate_limit_event carrying the reset time,
+#                the assistant's rate_limit error, and an error result
+#   limit-quiet  only the rejected rate_limit_event, with no text anywhere
+#   limit-bare   only the assistant's rate_limit error, with no reset time
+#   review-limit commit and set status: review, then be stopped by a limit
+#   limit-sub    a subagent hits a limit, then the session dies of something else
+#   limit-passed a subagent hits a limit and the session is told of a rejected
+#                window, but it goes on to finish - then `review`
 #   walk         the acceptance call - record it and exit 0
+#
+# Every call's session is written to $STUB_SESSIONS as `start <id> <ticket>` or
+# `resume <id>`. A resumed call names no ticket in its prompt - the real session
+# remembers what it was doing - so the stub looks the ticket up by the id.
 #
 # There is one role now where there were two. The runner used to launch a second
 # session to review what the first built; `/implement` spawns that reviewer
@@ -24,6 +36,16 @@ set -uo pipefail
 prompt="${*: -1}"
 ticket="$(printf '%s' "$prompt" | grep -o '[^ ]*tickets/[^ ]*\.md' | head -1)"
 
+args=("$@")
+for i in "${!args[@]}"; do
+  case "${args[$i]}" in
+    --session-id) printf 'start %s %s\n' "${args[$((i + 1))]}" "$ticket" >> "$STUB_SESSIONS" ;;
+    --resume)     id="${args[$((i + 1))]}"
+                  printf 'resume %s\n' "$id" >> "$STUB_SESSIONS"
+                  ticket="$(awk -v id="$id" '$1 == "start" && $2 == id { print $3 }' "$STUB_SESSIONS")" ;;
+  esac
+done
+
 # One line per call, whitespace flattened, so a test can count calls and read
 # the first one to see which ticket went first.
 n=$(( $(wc -l < "$STUB_CALLS") + 1 ))
@@ -33,6 +55,12 @@ printf '\n' >> "$STUB_CALLS"
 line="$(sed -n "${n}p" "$STUB_PLAN")"
 [ -n "$line" ] || { echo "stub: no plan line $n for: $prompt" >&2; exit 99; }
 
+# Resetting $STUB_RESET_IN seconds from now, 0 unless a test says otherwise.
+rejected_event() {
+  printf '{"type":"rate_limit_event","rate_limit_info":{"status":"rejected","resetsAt":%s,"rateLimitType":"five_hour"}}\n' \
+    "$(( $(date +%s) + ${STUB_RESET_IN:-0} ))"
+}
+
 set_status() { sed -i "s/^status: .*/status:    $1/" "$ticket"; }
 
 case "$line" in
@@ -41,11 +69,17 @@ case "$line" in
     [ -n "$ticket" ] && { echo "stub: expected the walk, got a ticket: $prompt" >&2; exit 97; }
     echo "the walk ran"
     ;;
-  review)
+  review|limit-passed|review-limit)
+    if [ "$line" = limit-passed ]; then
+      echo '{"type":"assistant","message":{"role":"assistant","content":[]},"parent_tool_use_id":"toolu_sub","error":"rate_limit"}'
+      rejected_event
+      echo '{"type":"result","subtype":"success","is_error":false,"result":"built"}'
+    fi
     printf 'built\n' >> "$ticket"
     set_status review
     git add -A >/dev/null 2>&1
     git commit -qm "build $(basename "$ticket")" >/dev/null 2>&1
+    if [ "$line" = review-limit ]; then rejected_event; exit 1; fi
     ;;
   claim-only)
     printf 'built\n' >> "$ticket"
@@ -56,8 +90,19 @@ case "$line" in
     set_status halted
     ;;
   die) exit 1 ;;
+  limit-sub)
+    echo '{"type":"assistant","message":{"role":"assistant","content":[]},"parent_tool_use_id":"toolu_sub","error":"rate_limit"}'
+    exit 1
+    ;;
   limit)
-    echo "Claude usage limit reached. Your limit will reset at 9pm."
+    rejected_event
+    echo '{"type":"assistant","message":{"role":"assistant","content":[{"type":"text","text":"You'"'"'ve hit your session limit · resets 2:10am (Europe/Amsterdam)"}]},"parent_tool_use_id":null,"error":"rate_limit"}'
+    echo '{"type":"result","subtype":"success","is_error":true,"terminal_reason":"api_error","result":"You'"'"'ve hit your session limit · resets 2:10am (Europe/Amsterdam)"}'
+    exit 1
+    ;;
+  limit-quiet) rejected_event; exit 1 ;;
+  limit-bare)
+    echo '{"type":"assistant","message":{"role":"assistant","content":[]},"parent_tool_use_id":null,"error":"rate_limit"}'
     exit 1
     ;;
   *) echo "stub: bad plan line: $line" >&2; exit 98 ;;

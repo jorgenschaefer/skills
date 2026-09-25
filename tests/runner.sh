@@ -46,9 +46,13 @@ EOF
   ticket 2-two AC-2 "the second thing happens." "1-one"
   git -C "$WORK" add -A >/dev/null; git -C "$WORK" commit -qm paper
   git -C "$WORK" checkout -q -b topic
-  STUB_CALLS="$WORK/.calls"; STUB_PLAN="$WORK/.plan"; : > "$STUB_CALLS"; : > "$STUB_PLAN"
-  export STUB_CALLS STUB_PLAN
+  STUB_CALLS="$WORK/.calls"; STUB_PLAN="$WORK/.plan"; STUB_SESSIONS="$WORK/.sessions"
+  : > "$STUB_CALLS"; : > "$STUB_PLAN"; : > "$STUB_SESSIONS"
+  export STUB_CALLS STUB_PLAN STUB_SESSIONS
   mkdir -p "$WORK/.bin" && ln -sf "$HERE/stub-session" "$WORK/.bin/claude"
+  # How long the runner asked to wait, one line per wait, and no wait at all.
+  SLEPT="$WORK/.slept"; : > "$SLEPT"
+  printf '#!/bin/sh\necho "$1" >> "%s"\n' "$SLEPT" > "$WORK/.bin/sleep" && chmod +x "$WORK/.bin/sleep"
 }
 
 ticket() {  # slug, id, text, after
@@ -77,7 +81,7 @@ EOF
 }
 
 plan()  { printf '%s\n' "$@" > "$STUB_PLAN"; }
-run()   { ( cd "$WORK" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=0 MAX_ATTEMPTS="${MAX_ATTEMPTS:-2}" \
+run()   { ( cd "$WORK" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=0 LIMIT_MARGIN=0 MAX_ATTEMPTS="${MAX_ATTEMPTS:-2}" \
               bash "$RUNNER" intents/x/tickets > "$WORK/.out" 2>&1 ); echo $?; }
 field() { sed -n "s/^$2: *//p" "$WORK/intents/x/tickets/$1.md" | head -1; }
 tkt()   { cat "$WORK/intents/x/tickets/$1.md"; }
@@ -336,9 +340,13 @@ else bad "a halt leaves the rest of the directory alone" "$(field 2-two status)"
 
 # --- the usage budget is waited out rather than spent
 #
-# A usage limit is not a failure of the work: the session never got to do any.
-# Waiting it out and starting again is the whole reason this outlives its
-# sessions.
+# A usage limit is not a failure of the work: the session was stopped, often
+# halfway through it. Waiting it out and carrying on in that same session is the
+# whole reason this outlives its sessions.
+#
+# The stub writes what the CLI writes when it is limited. The runner once
+# matched a message only the stub had ever printed, passed every case here, and
+# spent a real ticket's attempts in four seconds.
 
 workspace
 plan limit review review walk
@@ -347,16 +355,95 @@ if [ "$(field 1-one status)" = done ]; then ok "a usage limit is waited out and 
 else bad "a usage limit is waited out and the ticket still finishes" "$(field 1-one status) $(out)"; fi
 if [ "$(field 1-one attempts)" = 1 ]; then ok "waiting out a limit does not spend an attempt"
 else bad "waiting out a limit does not spend an attempt" "attempts=$(field 1-one attempts)"; fi
+first="$(awk 'NR == 1 && $1 == "start" { print $2 }' "$STUB_SESSIONS")"
+if [ -n "$first" ] && [ "$(sed -n 2p "$STUB_SESSIONS")" = "resume $first" ]; then
+  ok "after a limit the same session carries on"
+else bad "after a limit the same session carries on" "$(cat "$STUB_SESSIONS")"; fi
+if grep -q 'waiting until' "$WORK/.out" && grep -q '! usage limit, resets' "$WORK/.out"; then
+  ok "the limit and the wait are announced"
+else bad "the limit and the wait are announced" "$(out)"; fi
+if grep -q 'usage limit' <(sed -n 2p "$STUB_CALLS"); then ok "the resumed session is told why it stopped"
+else bad "the resumed session is told why it stopped" "$(calls)"; fi
+
+# The wait runs to the reset the limit names, plus the margin.
+workspace
+plan limit review review walk
+( cd "$WORK" && PATH="$WORK/.bin:$PATH" STUB_RESET_IN=3600 LIMIT_MARGIN=120 WAIT_SECONDS=5 \
+    bash "$RUNNER" intents/x/tickets > "$WORK/.out" 2>&1 )
+slept="$(head -1 "$SLEPT")"
+if [ -n "$slept" ] && [ "$slept" -ge 3715 ] && [ "$slept" -le 3720 ]; then
+  ok "a limit is waited out until its reset, plus the margin"
+else bad "a limit is waited out until its reset, plus the margin" "slept=$slept $(out)"; fi
+
+# A subagent's limit is the subagent's: the session that then dies of something
+# else has failed, and spends its attempt.
+workspace
+plan limit-sub review review walk
+run > /dev/null
+if [ ! -s "$SLEPT" ] && [ "$(field 1-one attempts)" = 2 ]; then
+  ok "a subagent's limit does not make the session's failure a limit"
+else bad "a subagent's limit does not make the session's failure a limit" "slept=$(cat "$SLEPT") $(tkt 1-one)"; fi
+
+# A session that finished is not limited, whatever was rejected on the way.
+workspace
+plan limit-passed review walk
+run > /dev/null
+if [ "$(field 1-one status)" = done ] && [ ! -s "$SLEPT" ] && [ "$(wc -l < "$STUB_CALLS")" = 3 ]; then
+  ok "a session that finishes despite a rejected limit is not waited on"
+else bad "a session that finishes despite a rejected limit is not waited on" "slept=$(cat "$SLEPT") $(calls)"; fi
+
+# The rejected event is the signal, not any wording around it.
+workspace
+plan limit-quiet review review walk
+run > /dev/null
+if [ "$(field 1-one status)" = done ] && [ "$(field 1-one attempts)" = 1 ]; then
+  ok "a limit is recognised from the rejected event alone"
+else bad "a limit is recognised from the rejected event alone" "$(tkt 1-one) $(out)"; fi
+
+# A rate_limit error with no reset time still waits, for the fallback period.
+workspace
+plan limit-bare review review walk
+( cd "$WORK" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=7 LIMIT_MARGIN=0 \
+    bash "$RUNNER" intents/x/tickets > "$WORK/.out" 2>&1 )
+if [ "$(field 1-one status)" = done ] && [ "$(field 1-one attempts)" = 1 ] && [ "$(cat "$SLEPT")" = 7 ]; then
+  ok "a limit that names no reset time is waited out too"
+else bad "a limit that names no reset time is waited out too" "$(tkt 1-one) $(out)"; fi
+
+workspace
+plan review review limit walk
+rc="$(run)"
+if [ "$rc" = 0 ] && [ "$(wc -l < "$STUB_CALLS")" = 4 ] && grep -q '^resume ' <(tail -1 "$STUB_SESSIONS"); then
+  ok "a limit during the walk is waited out and the walk carries on"
+else bad "a limit during the walk is waited out and the walk carries on" "rc=$rc $(cat "$STUB_SESSIONS") $(out)"; fi
+
+workspace
+plan review review limit limit limit
+rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=0 LIMIT_MARGIN=0 MAX_WAITS=2 \
+           bash "$RUNNER" intents/x/tickets > "$WORK/.out" 2>&1 ); echo $?)"
+if [ "$rc" != 0 ] && ! grep -q "^You've hit your session limit" "$WORK/.out"; then
+  ok "a walk that gives up on a limit fails rather than reporting the limit as its result"
+else bad "a walk that gives up on a limit fails rather than reporting the limit as its result" "rc=$rc $(out)"; fi
+
+workspace
+plan review-limit
+( cd "$WORK" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=0 LIMIT_MARGIN=0 MAX_WAITS=0 \
+    bash "$RUNNER" intents/x/tickets > "$WORK/.out" 2>&1 )
+if grep -q '1-one.md is at review' "$WORK/.out" && ! grep -q 'goes back to ready' "$WORK/.out"; then
+  ok "giving up names the status the session left, not one it did not"
+else bad "giving up names the status the session left, not one it did not" "$(out)"; fi
 
 # And it is bounded: a limit that never lifts has to end the run rather than
-# wait forever.
+# wait forever - and without charging the ticket for it.
 workspace
 plan limit limit limit
-rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=0 MAX_WAITS=2 MAX_ATTEMPTS=1 \
+rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=0 LIMIT_MARGIN=0 MAX_WAITS=2 MAX_ATTEMPTS=1 \
            bash "$RUNNER" intents/x/tickets > "$WORK/.out" 2>&1 ); echo $?)"
 if [ "$rc" != 0 ] && grep -q 'gave up waiting out the limit' "$WORK/.out"; then
   ok "a limit that never lifts gives up rather than waiting forever"
 else bad "a limit that never lifts gives up rather than waiting forever" "rc=$rc $(out)"; fi
+if [ "$(field 1-one status)" = ready ] && [ "$(field 1-one attempts)" = 0 ] && [ "$(wc -l < "$STUB_CALLS")" = 3 ]; then
+  ok "giving up on a limit hands the ticket back rather than halting it"
+else bad "giving up on a limit hands the ticket back rather than halting it" "$(tkt 1-one) $(calls)"; fi
 
 # --- nothing selectable is not the same as everything finished
 
