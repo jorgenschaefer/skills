@@ -49,6 +49,13 @@ case "$branch" in
   main|master) die "refusing to run on $branch: a run belongs on a branch of its own" ;;
 esac
 
+# Whatever is lying around uncommitted is someone's, and a session cannot tell
+# it from its own work: it lints it, reviews it, and carves it out of every
+# diff. Untracked files count - an untracked mockup failed the lint of every
+# session in a whole run.
+dirty="$(git status --porcelain)"
+[ -z "$dirty" ] || die "refusing to run on a dirty tree: commit or remove what is here first"$'\n'"$dirty"
+
 command -v claude >/dev/null || die "no claude on PATH: the runner drives sessions, it does not do the work"
 
 shopt -s nullglob
@@ -186,13 +193,14 @@ narrate() {
 # MAX_WAITS: that is nobody's failure, and the caller must not charge it to the
 # work.
 EX_LIMIT=75
-claude_through_limits() {  # log name, prompt
-  local id reset delay rc waits=0 how=--session-id prompt="$2"
+claude_through_limits() {  # log name, prompt, claude's own options...
+  local id reset delay rc waits=0 how=--session-id prompt="$2" name="$1"
+  shift 2
   id="$(new_session_id)"
   while :; do
-    LOG="$LOG_DIR/$1-$(date +%Y%m%d-%H%M%S)$([ "$waits" = 0 ] || printf -- '-resumed-%s' "$waits").jsonl"
+    LOG="$LOG_DIR/$name-$(date +%Y%m%d-%H%M%S)$([ "$waits" = 0 ] || printf -- '-resumed-%s' "$waits").jsonl"
     say "full log in $LOG"
-    claude_run "$LOG" "$how" "$id" "$prompt"; rc=$?
+    claude_run "$LOG" "$how" "$id" "$prompt" "$@"; rc=$?
     reset="$(limit_reset "$LOG")"
     [ -n "$reset" ] || return "$rc"
     waits=$((waits + 1))
@@ -235,10 +243,10 @@ limit_reset() {  # log -> the epoch the limit lifts, 0 where it named none; noth
 # `/implement` reviews its own diff by spawning `critique` in a session that did
 # not write it, and there is no review pass here to fall back on. Without it the
 # build declines the spawn and every ticket reaches `done` unreviewed.
-claude_run() {  # log, --session-id or --resume, session id, prompt -> claude's exit status
+claude_run() {  # log, --session-id or --resume, session id, prompt, claude's own options... -> claude's exit status
   claude -p --output-format stream-json --verbose --permission-mode acceptEdits \
     --allowedTools Bash Edit Write Read Glob Grep Skill Agent TodoWrite \
-    "$2" "$3" -- "$4" </dev/null 2>&1 | tee "$1" | narrate
+    "$2" "$3" "${@:5}" -- "$4" </dev/null 2>&1 | tee "$1" | narrate
   return "${PIPESTATUS[0]}"
 }
 
@@ -255,11 +263,13 @@ session() {  # ticket -> 0 ran, EX_LIMIT gave up on a limit, anything else faile
   local rc prompt
   prompt="Use /implement on the work described in $1.
 
+The project's checks are \`$VERIFY\`, and they passed on this commit before the run started. A check that fails now failed because of this build.
+
 That file is the whole brief. Its \`## Done when\` is the definition of done - not the diff, not what you would have built, not what the solution probably meant. Its \`## Not here\` names what a neighbouring ticket owns, and building it is two tickets building the same code. Its \`## Plan\` is how it was decided this gets built; where you find the plan wrong, say so rather than following it off a cliff.
 
 Do not open the solution the frontmatter names. The ticket quotes what it needs, and going upstream is how a ticket quietly becomes a different one.
 
-When the criteria are green and the project's checks pass, write the ticket's \`## Record\` - which test names which criterion, and the command you ran - then commit the code and the ticket together and set \`status: review\` in the frontmatter.
+When the criteria are green and the project's checks pass, write the ticket's \`## Record\` - which test names which criterion, and the command you ran - and set \`status: review\` in the frontmatter. Then commit the code and the ticket file together, in one commit.
 
 If you cannot proceed, append a \`## Halt\` section naming the kind and stop: \`blocked\` (a precondition the ticket assumed is not there), \`undecided\` (a decision the ticket's criteria do not settle and that is not yours to settle), or \`mystery\` (a failure you cannot explain, which is different from one you cannot fix). Then set \`status: halted\`.
 
@@ -269,6 +279,34 @@ Never write \`status: doing\` or \`status: done\`. Both ends belong to the runne
   say "session ended, exit $rc, ticket says status: $(field "$1" status)"
   return $rc
 }
+
+# --- the project's checks, once, before any build
+#
+# Finding the command is judgement - what the project gates a change on, which
+# CI says better than the scripts do - so a session names it. Running it is not,
+# so the runner does, and believes the exit status rather than an account of it.
+#
+# Every build used to meet the same failures that were already on HEAD, prove
+# each time by a different route that they were not its own, and in one case
+# halt over them. A run that starts red does not start, and a build that is told
+# the checks were green cannot mistake anything for someone else's.
+
+verify() {
+  local log
+  claude_through_limits verify "Find this project's verification command: the one shell line, run from $(pwd), that runs everything a change here has to pass - tests, type check, lint. Where CI runs these, what CI runs is the authority. Do not run it and change nothing; answer with the command." \
+    --json-schema '{"type":"object","properties":{"command":{"type":"string"}},"required":["command"]}'
+  [ $? = "$EX_LIMIT" ] && exit 1
+  VERIFY="$(jq -R -r 'fromjson? | select(.type == "result") | .structured_output.command // empty' "$LOG")"
+  [ -n "$VERIFY" ] || die "the session found no verification command - see $LOG"
+  log="$LOG_DIR/verify-$(date +%Y%m%d-%H%M%S).log"
+  say "running the checks: $VERIFY"
+  bash -c "$VERIFY" > "$log" 2>&1 \
+    || { tail -20 "$log" >&2; die "the checks fail before any build: $VERIFY - full output in $log"; }
+  say "the checks pass"
+}
+
+preflight || exit 2
+verify
 
 # --- the loop
 
@@ -315,14 +353,10 @@ while :; do
     echo "$(basename "$ticket") is at $(field "$ticket" status) - run again once the limit has lifted" >&2
     exit 1
   fi
-  if [ "$rc" != 0 ]; then
-    # The session did not get to say what happened, so the runner says it: the
-    # claim goes back, and the attempt is spent either way.
-    [ "$(field "$ticket" status)" = doing ] && set_field "$ticket" status ready
-    say "session failed - $(basename "$ticket") goes back to ready"
-    continue
-  fi
 
+  # Read off the ticket whatever the exit status: a session that crashed after
+  # committing its build has built it, and one that crashed before has left the
+  # claim for the runner to put back. The attempt is spent either way.
   case "$(field "$ticket" status)" in
     halted) echo "halted: $ticket" >&2; exit 1 ;;
     review) ;;
@@ -331,14 +365,13 @@ while :; do
   esac
 
   # A session that says `review` without a commit built nothing, and accepting
-  # it is how a ticket reaches done unbuilt - which matters more now that the
-  # runner promotes `review` straight to `done` and nothing else looks at the
-  # commit. Given the same tolerance as a crash, because it is the same kind of
-  # failure - a session that did not do what it was launched for - and the
-  # halt at the end of it says that, rather than that a budget ran out. Which is
-  # why the edge here is `-ge` where the selection above is `-gt`: this fires on
-  # the attempt that spends the last of the budget, because falling through to
-  # the next pass would halt as `exhausted` and lose the thing worth saying.
+  # it is how a ticket reaches done unbuilt - nothing else looks at the commit.
+  # Given the same tolerance as a crash, because it is the same kind of failure
+  # - a session that did not do what it was launched for - and the halt at the
+  # end of it says that, rather than that a budget ran out. Which is why the
+  # edge here is `-ge` where the selection above is `-gt`: this fires on the
+  # attempt that spends the last of the budget, because falling through to the
+  # next pass would halt as `exhausted` and lose the thing worth saying.
   if [ "$(git rev-parse HEAD)" = "$head_before" ]; then
     if [ "$attempts" -ge "$MAX_ATTEMPTS" ]; then
       halt "$ticket" unbuilt "the session reported a build and committed nothing, and the last of $MAX_ATTEMPTS attempts is spent - read the build output for what stopped it committing"
@@ -349,7 +382,15 @@ while :; do
     continue
   fi
 
+  # Into the build's own commit rather than one of the runner's, because a
+  # commit message needs a session and amending keeps the one it wrote. Left
+  # uncommitted, `done` - and the claim and counter under it - was every later
+  # session's "someone else's change", and lost to anything that reset the tree.
+  # The ticket goes in whole, so one the session left out of its commit is
+  # recorded all the same.
   set_field "$ticket" status done
+  git commit -q --amend --no-edit -- "$ticket" \
+    || { echo "could not amend $ticket into $(git rev-parse --short HEAD)" >&2; exit 1; }
   say "done: $(basename "$ticket") at $(git rev-parse --short HEAD)"
 done
 

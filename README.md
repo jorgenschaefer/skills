@@ -71,8 +71,10 @@ out to be shared rather than over that file by name.
 
 `./run.sh intents/<slug>/tickets` drives a ticket directory with nobody watching: it
 claims each ticket, builds it, and either finishes it or sends it back. It refuses to
-start on the main branch, checks before every pass that the tickets and their solution
-still agree, enforces the attempt budget from a counter in the ticket file, and waits
+start on the main branch or on a dirty tree, and before the first build it has a session
+name the project's checks and runs them itself - a run that starts red does not start,
+and every build is told the checks were green. It checks before every pass that the
+tickets and their solution still agree, enforces the attempt budget from a counter in the ticket file, and waits
 out a usage limit rather than spending the budget on it. When every ticket is done it
 walks the conditions with `/accept-intent` and prints what that found - without merging,
 marking, or ruling on it. It walks `01-INTENT.md` where there is one and the solution
@@ -81,7 +83,9 @@ where there is not, because the short path keeps its conditions in the solution'
 
 There is one session per ticket. There used to be two, the second reviewing what the
 first built; the build now spawns that reviewer itself, in a subagent that did not write
-the code.
+the code. That session commits the ticket with its build at `status: review`; the runner checks
+the commit is there, then sets `done` and amends it into that commit, so no ticket's
+status is left uncommitted for the next session to trip on.
 
 Every unattended stop is a named halt written into the ticket: `blocked`, `undecided`
 and `mystery` from a session; `exhausted`, `drift` and `unbuilt` from the runner,

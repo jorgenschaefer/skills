@@ -46,9 +46,13 @@ EOF
   ticket 2-two AC-2 "the second thing happens." "1-one"
   git -C "$WORK" add -A >/dev/null; git -C "$WORK" commit -qm paper
   git -C "$WORK" checkout -q -b topic
+  # The stub's own files sit in the workspace and are nobody's change: without
+  # this every case would be refused as a dirty tree.
+  printf '/.*\n' >> "$WORK/.git/info/exclude"
   STUB_CALLS="$WORK/.calls"; STUB_PLAN="$WORK/.plan"; STUB_SESSIONS="$WORK/.sessions"
   : > "$STUB_CALLS"; : > "$STUB_PLAN"; : > "$STUB_SESSIONS"
-  export STUB_CALLS STUB_PLAN STUB_SESSIONS
+  STUB_VERIFY=true
+  export STUB_CALLS STUB_PLAN STUB_SESSIONS STUB_VERIFY
   mkdir -p "$WORK/.bin" && ln -sf "$HERE/stub-session" "$WORK/.bin/claude"
   # How long the runner asked to wait, one line per wait, and no wait at all.
   SLEPT="$WORK/.slept"; : > "$SLEPT"
@@ -81,6 +85,7 @@ EOF
 }
 
 plan()  { printf '%s\n' "$@" > "$STUB_PLAN"; }
+commit() { git -C "$WORK" add -A >/dev/null; git -C "$WORK" commit -qm edit; }
 run()   { ( cd "$WORK" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=0 LIMIT_MARGIN=0 MAX_ATTEMPTS="${MAX_ATTEMPTS:-2}" \
               bash "$RUNNER" intents/x/tickets > "$WORK/.out" 2>&1 ); echo $?; }
 field() { sed -n "s/^$2: *//p" "$WORK/intents/x/tickets/$1.md" | head -1; }
@@ -91,7 +96,7 @@ calls() { cat "$STUB_CALLS"; }
 # --- refusals, before anything is launched
 
 workspace; git -C "$WORK" checkout -q main
-plan review
+plan build
 rc="$(run)"
 if [ "$rc" != 0 ] && grep -qi 'branch' "$WORK/.out"; then
   ok "it refuses to run on the main branch"
@@ -113,7 +118,7 @@ workspace
 rm -rf "$WORK/.git"
 git -C "$WORK" init -q -b topic
 git -C "$WORK" config user.email t@t; git -C "$WORK" config user.name t
-plan review
+plan build
 rc="$(run)"
 if [ "$rc" != 0 ] && grep -q 'no commits' "$WORK/.out" && grep -q 'branch refusal' "$WORK/.out"; then
   ok "it refuses a repository with no commits, for the reason it gives"
@@ -121,10 +126,57 @@ else bad "it refuses a repository with no commits, for the reason it gives" "rc=
 if [ ! -s "$STUB_CALLS" ]; then ok "a repository with no commits launches nothing"
 else bad "a repository with no commits launches nothing" "$(calls)"; fi
 
+# Whatever is lying around uncommitted is someone's, and a session cannot tell
+# it from its own work: it lints it, reviews it, and has to carve it out of
+# every diff. Untracked files count - an untracked mockup broke the lint of a
+# whole run.
+workspace
+printf 'x\n' > "$WORK/stray"
+plan build build walk
+rc="$(run)"
+if [ "$rc" != 0 ] && grep -q 'stray' "$WORK/.out"; then
+  ok "it refuses a dirty tree, and names what is in it"
+else bad "it refuses a dirty tree, and names what is in it" "rc=$rc $(out)"; fi
+if [ ! -s "$STUB_CALLS" ]; then ok "a dirty tree launches nothing"
+else bad "a dirty tree launches nothing" "$(calls)"; fi
+
+# --- the project's checks, before any build
+#
+# A build told the checks were green on HEAD cannot mistake a failure that was
+# already there for its own, or halt over one. So they are run first, by the
+# runner, and a run that starts red does not start.
+
+workspace
+STUB_VERIFY=false
+plan build build walk
+rc="$(run)"
+if [ "$rc" != 0 ] && grep -q 'false' "$WORK/.out" && [ ! -s "$STUB_CALLS" ]; then
+  ok "checks that fail before any build stop the run, naming the command"
+else bad "checks that fail before any build stop the run, naming the command" "rc=$rc $(out) $(calls)"; fi
+
+workspace
+STUB_VERIFY=
+plan build build walk
+rc="$(run)"
+if [ "$rc" != 0 ] && grep -q 'no verification command' "$WORK/.out" && [ ! -s "$STUB_CALLS" ]; then
+  ok "a session that names no verification command stops the run"
+else bad "a session that names no verification command stops the run" "rc=$rc $(out) $(calls)"; fi
+
+workspace
+STUB_VERIFY='touch .verified'
+plan build build walk
+rc="$(run)"
+if [ "$rc" = 0 ] && [ -f "$WORK/.verified" ]; then
+  ok "the command the session named is what the runner runs"
+else bad "the command the session named is what the runner runs" "rc=$rc $(out)"; fi
+if grep -q 'touch .verified' <(head -1 "$STUB_CALLS"); then
+  ok "the build is told the command, and that it was green"
+else bad "the build is told the command, and that it was green" "$(calls)"; fi
+
 # Someone's notes in the ticket directory are not a ticket.
 workspace
-printf '# notes\n' > "$WORK/intents/x/tickets/README.md"
-plan review review walk
+printf '# notes\n' > "$WORK/intents/x/tickets/README.md"; commit
+plan build build walk
 rc="$(run)"
 if [ "$rc" = 0 ] && grep -q 'ignoring' "$WORK/.out"; then
   ok "a file that is not a ticket is ignored, and said so"
@@ -136,8 +188,8 @@ else bad "a file that is not a ticket is ignored, and said so" "rc=$rc $(out)"; 
 # nobody, so this is the only place the two can be found to disagree.
 
 workspace
-sed -i 's/the first thing happens./the first thing happens, differently./' "$WORK/intents/x/tickets/1-one.md"
-plan review
+sed -i 's/the first thing happens./the first thing happens, differently./' "$WORK/intents/x/tickets/1-one.md"; commit
+plan build
 rc="$(run)"
 if [ "$rc" != 0 ] && grep -q 'drift' "$WORK/.out"; then
   ok "a ticket whose criterion left the solution stops the run"
@@ -151,8 +203,8 @@ if grep -q 'drift' <(tkt 1-one) && [ "$(field 1-one status)" = halted ]; then
 else bad "drift is written into the ticket: the ticket's criterion moved" "$(tkt 1-one)"; fi
 
 workspace
-printf -- '- **AC-3** a third thing happens. *(C-3)*\n' >> "$WORK/intents/x/02-SOLUTION.md"
-plan review
+printf -- '- **AC-3** a third thing happens. *(C-3)*\n' >> "$WORK/intents/x/02-SOLUTION.md"; commit
+plan build
 rc="$(run)"
 if [ "$rc" != 0 ] && grep -q 'drift' "$WORK/.out"; then
   ok "a criterion in no ticket stops the run"
@@ -172,7 +224,7 @@ sed -i '/^- \*\*AC-1\*\*/d' "$WORK/intents/x/02-SOLUTION.md"
 rm "$WORK/intents/x/tickets/1-one.md"
 sed -i 's/^after: .*/after:/' "$WORK/intents/x/tickets/2-two.md"
 git -C "$WORK" commit -qam delete
-plan review walk
+plan build walk
 rc="$(run)"
 if [ "$rc" = 0 ] && ! grep -q 'drift' "$WORK/.out"; then
   ok "a criterion deleted from the solution leaves a gap, and that is no drift"
@@ -183,7 +235,7 @@ else bad "a criterion deleted from the solution leaves a gap, and that is no dri
 workspace
 sed -i '/^- \*\*AC-1\*\*/d' "$WORK/intents/x/02-SOLUTION.md"
 git -C "$WORK" commit -qam delete
-plan review
+plan build
 rc="$(run)"
 if [ "$rc" != 0 ] && grep -q 'AC-1 is gone from' "$WORK/.out"; then
   ok "a ticket quoting a deleted criterion stops the run"
@@ -197,7 +249,7 @@ else bad "drift is written into the ticket: its criterion was deleted" "$(tkt 1-
 workspace
 sed -i 's/\*(C-1)\*/*(Nutzer)*/' "$WORK/intents/x/02-SOLUTION.md"
 git -C "$WORK" commit -qam retag
-plan review review walk
+plan build build walk
 rc="$(run)"
 if [ "$rc" = 0 ] && ! grep -q 'drift' "$WORK/.out"; then
   ok "a tag of any word is left off the comparison"
@@ -206,15 +258,15 @@ else bad "a tag of any word is left off the comparison" "rc=$rc $(out)"; fi
 workspace
 sed -i 's/ \*(C-2)\*/ *(C-2; Constraint\n  „the groups the tool knows")*/' "$WORK/intents/x/02-SOLUTION.md"
 git -C "$WORK" commit -qam retag
-plan review review walk
+plan build build walk
 rc="$(run)"
 if [ "$rc" = 0 ] && ! grep -q 'drift' "$WORK/.out"; then
   ok "a tag with punctuation, broken over two lines, is left off the comparison"
 else bad "a tag with punctuation, broken over two lines, is left off the comparison" "rc=$rc $(out)"; fi
 
 workspace
-rm "$WORK/intents/x/02-SOLUTION.md"
-plan review
+rm "$WORK/intents/x/02-SOLUTION.md"; commit
+plan build
 rc="$(run)"
 if [ "$rc" != 0 ] && grep -q 'not there' "$WORK/.out"; then
   ok "a ticket whose solution is gone stops the run"
@@ -229,7 +281,7 @@ workspace
 rm "$WORK/intents/x/tickets/1-one.md"
 sed -i '/^- \*\*AC-1\*\*/d' "$WORK/intents/x/02-SOLUTION.md"
 git -C "$WORK" add -A >/dev/null; git -C "$WORK" commit -qm delete
-plan review
+plan build
 rc="$(run)"
 if [ "$rc" != 0 ] && grep -q 'names 1-one, which is not a ticket' "$WORK/.out"; then
   ok "a ticket whose after: names a deleted ticket stops the run"
@@ -241,14 +293,14 @@ else bad "a dangling after: halts its ticket before any session" "$(tkt 2-two) $
 # A built ticket whose criterion changed is re-sliced in place: its words
 # updated and its status put back, so the runner builds it again.
 workspace
-plan review review walk
+plan build build walk
 run > /dev/null
 sed -i 's/the first thing happens./the first thing happens, differently./' \
   "$WORK/intents/x/02-SOLUTION.md" "$WORK/intents/x/tickets/1-one.md"
 sed -i 's/^status: .*/status:    ready/; s/^attempts: .*/attempts:  0/' "$WORK/intents/x/tickets/1-one.md"
 git -C "$WORK" commit -qam reslice
 : > "$STUB_CALLS"
-plan review walk
+plan build walk
 rc="$(run)"
 if [ "$rc" = 0 ] && [ "$(wc -l < "$STUB_CALLS")" = 2 ] && grep -q '1-one' <(head -1 "$STUB_CALLS"); then
   ok "a done ticket put back to ready is built again, and only it"
@@ -260,12 +312,18 @@ else bad "the rebuilt ticket ends done beside the one left alone" "$(field 1-one
 # --- the ordinary pass
 
 workspace
-plan review review walk
+plan build build walk
 rc="$(run)"
 if [ "$rc" = 0 ]; then ok "a clean run finishes"; else bad "a clean run finishes" "rc=$rc $(out)"; fi
 if [ "$(field 1-one status)" = done ] && [ "$(field 2-two status)" = done ]; then
   ok "every ticket ends done"
 else bad "every ticket ends done" "$(field 1-one status) / $(field 2-two status)"; fi
+# The claim, the counter and the finish all end up in the commits: a run that
+# leaves the ticket files modified leaves them for the next session to trip on.
+if [ -z "$(git -C "$WORK" status --porcelain)" ] \
+   && [ "$(git -C "$WORK" show HEAD:intents/x/tickets/2-two.md | sed -n 's/^status: *//p')" = done ]; then
+  ok "a clean run leaves nothing uncommitted, and done is committed"
+else bad "a clean run leaves nothing uncommitted, and done is committed" "$(git -C "$WORK" status --porcelain)"; fi
 if grep -q '1-one' <(head -1 "$STUB_CALLS"); then ok "it builds in dependency order"
 else bad "it builds in dependency order" "$(calls)"; fi
 # Two builds and the walk. There is one session per ticket now: the runner used
@@ -277,8 +335,8 @@ else bad "each ticket is built by exactly one session" "$(calls)"; fi
 # Dependency order, where the numbering says the opposite.
 workspace
 sed -i 's/^after: .*/after:     2-two/' "$WORK/intents/x/tickets/1-one.md"
-sed -i 's/^after: .*/after:     /'      "$WORK/intents/x/tickets/2-two.md"
-plan review review walk
+sed -i 's/^after: .*/after:     /'      "$WORK/intents/x/tickets/2-two.md"; commit
+plan build build walk
 run > /dev/null
 if grep -q '2-two' <(head -1 "$STUB_CALLS"); then ok "after: decides the order, not the filename"
 else bad "after: decides the order, not the filename" "$(calls)"; fi
@@ -289,7 +347,7 @@ else bad "after: decides the order, not the filename" "$(calls)"; fi
 # and the proof is that the ticket gets picked up again at all.
 
 workspace
-plan die review review walk
+plan die build build walk
 run > /dev/null
 if [ "$(field 1-one status)" = done ]; then ok "a ticket whose session died is picked up again"
 else bad "a ticket whose session died is picked up again" "$(field 1-one status) $(out)"; fi
@@ -311,12 +369,23 @@ else bad "the attempt budget, once spent, halts the ticket as exhausted" "rc=$rc
 # believes the one and checks the other.
 
 workspace
-plan claim-only review review walk
+plan claim-only build build walk
 run > /dev/null
 if [ "$(field 1-one status)" = done ]; then ok "a ticket whose session committed nothing is picked up again"
 else bad "a ticket whose session committed nothing is picked up again" "$(field 1-one status)"; fi
 if [ "$(field 1-one attempts)" = 2 ]; then ok "a session that committed nothing still spends an attempt"
 else bad "a session that committed nothing still spends an attempt" "attempts=$(field 1-one attempts)"; fi
+
+# The finish goes into the build's own commit rather than one of its own, since
+# only a session can write a message - and a ticket the session left out of that
+# commit goes in with it.
+workspace
+plan code-only build walk
+run > /dev/null
+if [ "$(git -C "$WORK" rev-list --count HEAD)" = 3 ] && [ -z "$(git -C "$WORK" status --porcelain)" ] \
+   && [ "$(git -C "$WORK" show HEAD~1:intents/x/tickets/1-one.md | sed -n 's/^status: *//p')" = done ]; then
+  ok "done is amended into the build's commit, ticket and all"
+else bad "done is amended into the build's commit, ticket and all" "$(git -C "$WORK" log --stat) $(git -C "$WORK" status --porcelain)"; fi
 
 workspace
 plan claim-only claim-only
@@ -349,7 +418,7 @@ else bad "a halt leaves the rest of the directory alone" "$(field 2-two status)"
 # spent a real ticket's attempts in four seconds.
 
 workspace
-plan limit review review walk
+plan limit build build walk
 run > /dev/null
 if [ "$(field 1-one status)" = done ]; then ok "a usage limit is waited out and the ticket still finishes"
 else bad "a usage limit is waited out and the ticket still finishes" "$(field 1-one status) $(out)"; fi
@@ -367,7 +436,7 @@ else bad "the resumed session is told why it stopped" "$(calls)"; fi
 
 # The wait runs to the reset the limit names, plus the margin.
 workspace
-plan limit review review walk
+plan limit build build walk
 ( cd "$WORK" && PATH="$WORK/.bin:$PATH" STUB_RESET_IN=3600 LIMIT_MARGIN=120 WAIT_SECONDS=5 \
     bash "$RUNNER" intents/x/tickets > "$WORK/.out" 2>&1 )
 slept="$(head -1 "$SLEPT")"
@@ -378,7 +447,7 @@ else bad "a limit is waited out until its reset, plus the margin" "slept=$slept 
 # A subagent's limit is the subagent's: the session that then dies of something
 # else has failed, and spends its attempt.
 workspace
-plan limit-sub review review walk
+plan limit-sub build build walk
 run > /dev/null
 if [ ! -s "$SLEPT" ] && [ "$(field 1-one attempts)" = 2 ]; then
   ok "a subagent's limit does not make the session's failure a limit"
@@ -386,7 +455,7 @@ else bad "a subagent's limit does not make the session's failure a limit" "slept
 
 # A session that finished is not limited, whatever was rejected on the way.
 workspace
-plan limit-passed review walk
+plan limit-passed build walk
 run > /dev/null
 if [ "$(field 1-one status)" = done ] && [ ! -s "$SLEPT" ] && [ "$(wc -l < "$STUB_CALLS")" = 3 ]; then
   ok "a session that finishes despite a rejected limit is not waited on"
@@ -394,7 +463,7 @@ else bad "a session that finishes despite a rejected limit is not waited on" "sl
 
 # The rejected event is the signal, not any wording around it.
 workspace
-plan limit-quiet review review walk
+plan limit-quiet build build walk
 run > /dev/null
 if [ "$(field 1-one status)" = done ] && [ "$(field 1-one attempts)" = 1 ]; then
   ok "a limit is recognised from the rejected event alone"
@@ -402,7 +471,7 @@ else bad "a limit is recognised from the rejected event alone" "$(tkt 1-one) $(o
 
 # A rate_limit error with no reset time still waits, for the fallback period.
 workspace
-plan limit-bare review review walk
+plan limit-bare build build walk
 ( cd "$WORK" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=7 LIMIT_MARGIN=0 \
     bash "$RUNNER" intents/x/tickets > "$WORK/.out" 2>&1 )
 if [ "$(field 1-one status)" = done ] && [ "$(field 1-one attempts)" = 1 ] && [ "$(cat "$SLEPT")" = 7 ]; then
@@ -410,14 +479,14 @@ if [ "$(field 1-one status)" = done ] && [ "$(field 1-one attempts)" = 1 ] && [ 
 else bad "a limit that names no reset time is waited out too" "$(tkt 1-one) $(out)"; fi
 
 workspace
-plan review review limit walk
+plan build build limit walk
 rc="$(run)"
 if [ "$rc" = 0 ] && [ "$(wc -l < "$STUB_CALLS")" = 4 ] && grep -q '^resume ' <(tail -1 "$STUB_SESSIONS"); then
   ok "a limit during the walk is waited out and the walk carries on"
 else bad "a limit during the walk is waited out and the walk carries on" "rc=$rc $(cat "$STUB_SESSIONS") $(out)"; fi
 
 workspace
-plan review review limit limit limit
+plan build build limit limit limit
 rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=0 LIMIT_MARGIN=0 MAX_WAITS=2 \
            bash "$RUNNER" intents/x/tickets > "$WORK/.out" 2>&1 ); echo $?)"
 if [ "$rc" != 0 ] && ! grep -q "^You've hit your session limit" "$WORK/.out"; then
@@ -425,7 +494,7 @@ if [ "$rc" != 0 ] && ! grep -q "^You've hit your session limit" "$WORK/.out"; th
 else bad "a walk that gives up on a limit fails rather than reporting the limit as its result" "rc=$rc $(out)"; fi
 
 workspace
-plan review-limit
+plan build-limit
 ( cd "$WORK" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=0 LIMIT_MARGIN=0 MAX_WAITS=0 \
     bash "$RUNNER" intents/x/tickets > "$WORK/.out" 2>&1 )
 if grep -q '1-one.md is at review' "$WORK/.out" && ! grep -q 'goes back to ready' "$WORK/.out"; then
@@ -448,16 +517,16 @@ else bad "giving up on a limit hands the ticket back rather than halting it" "$(
 # --- nothing selectable is not the same as everything finished
 
 workspace
-sed -i 's/^status: .*/status:    doing/' "$WORK/intents/x/tickets/1-one.md"
-plan review
+sed -i 's/^status: .*/status:    doing/' "$WORK/intents/x/tickets/1-one.md"; commit
+plan build
 rc="$(run)"
 if [ "$rc" != 0 ] && grep -q 'never came back' "$WORK/.out"; then
   ok "a stale claim is reported rather than counted as done"
 else bad "a stale claim is reported rather than counted as done" "rc=$rc $(out)"; fi
 
 workspace
-sed -i 's/^after: .*/after:     9-ghost/' "$WORK/intents/x/tickets/2-two.md"
-plan review
+sed -i 's/^after: .*/after:     9-ghost/' "$WORK/intents/x/tickets/2-two.md"; commit
+plan build
 rc="$(run)"
 if [ "$rc" != 0 ] && grep -q '9-ghost' "$WORK/.out"; then
   ok "a dependency nobody can satisfy is named"
@@ -469,8 +538,8 @@ else bad "a dependency nobody can satisfy is named" "rc=$rc $(out)"; fi
 # and this repository's own tickets are full of them.
 
 workspace
-printf '\n## Record\n\n```\nstatus:    review\nattempts:  7\n```\n' >> "$WORK/intents/x/tickets/1-one.md"
-plan review review walk
+printf '\n## Record\n\n```\nstatus:    review\nattempts:  7\n```\n' >> "$WORK/intents/x/tickets/1-one.md"; commit
+plan build build walk
 run > /dev/null
 if [ "$(grep -c '^status:    review' "$WORK/intents/x/tickets/1-one.md")" = 1 ]; then
   ok "only the frontmatter is rewritten"
@@ -479,7 +548,7 @@ else bad "only the frontmatter is rewritten" "$(tkt 1-one)"; fi
 # --- the walk
 
 workspace
-plan review review walk
+plan build build walk
 run > /dev/null
 # `accept-intent` is disable-model-invocation, so the model cannot reach it from
 # prose - the prompt has to *start* with the slash command for the harness to
@@ -495,8 +564,8 @@ else bad "the walk is given the intent" "$(tail -1 "$STUB_CALLS")"; fi
 # there. So the walk follows the conditions rather than the filename: skipping it
 # here dropped the only stage that asks whether the problem was solved.
 workspace
-rm "$WORK/intents/x/01-INTENT.md"
-plan review review walk
+rm "$WORK/intents/x/01-INTENT.md"; commit
+plan build build walk
 rc="$(run)"
 if [ "$rc" = 0 ] && [ "$(wc -l < "$STUB_CALLS")" = 3 ]; then
   ok "with no intent the walk still runs"

@@ -43,6 +43,6 @@ Written before the build, by whoever cut the slice, against the code as it actua
 
 **`satisfies` and the quotation have to agree.** A criterion claimed and not quoted is one the builder never sees; a criterion quoted and not claimed is work no coverage check knows about.
 
-**`status` belongs to the runner, except at its two ends.** The runner writes `doing` and `done`; a session writes `review` when it has committed, or `halted` when it has stopped. A session never claims its own work and never declares it finished.
+**`status` belongs to the runner, except at its two ends.** The runner writes `doing` and `done`; a session writes `review` when it has committed, or `halted` when it has stopped. A session never claims its own work and never declares it finished. The runner writes `done` into the session's commit, by amending it.
 
 **`attempts` is a counter the runner owns.** It lives in the file because the runner is expected to die and resume - it waits out usage limits - and a count that does not survive that is not a ceiling.
