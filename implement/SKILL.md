@@ -7,7 +7,7 @@ description: Write, build or change software - a feature, a fix, a refactor. Fir
 
 Build the thing, to the standard, and have it reviewed by someone who did not build it.
 
-`CODING_STANDARDS.md` is what the software has to look like. Read it whole and apply all of it - it is one page, and no part of it is for somebody else. It says how the work is ordered as well as how the code ends up, and neither is restated here.
+This skill's `CODING_STANDARDS.md` is what the software has to look like. Read it whole and apply all of it - it is one page, and no part of it is for somebody else. It says how the work is ordered as well as how the code ends up, and neither is restated here.
 
 ## Before you write anything
 
