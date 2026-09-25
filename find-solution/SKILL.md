@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Design several genuinely different answers to an intent, choose one with the user, and write it down thoroughly enough that whoever builds it needs nothing from you.
 
-`SOLUTION_FORMAT.md` settles the shape of the spec.
+This skill's `SOLUTION_FORMAT.md` settles the shape of the spec.
 
 ## Start from the conditions
 

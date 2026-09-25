@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Take a settled solution, cut it into the smallest number of slices that can each be built and verified on their own, and plan each one.
 
-`TICKET_FORMAT.md` settles the shape of a ticket, `PLANNING.md` the shape of a plan. This file is what you do.
+This skill's `TICKET_FORMAT.md` settles the shape of a ticket, its `PLANNING.md` the shape of a plan. This file is what you do.
 
 ## What this takes
 
@@ -61,7 +61,7 @@ Plan mode cannot be entered once per slice without stopping a person once per sl
 1. **Work the slicing out in context** - the slices, their order, what each covers. Where a slice introduces a concept the codebase has no name for, or moves a boundary between the ones it does, this skill's `CODING_STANDARDS.md` binds the names the ticket will write.
 2. **Check it.** Spawn a subagent with a fresh context and give it `VERIFY.md` from this directory, the slicing as text, and the solution's path. This is the one review that arrives before there is a file to read, so it is the only thing standing between a bad cut and a directory full of tickets.
 3. **Present it and get approval** - the slicing, and the rehearsal's questions as one list. What is approved is the slicing, not the files.
-4. **Write the tickets to match**, once plan mode has exited - and with them any ADR the change earned. `CODING_STANDARDS.md` says which decisions those are and `ADR_FORMAT.md` is the shape; plan approval is the yes that lets one be written, and the argument for it is in front of you now and gone by acceptance.
+4. **Write the tickets to match**, once plan mode has exited - and with them any ADR the change earned. `CODING_STANDARDS.md` says which decisions those are and this skill's `ADR_FORMAT.md` is the shape; plan approval is the yes that lets one be written, and the argument for it is in front of you now and gone by acceptance.
 
 The written files are a transcription of what was approved, and nothing checks them at the moment of writing - the runner's pre-flight is what catches a transcription that drifted, one pass later. So transcribe, do not improve. An idea you have while writing the files is an idea that skipped the approval.
 

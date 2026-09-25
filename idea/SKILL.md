@@ -44,7 +44,7 @@ This is the one place you may look at solution space, and only far enough to dis
 
 ## The record
 
-Present the intent in the shape `INTENT_FORMAT.md` specifies, and write it to `intents/YYYY-MM-DD-<slug>/01-INTENT.md`.
+Present the intent in the shape this skill's `INTENT_FORMAT.md` specifies, and write it to `intents/YYYY-MM-DD-<slug>/01-INTENT.md`.
 
 ### Check it before you ask
 
