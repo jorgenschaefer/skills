@@ -55,4 +55,4 @@ It will look like five minutes of work, and often it is - and then the change co
 
 Commit when the behaviour is green and the checks pass. `git-commit-message` is the shape. Stage the files this change touched and nothing else; never `git add -A`.
 
-Where you saw a better approach than the one you were asked for and it was not yours to take, say so now, once, rather than building it. Where it is smaller than that, `IDEAS.md` is the parking lot.
+Where you saw a better approach than the one you were asked for and it was not yours to take, say so now, once, rather than building it.

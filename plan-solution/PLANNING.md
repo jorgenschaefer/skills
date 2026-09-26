@@ -34,4 +34,4 @@ The questions go back at the approval, and `SKILL.md` says how. Carry into the t
 
 The plan implements exactly the criteria the ticket quotes, and nothing beyond them.
 
-The pull here is real: while reading the code you will see three things worth doing that nobody asked for. They are not this slice. `IDEAS.md` is the parking lot, and a criterion the solution should have had is something to say out loud, not something to plan in.
+The pull here is real: while reading the code you will see things worth doing that nobody asked for. They are not this slice.
