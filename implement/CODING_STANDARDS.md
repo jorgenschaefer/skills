@@ -34,6 +34,7 @@ External seams - database interfaces, components, etc. - validate their external
 Prefer a small number of layers that each hide real substance over many thin layers that only relay calls.
 
 - **Indirection pays for itself.** A layer earns its place only if a caller can use it correctly without understanding what is behind it. A wrapper that relays the same vocabulary and shape it received, a delegate-only class, a hop that adds a name but no meaning - none of them do. Thinness is not the defect; a layer that spares the caller nothing is.
+- **A variation point is varied.** An interface or base class with one implementation, a factory or strategy with one variant, an option every caller sets the same way: collapse each to its one case. Two exceptions: the adapter over an external dependency under *Test coverage*, whose mock is its second case, and a variation point exported for code outside this repo to fill.
 - **Inline the trivial.** A pass-through that does nothing but forward its argument, or a 1:1 domain-to-storage mapping, can stay inline. Do not manufacture a layer for it. Pull one out when the responsibility grows past trivial - real translation, real rules, more than one caller.
 
 ## General rules
@@ -42,7 +43,7 @@ Prefer a small number of layers that each hide real substance over many thin lay
 - **KISS.** Prefer the simplest thing that works over "clever" designs or needless optimization.
 - **Duplication is justified or removed.** Two copies that will change for the same reason belong in one place. Duplication is acceptable only when the copies will change for *different* reasons - then prefer it over the wrong abstraction. There is no count of copies that decides this.
 - **No optimization without measurement.** Never make code "more efficient" without having measured it and defined the efficiency as a problem - a win that does not cross the threshold above is not one. Two costs are the exception, because they follow from the shape of the code plus a number you can go and look up: a query inside a loop, and a query with no bound or no index on what it filters or sorts.
-- **No dead code.** Code that is not used anywhere outside of its tests should not be in the repository. Note what only *looks* dead but is live: dynamic or reflective access, DI registration, string-referenced routes, config and env, framework entry points, and exported API consumed from outside this repo - an exported symbol with no internal caller is not dead.
+- **No dead code.** Code that is not used anywhere outside of its tests should not be in the repository - down to a parameter, a field, an option, or a branch no input reaches. Note what only *looks* dead but is live: dynamic or reflective access, DI registration, string-referenced routes, config and env, framework entry points, a parameter a signature it must match requires, a field in a stored or wire format, an exhaustiveness assertion, and exported API consumed from outside this repo - an exported symbol with no internal caller is not dead.
 
 ## File and directory layout
 
@@ -51,6 +52,10 @@ Code that changes together should live close together - same file, same director
 - **Feature-based modules.** Combine a feature's code into the same module, each feature in its own directory or file. Prefer this over splitting by type, for example having all controllers in one directory and all models in another.
 - **Co-locate tests.** Put a test next to the file it tests, not in a separate `tests/` tree - unless the project's existing layout clearly says otherwise.
 - **Reads top to bottom** (the stepdown rule / newspaper metaphor). Files open with the abstract idea and grow concrete; a helper sits below its caller, so a reader meets a function before its details.
+
+## Control flow
+
+**Calls are named where they happen**, so a reader can find what runs by searching for it. Dispatch through a computed name - `handlers["on_" + event]`, `getattr(self, name)`, reflection, monkey-patching - hides the call from a search. Where the set of cases is known, name each one in a `switch` or `match`. An event with a single listener, or a hook, decorator or higher-order wrapper of your own with a single user, is a call dressed up as something else: make the call - unless it keeps the emitter's module from depending on the listener's.
 
 ## Concurrency and shared state
 
