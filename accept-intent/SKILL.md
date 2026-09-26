@@ -16,6 +16,8 @@ Start it the way the project says to - a `run` skill, `CLAUDE.md`, the README - 
 
 Where you cannot get the product running at all, stop and say so - that is the report, and every condition is unchecked.
 
+When you are done, stop what you started and remove the scratch databases, worktrees and directories you created - all but the run skill. Name in the report whatever you could not remove.
+
 ## Walk the conditions
 
 Take `## Done when` condition by condition, by id, and for each say whether you could find it in the product - what you did, and what you saw.
