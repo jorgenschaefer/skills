@@ -308,6 +308,19 @@ When the criteria are green and the project's checks pass, write the ticket's \`
 If you cannot proceed, append a \`## Halt\` section naming the kind and stop: \`blocked\` (a precondition the ticket assumed is not there), \`undecided\` (a decision the ticket's criteria do not settle and that is not yours to settle), or \`mystery\` (a failure you cannot explain, which is different from one you cannot fix). Then set \`status: halted\`.
 
 Never write \`status: doing\` or \`status: done\`. Both ends belong to the runner."
+  # What earlier builds left standing is in their Records, and a session reads
+  # its own ticket and no other - so an item one build left for the next was
+  # never seen by it. Pointed at rather than extracted: a Record says it in
+  # whatever shape its build chose.
+  local t built=""
+  for t in "${files[@]}"; do
+    [ "$(field "$t" status)" = done ] && built+=$'\n'"- $(realpath "$t")"
+  done
+  [ -z "$built" ] || prompt+="
+
+Tickets in this directory already built:$built
+
+Each one's \`## Record\` says what its build left standing. Handle an item that falls inside this ticket's \`## Done when\`, and leave the rest; this ticket's \`## Not here\` still holds."
   [ -z "$2" ] || prompt="Your turn ended before the ticket was finished. Nothing wakes an unattended session once its turn ends, so whatever you had running in the background was killed; your uncommitted work is still in the tree. Carry on from there - rerun what was killed - and finish as the brief said."
   say "session on $(basename "$1")"
   claude_through_limits "$(basename "$1" .md)" "$prompt" "$2"; rc=$?

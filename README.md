@@ -71,17 +71,19 @@ out to be shared rather than over that file by name.
 
 `./run.sh intents/<slug>/tickets` drives a ticket directory with nobody watching: it
 claims each ticket, builds it, and either finishes it or sends it back. It refuses to
-start on the main branch or on a dirty tree, and before the first build it has a
-session name the project's checks and runs them itself - a run that starts red does
-not start, and every build is told the checks were green. It checks before every pass
-that the tickets and their solution still agree, enforces the attempt budget from a
-counter in the ticket file, and waits out a usage limit rather than spending the budget
-on it. A session that ends its turn with its work uncommitted is resumed once rather
-than started over, and what an abandoned attempt leaves behind goes to the stash, so
-the next one starts on the tree the checks were green on. When every ticket is done it
-walks the conditions with `/accept-intent` and prints what that found, along with what
-the builds' Records say they left standing - without merging, marking, or ruling on it. It walks `01-INTENT.md` where there is one
-and the solution where there is not, because the short path keeps its conditions in the
+start on the main branch or on a dirty tree, and before the first build it has a session
+name the project's checks and runs them itself - a run that starts red does not start,
+and every build is told the checks were green. It checks before every pass that the
+tickets and their solution still agree, enforces the attempt budget from a counter in
+the ticket file, and waits out a usage limit rather than spending the budget on it. A
+session that ends its turn with its work uncommitted is resumed once rather than started
+over, and what an abandoned attempt leaves behind goes to the stash, so the next one
+starts on the tree the checks were green on. Each build is pointed at the Records of the
+tickets already done, since those are where one build leaves something for the next.
+When every ticket is done it walks the conditions with `/accept-intent` and prints what
+that found, along with what the builds' Records say they left standing - without
+merging, marking, or ruling on it. It walks `01-INTENT.md` where there is one and the
+solution where there is not, because the short path keeps its conditions in the
 solution's own `## Intent` section and the walk follows the conditions rather than the
 filename.
 

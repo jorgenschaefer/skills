@@ -365,6 +365,21 @@ run > /dev/null
 if grep -q '2-two' <(head -1 "$STUB_CALLS"); then ok "after: decides the order, not the filename"
 else bad "after: decides the order, not the filename" "$(calls)"; fi
 
+# --- what earlier builds left standing
+#
+# A build that leaves something for a later ticket - a rename that belongs to
+# the code the next one touches - says so in its Record, and nothing else ever
+# carried it there: every session reads its own ticket and no other.
+
+workspace
+plan build build walk
+run > /dev/null
+if ! grep -q 'already built' <(sed -n 1p "$STUB_CALLS") \
+   && grep -qF "$WORK/intents/x/tickets/1-one.md" <(sed -n 2p "$STUB_CALLS") \
+   && grep -q 'already built.*## Record' <(sed -n 2p "$STUB_CALLS"); then
+  ok "a later build is pointed at the Records of the tickets already built"
+else bad "a later build is pointed at the Records of the tickets already built" "$(calls)"; fi
+
 # --- the runner owns the claim
 #
 # A crashed session leaves its claim behind; only the runner can put it back,
