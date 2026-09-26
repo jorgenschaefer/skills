@@ -613,6 +613,38 @@ if ! grep -q 'already built' <(sed -n 1p "$STUB_CALLS") \
   ok "a later build is pointed at the Records of the tickets already built"
 else bad "a later build is pointed at the Records of the tickets already built" "$(calls)"; fi
 
+# --- which model each session runs on
+#
+# Plan with Opus, execute with Sonnet: a build carries out a plan that was
+# thought through before it was written down, and the walk is judgement.
+
+models_ok() {  # pattern of the calls, model -> every such call names the model
+  local lines; lines="$(grep -e "$1" "$STUB_ARGS")"
+  [ -n "$lines" ] && ! grep -v -e "--model $2" <<< "$lines" | grep -q .
+}
+
+workspace
+plan build build walk
+run > /dev/null
+if models_ok 'Use /implement' sonnet; then ok "the builds run on Sonnet"
+else bad "the builds run on Sonnet" "$(cut -c1-160 "$STUB_ARGS")"; fi
+if models_ok '/accept-intent' opus; then ok "the walk runs on Opus"
+else bad "the walk runs on Opus" "$(cut -c1-160 "$STUB_ARGS")"; fi
+if models_ok '--json-schema' sonnet; then ok "finding the checks runs on Sonnet"
+else bad "finding the checks runs on Sonnet" "$(cut -c1-160 "$STUB_ARGS")"; fi
+
+workspace
+plan limit build build walk
+run > /dev/null
+if models_ok '--resume' sonnet; then ok "a build resumed after a limit stays on its model"
+else bad "a build resumed after a limit stays on its model" "$(cut -c1-160 "$STUB_ARGS")"; fi
+
+workspace
+plan build build walk
+( cd "$WORK" && PATH="$WORK/.bin:$PATH" BUILD_MODEL=opus bash "$RUNNER" intents/x/tickets > "$WORK/.out" 2>&1 )
+if models_ok 'Use /implement' opus; then ok "the build model can be set from outside"
+else bad "the build model can be set from outside" "$(cut -c1-160 "$STUB_ARGS")"; fi
+
 # --- the runner owns the claim
 #
 # A crashed session leaves its claim behind; only the runner can put it back,
