@@ -518,6 +518,77 @@ if [ "$rc" = 0 ] && ! grep -q '^resume' "$STUB_SESSIONS" && [ "$(field 1-one att
   ok "a ticket handed back but still on record is built afresh, not resumed"
 else bad "a ticket handed back but still on record is built afresh, not resumed" "rc=$rc $(cat "$STUB_SESSIONS") $(out)"; fi
 
+# --- one runner at a time
+#
+# A second runner started on a tree another is working took over its claim and
+# resumed the session it was running. It stops instead, touching nothing - and a
+# session that outlived a killed runner counts, since it is still building.
+
+workspace
+lock="$WORK/.git/run.lock"
+( flock "$lock" sh -c ": > '$WORK/.locked'; exec /bin/sleep 5" ) &
+until [ -e "$WORK/.locked" ]; do /bin/sleep 0.1; done
+plan build build walk
+rc="$(run)"
+if [ "$rc" != 0 ] && grep -q 'still' "$WORK/.out" && [ ! -s "$STUB_CALLS" ] \
+   && [ -z "$(git -C "$WORK" status --porcelain)" ]; then
+  ok "a run started while another holds the repository stops, touching nothing"
+else bad "a run started while another holds the repository stops, touching nothing" "rc=$rc $(out)"; fi
+
+workspace
+plan orphaned build build walk
+run > /dev/null 2>&1
+rc="$(run)"
+if [ "$rc" != 0 ] && grep -q 'still' "$WORK/.out" && [ "$(field 1-one status)" = doing ] \
+   && [ "$(wc -l < "$STUB_CALLS")" = 1 ]; then
+  ok "a run started while a killed run's session still runs stops, touching nothing"
+else bad "a run started while a killed run's session still runs stops, touching nothing" "rc=$rc $(out)"; fi
+flock -w 10 "$WORK/.git/run.lock" true
+rc="$(run)"
+if [ "$rc" = 0 ] && [ "$(field 1-one status)" = "done" ] && grep -q '^resume' "$STUB_SESSIONS"; then
+  ok "once that session has ended, a run carries on with its claim"
+else bad "once that session has ended, a run carries on with its claim" "rc=$rc $(cat "$STUB_SESSIONS") $(out)"; fi
+
+# A `done` only in the working tree is a claim nobody checked, whatever became
+# of the record: killed between releasing it and writing the halt, the runner
+# left exactly that, and a start again counted the ticket as built.
+workspace
+sed -i 's/^status: .*/status:    done/' "$WORK/intents/x/tickets/1-one.md"
+plan build build walk
+rc="$(run)"
+if [ "$rc" = 0 ] && [ "$(wc -l < "$STUB_CALLS")" = 3 ] && grep -q '1-one' <(head -1 "$STUB_CALLS"); then
+  ok "an uncommitted done with nothing on record is built, not believed"
+else bad "an uncommitted done with nothing on record is built, not believed" "rc=$rc $(calls) $(out)"; fi
+
+# The runner's own halts are committed: a halt is the one thing a run leaves for
+# a person, and uncommitted it was every later session's someone else's change.
+workspace
+plan claim-only claim-only
+run > /dev/null
+if [ "$(field 1-one status)" = halted ] && [ -z "$(git -C "$WORK" status --porcelain)" ] \
+   && [ "$(git -C "$WORK" show HEAD:intents/x/tickets/1-one.md | sed -n 's/^status: *//p')" = halted ]; then
+  ok "a halt the runner writes is committed"
+else bad "a halt the runner writes is committed" "$(git -C "$WORK" status --porcelain) $(git -C "$WORK" log --oneline | head -3)"; fi
+
+# A drift nobody has resolved is the same halt on every start, not one more.
+workspace
+sed -i 's/the second thing happens\./the second thing happens, reworded./' "$WORK/intents/x/02-SOLUTION.md"; commit
+plan build build walk
+run > /dev/null; run > /dev/null
+if [ "$(grep -c '^## Halt' <(tkt 2-two))" = 1 ]; then
+  ok "starting again on an unresolved drift does not halt it twice"
+else bad "starting again on an unresolved drift does not halt it twice" "$(tkt 2-two)"; fi
+
+# What the checks start in the background is not a session: it must not hold the
+# lock after the run, or every later start is refused.
+workspace
+STUB_VERIFY='(/bin/sleep 3 >/dev/null 2>&1 &)'
+plan build build walk walk
+run > /dev/null
+rc="$(run)"
+if [ "$rc" = 0 ]; then ok "a process the checks leave running does not hold the lock"
+else bad "a process the checks leave running does not hold the lock" "rc=$rc $(out)"; fi
+
 # One runner leaves one claim.
 workspace
 sed -i 's/^status: .*/status:    doing/' "$WORK"/intents/x/tickets/*.md; commit
@@ -851,5 +922,21 @@ else bad "with no intent the walk still runs" "rc=$rc $(calls)"; fi
 if grep -q '^/accept-intent .*02-SOLUTION.md' <(tail -1 "$STUB_CALLS"); then
   ok "with no intent the walk is given the solution that carries the conditions"
 else bad "with no intent the walk is given the solution that carries the conditions" "$(tail -1 "$STUB_CALLS")"; fi
+
+# The walk's report is the one thing a run is for reading, and a walk that died
+# has none: a run that ends there has not ended well.
+workspace
+plan build build walk-dies
+rc="$(run)"
+if [ "$rc" != 0 ] && grep -q 'the walk did not finish' "$WORK/.out"; then
+  ok "a walk that dies fails the run, and says so"
+else bad "a walk that dies fails the run, and says so" "rc=$rc $(out)"; fi
+
+workspace
+plan build build walk
+rc="$(run)"
+if [ "$rc" = 0 ] && grep -q '^the walk ran$' "$WORK/.out"; then
+  ok "a walk that finishes prints its report and passes"
+else bad "a walk that finishes prints its report and passes" "rc=$rc $(out)"; fi
 
 finish

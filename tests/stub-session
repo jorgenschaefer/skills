@@ -28,7 +28,10 @@
 #                window, but it goes on to finish - then `build`
 #   killed       write code, then kill the runner with -9 - it gets no chance to
 #                tidy up, as with a power cut or a closed laptop
-#   walk         the acceptance call - record it and exit 0
+#   walk         the acceptance call - end in a successful result, as the CLI does
+#   walk-dies    the acceptance call, dying with no result at all
+#   orphaned     write code, kill the runner with -9, and keep running a while -
+#                a session outliving the runner that launched it
 #
 # The call that looks for the project's checks is told apart by the schema it
 # asks its answer in, consumes no plan line and is not recorded: it answers
@@ -91,10 +94,11 @@ rejected_event() {
 set_status() { sed -i "2,/^---$/s/^status: .*/status:    $1/" "$ticket"; }
 
 case "$line" in
-  walk)
+  walk|walk-dies)
     # The acceptance call names no ticket, which is how the stub tells it apart.
     [ -n "$ticket" ] && { echo "stub: expected the walk, got a ticket: $prompt" >&2; exit 97; }
-    echo "the walk ran"
+    [ "$line" = walk ] || exit 1
+    echo '{"type":"result","subtype":"success","is_error":false,"result":"the walk ran"}'
     ;;
   build|limit-passed|build-limit|build-dirty|build-killed)
     if [ "$line" = limit-passed ]; then
@@ -127,6 +131,11 @@ case "$line" in
     set_status halted
     ;;
   die) exit 1 ;;
+  orphaned)
+    printf 'half\n' > "$(git rev-parse --show-toplevel)/code"
+    kill -9 "$PPID"
+    /bin/sleep 3
+    ;;
   killed)
     printf 'half\n' > "$(git rev-parse --show-toplevel)/code"
     kill -9 "$PPID"

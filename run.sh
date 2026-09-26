@@ -53,6 +53,15 @@ esac
 
 command -v claude >/dev/null || die "no claude on PATH: the runner drives sessions, it does not do the work"
 
+# One runner per repository. A second one started beside a live run took over
+# its claim and resumed the session it was running. The lock is held on a
+# descriptor every session inherits, so a session that outlives a killed runner
+# still holds it and is still building; what that session starts does not
+# inherit it, so a server left running does not.
+LOCK="$(git rev-parse --absolute-git-dir)/run.lock"
+exec 9>"$LOCK"
+flock -n 9 || die "another run, or a session one started, is still working this repository (pids:$(exec 9>&-; fuser "$LOCK" 2>/dev/null | tr -s ' ' '\n' | grep -vx "$$" | tr '\n' ' ')) - let it finish or stop it, then start again"
+
 shopt -s nullglob
 files=()
 for f in "$TICKETS"/*.md; do
@@ -82,11 +91,19 @@ claim_record() {  # ticket -> the file
 }
 release() { rm -f "$(claim_record "$1")"; }
 
-claimed() {  # the tickets in flight - at `doing`, or on record - one per line
+claimed() {  # the tickets in flight - at `doing`, on record, or `done` unchecked - one per line
   local t
   for t in "${files[@]}"; do
-    if [ "$(field "$t" status)" = doing ] || [ -f "$(claim_record "$t")" ]; then printf '%s\n' "$t"; fi
+    if [ "$(field "$t" status)" = doing ] || [ -f "$(claim_record "$t")" ] || unchecked_done "$t"; then
+      printf '%s\n' "$t"
+    fi
   done
+}
+
+# A `done` in the working tree that HEAD does not carry: a session's claim the
+# runner never got to check, whatever became of its record.
+unchecked_done() {  # ticket
+  [ "$(field "$1" status)" = "done" ] && [ "$(field <(git show "HEAD:./$1" 2>/dev/null) status)" != "done" ]
 }
 
 # Whatever is lying around uncommitted is someone's, and a session cannot tell
@@ -311,9 +328,15 @@ put_aside() {  # ticket, attempt
   say "what it left uncommitted is in the stash"
 }
 
+# Committed, and once: a halt is the one thing a run leaves for a person, and
+# left uncommitted it was every later session's someone else's change - and a
+# drift nobody had resolved yet was halted again on every start.
 halt() {  # ticket, kind, why
+  [ "$(field "$1" status)" != halted ] || return 0
   printf '\n## Halt\n\n%s - %s\n' "$2" "$3" >> "$1"
   set_field "$1" status halted
+  git commit -q -m "Halt $(basename "$1" .md): $2" -- "$1" >/dev/null \
+    || echo "could not commit the halt in $1" >&2
 }
 
 # The ticket protocol is stated here rather than in the skill. `/implement` is
@@ -386,7 +409,7 @@ verify() {
   [ -n "$VERIFY" ] || die "the session found no verification command - see $LOG"
   log="$LOG_DIR/verify-$(date +%Y%m%d-%H%M%S).log"
   say "running the checks: $VERIFY"
-  bash -c "$VERIFY" > "$log" 2>&1 \
+  bash -c "$VERIFY" > "$log" 2>&1 9>&- \
     || { tail -20 "$log" >&2; die "the checks fail before any build: $VERIFY - full output in $log"; }
   say "the checks pass"
 }
@@ -496,8 +519,8 @@ while :; do
   # next pass would halt as `exhausted` and lose the thing worth saying.
   if [ "$(git rev-parse HEAD)" = "$head_before" ]; then
     if [ "$attempts" -ge "$MAX_ATTEMPTS" ]; then
-      release "$ticket"
       halt "$ticket" unbuilt "the session reported a build and committed nothing, and the last of $MAX_ATTEMPTS attempts is spent - read the build output for what stopped it committing, and \`git stash list\` for what each attempt left uncommitted"
+      release "$ticket"
       exit 1
     fi
     echo "unbuilt: $ticket reported a build and committed nothing - building it again" >&2
@@ -562,6 +585,9 @@ printf 'walking %s\n\n' "$intent"
 # the one stage that asks whether the problem was solved.
 claude_through_limits accept-intent "/accept-intent $intent" --session-id "$(new_session_id)"
 [ $? = "$EX_LIMIT" ] && exit 1
-# The walk's report is the one thing here meant to be read in full.
+# The walk's report is the one thing here meant to be read in full - and a walk
+# that died has none, which is a run that did not end well, whatever it prints.
 printf '\n'
 jq -R -r 'fromjson? | select(.type == "result") | .result // empty' "$LOG"
+jq -R -s -e '[split("\n")[] | fromjson? | select(.type == "result" and .is_error == false)] | length > 0' "$LOG" >/dev/null \
+  || { echo "the walk did not finish - see $LOG" >&2; exit 1; }
