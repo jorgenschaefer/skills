@@ -341,7 +341,7 @@ Never write \`status: doing\` or \`status: done\`. Both ends belong to the runne
   # never seen by it. Pointed at rather than extracted: a Record says it in
   # whatever shape its build chose.
   for t in "${files[@]}"; do
-    [ "$(field "$t" status)" = done ] && built+=$'\n'"- $(realpath "$t")"
+    [ "$(field "$t" status)" = "done" ] && built+=$'\n'"- $(realpath "$t")"
   done
   [ -z "$built" ] || prompt+="
 
@@ -390,7 +390,7 @@ ready_ticket() {  # the first ticket whose dependencies are done
     [ "$(field "$t" status)" = ready ] || continue
     ok=yes
     for dep in $(field "$t" after | tr ',' ' '); do
-      [ "$(field "$TICKETS/$dep.md" status)" = done ] 2>/dev/null || ok=no
+      [ "$(field "$TICKETS/$dep.md" status)" = "done" ] 2>/dev/null || ok=no
     done
     [ "$ok" = yes ] && { printf '%s' "$t"; return 0; }
   done
@@ -496,7 +496,7 @@ while :; do
   # session's "someone else's change", and lost to anything that reset the tree.
   # The ticket goes in whole, so one the session left out of its commit is
   # recorded all the same.
-  set_field "$ticket" status done
+  set_field "$ticket" status "done"
   git commit -q --amend --no-edit -- "$ticket" \
     || { echo "could not amend $ticket into $(git rev-parse --short HEAD)" >&2; exit 1; }
   say "done: $(basename "$ticket") at $(git rev-parse --short HEAD)"

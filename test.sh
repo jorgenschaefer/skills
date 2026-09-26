@@ -54,6 +54,18 @@ done
 # stops finding CODING_STANDARDS.md is the day it stops checking anything.
 expect_counted "$shared" "files held by more than one skill"
 
+# --- the scripts that ship pass shellcheck --------------------------------------
+#
+# Three reviews reported it as not installed and ran nothing. A lint that cannot
+# run fails here rather than reading as a clean one.
+if ! command -v shellcheck >/dev/null; then
+  bad "run.sh and sync.sh pass shellcheck" "shellcheck is not on PATH"
+elif lint="$(shellcheck "$HERE/run.sh" "$HERE/sync.sh" 2>&1)"; then
+  ok "run.sh and sync.sh pass shellcheck"
+else
+  bad "run.sh and sync.sh pass shellcheck" "$lint"
+fi
+
 # --- the suites ----------------------------------------------------------------
 
 printf '\n'
