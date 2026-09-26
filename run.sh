@@ -10,10 +10,11 @@
 # dies, and cannot wait out a limit that has already stopped it.
 #
 # The loop per ticket: claim it, build it, and either finish it or send it
-# back. The runner owns both ends of the status - a session writes `review` or
-# `halted` and nothing else - because a ticket left at `doing` by a crash is
-# indistinguishable from one being worked on, and only the process that
-# launched it knows which.
+# back. The runner owns `doing`, and a session writes `done` or `halted` and
+# nothing else. A `done` is the session's claim, which the runner checks against
+# the commit - a claim with no commit behind it is sent back - so nothing reaches
+# `done` unbuilt, and a run killed at any point is started again from whatever
+# the ticket files and the claim record say.
 #
 # There is no review pass here. `/implement` spawns its own reviewer in a
 # subagent that did not write the code, which is the property a second session
@@ -66,21 +67,42 @@ field()     { sed -n "2,/^---$/s/^$2: *//p" "$1" | head -1; }
 # body that look exactly like fields, and this repo's tickets are full of them.
 set_field() { sed -i "2,/^---$/s|^$2:.*|$2:$(printf '%*s' $((10 - ${#2})) '')$3|" "$1"; }
 
-claimed() {  # the tickets at `doing`, one per line
+# Where each session's full event stream goes. Inside the git directory, so a
+# session that commits everything it sees cannot commit its own transcript.
+LOG_DIR="${LOG_DIR:-$(git rev-parse --absolute-git-dir)/run-logs}"
+mkdir -p "$LOG_DIR"
+
+# Which session a claim was given, and where HEAD stood, for a runner started
+# again after being killed. Named for the ticket's whole path: every intent has
+# a 1-one.md, and one's record resumed another's session. It stays until the
+# runner has settled the ticket, not only until the session returns: a `done`
+# the runner was killed before checking is a claim to check, not a result.
+claim_record() {  # ticket -> the file
+  printf '%s/%s.claim' "$LOG_DIR" "$(realpath --relative-to="$(git rev-parse --show-toplevel)" "$1" | tr / _)"
+}
+release() { rm -f "$(claim_record "$1")"; }
+
+claimed() {  # the tickets in flight - at `doing`, or on record - one per line
   local t
-  for t in "${files[@]}"; do [ "$(field "$t" status)" != doing ] || printf '%s\n' "$t"; done
+  for t in "${files[@]}"; do
+    if [ "$(field "$t" status)" = doing ] || [ -f "$(claim_record "$t")" ]; then printf '%s\n' "$t"; fi
+  done
 }
 
 # Whatever is lying around uncommitted is someone's, and a session cannot tell
 # it from its own work: it lints it, reviews it, and carves it out of every
 # diff. Untracked files count - an untracked mockup failed the lint of every
-# session in a whole run.
+# session in a whole run. The ticket files are not counted: what is uncommitted
+# in them is the runner's own bookkeeping - a claim, a counter, a halt it wrote
+# - and a run started again reads it as the state to carry on from.
 #
 # Except beside a claim. A ticket at `doing` when no runner is running is one a
 # killed runner was building, and what is uncommitted is that session's work,
 # which the loop carries on with. One runner leaves one claim; more than one is
 # not something this script did.
-dirty="$(git status --porcelain)"
+not_tickets=(':/')
+for t in "${files[@]}"; do not_tickets+=(":!$t"); done
+dirty="$(git status --porcelain -- "${not_tickets[@]}")"
 case "$(claimed | wc -l)" in
   0) [ -z "$dirty" ] || die "refusing to run on a dirty tree: commit or remove what is here first"$'\n'"$dirty" ;;
   1) [ -z "$dirty" ] || say "carrying on with $(claimed), taking this as its session's work:"$'\n'"$dirty" ;;
@@ -168,11 +190,6 @@ preflight() {
 }
 
 # --- one session
-
-# Where each session's full event stream goes. Inside the git directory, so a
-# session that commits everything it sees cannot commit its own transcript.
-LOG_DIR="${LOG_DIR:-$(git rev-parse --absolute-git-dir)/run-logs}"
-mkdir -p "$LOG_DIR"
 
 # A session's event stream, cut to one line per tool call, remark and result.
 # Subagents are left out - their spawn shows, their insides are in the log.
@@ -278,25 +295,19 @@ claude_run() {  # log, --session-id or --resume, session id, prompt, claude's ow
   return "${PIPESTATUS[0]}"
 }
 
-# Which session a claim was given, and where HEAD stood, for a runner started
-# again after being killed. Named for the ticket's whole path: every intent has
-# a 1-one.md, and one's record resumed another's session.
-claim_record() {  # ticket -> the file
-  printf '%s/%s.claim' "$LOG_DIR" "$(realpath --relative-to="$(git rev-parse --show-toplevel)" "$1" | tr / _)"
-}
-
-# What a session left in the tree besides the ticket, whose fields the runner
-# writes itself.
-left_behind() {  # ticket -> git status lines, empty for none
-  git status --porcelain -- ':/' ":!$1"
+# What a session left in the tree besides the ticket files, which are the
+# runner's bookkeeping - another ticket's halt among them, which went into the
+# stash with a later build's leftovers and came back out as a fresh budget.
+left_behind() {  # -> git status lines, empty for none
+  git status --porcelain -- "${not_tickets[@]}"
 }
 
 # The next attempt is told the checks were green when the run started, which is
 # only true of a tree without this one's leftovers in it. Stashed rather than
 # dropped: it may be most of a build.
 put_aside() {  # ticket, attempt
-  [ -n "$(left_behind "$1")" ] || return 0
-  git stash push -q -u -m "run.sh: $(basename "$1") attempt $2, left uncommitted" -- ':/' ":!$1"
+  [ -n "$(left_behind)" ] || return 0
+  git stash push -q -u -m "run.sh: $(basename "$1") attempt $2, left uncommitted" -- "${not_tickets[@]}"
   say "what it left uncommitted is in the stash"
 }
 
@@ -331,11 +342,11 @@ That file is the whole brief. Its \`## Done when\` is the definition of done - n
 
 Do not open the solution the frontmatter names. The ticket quotes what it needs, and going upstream is how a ticket quietly becomes a different one.
 
-When the criteria are green and the project's checks pass, write the ticket's \`## Record\` - which test names which criterion, the command you ran, and what you left standing: review findings you did not fix and why, checks you did not run, and where you departed from the plan. Nobody reads your closing message in an unattended run; the walk reads the Record. Set \`status: review\` in the frontmatter and commit the code and the ticket file together, in one commit.
+When the criteria are green and the project's checks pass, write the ticket's \`## Record\` - which test names which criterion, the command you ran, and what you left standing: review findings you did not fix and why, checks you did not run, and where you departed from the plan. Nobody reads your closing message in an unattended run; the walk reads the Record. Set \`status: done\` in the frontmatter and commit the code and the ticket file together, in one commit.
 
 If you cannot proceed, append a \`## Halt\` section naming the kind and stop: \`blocked\` (a precondition the ticket assumed is not there), \`undecided\` (a decision the ticket's criteria do not settle and that is not yours to settle), or \`mystery\` (a failure you cannot explain, which is different from one you cannot fix). Then set \`status: halted\`.
 
-Never write \`status: doing\` or \`status: done\`. Both ends belong to the runner."
+Never write \`status: doing\`. It belongs to the runner."
   # What earlier builds left standing is in their Records, and a session reads
   # its own ticket and no other - so an item one build left for the next was
   # never seen by it. Pointed at rather than extracted: a Record says it in
@@ -400,10 +411,11 @@ ready_ticket() {  # the first ticket whose dependencies are done
 while :; do
   preflight || exit 2
 
-  # A claim at the top of the loop is one a killed runner left: every pass below
-  # ends by moving its ticket off `doing`. The record written at the claim says
-  # which session to resume and where HEAD was; where there is none it was
-  # killed around the session rather than in it, and there is nothing to resume.
+  # A ticket in flight at the top of the loop is one a killed runner left: every
+  # pass below settles its ticket and releases the record. What the record says
+  # - which session, and where HEAD was - is picked up wherever the kill
+  # interrupted it. Where there is no record it was killed around the session
+  # rather than in it, and there is nothing to resume.
   if ticket="$(claimed)" && [ -n "$ticket" ]; then
     attempts="$(field "$ticket" attempts)"
     if ! read -r id head_before 2>/dev/null < "$(claim_record "$ticket")"; then
@@ -412,8 +424,11 @@ while :; do
       set_field "$ticket" status ready
       continue
     fi
-    say "carrying on with $(basename "$ticket"), attempt $attempts of $MAX_ATTEMPTS"
-    session "$ticket" --resume "$id" "$INTERRUPTED"; rc=$?
+    case "$(field "$ticket" status)" in
+      doing) say "carrying on with $(basename "$ticket"), attempt $attempts of $MAX_ATTEMPTS"
+             session "$ticket" --resume "$id" "$INTERRUPTED"; rc=$? ;;
+      *)     say "settling $(basename "$ticket"), left at $(field "$ticket" status)"; rc=0 ;;
+    esac
   else
     ticket="$(ready_ticket)" || break
     # Run here rather than at startup: a run started again runs them only once
@@ -429,7 +444,7 @@ while :; do
     set_field "$ticket" status doing
     say "claimed $(basename "$ticket"), attempt $attempts of $MAX_ATTEMPTS"
 
-    # Where HEAD was before the build, so that `review` can be checked against
+    # Where HEAD was before the build, so that `done` can be checked against
     # what the session did rather than only against what it says it did. On
     # record with the session, because a runner killed during the build is
     # started again with neither.
@@ -443,11 +458,10 @@ while :; do
   # claimed was waiting on something `-p` killed when the turn ended - one did
   # so with its build done and reviewed. It is resumed once rather than started
   # over, because everything it did is still in the tree and in its context.
-  if [ "$rc" = 0 ] && [ "$(field "$ticket" status)" = doing ] && [ -n "$(left_behind "$ticket")" ]; then
+  if [ "$rc" = 0 ] && [ "$(field "$ticket" status)" = doing ] && [ -n "$(left_behind)" ]; then
     say "session stopped with its work uncommitted - resuming it"
     session "$ticket" --resume "$id" "$STOPPED_EARLY"; rc=$?
   fi
-  rm -f "$(claim_record "$ticket")"
   if [ "$rc" = "$EX_LIMIT" ]; then
     # A limit that outlasted every wait says nothing about the ticket, so it is
     # handed back as it was claimed, attempt and all, rather than left for the
@@ -457,6 +471,7 @@ while :; do
       set_field "$ticket" attempts "$((attempts - 1))"
     fi
     echo "$(basename "$ticket") is at $(field "$ticket" status) - run again once the limit has lifted" >&2
+    release "$ticket"
     exit 1
   fi
 
@@ -464,14 +479,14 @@ while :; do
   # committing its build has built it, and one that crashed before has left the
   # claim for the runner to put back. The attempt is spent either way.
   case "$(field "$ticket" status)" in
-    halted) echo "halted: $ticket" >&2; exit 1 ;;
-    review) ;;
+    halted) release "$ticket"; echo "halted: $ticket" >&2; exit 1 ;;
+    done) ;;
     *) say "session left $(basename "$ticket") at $(field "$ticket" status) - back to ready"
        put_aside "$ticket" "$attempts"
-       set_field "$ticket" status ready; continue ;;
+       set_field "$ticket" status ready; release "$ticket"; continue ;;
   esac
 
-  # A session that says `review` without a commit built nothing, and accepting
+  # A session that says `done` without a commit built nothing, and accepting
   # it is how a ticket reaches done unbuilt - nothing else looks at the commit.
   # Given the same tolerance as a crash, because it is the same kind of failure
   # - a session that did not do what it was launched for - and the halt at the
@@ -481,28 +496,31 @@ while :; do
   # next pass would halt as `exhausted` and lose the thing worth saying.
   if [ "$(git rev-parse HEAD)" = "$head_before" ]; then
     if [ "$attempts" -ge "$MAX_ATTEMPTS" ]; then
+      release "$ticket"
       halt "$ticket" unbuilt "the session reported a build and committed nothing, and the last of $MAX_ATTEMPTS attempts is spent - read the build output for what stopped it committing, and \`git stash list\` for what each attempt left uncommitted"
       exit 1
     fi
     echo "unbuilt: $ticket reported a build and committed nothing - building it again" >&2
     put_aside "$ticket" "$attempts"
     set_field "$ticket" status ready
+    release "$ticket"
     continue
   fi
 
-  # Into the build's own commit rather than one of the runner's, because a
-  # commit message needs a session and amending keeps the one it wrote. Left
+  # A ticket the session left out of its commit goes into it all the same: left
   # uncommitted, `done` - and the claim and counter under it - was every later
   # session's "someone else's change", and lost to anything that reset the tree.
-  # The ticket goes in whole, so one the session left out of its commit is
-  # recorded all the same.
-  set_field "$ticket" status "done"
-  git commit -q --amend --no-edit -- "$ticket" \
-    || { echo "could not amend $ticket into $(git rev-parse --short HEAD)" >&2; exit 1; }
+  # Into the build's own commit rather than one of the runner's, because a
+  # commit message needs a session and amending keeps the one it wrote.
+  if ! git diff --quiet HEAD -- "$ticket"; then
+    git commit -q --amend --no-edit -- "$ticket" \
+      || { echo "could not amend $ticket into $(git rev-parse --short HEAD)" >&2; exit 1; }
+  fi
   say "done: $(basename "$ticket") at $(git rev-parse --short HEAD)"
   # Whatever the build left lying around besides its commit is not the next
   # ticket's, and would read to its session as its own work.
   put_aside "$ticket" "$attempts"
+  release "$ticket"
 done
 
 # `break` means nothing could be selected, which is not the same as everything

@@ -447,6 +447,77 @@ if [ "$rc" != 0 ] && [ ! -s "$STUB_CALLS" ]; then
   ok "a VERIFY already in the environment does not skip the checks"
 else bad "a VERIFY already in the environment does not skip the checks" "rc=$rc $(out)"; fi
 
+# Killed after the session committed its build but before the runner checked
+# it, the ticket is committed at `done`: a start again moves on without building
+# it twice.
+workspace
+plan build-killed build walk
+run > /dev/null 2>&1
+rc="$(run)"
+if [ "$rc" = 0 ] && [ "$(field 2-two status)" = "done" ] && [ "$(wc -l < "$STUB_CALLS")" = 3 ]; then
+  ok "a run killed after a build committed moves on without building it again"
+else bad "a run killed after a build committed moves on without building it again" "rc=$rc $(calls) $(out)"; fi
+
+# The runner's own halts leave the ticket file uncommitted. That is bookkeeping,
+# not someone's work: a start again stops at the halt as the first run did,
+# rather than refusing the tree.
+workspace
+plan claim-only claim-only
+run > /dev/null
+rc="$(run)"
+if [ "$rc" != 0 ] && ! grep -q 'dirty tree' "$WORK/.out" && grep -q '1-one.md: halted' "$WORK/.out" \
+   && [ "$(wc -l < "$STUB_CALLS")" = 2 ]; then
+  ok "a run started again after a halt stops at the halt, not at its own bookkeeping"
+else bad "a run started again after a halt stops at the halt, not at its own bookkeeping" "rc=$rc $(out)"; fi
+
+# Killed after the session wrote `done` and before it committed, the `done` is
+# only a claim: a start again checks it against the commit like any other, and
+# builds the ticket again.
+workspace
+plan claim-killed build build walk
+run > /dev/null 2>&1
+rc="$(run)"
+if [ "$rc" = 0 ] && [ "$(field 1-one attempts)" = 2 ] && [ "$(wc -l < "$STUB_CALLS")" = 4 ] \
+   && [ "$(git -C "$WORK" show HEAD~1:intents/x/tickets/1-one.md | sed -n 's/^status: *//p')" = "done" ]; then
+  ok "a done left uncommitted by a killed run is checked, not believed"
+else bad "a done left uncommitted by a killed run is checked, not believed" "rc=$rc $(field 1-one attempts) $(calls) $(out)"; fi
+
+# A halt the runner wrote stays where it is while the run goes on with the
+# tickets that do not depend on it - not stashed with some other build's
+# leftovers, which handed the ticket a fresh budget.
+workspace
+sed -i 's/^after: .*/after:/' "$WORK/intents/x/tickets/2-two.md"; commit
+plan claim-only claim-only code-only
+run > /dev/null
+run > /dev/null
+if [ "$(field 1-one status)" = halted ] && [ "$(field 1-one attempts)" = 2 ] && grep -q '^## Halt' <(tkt 1-one) \
+   && [ "$(field 2-two status)" = "done" ] && [ -z "$(git -C "$WORK" stash list)" ]; then
+  ok "a halt left uncommitted survives the builds after it"
+else bad "a halt left uncommitted survives the builds after it" "$(tkt 1-one) / $(git -C "$WORK" stash list) $(out)"; fi
+
+# The ticket files are the runner's bookkeeping and nothing else in their
+# directory is: someone's notes there are still someone's.
+workspace
+plan claim-only claim-only
+run > /dev/null
+printf 'notes\n' > "$WORK/intents/x/tickets/notes.md"
+rc="$(run)"
+if [ "$rc" != 0 ] && grep -q 'dirty tree' "$WORK/.out" && grep -q 'notes.md' "$WORK/.out"; then
+  ok "an uncommitted file beside the tickets is refused, bookkeeping or not"
+else bad "an uncommitted file beside the tickets is refused, bookkeeping or not" "rc=$rc $(out)"; fi
+
+# Killed after it handed a ticket back and before it released the record, the
+# runner finds a ready ticket still on record: nothing to resume, only a fresh
+# build to start.
+workspace
+plan killed build build walk
+run > /dev/null 2>&1
+sed -i 's/^status: .*/status:    ready/' "$WORK/intents/x/tickets/1-one.md"
+rc="$(run)"
+if [ "$rc" = 0 ] && ! grep -q '^resume' "$STUB_SESSIONS" && [ "$(field 1-one attempts)" = 2 ]; then
+  ok "a ticket handed back but still on record is built afresh, not resumed"
+else bad "a ticket handed back but still on record is built afresh, not resumed" "rc=$rc $(cat "$STUB_SESSIONS") $(out)"; fi
+
 # One runner leaves one claim.
 workspace
 sed -i 's/^status: .*/status:    doing/' "$WORK"/intents/x/tickets/*.md; commit
@@ -558,7 +629,7 @@ else bad "the build is told nothing wakes it once its turn ends" "$(head -1 "$ST
 
 # --- a build that committed nothing
 #
-# `review` is a session's account of itself, and a session that wrote no code can
+# `done` is a session's account of itself, and a session that wrote no code can
 # still write it. The commit is the part that cannot be claimed, so the runner
 # believes the one and checks the other.
 
@@ -711,7 +782,7 @@ workspace
 plan build-limit
 ( cd "$WORK" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=0 LIMIT_MARGIN=0 MAX_WAITS=0 \
     bash "$RUNNER" intents/x/tickets > "$WORK/.out" 2>&1 )
-if grep -q '1-one.md is at review' "$WORK/.out" && ! grep -q 'goes back to ready' "$WORK/.out"; then
+if grep -q '1-one.md is at done' "$WORK/.out" && ! grep -q 'goes back to ready' "$WORK/.out"; then
   ok "giving up names the status the session left, not one it did not"
 else bad "giving up names the status the session left, not one it did not" "$(out)"; fi
 

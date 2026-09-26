@@ -91,9 +91,10 @@ walk follows the conditions rather than the filename.
 
 There is one session per ticket. There used to be two, the second reviewing what the
 first built; the build now spawns that reviewer itself, in a subagent that did not write
-the code. That session commits the ticket with its build at `status: review`; the
-runner checks the commit is there, then sets `done` and amends it into that commit, so
-no ticket's status is left uncommitted for the next session to trip on.
+the code. That session commits the ticket with its build at `status: done`, and the
+runner checks the commit is there - sending the ticket back if it is not, and amending
+the ticket into it if the session left it out - so no ticket's status is left
+uncommitted for the next session to trip on.
 
 Every unattended stop is a named halt written into the ticket: `blocked`, `undecided`
 and `mystery` from a session; `exhausted`, `drift` and `unbuilt` from the runner,

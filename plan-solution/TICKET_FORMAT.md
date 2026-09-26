@@ -7,7 +7,7 @@ One file per slice, in the intent's own `tickets/` directory - `intents/YYYY-MM-
 solution:  02-SOLUTION.md        # resolved next to the tickets/ directory, not from the cwd
 satisfies: AC-1, AC-4            # the criteria this slice covers
 after:     02-<slug>, 05-<slug>  # dependencies, comma-separated, or empty
-status:    ready                 # ready | doing | review | done | halted
+status:    ready                 # ready | doing | done | halted
 attempts:  0                     # runner-owned
 ---
 
@@ -45,6 +45,6 @@ And what the build left standing - review findings not fixed and why, checks not
 
 **`satisfies` and the quotation have to agree.** A criterion claimed and not quoted is one the builder never sees; a criterion quoted and not claimed is work no coverage check knows about.
 
-**`status` belongs to the runner, except at its two ends.** The runner writes `doing` and `done`; a session writes `review` when it has committed, or `halted` when it has stopped.
+**`doing` belongs to the runner; a session ends it.** A session writes `done` when it has committed its build, or `halted` when it has stopped. The runner sends back a `done` with no commit behind it.
 
 **`attempts` is a counter the runner owns.** It lives in the file because the runner is expected to die and resume - it waits out usage limits - and a count that does not survive that is not a ceiling.
