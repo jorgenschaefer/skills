@@ -194,7 +194,7 @@ narrate() {
 # work.
 EX_LIMIT=75
 claude_through_limits() {  # log name, prompt, claude's own options...
-  local id reset delay rc waits=0 how=--session-id prompt="$2" name="$1"
+  local id reset until rc waits=0 how=--session-id prompt="$2" name="$1"
   shift 2
   id="$(new_session_id)"
   while :; do
@@ -206,12 +206,22 @@ claude_through_limits() {  # log name, prompt, claude's own options...
     waits=$((waits + 1))
     [ "$waits" -le "$MAX_WAITS" ] \
       || { echo "gave up waiting out the limit after $MAX_WAITS waits" >&2; return "$EX_LIMIT"; }
-    if [ "$reset" -gt 0 ]; then delay=$(( reset + LIMIT_MARGIN - $(date +%s) )); else delay="$WAIT_SECONDS"; fi
-    [ "$delay" -gt 0 ] || delay=0
-    say "usage limit - waiting until $(date -d "@$(( $(date +%s) + delay ))" '+%a %H:%M') ($waits of $MAX_WAITS)"
-    sleep "$delay"
+    if [ "$reset" -gt 0 ]; then until=$(( reset + LIMIT_MARGIN )); else until=$(( $(date +%s) + WAIT_SECONDS )); fi
+    say "usage limit - waiting until $(date -d "@$until" '+%a %H:%M') ($waits of $MAX_WAITS)"
+    sleep_until "$until"
     how=--resume
     prompt="You were stopped by a usage limit, which has now reset. Carry on with the task from where you stopped; redo any step the limit cut short, a subagent included."
+  done
+}
+
+# `sleep` counts only the time the machine is awake, so one long sleep across a
+# suspend runs on past its end by however long the machine was suspended - a run
+# once slept on well past the reset it was waiting for. Short sleeps against the
+# clock notice the time that passed.
+sleep_until() {  # epoch
+  local left
+  while left=$(( $1 - $(date +%s) )); [ "$left" -gt 0 ]; do
+    sleep $(( left < 60 ? left : 60 ))
   done
 }
 

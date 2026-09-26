@@ -55,9 +55,21 @@ EOF
   STUB_VERIFY=true
   export STUB_CALLS STUB_PLAN STUB_SESSIONS STUB_ARGS STUB_VERIFY
   mkdir -p "$WORK/.bin" && ln -sf "$HERE/stub-session" "$WORK/.bin/claude"
-  # How long the runner asked to wait, one line per wait, and no wait at all.
-  SLEPT="$WORK/.slept"; : > "$SLEPT"
-  printf '#!/bin/sh\necho "$1" >> "%s"\n' "$SLEPT" > "$WORK/.bin/sleep" && chmod +x "$WORK/.bin/sleep"
+  # How long the runner asked to sleep, one line per sleep, and no wait at all.
+  # The clock `date +%s` reads moves by what was slept instead, plus whatever
+  # .suspend holds on the next sleep: a machine suspended in the middle of it.
+  SLEPT="$WORK/.slept"; : > "$SLEPT"; CLOCK="$WORK/.clock"; date +%s > "$CLOCK"
+  cat > "$WORK/.bin/sleep" <<STUB
+#!/bin/sh
+echo "\$1" >> "$SLEPT"
+echo \$(( \$(cat "$CLOCK") + \$1 + \$(cat "$WORK/.suspend" 2>/dev/null || echo 0) )) > "$CLOCK"
+rm -f "$WORK/.suspend"
+STUB
+  cat > "$WORK/.bin/date" <<STUB
+#!/bin/sh
+if [ "\$1" = +%s ]; then cat "$CLOCK"; else exec $(command -v date) "\$@"; fi
+STUB
+  chmod +x "$WORK/.bin/sleep" "$WORK/.bin/date"
 }
 
 ticket() {  # slug, id, text, after
@@ -451,10 +463,23 @@ workspace
 plan limit build build walk
 ( cd "$WORK" && PATH="$WORK/.bin:$PATH" STUB_RESET_IN=3600 LIMIT_MARGIN=120 WAIT_SECONDS=5 \
     bash "$RUNNER" intents/x/tickets > "$WORK/.out" 2>&1 )
-slept="$(head -1 "$SLEPT")"
-if [ -n "$slept" ] && [ "$slept" -ge 3715 ] && [ "$slept" -le 3720 ]; then
+slept="$(awk '{ s += $1 } END { print s + 0 }' "$SLEPT")"
+if [ "$slept" -ge 3715 ] && [ "$slept" -le 3720 ]; then
   ok "a limit is waited out until its reset, plus the margin"
 else bad "a limit is waited out until its reset, plus the margin" "slept=$slept $(out)"; fi
+
+# The reset is a time on the clock, and a machine suspended mid-wait has spent
+# that time too: `sleep` counts only the time the machine was awake, and a run
+# slept on well past a reset it had long reached.
+workspace
+plan limit build build walk
+echo 3000 > "$WORK/.suspend"
+( cd "$WORK" && PATH="$WORK/.bin:$PATH" STUB_RESET_IN=3600 LIMIT_MARGIN=120 WAIT_SECONDS=5 \
+    bash "$RUNNER" intents/x/tickets > "$WORK/.out" 2>&1 )
+slept="$(awk '{ s += $1 } END { print s + 0 }' "$SLEPT")"
+if [ "$(field 1-one status)" = done ] && [ "$slept" -le 780 ]; then
+  ok "a wait counts the time the machine was suspended"
+else bad "a wait counts the time the machine was suspended" "slept=$slept $(out)"; fi
 
 # A subagent's limit is the subagent's: the session that then dies of something
 # else has failed, and spends its attempt.
