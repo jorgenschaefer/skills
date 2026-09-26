@@ -6,10 +6,15 @@
 # that session would have done:
 #
 #   build        set status: review, and commit it with the code
+#   build-dirty  build, and leave an untracked file behind besides
 #   claim-only   set status: review having committed nothing
+#   claim-dirty  the same, with code written and left uncommitted
 #   code-only    set status: review, and commit the code but not the ticket
 #   halt:<kind>  write the halt and set status: halted
 #   die          exit 1 having touched nothing, as a crash does
+#   stop-early   write code and leave it uncommitted, the ticket at `doing`, and
+#                exit 0 - a session that ended its turn waiting on background
+#                work, which `-p` then killed
 #   limit        be rejected by a usage limit, in the events the CLI really
 #                writes: a rejected rate_limit_event carrying the reset time,
 #                the assistant's rate_limit error, and an error result
@@ -87,7 +92,7 @@ case "$line" in
     [ -n "$ticket" ] && { echo "stub: expected the walk, got a ticket: $prompt" >&2; exit 97; }
     echo "the walk ran"
     ;;
-  build|limit-passed|build-limit)
+  build|limit-passed|build-limit|build-dirty)
     if [ "$line" = limit-passed ]; then
       echo '{"type":"assistant","message":{"role":"assistant","content":[]},"parent_tool_use_id":"toolu_sub","error":"rate_limit"}'
       rejected_event
@@ -98,8 +103,10 @@ case "$line" in
     git add -A >/dev/null 2>&1
     git commit -qm "build $(basename "$ticket")" >/dev/null 2>&1
     if [ "$line" = build-limit ]; then rejected_event; exit 1; fi
+    if [ "$line" = build-dirty ]; then printf 'stray\n' > "$(git rev-parse --show-toplevel)/stray"; fi
     ;;
-  claim-only)
+  claim-only|claim-dirty)
+    [ "$line" = claim-only ] || printf 'half\n' > "$(git rev-parse --show-toplevel)/code"
     printf 'built\n' >> "$ticket"
     set_status review
     ;;
@@ -114,6 +121,7 @@ case "$line" in
     set_status halted
     ;;
   die) exit 1 ;;
+  stop-early) printf 'half\n' > "$(git rev-parse --show-toplevel)/code" ;;
   limit-sub)
     echo '{"type":"assistant","message":{"role":"assistant","content":[]},"parent_tool_use_id":"toolu_sub","error":"rate_limit"}'
     exit 1

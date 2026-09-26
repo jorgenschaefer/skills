@@ -386,6 +386,70 @@ if [ "$rc" != 0 ] && [ "$(field 1-one status)" = halted ] && grep -q 'exhausted'
   ok "the attempt budget, once spent, halts the ticket as exhausted"
 else bad "the attempt budget, once spent, halts the ticket as exhausted" "rc=$rc $(tail -3 <(tkt 1-one))"; fi
 
+# --- a session that stops before it finishes
+#
+# In `-p` a session that ends its turn to wait on a check it put in the
+# background is not woken again: the process exits and the check is killed. One
+# build did exactly that with its work done and reviewed, and the retry started
+# from nothing on top of the diff it left. The same session is resumed instead,
+# once, and a second early stop is put aside where the next attempt cannot
+# mistake it for the state the checks were green on.
+
+workspace
+plan stop-early build build walk
+run > /dev/null
+if [ "$(field 1-one status)" = done ] && [ "$(field 1-one attempts)" = 1 ]; then
+  ok "a session that stopped early is carried on without spending an attempt"
+else bad "a session that stopped early is carried on without spending an attempt" "$(field 1-one status) $(field 1-one attempts) $(out)"; fi
+first="$(awk 'NR == 1 && $1 == "start" { print $2 }' "$STUB_SESSIONS")"
+if [ -n "$first" ] && [ "$(sed -n 2p "$STUB_SESSIONS")" = "resume $first" ]; then
+  ok "a session that stopped early is resumed, not started over"
+else bad "a session that stopped early is resumed, not started over" "$(cat "$STUB_SESSIONS")"; fi
+if grep -q 'background' <(sed -n 2p "$STUB_CALLS"); then ok "the resumed session is told its background work was killed"
+else bad "the resumed session is told its background work was killed" "$(calls)"; fi
+
+workspace
+plan stop-early stop-early build build walk
+run > /dev/null
+if [ "$(field 1-one status)" = done ] && [ "$(field 1-one attempts)" = 2 ] \
+   && grep -q '^start ' <(sed -n 3p "$STUB_SESSIONS"); then
+  ok "a session that stops early twice is started over, spending an attempt"
+else bad "a session that stops early twice is started over, spending an attempt" "$(field 1-one attempts) $(cat "$STUB_SESSIONS") $(out)"; fi
+if [ -z "$(git -C "$WORK" ls-files code)" ] && git -C "$WORK" stash list | grep -q '1-one.*attempt 1'; then
+  ok "what it left is stashed, not built on"
+else bad "what it left is stashed, not built on" "$(git -C "$WORK" ls-files) / $(git -C "$WORK" stash list)"; fi
+
+# Started from a subdirectory, as the runner was in the run that found this: what
+# is left at the repository root is put aside too.
+workspace
+plan stop-early stop-early build build walk
+( cd "$WORK/intents" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=0 LIMIT_MARGIN=0 MAX_ATTEMPTS=2 \
+    bash "$RUNNER" x/tickets > "$WORK/.out" 2>&1 )
+if [ ! -e "$WORK/code" ] && git -C "$WORK" stash list | grep -q '1-one.*attempt 1'; then
+  ok "started from a subdirectory, what is left at the root is stashed too"
+else bad "started from a subdirectory, what is left at the root is stashed too" "$(git -C "$WORK" status --porcelain) / $(git -C "$WORK" stash list) $(out)"; fi
+
+# Only a session that ended cleanly is resumed: a crash was not waiting on
+# anything, and what a finished build left lying around is not the next one's.
+workspace
+plan build-dirty die build build walk
+run > /dev/null
+if ! grep -q '^resume' "$STUB_SESSIONS" && git -C "$WORK" stash list | grep -q '1-one'; then
+  ok "what a finished build leaves behind is put aside under its own name, not resumed on"
+else bad "what a finished build leaves behind is put aside under its own name, not resumed on" "$(cat "$STUB_SESSIONS") / $(git -C "$WORK" stash list)"; fi
+
+workspace
+plan claim-dirty claim-only
+run > /dev/null
+if grep -q 'git stash' <(tkt 1-one); then ok "a halt after abandoned attempts points at the stash"
+else bad "a halt after abandoned attempts points at the stash" "$(tail -3 <(tkt 1-one))"; fi
+
+workspace
+plan build build walk
+run > /dev/null
+if grep -q 'Monitor' <(head -1 "$STUB_CALLS"); then ok "the build is told nothing wakes it once its turn ends"
+else bad "the build is told nothing wakes it once its turn ends" "$(head -1 "$STUB_CALLS")"; fi
+
 # --- a build that committed nothing
 #
 # `review` is a session's account of itself, and a session that wrote no code can
@@ -399,6 +463,13 @@ if [ "$(field 1-one status)" = done ]; then ok "a ticket whose session committed
 else bad "a ticket whose session committed nothing is picked up again" "$(field 1-one status)"; fi
 if [ "$(field 1-one attempts)" = 2 ]; then ok "a session that committed nothing still spends an attempt"
 else bad "a session that committed nothing still spends an attempt" "attempts=$(field 1-one attempts)"; fi
+
+workspace
+plan claim-dirty build build walk
+run > /dev/null
+if [ -z "$(git -C "$WORK" ls-files code)" ] && git -C "$WORK" stash list | grep -q '1-one.*attempt 1'; then
+  ok "what a build that committed nothing left behind is stashed, not built on"
+else bad "what a build that committed nothing left behind is stashed, not built on" "$(git -C "$WORK" ls-files) / $(git -C "$WORK" stash list)"; fi
 
 # The finish goes into the build's own commit rather than one of its own, since
 # only a session can write a message - and a ticket the session left out of that

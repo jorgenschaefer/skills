@@ -187,16 +187,17 @@ narrate() {
 # failure of the work - it stops a session wherever it happens to be, often with
 # a build done and its review half run - so the session is waited out to the
 # reset the limit names and then resumed, not started over. Each round gets its
-# own log, and LOG names the last one.
+# own log, LOG names the last one, and SESSION the session they all belong to.
 #
 # Returns the session's exit status, or EX_LIMIT when the limit outlasted
 # MAX_WAITS: that is nobody's failure, and the caller must not charge it to the
 # work.
 EX_LIMIT=75
-claude_through_limits() {  # log name, prompt, claude's own options...
-  local id reset until rc waits=0 how=--session-id prompt="$2" name="$1"
-  shift 2
-  id="$(new_session_id)"
+claude_through_limits() {  # log name, prompt, session to resume or empty, claude's own options...
+  local id="$3" reset until rc waits=0 how=--resume prompt="$2" name="$1"
+  shift 3
+  [ -n "$id" ] || { id="$(new_session_id)"; how=--session-id; }
+  SESSION="$id"
   while :; do
     LOG="$LOG_DIR/$name-$(date +%Y%m%d-%H%M%S)$([ "$waits" = 0 ] || printf -- '-resumed-%s' "$waits").jsonl"
     say "full log in $LOG"
@@ -264,6 +265,21 @@ claude_run() {  # log, --session-id or --resume, session id, prompt, claude's ow
   return "${PIPESTATUS[0]}"
 }
 
+# What a session left in the tree besides the ticket, whose fields the runner
+# writes itself.
+left_behind() {  # ticket -> git status lines, empty for none
+  git status --porcelain -- ':/' ":!$1"
+}
+
+# The next attempt is told the checks were green when the run started, which is
+# only true of a tree without this one's leftovers in it. Stashed rather than
+# dropped: it may be most of a build.
+put_aside() {  # ticket, attempt
+  [ -n "$(left_behind "$1")" ] || return 0
+  git stash push -q -u -m "run.sh: $(basename "$1") attempt $2, left uncommitted" -- ':/' ":!$1"
+  say "what it left uncommitted is in the stash"
+}
+
 halt() {  # ticket, kind, why
   printf '\n## Halt\n\n%s - %s\n' "$2" "$3" >> "$1"
   set_field "$1" status halted
@@ -273,13 +289,15 @@ halt() {  # ticket, kind, why
 # the generic build skill - it fires when anyone asks for code and knows nothing
 # about tickets, statuses or halt kinds. A runner that needs those has to say so
 # itself, which is the cost of the skill staying general.
-session() {  # ticket -> 0 ran, EX_LIMIT gave up on a limit, anything else failed
+session() {  # ticket, session to resume or empty -> 0 ran, EX_LIMIT gave up on a limit, anything else failed
   local rc prompt
   # By its absolute path: a session runs wherever the runner was started, and
   # one in a subdirectory looked for a relative path at the repository root.
   prompt="Use /implement on the work described in $(realpath "$1").
 
 The project's checks are \`$VERIFY\`, and they passed when this run started. A check that fails now failed because of this build.
+
+Nothing wakes you once your turn ends: the run moves on, and whatever you left running in the background is killed. Wait for background work with Monitor, or run the checks in the foreground.
 
 That file is the whole brief. Its \`## Done when\` is the definition of done - not the diff, not what you would have built, not what the solution probably meant. Its \`## Not here\` names what a neighbouring ticket owns, and building it is two tickets building the same code. Its \`## Plan\` is how it was decided this gets built; where you find the plan wrong, say so rather than following it off a cliff.
 
@@ -290,8 +308,9 @@ When the criteria are green and the project's checks pass, write the ticket's \`
 If you cannot proceed, append a \`## Halt\` section naming the kind and stop: \`blocked\` (a precondition the ticket assumed is not there), \`undecided\` (a decision the ticket's criteria do not settle and that is not yours to settle), or \`mystery\` (a failure you cannot explain, which is different from one you cannot fix). Then set \`status: halted\`.
 
 Never write \`status: doing\` or \`status: done\`. Both ends belong to the runner."
+  [ -z "$2" ] || prompt="Your turn ended before the ticket was finished. Nothing wakes an unattended session once its turn ends, so whatever you had running in the background was killed; your uncommitted work is still in the tree. Carry on from there - rerun what was killed - and finish as the brief said."
   say "session on $(basename "$1")"
-  claude_through_limits "$(basename "$1" .md)" "$prompt"; rc=$?
+  claude_through_limits "$(basename "$1" .md)" "$prompt" "$2"; rc=$?
   say "session ended, exit $rc, ticket says status: $(field "$1" status)"
   return $rc
 }
@@ -309,7 +328,7 @@ Never write \`status: doing\` or \`status: done\`. Both ends belong to the runne
 
 verify() {
   local log
-  claude_through_limits verify "Find this project's verification command: the one shell line, run from $(pwd), that runs everything a change here has to pass - tests, type check, lint. Where CI runs these, what CI runs is the authority. Do not run it and change nothing; answer with the command." \
+  claude_through_limits verify "Find this project's verification command: the one shell line, run from $(pwd), that runs everything a change here has to pass - tests, type check, lint. Where CI runs these, what CI runs is the authority. Do not run it and change nothing; answer with the command." "" \
     --json-schema '{"type":"object","properties":{"command":{"type":"string"}},"required":["command"]}'
   [ $? = "$EX_LIMIT" ] && exit 1
   VERIFY="$(jq -R -r 'fromjson? | select(.type == "result") | .structured_output.command // empty' "$LOG")"
@@ -346,7 +365,7 @@ while :; do
 
   attempts=$(( $(field "$ticket" attempts) + 1 ))
   if [ "$attempts" -gt "$MAX_ATTEMPTS" ]; then
-    halt "$ticket" exhausted "$MAX_ATTEMPTS attempts spent without a build that stuck - read the build output, decide whether to raise the budget or re-slice"
+    halt "$ticket" exhausted "$MAX_ATTEMPTS attempts spent without a build that stuck - read the build output and \`git stash list\`, which holds what each attempt left uncommitted, and decide whether to raise the budget or re-slice"
     exit 1
   fi
   set_field "$ticket" attempts "$attempts"
@@ -357,7 +376,15 @@ while :; do
   # what the session did rather than only against what it says it did.
   head_before="$(git rev-parse HEAD)"
 
-  session "$ticket"; rc=$?
+  # A session that ended its turn with its work uncommitted and the ticket still
+  # claimed was waiting on something `-p` killed when the turn ended - one did
+  # so with its build done and reviewed. It is resumed once rather than started
+  # over, because everything it did is still in the tree and in its context.
+  session "$ticket" ""; rc=$?
+  if [ "$rc" = 0 ] && [ "$(field "$ticket" status)" = doing ] && [ -n "$(left_behind "$ticket")" ]; then
+    say "session stopped with its work uncommitted - resuming it"
+    session "$ticket" "$SESSION"; rc=$?
+  fi
   if [ "$rc" = "$EX_LIMIT" ]; then
     # A limit that outlasted every wait says nothing about the ticket, so it is
     # handed back as it was claimed, attempt and all, rather than left for the
@@ -377,6 +404,7 @@ while :; do
     halted) echo "halted: $ticket" >&2; exit 1 ;;
     review) ;;
     *) say "session left $(basename "$ticket") at $(field "$ticket" status) - back to ready"
+       put_aside "$ticket" "$attempts"
        set_field "$ticket" status ready; continue ;;
   esac
 
@@ -390,10 +418,11 @@ while :; do
   # next pass would halt as `exhausted` and lose the thing worth saying.
   if [ "$(git rev-parse HEAD)" = "$head_before" ]; then
     if [ "$attempts" -ge "$MAX_ATTEMPTS" ]; then
-      halt "$ticket" unbuilt "the session reported a build and committed nothing, and the last of $MAX_ATTEMPTS attempts is spent - read the build output for what stopped it committing"
+      halt "$ticket" unbuilt "the session reported a build and committed nothing, and the last of $MAX_ATTEMPTS attempts is spent - read the build output for what stopped it committing, and \`git stash list\` for what each attempt left uncommitted"
       exit 1
     fi
     echo "unbuilt: $ticket reported a build and committed nothing - building it again" >&2
+    put_aside "$ticket" "$attempts"
     set_field "$ticket" status ready
     continue
   fi
@@ -408,6 +437,9 @@ while :; do
   git commit -q --amend --no-edit -- "$ticket" \
     || { echo "could not amend $ticket into $(git rev-parse --short HEAD)" >&2; exit 1; }
   say "done: $(basename "$ticket") at $(git rev-parse --short HEAD)"
+  # Whatever the build left lying around besides its commit is not the next
+  # ticket's, and would read to its session as its own work.
+  put_aside "$ticket" "$attempts"
 done
 
 # `break` means nothing could be selected, which is not the same as everything
@@ -448,7 +480,7 @@ printf 'walking %s\n\n' "$intent"
 # `disable-model-invocation`, so it is not among the skills a session can
 # reach on its own - naming it in a sentence gets a session that improvises
 # the one stage that asks whether the problem was solved.
-claude_through_limits accept-intent "/accept-intent $intent"
+claude_through_limits accept-intent "/accept-intent $intent" ""
 [ $? = "$EX_LIMIT" ] && exit 1
 # The walk's report is the one thing here meant to be read in full.
 printf '\n'
