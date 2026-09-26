@@ -12,7 +12,7 @@ You are given an intent - `intents/<slug>/01-INTENT.md`, or the `## Intent` sect
 
 **Use it the way its user would**, in the running product. Do not read the diff and conclude: deciding by eye whether code would behave a certain way is prediction, and prediction is what this stage exists to replace.
 
-Start it the way the project says to - a `run` skill, `CLAUDE.md`, the README - before building a harness of your own. Where you had to build one, say how in the report, so the next walk does not build it again.
+Start it the way the project says to - a `run` skill, `CLAUDE.md`, the README - before building a harness of your own. Where you had to build one, write it up as the project's run skill, `.claude/skills/run/SKILL.md`, with the scripts it drives beside it. Leave it uncommitted and name it in the report - whether it stays is the reader's call. A harness described only in a report is rebuilt by the next walk, and never reaches the builds, which do not read reports.
 
 Where you cannot get the product running at all, stop and say so - that is the report, and every condition is unchecked.
 
