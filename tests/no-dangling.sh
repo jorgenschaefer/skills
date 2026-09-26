@@ -46,6 +46,7 @@ while IFS= read -r doc; do
 
   # `/name` and `name/SOMETHING.md` in backticks: the two shapes these documents
   # use to send a reader somewhere.
+  # shellcheck disable=SC2016 # the backticks are Markdown's, matched literally
   while IFS= read -r ref; do
     [ -n "$ref" ] || continue
     # `mockups/` and `tickets/NN-slug.md` are shapes, not references: a trailing
@@ -62,6 +63,7 @@ while IFS= read -r doc; do
 
   # And the scripts. With or without the `./`: the leftover that got through
   # this check the first time was written `loop.sh`, not `./loop.sh`.
+  # shellcheck disable=SC2016 # the backticks are Markdown's, matched literally
   while IFS= read -r script; do
     [ -n "$script" ] || continue
     refs=$((refs + 1))
@@ -72,6 +74,7 @@ while IFS= read -r doc; do
   # And no section of the standard, named anywhere at all. A section of some
   # other document - an intent's `## Done when`, a ticket's `## Record` - is a
   # skill specifying a document it writes or reads, which is its own business.
+  # shellcheck disable=SC2016 # the backticks are Markdown's, matched literally
   while IFS= read -r tok; do
     [ -n "$tok" ] || continue
     sectokens=$((sectokens + 1))
@@ -83,17 +86,17 @@ while IFS= read -r doc; do
 done < <(find "$ROOT" -name SKILL.md -o -name '*_FORMAT.md' -o -name README.md \
            | grep -v '/\.git/' | sort)
 
-[ -z "$dangling" ] \
-  && ok "no live instruction points at something that is not there" \
-  || bad "no live instruction points at something that is not there" "$dangling"
+if [ -z "$dangling" ]; then
+  ok "no live instruction points at something that is not there"
+else bad "no live instruction points at something that is not there" "$dangling"; fi
 
-[ -z "$missing" ] \
-  && ok "every script a document names is there" \
-  || bad "every script a document names is there" "$missing"
+if [ -z "$missing" ]; then
+  ok "every script a document names is there"
+else bad "every script a document names is there" "$missing"; fi
 
-[ -z "$coupled" ] \
-  && ok "no document names a section of CODING_STANDARDS.md" \
-  || bad "no document names a section of CODING_STANDARDS.md" "$coupled"
+if [ -z "$coupled" ]; then
+  ok "no document names a section of CODING_STANDARDS.md"
+else bad "no document names a section of CODING_STANDARDS.md" "$coupled"; fi
 
 # The checks above are all "no failures found", which is what an empty tree also
 # looks like.

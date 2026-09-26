@@ -47,21 +47,21 @@ sync() { ( cd "$WORK" && "$SRC/sync.sh" "$DEST" ); }
 
 workspace
 sync >/dev/null 2>&1
-[ -L "$DEST/alpha" ] && [ "$(readlink -f "$DEST/alpha")" = "$(readlink -f "$SRC/alpha")" ] \
-  && ok "a directory holding a SKILL.md is linked" \
-  || bad "a directory holding a SKILL.md is linked" "$(ls -l "$DEST")"
+if [ -L "$DEST/alpha" ] && [ "$(readlink -f "$DEST/alpha")" = "$(readlink -f "$SRC/alpha")" ]; then
+  ok "a directory holding a SKILL.md is linked"
+else bad "a directory holding a SKILL.md is linked" "$(ls -l "$DEST")"; fi
 
-[ -L "$DEST/beta" ] \
-  && ok "every skill is linked, not just the first" \
-  || bad "every skill is linked, not just the first" "$(ls -l "$DEST")"
+if [ -L "$DEST/beta" ]; then
+  ok "every skill is linked, not just the first"
+else bad "every skill is linked, not just the first" "$(ls -l "$DEST")"; fi
 
-[ ! -e "$DEST/tests" ] \
-  && ok "a directory with no SKILL.md is left out" \
-  || bad "a directory with no SKILL.md is left out" "$(ls -l "$DEST")"
+if [ ! -e "$DEST/tests" ]; then
+  ok "a directory with no SKILL.md is left out"
+else bad "a directory with no SKILL.md is left out" "$(ls -l "$DEST")"; fi
 
-[ ! -e "$DEST/sync.sh" ] \
-  && ok "a file beside the skills is left out" \
-  || bad "a file beside the skills is left out" "$(ls -l "$DEST")"
+if [ ! -e "$DEST/sync.sh" ]; then
+  ok "a file beside the skills is left out"
+else bad "a file beside the skills is left out" "$(ls -l "$DEST")"; fi
 
 # --- running it twice ---------------------------------------------------------
 #
@@ -72,13 +72,13 @@ sync >/dev/null 2>&1
 workspace
 sync >/dev/null 2>&1
 sync >/dev/null 2>&1
-[ -L "$DEST/alpha" ] && [ ! -e "$SRC/alpha/alpha" ] \
-  && ok "a second run replaces the link rather than nesting inside it" \
-  || bad "a second run replaces the link rather than nesting inside it" "$(ls -l "$DEST" "$SRC/alpha")"
+if [ -L "$DEST/alpha" ] && [ ! -e "$SRC/alpha/alpha" ]; then
+  ok "a second run replaces the link rather than nesting inside it"
+else bad "a second run replaces the link rather than nesting inside it" "$(ls -l "$DEST" "$SRC/alpha")"; fi
 
-[ "$(ls "$DEST" | wc -l)" = 2 ] \
-  && ok "a second run leaves the same two links" \
-  || bad "a second run leaves the same two links" "$(ls -l "$DEST")"
+if [ "$(find "$DEST" -mindepth 1 -maxdepth 1 | wc -l)" = 2 ]; then
+  ok "a second run leaves the same two links"
+else bad "a second run leaves the same two links" "$(ls -l "$DEST")"; fi
 
 # --- a skill that moved -------------------------------------------------------
 
@@ -86,22 +86,22 @@ workspace
 sync >/dev/null 2>&1
 mv "$SRC/beta" "$SRC/gamma"
 sync >/dev/null 2>&1
-[ ! -e "$DEST/beta" ] && [ ! -L "$DEST/beta" ] \
-  && ok "the link to a renamed skill is removed" \
-  || bad "the link to a renamed skill is removed" "$(ls -l "$DEST")"
+if [ ! -e "$DEST/beta" ] && [ ! -L "$DEST/beta" ]; then
+  ok "the link to a renamed skill is removed"
+else bad "the link to a renamed skill is removed" "$(ls -l "$DEST")"; fi
 
-[ -L "$DEST/gamma" ] \
-  && ok "the renamed skill is linked under its new name" \
-  || bad "the renamed skill is linked under its new name" "$(ls -l "$DEST")"
+if [ -L "$DEST/gamma" ]; then
+  ok "the renamed skill is linked under its new name"
+else bad "the renamed skill is linked under its new name" "$(ls -l "$DEST")"; fi
 
 # --- a dangling link from somewhere else --------------------------------------
 
 workspace
 ln -s "$WORK/never-existed" "$DEST/orphan"
 sync >/dev/null 2>&1
-[ ! -L "$DEST/orphan" ] \
-  && ok "a dangling link pointing outside the project is removed too" \
-  || bad "a dangling link pointing outside the project is removed too" "$(ls -l "$DEST")"
+if [ ! -L "$DEST/orphan" ]; then
+  ok "a dangling link pointing outside the project is removed too"
+else bad "a dangling link pointing outside the project is removed too" "$(ls -l "$DEST")"; fi
 
 # --- what is not ours ---------------------------------------------------------
 #
@@ -114,22 +114,22 @@ mkdir -p "$DEST/synced/thing" && : > "$DEST/synced/thing/SKILL.md"
 mkdir -p "$DEST/handwritten" && : > "$DEST/handwritten/SKILL.md"
 ln -s "$SRC/alpha" "$DEST/live-elsewhere"
 sync >/dev/null 2>&1
-[ -d "$DEST/synced/thing" ] && [ -f "$DEST/handwritten/SKILL.md" ] \
-  && ok "a real directory in the target is left alone" \
-  || bad "a real directory in the target is left alone" "$(ls -l "$DEST")"
+if [ -d "$DEST/synced/thing" ] && [ -f "$DEST/handwritten/SKILL.md" ]; then
+  ok "a real directory in the target is left alone"
+else bad "a real directory in the target is left alone" "$(ls -l "$DEST")"; fi
 
-[ -L "$DEST/live-elsewhere" ] \
-  && ok "a link that still resolves is left alone" \
-  || bad "a link that still resolves is left alone" "$(ls -l "$DEST")"
+if [ -L "$DEST/live-elsewhere" ]; then
+  ok "a link that still resolves is left alone"
+else bad "a link that still resolves is left alone" "$(ls -l "$DEST")"; fi
 
 # --- a target that is not there yet -------------------------------------------
 
 workspace
 rm -rf "$DEST"
 sync >/dev/null 2>&1
-[ -L "$DEST/alpha" ] \
-  && ok "a target directory that does not exist yet is created" \
-  || bad "a target directory that does not exist yet is created" "$(ls -l "$WORK")"
+if [ -L "$DEST/alpha" ]; then
+  ok "a target directory that does not exist yet is created"
+else bad "a target directory that does not exist yet is created" "$(ls -l "$WORK")"; fi
 
 # --- the default target -------------------------------------------------------
 #
@@ -138,9 +138,9 @@ sync >/dev/null 2>&1
 
 workspace
 ( cd "$WORK" && HOME="$WORK/home" "$SRC/sync.sh" ) >/dev/null 2>&1
-[ -L "$WORK/home/.claude/skills/alpha" ] \
-  && ok "with no argument it syncs to ~/.claude/skills" \
-  || bad "with no argument it syncs to ~/.claude/skills" "$(find "$WORK/home" 2>&1)"
+if [ -L "$WORK/home/.claude/skills/alpha" ]; then
+  ok "with no argument it syncs to ~/.claude/skills"
+else bad "with no argument it syncs to ~/.claude/skills" "$(find "$WORK/home" 2>&1)"; fi
 
 # --- it says what it did ------------------------------------------------------
 
@@ -148,8 +148,8 @@ workspace
 sync >/dev/null 2>&1
 mv "$SRC/beta" "$SRC/gamma"
 out="$(sync 2>&1)"
-printf '%s' "$out" | grep -q gamma && printf '%s' "$out" | grep -q beta \
-  && ok "the run names the skill it linked and the link it removed" \
-  || bad "the run names the skill it linked and the link it removed" "$out"
+if printf '%s' "$out" | grep -q gamma && printf '%s' "$out" | grep -q beta; then
+  ok "the run names the skill it linked and the link it removed"
+else bad "the run names the skill it linked and the link it removed" "$out"; fi
 
 finish

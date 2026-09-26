@@ -318,7 +318,7 @@ rc="$(run)"
 if [ "$rc" = 0 ] && [ "$(wc -l < "$STUB_CALLS")" = 2 ] && grep -q '1-one' <(head -1 "$STUB_CALLS"); then
   ok "a done ticket put back to ready is built again, and only it"
 else bad "a done ticket put back to ready is built again, and only it" "rc=$rc $(calls) $(out)"; fi
-if [ "$(field 1-one status)" = done ] && [ "$(field 2-two status)" = done ]; then
+if [ "$(field 1-one status)" = "done" ] && [ "$(field 2-two status)" = "done" ]; then
   ok "the rebuilt ticket ends done beside the one left alone"
 else bad "the rebuilt ticket ends done beside the one left alone" "$(field 1-one status) / $(field 2-two status)"; fi
 
@@ -328,13 +328,13 @@ workspace
 plan build build walk
 rc="$(run)"
 if [ "$rc" = 0 ]; then ok "a clean run finishes"; else bad "a clean run finishes" "rc=$rc $(out)"; fi
-if [ "$(field 1-one status)" = done ] && [ "$(field 2-two status)" = done ]; then
+if [ "$(field 1-one status)" = "done" ] && [ "$(field 2-two status)" = "done" ]; then
   ok "every ticket ends done"
 else bad "every ticket ends done" "$(field 1-one status) / $(field 2-two status)"; fi
 # The claim, the counter and the finish all end up in the commits: a run that
 # leaves the ticket files modified leaves them for the next session to trip on.
 if [ -z "$(git -C "$WORK" status --porcelain)" ] \
-   && [ "$(git -C "$WORK" show HEAD:intents/x/tickets/2-two.md | sed -n 's/^status: *//p')" = done ]; then
+   && [ "$(git -C "$WORK" show HEAD:intents/x/tickets/2-two.md | sed -n 's/^status: *//p')" = "done" ]; then
   ok "a clean run leaves nothing uncommitted, and done is committed"
 else bad "a clean run leaves nothing uncommitted, and done is committed" "$(git -C "$WORK" status --porcelain)"; fi
 # Sessions run where the runner was started, which need not be where the path
@@ -378,7 +378,7 @@ plan killed build build walk
 run > /dev/null 2>&1
 rc="$(run)"
 first="$(awk 'NR == 1 && $1 == "start" { print $2 }' "$STUB_SESSIONS")"
-if [ "$rc" = 0 ] && [ "$(field 1-one status)" = done ] && [ "$(field 1-one attempts)" = 1 ]; then
+if [ "$rc" = 0 ] && [ "$(field 1-one status)" = "done" ] && [ "$(field 1-one attempts)" = 1 ]; then
   ok "a run killed in the middle is started again and finishes, on the same attempt"
 else bad "a run killed in the middle is started again and finishes, on the same attempt" "rc=$rc $(field 1-one status) $(field 1-one attempts) $(out)"; fi
 if [ -n "$first" ] && [ "$(sed -n 2p "$STUB_SESSIONS")" = "resume $first" ] \
@@ -405,7 +405,7 @@ STUB_VERIFY='! git status --porcelain | grep -q code'
 plan killed build build walk
 run > /dev/null 2>&1
 rc="$(run)"
-if [ "$rc" = 0 ] && [ "$(field 1-one status)" = done ]; then
+if [ "$rc" = 0 ] && [ "$(field 1-one status)" = "done" ]; then
   ok "the checks are not run on the killed session's half-built work"
 else bad "the checks are not run on the killed session's half-built work" "rc=$rc $(out)"; fi
 
@@ -479,7 +479,7 @@ else bad "a later build is pointed at the Records of the tickets already built" 
 workspace
 plan die build build walk
 run > /dev/null
-if [ "$(field 1-one status)" = done ]; then ok "a ticket whose session died is picked up again"
+if [ "$(field 1-one status)" = "done" ]; then ok "a ticket whose session died is picked up again"
 else bad "a ticket whose session died is picked up again" "$(field 1-one status) $(out)"; fi
 if [ "$(field 1-one attempts)" = 2 ]; then ok "a dead session still spends an attempt"
 else bad "a dead session still spends an attempt" "attempts=$(field 1-one attempts)"; fi
@@ -504,7 +504,7 @@ else bad "the attempt budget, once spent, halts the ticket as exhausted" "rc=$rc
 workspace
 plan stop-early build build walk
 run > /dev/null
-if [ "$(field 1-one status)" = done ] && [ "$(field 1-one attempts)" = 1 ]; then
+if [ "$(field 1-one status)" = "done" ] && [ "$(field 1-one attempts)" = 1 ]; then
   ok "a session that stopped early is carried on without spending an attempt"
 else bad "a session that stopped early is carried on without spending an attempt" "$(field 1-one status) $(field 1-one attempts) $(out)"; fi
 first="$(awk 'NR == 1 && $1 == "start" { print $2 }' "$STUB_SESSIONS")"
@@ -517,7 +517,7 @@ else bad "the resumed session is told its background work was killed" "$(calls)"
 workspace
 plan stop-early stop-early build build walk
 run > /dev/null
-if [ "$(field 1-one status)" = done ] && [ "$(field 1-one attempts)" = 2 ] \
+if [ "$(field 1-one status)" = "done" ] && [ "$(field 1-one attempts)" = 2 ] \
    && grep -q '^start ' <(sed -n 3p "$STUB_SESSIONS"); then
   ok "a session that stops early twice is started over, spending an attempt"
 else bad "a session that stops early twice is started over, spending an attempt" "$(field 1-one attempts) $(cat "$STUB_SESSIONS") $(out)"; fi
@@ -565,7 +565,7 @@ else bad "the build is told nothing wakes it once its turn ends" "$(head -1 "$ST
 workspace
 plan claim-only build build walk
 run > /dev/null
-if [ "$(field 1-one status)" = done ]; then ok "a ticket whose session committed nothing is picked up again"
+if [ "$(field 1-one status)" = "done" ]; then ok "a ticket whose session committed nothing is picked up again"
 else bad "a ticket whose session committed nothing is picked up again" "$(field 1-one status)"; fi
 if [ "$(field 1-one attempts)" = 2 ]; then ok "a session that committed nothing still spends an attempt"
 else bad "a session that committed nothing still spends an attempt" "attempts=$(field 1-one attempts)"; fi
@@ -584,7 +584,7 @@ workspace
 plan code-only build walk
 run > /dev/null
 if [ "$(git -C "$WORK" rev-list --count HEAD)" = 3 ] && [ -z "$(git -C "$WORK" status --porcelain)" ] \
-   && [ "$(git -C "$WORK" show HEAD~1:intents/x/tickets/1-one.md | sed -n 's/^status: *//p')" = done ]; then
+   && [ "$(git -C "$WORK" show HEAD~1:intents/x/tickets/1-one.md | sed -n 's/^status: *//p')" = "done" ]; then
   ok "done is amended into the build's commit, ticket and all"
 else bad "done is amended into the build's commit, ticket and all" "$(git -C "$WORK" log --stat) $(git -C "$WORK" status --porcelain)"; fi
 
@@ -621,7 +621,7 @@ else bad "a halt leaves the rest of the directory alone" "$(field 2-two status)"
 workspace
 plan limit build build walk
 run > /dev/null
-if [ "$(field 1-one status)" = done ]; then ok "a usage limit is waited out and the ticket still finishes"
+if [ "$(field 1-one status)" = "done" ]; then ok "a usage limit is waited out and the ticket still finishes"
 else bad "a usage limit is waited out and the ticket still finishes" "$(field 1-one status) $(out)"; fi
 if [ "$(field 1-one attempts)" = 1 ]; then ok "waiting out a limit does not spend an attempt"
 else bad "waiting out a limit does not spend an attempt" "attempts=$(field 1-one attempts)"; fi
@@ -654,7 +654,7 @@ echo 3000 > "$WORK/.suspend"
 ( cd "$WORK" && PATH="$WORK/.bin:$PATH" STUB_RESET_IN=3600 LIMIT_MARGIN=120 WAIT_SECONDS=5 \
     bash "$RUNNER" intents/x/tickets > "$WORK/.out" 2>&1 )
 slept="$(awk '{ s += $1 } END { print s + 0 }' "$SLEPT")"
-if [ "$(field 1-one status)" = done ] && [ "$slept" -le 780 ]; then
+if [ "$(field 1-one status)" = "done" ] && [ "$slept" -le 780 ]; then
   ok "a wait counts the time the machine was suspended"
 else bad "a wait counts the time the machine was suspended" "slept=$slept $(out)"; fi
 
@@ -671,7 +671,7 @@ else bad "a subagent's limit does not make the session's failure a limit" "slept
 workspace
 plan limit-passed build walk
 run > /dev/null
-if [ "$(field 1-one status)" = done ] && [ ! -s "$SLEPT" ] && [ "$(wc -l < "$STUB_CALLS")" = 3 ]; then
+if [ "$(field 1-one status)" = "done" ] && [ ! -s "$SLEPT" ] && [ "$(wc -l < "$STUB_CALLS")" = 3 ]; then
   ok "a session that finishes despite a rejected limit is not waited on"
 else bad "a session that finishes despite a rejected limit is not waited on" "slept=$(cat "$SLEPT") $(calls)"; fi
 
@@ -679,7 +679,7 @@ else bad "a session that finishes despite a rejected limit is not waited on" "sl
 workspace
 plan limit-quiet build build walk
 run > /dev/null
-if [ "$(field 1-one status)" = done ] && [ "$(field 1-one attempts)" = 1 ]; then
+if [ "$(field 1-one status)" = "done" ] && [ "$(field 1-one attempts)" = 1 ]; then
   ok "a limit is recognised from the rejected event alone"
 else bad "a limit is recognised from the rejected event alone" "$(tkt 1-one) $(out)"; fi
 
@@ -688,7 +688,7 @@ workspace
 plan limit-bare build build walk
 ( cd "$WORK" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=7 LIMIT_MARGIN=0 \
     bash "$RUNNER" intents/x/tickets > "$WORK/.out" 2>&1 )
-if [ "$(field 1-one status)" = done ] && [ "$(field 1-one attempts)" = 1 ] && [ "$(cat "$SLEPT")" = 7 ]; then
+if [ "$(field 1-one status)" = "done" ] && [ "$(field 1-one attempts)" = 1 ] && [ "$(cat "$SLEPT")" = 7 ]; then
   ok "a limit that names no reset time is waited out too"
 else bad "a limit that names no reset time is waited out too" "$(tkt 1-one) $(out)"; fi
 
@@ -744,6 +744,7 @@ else bad "a dependency nobody can satisfy is named" "rc=$rc $(out)"; fi
 # and this repository's own tickets are full of them.
 
 workspace
+# shellcheck disable=SC2016 # a Markdown fence, written literally
 printf '\n## Record\n\n```\nstatus:    review\nattempts:  7\n```\n' >> "$WORK/intents/x/tickets/1-one.md"; commit
 plan build build walk
 run > /dev/null

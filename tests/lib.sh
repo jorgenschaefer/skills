@@ -14,9 +14,9 @@ bad() { printf 'FAIL  %s\n' "$1"; failed=$((failed + 1))
 # tree as over a clean one. Every suite that loops over a glob says how many
 # cases it found, so a suite that stopped finding anything cannot read as green.
 expect_counted() {
-  [ "$1" -gt 0 ] \
-    && ok "there are $2 to check" \
-    || bad "there are $2 to check" "none found: the cases above checked nothing"
+  if [ "$1" -gt 0 ]; then
+    ok "there are $2 to check"
+  else bad "there are $2 to check" "none found: the cases above checked nothing"; fi
 }
 
 finish() {
