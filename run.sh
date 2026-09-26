@@ -26,6 +26,7 @@ MAX_ATTEMPTS="${MAX_ATTEMPTS:-3}"     # builds of one ticket before it is exhaus
 WAIT_SECONDS="${WAIT_SECONDS:-300}"   # after a usage limit that names no reset time
 LIMIT_MARGIN="${LIMIT_MARGIN:-120}"   # past a limit's reset time, before carrying on
 MAX_WAITS="${MAX_WAITS:-8}"           # limits in a row before the run gives up
+VERIFY=""                             # the checks, once they have passed - never from outside
 
 die() { printf '%s\n' "$*" >&2; exit 2; }
 say() { printf '%s %s\n' "$(date +%H:%M:%S)" "$*"; }
@@ -49,13 +50,6 @@ case "$branch" in
   main|master) die "refusing to run on $branch: a run belongs on a branch of its own" ;;
 esac
 
-# Whatever is lying around uncommitted is someone's, and a session cannot tell
-# it from its own work: it lints it, reviews it, and carves it out of every
-# diff. Untracked files count - an untracked mockup failed the lint of every
-# session in a whole run.
-dirty="$(git status --porcelain)"
-[ -z "$dirty" ] || die "refusing to run on a dirty tree: commit or remove what is here first"$'\n'"$dirty"
-
 command -v claude >/dev/null || die "no claude on PATH: the runner drives sessions, it does not do the work"
 
 shopt -s nullglob
@@ -71,6 +65,27 @@ field()     { sed -n "2,/^---$/s/^$2: *//p" "$1" | head -1; }
 # Scoped to the frontmatter: a ticket about the ticket format has lines in its
 # body that look exactly like fields, and this repo's tickets are full of them.
 set_field() { sed -i "2,/^---$/s|^$2:.*|$2:$(printf '%*s' $((10 - ${#2})) '')$3|" "$1"; }
+
+claimed() {  # the tickets at `doing`, one per line
+  local t
+  for t in "${files[@]}"; do [ "$(field "$t" status)" != doing ] || printf '%s\n' "$t"; done
+}
+
+# Whatever is lying around uncommitted is someone's, and a session cannot tell
+# it from its own work: it lints it, reviews it, and carves it out of every
+# diff. Untracked files count - an untracked mockup failed the lint of every
+# session in a whole run.
+#
+# Except beside a claim. A ticket at `doing` when no runner is running is one a
+# killed runner was building, and what is uncommitted is that session's work,
+# which the loop carries on with. One runner leaves one claim; more than one is
+# not something this script did.
+dirty="$(git status --porcelain)"
+case "$(claimed | wc -l)" in
+  0) [ -z "$dirty" ] || die "refusing to run on a dirty tree: commit or remove what is here first"$'\n'"$dirty" ;;
+  1) [ -z "$dirty" ] || say "carrying on with $(claimed), taking this as its session's work:"$'\n'"$dirty" ;;
+  *) die "more than one ticket is claimed, which one runner cannot leave behind - put back all but one:"$'\n'"$(claimed)" ;;
+esac
 
 # The criteria a ticket quotes, and the criteria its solution carries, in the
 # one shape both can be compared in.
@@ -187,17 +202,15 @@ narrate() {
 # failure of the work - it stops a session wherever it happens to be, often with
 # a build done and its review half run - so the session is waited out to the
 # reset the limit names and then resumed, not started over. Each round gets its
-# own log, LOG names the last one, and SESSION the session they all belong to.
+# own log, and LOG names the last one.
 #
 # Returns the session's exit status, or EX_LIMIT when the limit outlasted
 # MAX_WAITS: that is nobody's failure, and the caller must not charge it to the
 # work.
 EX_LIMIT=75
-claude_through_limits() {  # log name, prompt, session to resume or empty, claude's own options...
-  local id="$3" reset until rc waits=0 how=--resume prompt="$2" name="$1"
-  shift 3
-  [ -n "$id" ] || { id="$(new_session_id)"; how=--session-id; }
-  SESSION="$id"
+claude_through_limits() {  # log name, prompt, --session-id or --resume, session id, claude's own options...
+  local name="$1" prompt="$2" how="$3" id="$4" reset until rc waits=0
+  shift 4
   while :; do
     LOG="$LOG_DIR/$name-$(date +%Y%m%d-%H%M%S)$([ "$waits" = 0 ] || printf -- '-resumed-%s' "$waits").jsonl"
     say "full log in $LOG"
@@ -265,6 +278,13 @@ claude_run() {  # log, --session-id or --resume, session id, prompt, claude's ow
   return "${PIPESTATUS[0]}"
 }
 
+# Which session a claim was given, and where HEAD stood, for a runner started
+# again after being killed. Named for the ticket's whole path: every intent has
+# a 1-one.md, and one's record resumed another's session.
+claim_record() {  # ticket -> the file
+  printf '%s/%s.claim' "$LOG_DIR" "$(realpath --relative-to="$(git rev-parse --show-toplevel)" "$1" | tr / _)"
+}
+
 # What a session left in the tree besides the ticket, whose fields the runner
 # writes itself.
 left_behind() {  # ticket -> git status lines, empty for none
@@ -289,8 +309,16 @@ halt() {  # ticket, kind, why
 # the generic build skill - it fires when anyone asks for code and knows nothing
 # about tickets, statuses or halt kinds. A runner that needs those has to say so
 # itself, which is the cost of the skill staying general.
-session() {  # ticket, session to resume or empty -> 0 ran, EX_LIMIT gave up on a limit, anything else failed
-  local rc prompt
+session() {  # ticket, --session-id or --resume, session id, prompt to resume with -> 0 ran, EX_LIMIT gave up on a limit, anything else failed
+  local rc prompt="${4:-$(brief "$1")}"
+  say "session on $(basename "$1")"
+  claude_through_limits "$(basename "$1" .md)" "$prompt" "$2" "$3"; rc=$?
+  say "session ended, exit $rc, ticket says status: $(field "$1" status)"
+  return $rc
+}
+
+brief() {  # ticket -> the prompt a fresh session on it starts from
+  local prompt t built=""
   # By its absolute path: a session runs wherever the runner was started, and
   # one in a subdirectory looked for a relative path at the repository root.
   prompt="Use /implement on the work described in $(realpath "$1").
@@ -312,7 +340,6 @@ Never write \`status: doing\` or \`status: done\`. Both ends belong to the runne
   # its own ticket and no other - so an item one build left for the next was
   # never seen by it. Pointed at rather than extracted: a Record says it in
   # whatever shape its build chose.
-  local t built=""
   for t in "${files[@]}"; do
     [ "$(field "$t" status)" = done ] && built+=$'\n'"- $(realpath "$t")"
   done
@@ -321,12 +348,12 @@ Never write \`status: doing\` or \`status: done\`. Both ends belong to the runne
 Tickets in this directory already built:$built
 
 Each one's \`## Record\` says what its build left standing. Handle an item that falls inside this ticket's \`## Done when\`, and leave the rest; this ticket's \`## Not here\` still holds."
-  [ -z "$2" ] || prompt="Your turn ended before the ticket was finished. Nothing wakes an unattended session once its turn ends, so whatever you had running in the background was killed; your uncommitted work is still in the tree. Carry on from there - rerun what was killed - and finish as the brief said."
-  say "session on $(basename "$1")"
-  claude_through_limits "$(basename "$1" .md)" "$prompt" "$2"; rc=$?
-  say "session ended, exit $rc, ticket says status: $(field "$1" status)"
-  return $rc
+  printf '%s' "$prompt"
 }
+
+# The two ways a claimed session is carried on rather than started over.
+STOPPED_EARLY="Your turn ended before the ticket was finished. Nothing wakes an unattended session once its turn ends, so whatever you had running in the background was killed; your uncommitted work is still in the tree. Carry on from there - rerun what was killed - and finish as the brief said."
+INTERRUPTED="The run was interrupted while you were working, and has been started again. Your uncommitted work is still in the tree. Carry on from where you stopped - rerun whatever was cut short, a subagent or a check included - and finish as the brief said."
 
 # --- the project's checks, once, before any build
 #
@@ -341,7 +368,7 @@ Each one's \`## Record\` says what its build left standing. Handle an item that 
 
 verify() {
   local log
-  claude_through_limits verify "Find this project's verification command: the one shell line, run from $(pwd), that runs everything a change here has to pass - tests, type check, lint. Where CI runs these, what CI runs is the authority. Do not run it and change nothing; answer with the command." "" \
+  claude_through_limits verify "Find this project's verification command: the one shell line, run from $(pwd), that runs everything a change here has to pass - tests, type check, lint. Where CI runs these, what CI runs is the authority. Do not run it and change nothing; answer with the command." --session-id "$(new_session_id)" \
     --json-schema '{"type":"object","properties":{"command":{"type":"string"}},"required":["command"]}'
   [ $? = "$EX_LIMIT" ] && exit 1
   VERIFY="$(jq -R -r 'fromjson? | select(.type == "result") | .structured_output.command // empty' "$LOG")"
@@ -354,7 +381,6 @@ verify() {
 }
 
 preflight || exit 2
-verify
 
 # --- the loop
 
@@ -374,30 +400,54 @@ ready_ticket() {  # the first ticket whose dependencies are done
 while :; do
   preflight || exit 2
 
-  ticket="$(ready_ticket)" || break
+  # A claim at the top of the loop is one a killed runner left: every pass below
+  # ends by moving its ticket off `doing`. The record written at the claim says
+  # which session to resume and where HEAD was; where there is none it was
+  # killed around the session rather than in it, and there is nothing to resume.
+  if ticket="$(claimed)" && [ -n "$ticket" ]; then
+    attempts="$(field "$ticket" attempts)"
+    if ! read -r id head_before 2>/dev/null < "$(claim_record "$ticket")"; then
+      say "$(basename "$ticket") was claimed and no session is on record - back to ready"
+      put_aside "$ticket" "$attempts"
+      set_field "$ticket" status ready
+      continue
+    fi
+    say "carrying on with $(basename "$ticket"), attempt $attempts of $MAX_ATTEMPTS"
+    session "$ticket" --resume "$id" "$INTERRUPTED"; rc=$?
+  else
+    ticket="$(ready_ticket)" || break
+    # Run here rather than at startup: a run started again runs them only once
+    # the ticket it was killed in is finished, never on its half-built work.
+    [ -n "$VERIFY" ] || verify
 
-  attempts=$(( $(field "$ticket" attempts) + 1 ))
-  if [ "$attempts" -gt "$MAX_ATTEMPTS" ]; then
-    halt "$ticket" exhausted "$MAX_ATTEMPTS attempts spent without a build that stuck - read the build output and \`git stash list\`, which holds what each attempt left uncommitted, and decide whether to raise the budget or re-slice"
-    exit 1
+    attempts=$(( $(field "$ticket" attempts) + 1 ))
+    if [ "$attempts" -gt "$MAX_ATTEMPTS" ]; then
+      halt "$ticket" exhausted "$MAX_ATTEMPTS attempts spent without a build that stuck - read the build output and \`git stash list\`, which holds what each attempt left uncommitted, and decide whether to raise the budget or re-slice"
+      exit 1
+    fi
+    set_field "$ticket" attempts "$attempts"
+    set_field "$ticket" status doing
+    say "claimed $(basename "$ticket"), attempt $attempts of $MAX_ATTEMPTS"
+
+    # Where HEAD was before the build, so that `review` can be checked against
+    # what the session did rather than only against what it says it did. On
+    # record with the session, because a runner killed during the build is
+    # started again with neither.
+    head_before="$(git rev-parse HEAD)"
+    id="$(new_session_id)"
+    printf '%s %s\n' "$id" "$head_before" > "$(claim_record "$ticket")"
+    session "$ticket" --session-id "$id"; rc=$?
   fi
-  set_field "$ticket" attempts "$attempts"
-  set_field "$ticket" status doing
-  say "claimed $(basename "$ticket"), attempt $attempts of $MAX_ATTEMPTS"
-
-  # Where HEAD was before the build, so that `review` can be checked against
-  # what the session did rather than only against what it says it did.
-  head_before="$(git rev-parse HEAD)"
 
   # A session that ended its turn with its work uncommitted and the ticket still
   # claimed was waiting on something `-p` killed when the turn ended - one did
   # so with its build done and reviewed. It is resumed once rather than started
   # over, because everything it did is still in the tree and in its context.
-  session "$ticket" ""; rc=$?
   if [ "$rc" = 0 ] && [ "$(field "$ticket" status)" = doing ] && [ -n "$(left_behind "$ticket")" ]; then
     say "session stopped with its work uncommitted - resuming it"
-    session "$ticket" "$SESSION"; rc=$?
+    session "$ticket" --resume "$id" "$STOPPED_EARLY"; rc=$?
   fi
+  rm -f "$(claim_record "$ticket")"
   if [ "$rc" = "$EX_LIMIT" ]; then
     # A limit that outlasted every wait says nothing about the ticket, so it is
     # handed back as it was claimed, attempt and all, rather than left for the
@@ -456,13 +506,12 @@ while :; do
 done
 
 # `break` means nothing could be selected, which is not the same as everything
-# being finished: a stale claim, a halt, or a dependency nobody can satisfy all
-# look identical from inside the loop.
+# being finished: a halt and a dependency nobody can satisfy look identical from
+# inside the loop.
 stuck=""
 for t in "${files[@]}"; do
   case "$(field "$t" status)" in
     done) ;;
-    doing)  stuck+="$(basename "$t"): claimed by a session that never came back"$'\n' ;;
     halted) stuck+="$(basename "$t"): halted - $(sed -n '/^## Halt$/,$p' "$t" | sed -n '3p')"$'\n' ;;
     *)      stuck+="$(basename "$t"): waiting on $(field "$t" after)"$'\n' ;;
   esac
@@ -493,7 +542,7 @@ printf 'walking %s\n\n' "$intent"
 # `disable-model-invocation`, so it is not among the skills a session can
 # reach on its own - naming it in a sentence gets a session that improvises
 # the one stage that asks whether the problem was solved.
-claude_through_limits accept-intent "/accept-intent $intent" ""
+claude_through_limits accept-intent "/accept-intent $intent" --session-id "$(new_session_id)"
 [ $? = "$EX_LIMIT" ] && exit 1
 # The walk's report is the one thing here meant to be read in full.
 printf '\n'

@@ -78,14 +78,16 @@ tickets and their solution still agree, enforces the attempt budget from a count
 the ticket file, and waits out a usage limit rather than spending the budget on it. A
 session that ends its turn with its work uncommitted is resumed once rather than started
 over, and what an abandoned attempt leaves behind goes to the stash, so the next one
-starts on the tree the checks were green on. Each build is pointed at the Records of the
-tickets already done, since those are where one build leaves something for the next.
-When every ticket is done it walks the conditions with `/accept-intent` and prints what
-that found, along with what the builds' Records say they left standing - without
-merging, marking, or ruling on it. It walks `01-INTENT.md` where there is one and the
-solution where there is not, because the short path keeps its conditions in the
-solution's own `## Intent` section and the walk follows the conditions rather than the
-filename.
+starts on the tree the checks were green on. Killed in the middle, it can simply be
+started again: the ticket it left claimed is carried on in the same session, on the same
+attempt, with its uncommitted work taken as that session's, and the checks wait until it
+is finished. Each build is pointed at the Records of the tickets already done, since
+those are where one build leaves something for the next. When every ticket is done it
+walks the conditions with `/accept-intent` and prints what that found, along with what
+the builds' Records say they left standing - without merging, marking, or ruling on it.
+It walks `01-INTENT.md` where there is one and the solution where there is not, because
+the short path keeps its conditions in the solution's own `## Intent` section and the
+walk follows the conditions rather than the filename.
 
 There is one session per ticket. There used to be two, the second reviewing what the
 first built; the build now spawns that reviewer itself, in a subagent that did not write

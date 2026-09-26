@@ -365,6 +365,97 @@ run > /dev/null
 if grep -q '2-two' <(head -1 "$STUB_CALLS"); then ok "after: decides the order, not the filename"
 else bad "after: decides the order, not the filename" "$(calls)"; fi
 
+# --- a run killed in the middle
+#
+# A runner killed during a session left its claim at `doing`, uncommitted, with
+# the session's work beside it: the next start refused the dirty tree, and a
+# ticket committed at `doing` was never selected again. At startup a `doing`
+# ticket can only be that, so the runner carries on with it - in the same
+# session, on the same attempt.
+
+workspace
+plan killed build build walk
+run > /dev/null 2>&1
+rc="$(run)"
+first="$(awk 'NR == 1 && $1 == "start" { print $2 }' "$STUB_SESSIONS")"
+if [ "$rc" = 0 ] && [ "$(field 1-one status)" = done ] && [ "$(field 1-one attempts)" = 1 ]; then
+  ok "a run killed in the middle is started again and finishes, on the same attempt"
+else bad "a run killed in the middle is started again and finishes, on the same attempt" "rc=$rc $(field 1-one status) $(field 1-one attempts) $(out)"; fi
+if [ -n "$first" ] && [ "$(sed -n 2p "$STUB_SESSIONS")" = "resume $first" ] \
+   && grep -q 'interrupted' <(sed -n 2p "$STUB_CALLS"); then
+  ok "the killed session is resumed, and told it was interrupted"
+else bad "the killed session is resumed, and told it was interrupted" "$(cat "$STUB_SESSIONS") $(calls)"; fi
+if git -C "$WORK" ls-files --error-unmatch code >/dev/null 2>&1; then
+  ok "the killed session's work is carried on, not put aside"
+else bad "the killed session's work is carried on, not put aside" "$(git -C "$WORK" stash list)"; fi
+
+if grep -q 'carrying on with.*1-one' "$WORK/.out" && grep -q 'code' "$WORK/.out"; then
+  ok "the restart says which claim it carries on with, and whose work it takes the tree for"
+else bad "the restart says which claim it carries on with, and whose work it takes the tree for" "$(out)"; fi
+# Resume, then the checks, then the next ticket: skipped for the half-built work,
+# not for the run.
+if awk '/--resume/ { r = NR } /--json-schema/ && r { v = NR } /2-two\.md/ && v { ok = 1 } END { exit !ok }' "$STUB_ARGS"; then
+  ok "a restarted run still runs the checks before the next fresh claim"
+else bad "a restarted run still runs the checks before the next fresh claim" "$(cut -c1-120 "$STUB_ARGS")"; fi
+
+# The checks were green when the killed run started; run now, they would judge a
+# half-built ticket.
+workspace
+STUB_VERIFY='! git status --porcelain | grep -q code'
+plan killed build build walk
+run > /dev/null 2>&1
+rc="$(run)"
+if [ "$rc" = 0 ] && [ "$(field 1-one status)" = done ]; then
+  ok "the checks are not run on the killed session's half-built work"
+else bad "the checks are not run on the killed session's half-built work" "rc=$rc $(out)"; fi
+
+# Killed before the session was launched, there is nothing to resume: what is
+# there is put aside and the ticket built again.
+workspace
+plan killed build build walk
+run > /dev/null 2>&1
+rm -f "$WORK"/.git/run-logs/*.claim
+rc="$(run)"
+if [ "$rc" = 0 ] && [ "$(field 1-one attempts)" = 2 ] && ! grep -q '^resume' "$STUB_SESSIONS" \
+   && git -C "$WORK" stash list | grep -q '1-one'; then
+  ok "a claim with no session to resume is put aside and built again"
+else bad "a claim with no session to resume is put aside and built again" "rc=$rc $(field 1-one attempts) $(cat "$STUB_SESSIONS") $(git -C "$WORK" stash list) $(out)"; fi
+
+# A claim is on record under its own ticket directory: two intents both have a
+# 1-one.md, and one's record must not resume the other's session.
+workspace
+cp -r "$WORK/intents/x" "$WORK/intents/y"; commit
+plan killed killed build build walk
+run > /dev/null 2>&1
+commit
+( cd "$WORK" && PATH="$WORK/.bin:$PATH" bash "$RUNNER" intents/y/tickets > "$WORK/.out" 2>&1 )
+commit
+git -C "$WORK" checkout -q HEAD~1 -- intents/y 2>/dev/null
+sed -i 's/^status: .*/status:    ready/' "$WORK"/intents/y/tickets/*.md; commit
+first="$(awk 'NR == 1 && $1 == "start" { print $2 }' "$STUB_SESSIONS")"
+rc="$(run)"
+if [ "$rc" = 0 ] && grep -q "^resume $first\$" "$STUB_SESSIONS"; then
+  ok "a killed claim resumes its own session, not another directory's of the same name"
+else bad "a killed claim resumes its own session, not another directory's of the same name" "rc=$rc $(cat "$STUB_SESSIONS") $(out)"; fi
+
+# A VERIFY in the caller's environment is not a check that passed.
+workspace
+STUB_VERIFY=false
+plan build build walk
+rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" VERIFY=true bash "$RUNNER" intents/x/tickets > "$WORK/.out" 2>&1 ); echo $?)"
+if [ "$rc" != 0 ] && [ ! -s "$STUB_CALLS" ]; then
+  ok "a VERIFY already in the environment does not skip the checks"
+else bad "a VERIFY already in the environment does not skip the checks" "rc=$rc $(out)"; fi
+
+# One runner leaves one claim.
+workspace
+sed -i 's/^status: .*/status:    doing/' "$WORK"/intents/x/tickets/*.md; commit
+plan build build walk
+rc="$(run)"
+if [ "$rc" != 0 ] && grep -q 'more than one' "$WORK/.out" && grep -q '1-one' "$WORK/.out" && grep -q '2-two' "$WORK/.out" && [ ! -s "$STUB_CALLS" ]; then
+  ok "two claimed tickets are refused, named, and nothing is launched"
+else bad "two claimed tickets are refused, named, and nothing is launched" "rc=$rc $(out) $(calls)"; fi
+
 # --- what earlier builds left standing
 #
 # A build that leaves something for a later ticket - a rename that belongs to
@@ -638,14 +729,6 @@ if [ "$(field 1-one status)" = ready ] && [ "$(field 1-one attempts)" = 0 ] && [
 else bad "giving up on a limit hands the ticket back rather than halting it" "$(tkt 1-one) $(calls)"; fi
 
 # --- nothing selectable is not the same as everything finished
-
-workspace
-sed -i 's/^status: .*/status:    doing/' "$WORK/intents/x/tickets/1-one.md"; commit
-plan build
-rc="$(run)"
-if [ "$rc" != 0 ] && grep -q 'never came back' "$WORK/.out"; then
-  ok "a stale claim is reported rather than counted as done"
-else bad "a stale claim is reported rather than counted as done" "rc=$rc $(out)"; fi
 
 workspace
 sed -i 's/^after: .*/after:     9-ghost/' "$WORK/intents/x/tickets/2-two.md"; commit

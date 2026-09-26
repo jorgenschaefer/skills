@@ -24,6 +24,8 @@
 #   limit-sub    a subagent hits a limit, then the session dies of something else
 #   limit-passed a subagent hits a limit and the session is told of a rejected
 #                window, but it goes on to finish - then `build`
+#   killed       write code, then kill the runner with -9 - it gets no chance to
+#                tidy up, as with a power cut or a closed laptop
 #   walk         the acceptance call - record it and exit 0
 #
 # The call that looks for the project's checks is told apart by the schema it
@@ -121,6 +123,10 @@ case "$line" in
     set_status halted
     ;;
   die) exit 1 ;;
+  killed)
+    printf 'half\n' > "$(git rev-parse --show-toplevel)/code"
+    kill -9 "$PPID"
+    ;;
   stop-early) printf 'half\n' > "$(git rev-parse --show-toplevel)/code" ;;
   limit-sub)
     echo '{"type":"assistant","message":{"role":"assistant","content":[]},"parent_tool_use_id":"toolu_sub","error":"rate_limit"}'
