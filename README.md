@@ -85,8 +85,9 @@ work taken as that session's, and the checks wait until it is finished. It refus
 start beside a live run, or beside a session a killed run left running. Each build is
 pointed at the Records of the tickets already done, since those are where one build
 leaves something for the next. When every ticket is done it walks the conditions with
-`/accept-intent` and prints what that found, along with what the builds' Records say
-they left standing - without merging, marking, or ruling on it, and a walk that ends
+`/accept-intent` and prints what needs the reader: conditions not met or not checked,
+and what the builds' Records left standing that the walk did not settle - without
+merging, marking, or ruling on it, and a walk that ends
 without a report fails the run. It walks `01-INTENT.md` where there is one and the
 solution where there is not, because the short path keeps its conditions in the
 solution's own `## Intent` section and the walk follows the conditions rather than the

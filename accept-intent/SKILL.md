@@ -34,4 +34,12 @@ Each Record also says what its build left standing: findings not fixed, checks n
 
 ## Report
 
-One entry per condition id, including every id you could not check: what you did to check it, and what you saw. Then what the builds left standing, one line per item with its ticket, saying whether your walk touched it. No verdict on whether to merge: that is the reader's.
+Only what needs the reader, most serious first, each item ending with the step that would settle it:
+
+- A condition not met: what you did, and what you saw. Where a Record names a test for it, name the test.
+- A condition you could not check: why, and what it would take to check it.
+- An item a build left standing that your walk did not settle, with its ticket.
+- The run skill, if you wrote one.
+- Whatever you could not remove.
+
+Then one line naming the ids you found met, so every id is accounted for - nothing more about them. No verdict on whether to merge: that is the reader's.
