@@ -28,13 +28,6 @@ WAIT_SECONDS="${WAIT_SECONDS:-300}"   # after a usage limit that names no reset 
 LIMIT_MARGIN="${LIMIT_MARGIN:-120}"   # past a limit's reset time, before carrying on
 MAX_WAITS="${MAX_WAITS:-8}"           # limits in a row before the run gives up
 VERIFY=""                             # the checks, once they have passed - never from outside
-# Plan with Opus, execute with Sonnet. A build carries out a plan that was
-# thought through before the ticket was written, and a ticket says what proves
-# each step; the walk is judgement, and so is the review a build spawns, which
-# `/implement` pins to Opus whatever the build runs on.
-BUILD_MODEL="${BUILD_MODEL:-sonnet}"
-WALK_MODEL="${WALK_MODEL:-opus}"
-VERIFY_MODEL="${VERIFY_MODEL:-sonnet}"   # only names the checks command
 
 die() { printf '%s\n' "$*" >&2; exit 2; }
 say() { printf '%s %s\n' "$(date +%H:%M:%S)" "$*"; }
@@ -353,7 +346,7 @@ halt() {  # ticket, kind, why
 session() {  # ticket, --session-id or --resume, session id, prompt to resume with -> 0 ran, EX_LIMIT gave up on a limit, anything else failed
   local rc prompt="${4:-$(brief "$1")}"
   say "session on $(basename "$1")"
-  claude_through_limits "$(basename "$1" .md)" "$prompt" "$2" "$3" --model "$BUILD_MODEL"; rc=$?
+  claude_through_limits "$(basename "$1" .md)" "$prompt" "$2" "$3"; rc=$?
   say "session ended, exit $rc, ticket says status: $(field "$1" status)"
   return $rc
 }
@@ -410,7 +403,7 @@ INTERRUPTED="The run was interrupted while you were working, and has been starte
 verify() {
   local log
   claude_through_limits verify "Find this project's verification command: the one shell line, run from $(pwd), that runs everything a change here has to pass - tests, type check, lint. Where CI runs these, what CI runs is the authority. Do not run it and change nothing; answer with the command." --session-id "$(new_session_id)" \
-    --model "$VERIFY_MODEL" --json-schema '{"type":"object","properties":{"command":{"type":"string"}},"required":["command"]}'
+    --json-schema '{"type":"object","properties":{"command":{"type":"string"}},"required":["command"]}'
   [ $? = "$EX_LIMIT" ] && exit 1
   VERIFY="$(jq -R -r 'fromjson? | select(.type == "result") | .structured_output.command // empty' "$LOG")"
   [ -n "$VERIFY" ] || die "the session found no verification command - see $LOG"
@@ -590,7 +583,7 @@ printf 'walking %s\n\n' "$intent"
 # `disable-model-invocation`, so it is not among the skills a session can
 # reach on its own - naming it in a sentence gets a session that improvises
 # the one stage that asks whether the problem was solved.
-claude_through_limits accept-intent "/accept-intent $intent" --session-id "$(new_session_id)" --model "$WALK_MODEL"
+claude_through_limits accept-intent "/accept-intent $intent" --session-id "$(new_session_id)"
 [ $? = "$EX_LIMIT" ] && exit 1
 # The walk's report is the one thing here meant to be read in full - and a walk
 # that died has none, which is a run that did not end well, whatever it prints.

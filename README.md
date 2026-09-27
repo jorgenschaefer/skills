@@ -82,17 +82,15 @@ leaves behind goes to the stash, so the next one starts on the tree the checks w
 green on. Killed in the middle, it can simply be started again: the ticket it left
 claimed is carried on in the same session, on the same attempt, with its uncommitted
 work taken as that session's, and the checks wait until it is finished. It refuses to
-start beside a live run, or beside a session a killed run left running. Planning happens
-on Opus, in your own sessions; the runner executes on Sonnet, while the review each
-build spawns and the walk stay on Opus, because those are judgement. `BUILD_MODEL`,
-`WALK_MODEL` and `VERIFY_MODEL` change that. Each build is pointed at the Records of the
-tickets already done, since those are where one build leaves something for the next.
-When every ticket is done it walks the conditions with `/accept-intent` and prints what
-that found, along with what the builds' Records say they left standing - without
-merging, marking, or ruling on it, and a walk that ends without a report fails the run.
-It walks `01-INTENT.md` where there is one and the solution where there is not, because
-the short path keeps its conditions in the solution's own `## Intent` section and the
-walk follows the conditions rather than the filename.
+start beside a live run, or beside a session a killed run left running. Each build is
+pointed at the Records of the tickets already done, since those are where one build
+leaves something for the next. When every ticket is done it walks the conditions with
+`/accept-intent` and prints what that found, along with what the builds' Records say
+they left standing - without merging, marking, or ruling on it, and a walk that ends
+without a report fails the run. It walks `01-INTENT.md` where there is one and the
+solution where there is not, because the short path keeps its conditions in the
+solution's own `## Intent` section and the walk follows the conditions rather than the
+filename.
 
 There is one session per ticket. There used to be two, the second reviewing what the
 first built; the build now spawns that reviewer itself, in a subagent that did not write

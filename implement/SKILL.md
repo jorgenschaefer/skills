@@ -27,7 +27,7 @@ Build it to the standard, in the order the standard says the work happens. Then 
 
 ## Review it in a session that did not write it
 
-**Spawn `critique` as a subagent with a fresh context, on Opus** - the build may run on a cheaper model, and the review is judgement. Hand it the diff, the result of the checks, and what was asked for - the criteria and what is out of scope, as the request states them. Do not hand it the reasoning that produced the code: not the plan, and not how you tested it.
+**Spawn `critique` as a subagent with a fresh context.** Hand it the diff, the result of the checks, and what was asked for - the criteria and what is out of scope, as the request states them. Do not hand it the reasoning that produced the code: not the plan, and not how you tested it.
 
 That last part is the whole point. A reviewer that has already accepted every step of the reasoning is not a reviewer - it will read its own intentions into the code and find the defects it was already looking for. The subagent starts cold, which is the only reason its findings are worth anything.
 
