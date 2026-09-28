@@ -34,7 +34,7 @@ dangling="" docs=0 refs=0 missing="" coupled="" sectokens=0
 # The standard is read whole or not at all. A document that names one of its
 # sections is telling a reader which part to apply, which is the same as telling
 # them the rest is optional - and it pins the wording of a heading it does not
-# own. The three copies are identical and `test.sh` is what holds them so, so
+# own. The copies are identical and `test.sh` is what holds them so, so
 # whichever ones exist give the same answer.
 standard="$(cat "$ROOT"/*/CODING_STANDARDS.md 2>/dev/null | grep '^#\{1,\} ' | sort -u)"
 

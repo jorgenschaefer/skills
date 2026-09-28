@@ -20,7 +20,7 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 # A skill installs on its own and cannot reach into a sibling's directory, so a
 # reference file two skills both need is copied into each of them. Identical is
 # the whole point, and an n-way edit is easy to make (n-1)-way by accident -
-# today that is the three copies of CODING_STANDARDS.md.
+# today that is the four copies of CODING_STANDARDS.md.
 #
 # Quantified over whatever is shared rather than over that file by name: the
 # holders move as skills come and go, and an assertion pinned to a list is one

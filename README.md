@@ -62,9 +62,9 @@ something you ask for.
 project rather than only this one. It was four skills, read at different moments by
 different readers, which meant four places for a rule to drift.
 
-`implement`, `critique` and `plan-solution` each hold an identical copy, because a skill
-installs alone and cannot reach a sibling's directory. **An edit to one is an edit to
-all three, in the same commit.** `./test.sh` is what enforces it, over whatever turns
+`implement`, `critique`, `plan-solution` and `restructure` each hold an identical copy,
+because a skill installs alone and cannot reach a sibling's directory. **An edit to one
+is an edit to all four, in the same commit.** `./test.sh` is what enforces it, over whatever turns
 out to be shared rather than over that file by name.
 
 ### The runner
@@ -144,7 +144,7 @@ concluding.
 
 ## Available skills
 
-The pipeline is most of them. `repo-overview`, `improve-skill` and
+The pipeline is most of them. `repo-overview`, `improve-skill`, `restructure` and
 `upgrade-dependencies` stand outside it - they are things you run on a codebase, or on a
 skill, rather than steps in building a change.
 
@@ -157,6 +157,7 @@ skill, rather than steps in building a change.
 - **git-commit-message** - encode the seven rules of a well-formed commit message (subject/body separation, 50-char imperative subject, no trailing period, 72-char body explaining what and why); auto-loaded when writing a commit, with the repo's existing history as the baseline and the rules as the floor
 - **improve-skill** - the review for agent skills, and it edits rather than reports: it cuts the skill to what changes what the agent does. Every edit is a deletion or a shorter replacement, clauses out of the middle of sentences included, so the file comes out shorter every time and an improvement that would *add* - a missing trigger, a completion criterion, a form that does not fit its failure - is written into the report as wording to paste rather than into the file. It names the one sentence the skill is for, deriving and writing it where the author never did, and deletes what that sentence already covers, then what the model would do anyway, the duplication and the prose around the instructions. A cut it cannot settle by reading is settled by running the skill three ways against a control. Then a subagent that did not write the rewrite reads it against the original for what went missing, which is the step that makes the cutting safe: measured over four skills, the first draft over-cuts every time and the review is what puts the guards back
 - **repo-overview** - orient a new developer to an unfamiliar codebase - tech stack, code organization, work objects and the actions each part supports, main workflows, where to start reading - and leave it in `ARCHITECTURE.md`, re-derived whole every run rather than maintained by hand
+- **restructure** - make a whole codebase easier to change: it judges what changes together from the code, with the git history's co-changing files as a second view. It looks for proposals first - near-duplicate concepts to merge in the UI and the code, and features that cost more than they give - and leaves that code alone. Then it deletes dead or inert code, colocates, splits grab-bag modules, makes coupling that nothing links explicit, unifies, collapses empty layers, generalizes and simplifies, each only for a future change it can name. It applies only what it can prove preserves behavior and proposes the rest. Typed, so it does not compete with `critique` for "clean up the code"
 - **ubiquitous-language-init** - bootstrap a UBIQUITOUS_LANGUAGE.md glossary in a brownfield project by excavating domain terminology from the existing codebase
 - **upgrade-dependencies** - upgrade npm dependencies safely and incrementally: green baseline, then `npm update`, then remaining majors one at a time, running tests/tsc/lint at every step; reconciles the Node version across `.nvmrc`, Dockerfile and `@types/node`; taking a new dependency on is a decision rather than maintenance, and is not this skill's to make
 
@@ -181,7 +182,7 @@ description: One-line description used for discovery.
 
 A skill installs on its own and cannot read a sibling's directory. So a reference file
 two skills both need is **copied into each of them**, byte for byte, rather than shared -
-`CODING_STANDARDS.md` lives in three places for exactly this reason. The copies have to
+`CODING_STANDARDS.md` lives in four places for exactly this reason. The copies have to
 be edited together, in one commit, and `./test.sh` fails when they are not.
 
 `VERIFY.md` is the deliberate exception: three skills hold one, and the three are
