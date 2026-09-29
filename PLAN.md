@@ -41,7 +41,24 @@ There is no backwards compatibility: the old formats and ids go.
    context. Only two tickets were that expensive, and poor context management
    inside those sessions could explain them as well as size does. The token
    log below exists to settle that.
-7. **Acceptance needs the user in it.** It should be an interactive session,
+7. **One oversized file makes every ticket expensive.** In `einsatz`,
+   `SituationWorkspace.tsx` has 1082 lines and its test file has 3240. In four
+   days, 17 and 23 commits touched them. The two most expensive builds re-read
+   files 35 and 22 times, and even simple tickets start at 40–70k context
+   before the first edit.
+8. **Screenshots stay in the build's context.** `10-smartphone` read 30
+   screenshots (1.7 MB) in its main session, and they were carried through
+   every later turn. In `01-hauptansichten` the browser check ran in a
+   subagent that reported back in text, which is the cheap pattern.
+9. **What slipped through was UX judgement, not function.** Found after the
+   pipeline finished:
+   - no padding at the ETB divider;
+   - the search bar not full-width on mobile;
+   - Korrigieren and Annullieren too prominent for how rarely they are used;
+   - no feedback after "Gesamtstärke melden", so it got sent twice.
+
+   None of these would have been an AC as the criteria were written.
+10. **Acceptance needs the user in it.** It should be an interactive session,
    not an unattended walk at the end of `run.sh`.
 
 ## Layout
@@ -124,7 +141,12 @@ it earlier or keep it going.
    the approved list, and checks that:
    - the ACs serve the Problem, with none missing and none unasked for;
    - each AC can be tested;
-   - the ACs make sense for users and for good software;
+   - the ACs make sense for users and for good software. For anything a
+     user sees, it probes specifically:
+     - the feedback after every action;
+     - actions that cannot be undone;
+     - layout at the narrowest and widest supported screen;
+     - how prominent rarely used actions are;
    - criteria-to-tickets could slice from the file without asking anything.
 3. The agent works the findings in and asks again, showing only what changed.
    If the adversary found nothing, it says so and asks for the final yes.
@@ -165,6 +187,11 @@ slice gets a ticket, so the plans can be written straight to files.
 - When small and vertical conflict, vertical wins.
 - The size rule stays loose (few plan steps, few files) until the token log
   shows where the limit is.
+- **Oversized files.** When several slices would touch a file that a builder
+  cannot read whole, the first ticket splits that file along the lines
+  `CODING_STANDARDS.md` draws (group by feature, read top to bottom, tests next
+  to their code). It changes no behaviour, and every ticket touching the file
+  comes `after:` it.
 
 **What it finds while planning.** Planning reads the code, which turns up two
 kinds of question:
@@ -212,6 +239,13 @@ and goes through the same write, check, approve order instead of plan mode.
 **Handoff.** One ticket means `/implement <ticket>`, then `/accept-criteria`.
 Several mean `run.sh`.
 
+### implement
+
+**Visual checks go to a subagent.** Screenshots and browser checks run in a
+subagent that reports back in text: what it did, what it saw, pass or fail.
+Images never enter the build's own context, where every later turn would read
+them again. This holds whether a ticket or a person started the build.
+
 ### run.sh
 
 - **Builds tickets as today:** claims, attempt budget, waiting out usage
@@ -247,6 +281,9 @@ either path.
 - It holds the whole against the Problem, and says so if the ACs are met but
   the problem is not solved.
 - It reads the tickets' Records, including nudge departures, and `REVIEW.md`.
+- Beyond the ACs, the user can use the feature freely, and the agent follows
+  along. What comes up gets reported the same way: the UX misses from problem 9
+  are the kind no AC caught.
 - It reports each AC as met, not met, or could not be checked, plus anything a
   build or the review left standing that the walk did not settle.
 - **Once the user accepts**, it deletes the change's directory (`CRITERIA.md`,
