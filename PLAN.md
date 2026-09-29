@@ -46,7 +46,7 @@ There is no backwards compatibility: the old formats and ids go.
 
 ## Layout
 
-Everything one change produces lives in `intents/YYYY-MM-DD-<slug>/`:
+Everything one change produces lives in `changes/YYYY-MM-DD-<slug>/`:
 
 - `CRITERIA.md`
 - `specimens/`: the agreed specimen only
@@ -54,8 +54,8 @@ Everything one change produces lives in `intents/YYYY-MM-DD-<slug>/`:
 - `REVIEW.md`: written by run.sh's final review, when it runs
 
 The directory is scaffolding for one change: accept-criteria deletes it at the
-end. ADRs outlive the change, so they go where the project keeps its ADRs,
-not here.
+end. ADRs outlive the change, so they always go to `docs/adr/`, never
+here.
 
 ## The pipeline
 
@@ -113,15 +113,21 @@ Replaces `find-solution`.
 - Settles every open question. Each one ends up as an AC, a nudge, a ruled-out
   line, or explicitly out of scope. None survives into the file.
 
-**Adversary, before the approval.** Fresh context, given the Problem and the
-draft criteria. It checks that:
-- the ACs serve the Problem, with none missing and none unasked for;
-- each AC can be tested;
-- the ACs make sense for users and for good software;
-- criteria-to-tickets could slice from the file without asking anything.
+**Stop condition.** The loop is done when every AC and nudge can be written
+so that criteria-to-tickets would not have to ask anything. The user can end
+it earlier or keep it going.
 
-**Approval.** When the user says it is done, the full list is shown, with the
-adversary's findings already worked in. The approval can send the loop back.
+**Approval, then adversary, then approval.**
+1. When the agent judges the stop condition reached, it shows all ACs and
+   nudges and asks if this is ok. A no sends the loop back.
+2. Only then does the adversary run. It gets a fresh context, the Problem and
+   the approved list, and checks that:
+   - the ACs serve the Problem, with none missing and none unasked for;
+   - each AC can be tested;
+   - the ACs make sense for users and for good software;
+   - criteria-to-tickets could slice from the file without asking anything.
+3. The agent works the findings in and asks again, showing only what changed.
+   If the adversary found nothing, it says so and asks for the final yes.
 
 **Output: `CRITERIA.md`.**
 - **Problem:** the agreed statement plus the one real instance. It was written
@@ -140,11 +146,17 @@ adversary's findings already worked in. The approval can send the loop back.
 - **Ruled out:** one line per rejected alternative and why, so later agents do
   not propose it again.
 
+**ADRs.** A decision made here that `CODING_STANDARDS.md` says earns an ADR is
+put to the user with a recommendation. On a yes it is written to `docs/adr/`
+in `ADR_FORMAT.md`'s shape, while the argument for it is still in context.
+find-criteria therefore carries `ADR_FORMAT.md` and `CODING_STANDARDS.md`.
+
 ### criteria-to-tickets
 
 Replaces `plan-solution`. It keeps that skill's `PLANNING.md`, `ADR_FORMAT.md`,
-`TICKET_FORMAT.md` (adapted), `VERIFY.md` (the slicing adversary) and its copy
-of `CODING_STANDARDS.md`.
+`TICKET_FORMAT.md` (adapted), `VERIFY.md` (adapted to review ticket files) and
+its copy of `CODING_STANDARDS.md`. Plan mode is no longer part of it: every
+slice gets a ticket, so the plans can be written straight to files.
 
 **Slicing**
 - Slices stay vertical: each can be built and verified on its own.
@@ -162,10 +174,20 @@ kinds of question:
   back to `find-criteria`.
 - **Implementation decisions** are shown at the approval and not written back.
 
-**Adversary.** It reviews the slicing as text, before any ticket file exists,
-the same as today.
+**Order: write, check, approve.**
+1. Write the tickets, including for a single slice.
+2. The adversary gets a fresh context, the ticket files and `CRITERIA.md`, and
+   checks the slicing and the files themselves:
+   - quotes that do not match `CRITERIA.md`;
+   - ACs no ticket covers;
+   - slices that are not vertical or will clearly run long;
+   - Context a builder would miss;
+   - plans that rest on code that is not there.
+3. The agent fixes what the adversary finds, then asks for approval. It shows
+   the slicing, the implementation decisions and the product questions. A no
+   means editing the tickets.
 
-**Tickets.** Written after approval, including for a single slice.
+**Tickets.**
 - The frontmatter points at `CRITERIA.md`.
 - Sections:
   - Build;
@@ -180,9 +202,15 @@ the same as today.
   fixed, checks not run, departures from the plan, and **departures from a
   nudge, with the reason**.
 
-**Re-slicing.** The procedure stays as it is today, pointed at `CRITERIA.md`.
+**ADRs.** Only for decisions it newly makes while reading the code, put to the
+user at its approval and written to `docs/adr/` on a yes. Decisions from
+find-criteria already have theirs.
 
-**Handoff.** One ticket means `/implement <ticket>`. Several mean `run.sh`.
+**Re-slicing.** The procedure stays as it is today, pointed at `CRITERIA.md`,
+and goes through the same write, check, approve order instead of plan mode.
+
+**Handoff.** One ticket means `/implement <ticket>`, then `/accept-criteria`.
+Several mean `run.sh`.
 
 ### run.sh
 
@@ -205,7 +233,7 @@ the same as today.
     The session enforces that limit; `run.sh` does not count rounds.
   - It writes what it left standing to `REVIEW.md`.
 - **No accept walk.** It ends by printing halts, each ticket's
-  `### Left standing` and `REVIEW.md`.
+  `### Left standing` and `REVIEW.md`, then points to `/accept-criteria`.
 
 ### accept-criteria
 
@@ -242,3 +270,8 @@ either path.
 - The runner's pre-flight cases are adapted to `CRITERIA.md`, not deleted.
 - New cases cover the token log and the final review.
 - The no-dangling check covers the renamed skills.
+- `ADR_FORMAT.md` drops "a project that already keeps ADRs somewhere else keeps
+  them there": ADRs always live in `docs/adr/`. It now has copies in two skills,
+  so they are kept identical like `CODING_STANDARDS.md`.
+- `CODING_STANDARDS.md` gains a copy in find-criteria.
+- `run.sh`'s usage line and messages say `changes/<slug>/tickets`.
