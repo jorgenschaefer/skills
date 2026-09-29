@@ -187,11 +187,6 @@ slice gets a ticket, so the plans can be written straight to files.
 - When small and vertical conflict, vertical wins.
 - The size rule stays loose (few plan steps, few files) until the token log
   shows where the limit is.
-- **Oversized files.** When several slices would touch a file that a builder
-  cannot read whole, the first ticket splits that file along the lines
-  `CODING_STANDARDS.md` draws (group by feature, read top to bottom, tests next
-  to their code). It changes no behaviour, and every ticket touching the file
-  comes `after:` it.
 
 **What it finds while planning.** Planning reads the code, which turns up two
 kinds of question:
@@ -245,6 +240,19 @@ Several mean `run.sh`.
 subagent that reports back in text: what it did, what it saw, pass or fail.
 Images never enter the build's own context, where every later turn would read
 them again. This holds whether a ticket or a person started the build.
+
+The subagent judges what it sees against the criteria and against
+`CODING_STANDARDS.md`'s Usability section, so the builder catches UX misses
+while they are still cheap to fix.
+
+### critique
+
+**It looks at the running product, not only the diff.** Where a change is
+visible to a user, critique drives it in the running app and judges what it
+sees against the Usability section: every changed screen, at the narrowest and
+widest supported size, with the feedback after each action. This is the
+independent check. implement's visual subagent is the builder checking its own
+work, and cannot stand in for it.
 
 ### run.sh
 
@@ -310,5 +318,7 @@ either path.
 - `ADR_FORMAT.md` drops "a project that already keeps ADRs somewhere else keeps
   them there": ADRs always live in `docs/adr/`. It now has copies in two skills,
   so they are kept identical like `CODING_STANDARDS.md`.
-- `CODING_STANDARDS.md` gains a copy in find-criteria.
+- `CODING_STANDARDS.md` gains a copy in find-criteria. Problem 7 is answered
+  there rather than in slicing: before adding code to a large file, split it
+  along what changes together (done).
 - `run.sh`'s usage line and messages say `changes/<slug>/tickets`.

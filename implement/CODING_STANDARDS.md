@@ -112,6 +112,8 @@ Directories and modules should therefore group code by feature. Prefer this over
 
 Put a test next to the file it tests, not in a separate `tests/` tree - unless the project's existing layout clearly says otherwise.
 
+**Before adding code to a large file, split it.** Divide it along what changes together into smaller files, each holding one part, and split its test file the same way. A large file keeps growing, because adding to it is always the easiest option, and every later change has to read all of it again. The split changes no behaviour and comes before the change, not mixed into it.
+
 ### Function and Method Names Follow Domain Actions
 
 When users talk about "publishing a blog post" or "archiving it", the respective functions should be `publishPost` and `archivePost` - not `updatePost`, even though both end as a database `UPDATE`. When they talk about "setting an article's category", it should be `setArticleCategory`; when they talk about "saving an article", it should be `saveArticle`, with the argument a compound object of everything the users mean by "the article" in this context - which could contain the category.
