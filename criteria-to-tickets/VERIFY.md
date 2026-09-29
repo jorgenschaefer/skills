@@ -6,13 +6,15 @@ You are reading the tickets written for one change against the `CRITERIA.md` the
 
 ## Coverage, both ways
 
-- **Every ticket claims at least one AC.** A ticket tracing to none is work nobody asked for.
-- **Every AC in `CRITERIA.md` is quoted by some ticket.** One quoted nowhere is the AC this change was for, going unbuilt.
-- **An AC split across two tickets is two ACs.** Half an AC quoted into one ticket and half into another means `CRITERIA.md` described two pieces of work in one sentence. That goes back to the user.
+- **Every ticket closes or advances at least one AC.** A ticket tracing to none is work nobody asked for.
+- **Every AC in `CRITERIA.md` is closed by exactly one ticket, which comes after every ticket advancing it.** One closed nowhere is the AC this change was for, going unfinished; one closed first is a test written before what it tests.
+- **A ticket's own part of an AC it advances is narrower than that AC, never beside it.** The `Done when` line an advancing ticket writes is the one place a slicer writes a criterion in its own words, and the easiest place for a new requirement to get in. Hold it against the AC it serves: behaviour the AC does not ask for is a finding.
+- **The parts add up.** Walk the advancing tickets and the closing one of each AC together: is anything the AC asks for built by none of them?
+- **An AC that describes two behaviours goes back to the user.** One split only because the work is big is not a finding - that is what advancing is for.
 
 ## The quotes match, word for word
 
-Each ticket quotes its ACs and nudges exactly as `CRITERIA.md` writes them, and `satisfies` names exactly the ACs it quotes. Check the words, not the sense: a quotation that stops a sentence early has dropped a requirement, and a paraphrase is a criterion quietly changed in a file that claims to be quoting one. A nudge a ticket's plan runs against, and does not quote, is one the builder will never see.
+Each ticket quotes its ACs and nudges exactly as `CRITERIA.md` writes them, and `closes` and `advances` name exactly the ACs it quotes. Check the words, not the sense: a quotation that stops a sentence early has dropped a requirement, and a paraphrase is a criterion quietly changed in a file that claims to be quoting one. A nudge a ticket's plan runs against, and does not quote, is one the builder will never see.
 
 ## Each slice is vertical, and one session long
 

@@ -28,7 +28,7 @@ Where you cannot get the product running at all, stop and say so - every AC is u
 
 ## Read what the builds left
 
-Each ticket's `## Record` names the test that pins each AC, and its `### Left standing` says what the build did not settle - departures from a nudge among them. `REVIEW.md` says what the final review left. Read them as you walk.
+The `## Record` of the ticket that closes an AC names the test that proves it - one test per AC, in the ticket whose `closes:` names it. Each Record's `### Left standing` says what the build did not settle - departures from a nudge among them. `REVIEW.md` says what the final review left. Read them as you walk.
 
 Where a Record names a test for an AC you could not find in the product, say so plainly: green tests over absent behaviour is the gap this stage exists to catch.
 

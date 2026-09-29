@@ -5,7 +5,8 @@ One file per slice, in the change's own `tickets/` directory - `changes/YYYY-MM-
 ```markdown
 ---
 criteria:  CRITERIA.md           # resolved next to the tickets/ directory, not from the cwd
-satisfies: AC-1, AC-4            # the ACs this slice covers
+closes:    AC-1                  # the ACs true once this slice is built
+advances:  AC-4                  # the ACs this slice builds part of, closed by a later one
 after:     02-<slug>, 05-<slug>  # dependencies, comma-separated, or empty
 status:    ready                 # ready | doing | done | halted
 attempts:  0                     # runner-owned
@@ -15,11 +16,16 @@ attempts:  0                     # runner-owned
 <What this slice is, in a sentence or two. The change, not the method.>
 
 ## Done when
-<The ACs named in `satisfies`, quoted verbatim from `CRITERIA.md`:
+<The ACs named in `closes`, quoted verbatim from `CRITERIA.md`:
 
 > **AC-1** <exactly as `CRITERIA.md` writes it>
 
-Copied, never summarised. A ticket carrying its own words cannot be redefined by an edit upstream, and the builder never opens `CRITERIA.md` to find out what was meant. A paraphrase is a criterion quietly changed, in a file that claims to be quoting one.>
+Copied, never summarised. A ticket carrying its own words cannot be redefined by an edit upstream, and the builder never opens `CRITERIA.md` to find out what was meant. A paraphrase is a criterion quietly changed, in a file that claims to be quoting one.
+
+Then, for each AC under `## Toward`, the part of it this slice makes true, in plain words and not quoted: "CSV export works, without filters". Observable like an AC, and narrower than the one it serves - never beside it or beyond it.>
+
+## Toward
+<The ACs named in `advances`, quoted verbatim the same way, so the builder sees the whole of what its part is for. Omit the section when `advances` is empty.>
 
 ## Nudges
 <The nudges this slice bears on, quoted verbatim from `CRITERIA.md`, one quote each with a blank line between:
@@ -40,7 +46,7 @@ Written before the build, by whoever cut the slice, against the code as it actua
 <The boundary against the neighbouring tickets, and where the excluded thing lives instead, and the lines of `CRITERIA.md`'s `Out of scope` a builder here would otherwise wander into.>
 
 ## Record
-<Written by the build: which test names which AC, and the command that ran the checks. The only evidence that an AC was covered rather than claimed.
+<Written by the build: the test that proves each AC this slice closes, the test that proves its part of each AC it advances, and the command that ran the checks. The only evidence that an AC was covered rather than claimed.
 
 ### Left standing
 Review findings not fixed and why, checks not run, departures from the plan, and departures from a nudge with the reason. Printed at the end of the run and read at acceptance.>
@@ -51,7 +57,9 @@ Review findings not fixed and why, checks not run, departures from the plan, and
 
 ## What the frontmatter is for
 
-**`satisfies` and the quotation have to agree.** An AC claimed and not quoted is one the builder never sees; an AC quoted and not claimed is work no coverage check knows about.
+**`closes` and `advances` have to agree with the quotation.** An AC claimed and not quoted is one the builder never sees; an AC quoted and not claimed is work no coverage check knows about. The runner checks both.
+
+**Every AC is closed by exactly one ticket, and that ticket comes after every one that advances it**, directly or by way of others. The closing ticket writes the AC's test, and one built before the parts it rests on writes a test nothing can pass yet. The runner checks this too.
 
 **`doing` belongs to the runner; a session ends it.** A session writes `done` when it has committed its build, or `halted` when it has stopped. The runner sends back a `done` with no commit behind it.
 

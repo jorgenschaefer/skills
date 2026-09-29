@@ -80,8 +80,10 @@ start on the main branch or on a dirty tree - the ticket files aside, which are 
 bookkeeping - and before the first build it has a session name the project's checks and
 runs them itself - a run that starts red does not start, and every build is told the
 checks were green. It checks before every pass that the tickets still quote `CRITERIA.md`'s
-acceptance criteria and nudges word for word and that every criterion is quoted by some
-ticket, enforces the attempt budget from a counter in the ticket file, and waits out a
+acceptance criteria and nudges word for word, that each ticket's `closes:` and `advances:`
+name exactly the criteria it quotes, and that every criterion is closed by exactly one ticket,
+built after every ticket that advances it - a criterion can take several slices, but one of
+them finishes it and writes its test. It enforces the attempt budget from a counter in the ticket file, and waits out a
 usage limit rather than spending the budget on it. A session that ends its turn with its
 work uncommitted is resumed once rather than started over, and what an abandoned attempt
 leaves behind goes to the stash, so the next one starts on the tree the checks were

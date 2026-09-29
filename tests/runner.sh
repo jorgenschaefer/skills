@@ -85,7 +85,8 @@ ticket() {  # slug, id, text, after, nudge
   cat > "$WORK/changes/x/tickets/$1.md" <<EOF
 ---
 criteria:  CRITERIA.md
-satisfies: $2
+closes:    $2
+advances:
 after:     $4
 status:    ready
 attempts:  0
@@ -102,6 +103,38 @@ x
 ${5:+
 > $5
 }
+## Context
+x
+
+## Not here
+x
+EOF
+}
+
+# A ticket that builds part of a criterion another ticket closes.
+advancer() {  # slug, id, text, after
+  cat > "$WORK/changes/x/tickets/$1.md" <<EOF
+---
+criteria:  CRITERIA.md
+closes:
+advances:  $2
+after:     $4
+status:    ready
+attempts:  0
+---
+
+## Build
+x
+
+## Done when
+part of it happens.
+
+## Toward
+
+> **$2** $3
+
+## Nudges
+
 ## Context
 x
 
@@ -198,6 +231,11 @@ else bad "the command the session named is what the runner runs" "rc=$rc $(out)"
 if grep -q 'touch .verified' <(head -1 "$STUB_CALLS"); then
   ok "the build is told the command, and that it was green"
 else bad "the build is told the command, and that it was green" "$(calls)"; fi
+# A criterion is proven once, by the ticket that closes it, and where its user
+# acts; a ticket that only advances one proves its own narrower part.
+if grep -q 'closes:.*where its user acts.*## Toward' <(head -1 "$STUB_CALLS"); then
+  ok "the build is told how a closed criterion and an advanced one are proven"
+else bad "the build is told how a closed criterion and an advanced one are proven" "$(calls)"; fi
 
 # Someone's notes in the ticket directory are not a ticket.
 workspace
@@ -239,7 +277,7 @@ if grep -q 'drift' <(tkt 1-one) && [ "$(field 1-one status)" = halted ]; then
   ok "drift is written into the ticket: a criterion no ticket quotes"
 else bad "drift is written into the ticket: a criterion no ticket quotes" "$(tkt 1-one)"; fi
 # Reported once, not once per ticket in the directory.
-if [ "$(grep -c 'AC-3 is quoted by no ticket' "$WORK/.out")" = 1 ]; then
+if [ "$(grep -c 'AC-3 is closed by no ticket' "$WORK/.out")" = 1 ]; then
   ok "an uncovered criterion is reported once, not once per ticket"
 else bad "an uncovered criterion is reported once, not once per ticket" "$(out)"; fi
 
@@ -299,6 +337,67 @@ rc="$(run)"
 if [ "$rc" = 0 ] && ! grep -q 'drift' "$WORK/.out"; then
   ok "a nudge no ticket quotes is no drift"
 else bad "a nudge no ticket quotes is no drift" "rc=$rc $(out)"; fi
+
+# --- which ticket closes which criterion
+#
+# A criterion can take several tickets to build. Exactly one closes it - the
+# one after which it is true, and which writes its test - and it comes after
+# every ticket that advances it, or the test it writes is red for want of work
+# still waiting to run.
+
+workspace
+sed -i 's/^closes: .*/closes:/; s/^advances:.*/advances:  AC-2/' "$WORK/changes/x/tickets/2-two.md"; commit
+plan build
+rc="$(run)"
+if [ "$rc" != 0 ] && grep -q 'AC-2 is closed by no ticket' "$WORK/.out" && [ ! -s "$STUB_CALLS" ]; then
+  ok "a criterion only advanced, and closed by no ticket, stops the run"
+else bad "a criterion only advanced, and closed by no ticket, stops the run" "rc=$rc $(out)"; fi
+
+workspace
+ticket 3-three AC-2 "the second thing happens." "1-one"; commit
+plan build
+rc="$(run)"
+if [ "$rc" != 0 ] && grep -q 'AC-2 is closed by more than one ticket: 2-two 3-three' "$WORK/.out" \
+   && [ ! -s "$STUB_CALLS" ]; then
+  ok "a criterion closed by two tickets stops the run, naming both"
+else bad "a criterion closed by two tickets stops the run, naming both" "rc=$rc $(out)"; fi
+
+workspace
+advancer 3-three AC-2 "the second thing happens." ""; commit
+plan build
+rc="$(run)"
+if [ "$rc" != 0 ] && grep -q '2-two.md: closes AC-2 and does not come after 3-three, which advances it' "$WORK/.out" \
+   && [ "$(field 2-two status)" = halted ] && [ ! -s "$STUB_CALLS" ]; then
+  ok "a ticket closing a criterion before one that advances it stops the run"
+else bad "a ticket closing a criterion before one that advances it stops the run" "rc=$rc $(out)"; fi
+
+# After it by way of another ticket is after it.
+workspace
+advancer 3-three AC-2 "the second thing happens." ""
+sed -i 's/^after: .*/after:     3-three/' "$WORK/changes/x/tickets/1-one.md"; commit
+plan build build build review
+rc="$(run)"
+if [ "$rc" = 0 ] && ! grep -q 'drift' "$WORK/.out"; then
+  ok "a closing ticket after an advancing one by way of a third runs"
+else bad "a closing ticket after an advancing one by way of a third runs" "rc=$rc $(out)"; fi
+
+# The frontmatter is what coverage is counted from and the quote is what the
+# builder reads, so the two have to name the same criteria.
+workspace
+sed -i 's/^advances:.*/advances:  AC-2/' "$WORK/changes/x/tickets/1-one.md"; commit
+plan build
+rc="$(run)"
+if [ "$rc" != 0 ] && grep -q '1-one.md: claims AC-2 and does not quote it' "$WORK/.out" && [ ! -s "$STUB_CALLS" ]; then
+  ok "a ticket claiming a criterion it does not quote stops the run"
+else bad "a ticket claiming a criterion it does not quote stops the run" "rc=$rc $(out)"; fi
+
+workspace
+sed -i 's/^## Nudges$/> **AC-2** the second thing happens.\n\n## Nudges/' "$WORK/changes/x/tickets/1-one.md"; commit
+plan build
+rc="$(run)"
+if [ "$rc" != 0 ] && grep -q '1-one.md: quotes AC-2 and neither closes nor advances it' "$WORK/.out" && [ ! -s "$STUB_CALLS" ]; then
+  ok "a ticket quoting a criterion it does not claim stops the run"
+else bad "a ticket quoting a criterion it does not claim stops the run" "rc=$rc $(out)"; fi
 
 workspace
 rm "$WORK/changes/x/CRITERIA.md"; commit

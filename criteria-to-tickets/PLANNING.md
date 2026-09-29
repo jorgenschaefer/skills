@@ -20,6 +20,10 @@ Each step says:
 - **Which files**, by path. New files are marked as new.
 - **What proves it** - the test that will pin it, or the command that will show it working. Every step has one. A step nothing can prove is a step whose result nobody can check, and it is where the build quietly diverges. A criterion about what a user sees or is refused is proven where the user acts - the action, the route, the form - not at a function behind it: whatever sits between the two can decide the outcome first, and the test stays green on a refusal no user ever meets.
 
+## The first step
+
+**In a ticket that closes an AC, the first step is the AC's test**, written where the user acts and red, because the slices that advance it are already built and this one finishes it. In a ticket that only advances one, it is the test of the narrower part its `Done when` states - never the whole AC's, which cannot pass yet.
+
 ## The boundary
 
 **Say what this slice does not do**, and where the excluded thing lives instead. This becomes the ticket's `## Not here`, and it is what stops two slices building the same code twice.

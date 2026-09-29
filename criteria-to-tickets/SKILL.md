@@ -20,15 +20,15 @@ This skill's `TICKET_FORMAT.md` settles the shape of a ticket, its `PLANNING.md`
 
 **Vertical.** Buildable and testable on its own, end to end. "The database part" is not a slice; it cannot be verified without the thing above it, and it leaves the tree in a state no criterion describes. When small and vertical conflict, vertical wins.
 
-**A size one session can build.** Among vertical cuts, this is the main constraint: every turn of a build re-reads its whole context, so a long session costs more with every turn. A slice that would clearly run long - many plan steps, many files - is split along a real seam.
+**A size one session can build.** Among vertical cuts, this is the main constraint: every turn of a build re-reads its whole context, so a long session costs more with every turn. A slice that would clearly run long - many plan steps, many files - is split along a real seam, even where that seam runs through an AC.
 
 **`Out of scope` is yours to place.** Each line belongs in the `## Not here` of whichever ticket a builder would otherwise wander into - that is how it reaches the person who needs it, since no builder opens `CRITERIA.md`.
 
 **Ordered by need, not by size.** `after:` is what carries the order. Put a slice after another only when it genuinely cannot be built first; a false dependency serialises a run for no reason.
 
-**An AC covered by two slices is two ACs.** When you find yourself quoting half an AC into one ticket and half into another, stop: `CRITERIA.md` is describing two pieces of work in one sentence. Put it to the user and get it split there.
+**Exactly one ticket closes each AC.** It is the slice after which the AC is true, and it writes the AC's test where the user acts. An AC too big for one slice is also advanced by others, each building a narrower part it can prove on its own; the closing ticket comes `after:` every one of them. The size of the work is never a reason to split an AC - that puts your seams into what the user approved. An AC that turns out to describe two behaviours is: put it to the user and get it split in `CRITERIA.md`.
 
-**Every AC lands in some ticket, and every ticket claims some AC.** A nudge goes into every ticket it bears on.
+**Every AC is closed by some ticket, and every ticket closes or advances some AC.** A nudge goes into every ticket it bears on.
 
 Where a slice introduces a concept the codebase has no name for, or moves a boundary between the ones it does, this skill's `CODING_STANDARDS.md` binds the names the ticket will write.
 
