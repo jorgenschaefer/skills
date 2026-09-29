@@ -25,6 +25,8 @@ Build it to the standard, in the order the standard says the work happens. Then 
 
 **Keep your own context for the build.** Side work whose result is a conclusion - surveying code you do not know, a manual check in the running app, chasing a failure you cannot yet explain - goes to a subagent with the question, and only the answer comes back - a large context is paid for on every turn, and again on every resume. The red-green cycles stay here.
 
+**Visual checks always go to a subagent**, whoever started the build. Screenshots and browser checks run there, and it reports back in text: what it did, what it saw, pass or fail. An image in your own context is read again on every later turn. Have it judge what it sees against what was asked for and against this skill's `CODING_STANDARDS.md`, on every screen the change touches, at the narrowest and widest supported size, with the feedback after each action - a UX miss caught now is cheap to fix.
+
 ## Review it in a session that did not write it
 
 **Spawn `critique` as a subagent with a fresh context.** Hand it the diff, the result of the checks, and what was asked for - the criteria and what is out of scope, as the request states them. Do not hand it the reasoning that produced the code: not the plan, and not how you tested it.

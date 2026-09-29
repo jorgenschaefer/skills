@@ -5,7 +5,8 @@
 # Each invocation consumes one line of $STUB_PLAN and does to the ticket what
 # that session would have done:
 #
-#   build        set status: done, and commit it with the code
+#   build        set status: done, write a Record that leaves something standing,
+#                and commit it with the code
 #   build-dirty  build, and leave an untracked file behind besides
 #   build-killed build, then kill the runner with -9 before it can check the build
 #   claim-only   set status: done having committed nothing
@@ -28,8 +29,9 @@
 #                window, but it goes on to finish - then `build`
 #   killed       write code, then kill the runner with -9 - it gets no chance to
 #                tidy up, as with a power cut or a closed laptop
-#   walk         the acceptance call - end in a successful result, as the CLI does
-#   walk-dies    the acceptance call, dying with no result at all
+#   review       the final review - write and commit the REVIEW.md its prompt
+#                names, and end in a successful result, as the CLI does
+#   review-dies  the final review, dying with no REVIEW.md and no result
 #   orphaned     write code, kill the runner with -9, and keep running a while -
 #                a session outliving the runner that launched it
 #
@@ -39,9 +41,14 @@
 #
 # Every call's arguments go to $STUB_ARGS, the verification call's included.
 #
+# Every other call reads context the way the CLI reports it, for the token log:
+# 111 in its own context, on one message written twice as the CLI repeats a
+# message once per content block, and 1000 in a subagent's.
+#
 # Every call's session is written to $STUB_SESSIONS as `start <id> <ticket>` or
-# `resume <id>`. A resumed call names no ticket in its prompt - the real session
-# remembers what it was doing - so the stub looks the ticket up by the id.
+# `resume <id>` - the final review's start naming its REVIEW.md where a build's
+# names its ticket. A resumed call names neither in its prompt - the real session
+# remembers what it was doing - so the stub looks it up by the id.
 #
 # There is one role now where there were two. The runner used to launch a second
 # session to review what the first built; `/implement` spawns that reviewer
@@ -65,14 +72,16 @@ fi
 
 prompt="${*: -1}"
 ticket="$(printf '%s' "$prompt" | grep -o '[^ ]*tickets/[^ ]*\.md' | head -1)"
+review="$(printf '%s' "$prompt" | grep -o '[^ `]*REVIEW\.md' | head -1)"
 
 args=("$@")
 for i in "${!args[@]}"; do
   case "${args[$i]}" in
-    --session-id) printf 'start %s %s\n' "${args[$((i + 1))]}" "$ticket" >> "$STUB_SESSIONS" ;;
+    --session-id) printf 'start %s %s\n' "${args[$((i + 1))]}" "${ticket:-$review}" >> "$STUB_SESSIONS" ;;
     --resume)     id="${args[$((i + 1))]}"
                   printf 'resume %s\n' "$id" >> "$STUB_SESSIONS"
-                  ticket="$(awk -v id="$id" '$1 == "start" && $2 == id { print $3 }' "$STUB_SESSIONS")" ;;
+                  ticket="$(awk -v id="$id" '$1 == "start" && $2 == id { print $3 }' "$STUB_SESSIONS")"
+                  case "$ticket" in *REVIEW.md) review="$ticket"; ticket="" ;; esac ;;
   esac
 done
 
@@ -85,6 +94,10 @@ printf '\n' >> "$STUB_CALLS"
 line="$(sed -n "${n}p" "$STUB_PLAN")"
 [ -n "$line" ] || { echo "stub: no plan line $n for: $prompt" >&2; exit 99; }
 
+echo '{"type":"assistant","message":{"id":"msg_main","content":[],"usage":{"input_tokens":1,"cache_read_input_tokens":10,"cache_creation_input_tokens":100,"output_tokens":5}},"parent_tool_use_id":null}'
+echo '{"type":"assistant","message":{"id":"msg_main","content":[],"usage":{"input_tokens":1,"cache_read_input_tokens":10,"cache_creation_input_tokens":100,"output_tokens":5}},"parent_tool_use_id":null}'
+echo '{"type":"assistant","message":{"id":"msg_sub","content":[],"usage":{"input_tokens":1000,"cache_read_input_tokens":0,"cache_creation_input_tokens":0,"output_tokens":5}},"parent_tool_use_id":"toolu_sub"}'
+
 # Resetting $STUB_RESET_IN seconds from now, 0 unless a test says otherwise.
 rejected_event() {
   printf '{"type":"rate_limit_event","rate_limit_info":{"status":"rejected","resetsAt":%s,"rateLimitType":"five_hour"}}\n' \
@@ -94,11 +107,14 @@ rejected_event() {
 set_status() { sed -i "2,/^---$/s/^status: .*/status:    $1/" "$ticket"; }
 
 case "$line" in
-  walk|walk-dies)
-    # The acceptance call names no ticket, which is how the stub tells it apart.
-    [ -n "$ticket" ] && { echo "stub: expected the walk, got a ticket: $prompt" >&2; exit 97; }
-    [ "$line" = walk ] || exit 1
-    echo '{"type":"result","subtype":"success","is_error":false,"result":"the walk ran"}'
+  review|review-dies)
+    # The final review names no ticket, which is how the stub tells it apart.
+    [ -n "$ticket" ] && { echo "stub: expected the review, got a ticket: $prompt" >&2; exit 97; }
+    [ "$line" = review ] || exit 1
+    printf 'the review left: a seam\n' > "$review"
+    git add "$review" >/dev/null 2>&1
+    git commit -qm "review" >/dev/null 2>&1
+    echo '{"type":"result","subtype":"success","is_error":false,"result":"reviewed"}'
     ;;
   build|limit-passed|build-limit|build-dirty|build-killed)
     if [ "$line" = limit-passed ]; then
@@ -106,7 +122,7 @@ case "$line" in
       rejected_event
       echo '{"type":"result","subtype":"success","is_error":false,"result":"built"}'
     fi
-    printf 'built\n' >> "$ticket"
+    printf '\n## Record\n\n### Left standing\n\n- left by %s\n' "$(basename "$ticket")" >> "$ticket"
     set_status "done"
     git add -A >/dev/null 2>&1
     git commit -qm "build $(basename "$ticket")" >/dev/null 2>&1

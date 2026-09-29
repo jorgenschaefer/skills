@@ -1,16 +1,16 @@
 # ADR format
 
-The shape of an architecture decision record: one choice, the alternatives that were live when it was made, and what it costs. `CODING_STANDARDS.md` says which decisions earn one and that the decision goes to a person first; `/plan-solution` writes the ratified record at plan exit, while the argument for it is still in context. `/critique` reads them, and so does anyone planning the next change.
+The shape of an architecture decision record: one choice, the alternatives that were live when it was made, and what it costs. `CODING_STANDARDS.md` says which decisions earn one and that the decision goes to a person first; `/find-criteria` and `/criteria-to-tickets` write the ratified record on their yes, while the argument for it is still in context. `/critique` reads them, and so does anyone planning the next change.
 
-An ADR is permanent-tier. It outlives the feature that produced it and the spec that carried it, so it is never written autonomously - the decision and a recommendation are put to the user, and the ADR exists only once they say yes to it. What does not clear that bar is an implementation decision and belongs in the spec, where it is deleted with the rest of the paper on acceptance.
+An ADR is permanent-tier. It outlives the feature that produced it and the criteria that carried it, so it is never written autonomously - the decision and a recommendation are put to the user, and the ADR exists only once they say yes to it. What does not clear that bar is an implementation decision and belongs in `CRITERIA.md` or a ticket, where it is deleted with the rest of the change's paper on acceptance.
 
 ## Where they live
 
-`docs/adr/NNNN-kebab-title.md`, numbered from `0001` in the order they were accepted. A project that already keeps ADRs somewhere else keeps them there - follow what is in the repository rather than moving it.
+`docs/adr/NNNN-kebab-title.md`, numbered from `0001` in the order they were accepted. Never in the change's own directory: that is deleted on acceptance, and an ADR outlives the change that produced it.
 
-Numbers are never reused: an ADR is cited by number and path - from other ADRs, from a spec's `## ADRs`, and from comments in the code it explains - and a reused number points those citations at a decision they were not written about.
+Numbers are never reused: an ADR is cited by number and path - from other ADRs and from comments in the code it explains - and a reused number points those citations at a decision they were not written about.
 
-A decision that changes is rewritten in place to say what holds now, and the decision it replaces moves into `## Alternatives` with why it lost this time. A decision that no longer applies at all is deleted, and its number goes with it. Either way, find every citation of it - its number and its filename, in the code, the other ADRs and the specs - and fix them in the same change. The file says what holds; git says what used to.
+A decision that changes is rewritten in place to say what holds now, and the decision it replaces moves into `## Alternatives` with why it lost this time. A decision that no longer applies at all is deleted, and its number goes with it. Either way, find every citation of it - its number and its filename, in the code and the other ADRs - and fix them in the same change. The file says what holds; git says what used to.
 
 ## The record
 

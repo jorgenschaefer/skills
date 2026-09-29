@@ -8,6 +8,8 @@ What goes in a ticket's `## Plan`. One slice at a time, worked out against the c
 
 **Find what already does this, or half of it.** The plan should reuse what is there. A step that writes something the project already has is a step that adds a second way to do it.
 
+**Follow the nudges the ticket quotes.** They are how the user agreed it gets built. Where the code makes one wrong, that is a question for the approval, not a plan that quietly departs from it.
+
 ## The plan is steps, in order
 
 Each step is small enough to be wrong on its own - if a step fails, it should be obvious which one and what it was trying to do. A plan of three steps that each take a day is not a plan, it is a summary.

@@ -10,13 +10,13 @@
 # instruction that was supposed to bind it silently does not.
 #
 # Scoped to what an agent is actually told to do: every SKILL.md, the format
-# documents beside them, and README.md. The intents and the ticket records are
-# history and name retired things on purpose.
+# documents beside them, and README.md. A change's own paper - its CRITERIA.md
+# and tickets - is written for that one change and deleted with it.
 #
 # Sections are checked the other way round. Naming a section of a document was
 # only ever done to CODING_STANDARDS.md, and that is now the thing being
 # forbidden rather than resolved, so there is nothing left to resolve. A section
-# of some other document - an intent's `## Done when` - names a document the
+# of some other document - a ticket's `## Done when` - names a document the
 # skill writes or reads; which one it means is often nowhere stated, and
 # grepping for it would fire on every heading in the repository. Those are read
 # by a person.
@@ -72,7 +72,7 @@ while IFS= read -r doc; do
              | tr -d '`' | sed 's|^\./||' | sort -u)
 
   # And no section of the standard, named anywhere at all. A section of some
-  # other document - an intent's `## Done when`, a ticket's `## Record` - is a
+  # other document - a ticket's `## Done when` or its `## Record` - is a
   # skill specifying a document it writes or reads, which is its own business.
   # shellcheck disable=SC2016 # the backticks are Markdown's, matched literally
   while IFS= read -r tok; do

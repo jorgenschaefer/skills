@@ -2,7 +2,7 @@
 #
 # Drive a ticket directory to completion with nobody watching.
 #
-#   ./run.sh intents/<slug>/tickets
+#   ./run.sh changes/<slug>/tickets
 #
 # Everything here is something that has to hold when a session is dead or
 # misbehaving, which is why it is a script and not a skill. A session cannot
@@ -16,9 +16,11 @@
 # `done` unbuilt, and a run killed at any point is started again from whatever
 # the ticket files and the claim record say.
 #
-# There is no review pass here. `/implement` spawns its own reviewer in a
+# There is no review pass per ticket. `/implement` spawns its own reviewer in a
 # subagent that did not write the code, which is the property a second session
-# used to buy, and a second review of a reviewed commit reviews a review.
+# used to buy, and a second review of a reviewed commit reviews a review. What
+# no ticket's review can see - what lies between the tickets - gets one review
+# of the whole change at the end.
 
 set -uo pipefail
 
@@ -34,7 +36,7 @@ say() { printf '%s %s\n' "$(date +%H:%M:%S)" "$*"; }
 
 # --- refusals, before anything is launched
 
-[ -n "$TICKETS" ] || die "usage: run.sh intents/<slug>/tickets"
+[ -n "$TICKETS" ] || die "usage: run.sh changes/<slug>/tickets"
 [ -d "$TICKETS" ] || die "no ticket directory: $TICKETS"
 git rev-parse --is-inside-work-tree >/dev/null 2>&1 || die "not a git repository"
 # The branch refusal just above passes by accident in a repository with no
@@ -65,9 +67,9 @@ flock -n 9 || die "another run, or a session one started, is still working this 
 shopt -s nullglob
 files=()
 for f in "$TICKETS"/*.md; do
-  # A ticket is a file with a solution behind it. Anything else in the directory
+  # A ticket is a file with criteria behind it. Anything else in the directory
   # is someone's notes, and reading it as a ticket fails every pass.
-  grep -q '^solution:' "$f" && files+=("$f") || printf 'ignoring %s: not a ticket\n' "$f" >&2
+  grep -q '^criteria:' "$f" && files+=("$f") || printf 'ignoring %s: not a ticket\n' "$f" >&2
 done
 [ "${#files[@]}" -gt 0 ] || die "no tickets in $TICKETS"
 
@@ -82,7 +84,7 @@ LOG_DIR="${LOG_DIR:-$(git rev-parse --absolute-git-dir)/run-logs}"
 mkdir -p "$LOG_DIR"
 
 # Which session a claim was given, and where HEAD stood, for a runner started
-# again after being killed. Named for the ticket's whole path: every intent has
+# again after being killed. Named for the ticket's whole path: every change has
 # a 1-one.md, and one's record resumed another's session. It stays until the
 # runner has settled the ticket, not only until the session returns: a `done`
 # the runner was killed before checking is a claim to check, not a result.
@@ -126,43 +128,55 @@ case "$(claimed | wc -l)" in
   *) die "more than one ticket is claimed, which one runner cannot leave behind - put back all but one:"$'\n'"$(claimed)" ;;
 esac
 
-# The criteria a ticket quotes, and the criteria its solution carries, in the
+# The criteria a ticket quotes, and the criteria CRITERIA.md carries, in the
 # one shape both can be compared in.
 quoted()   { grep -o '^> \*\*AC-[0-9]\+\*\*' "$1" | grep -o 'AC-[0-9]\+' | sort -u; }
 declared() { grep -o '^- \*\*AC-[0-9]\+\*\*' "$1" | grep -o 'AC-[0-9]\+' | sort -u; }
-text_of()  { # file, id -> the criterion as written, tag and marker stripped
+text_of()  { # file, id -> the criterion as written, marker stripped
   awk -v id="$2" '
     index($0, "- **" id "**") == 1 || index($0, "> **" id "**") == 1 { found = 1; print; next }
     found && (/^[->] \*\*AC-/ || /^#/ || /^$/) { exit }
     found { print }
-  ' "$1" | sed 's/^[[:space:]]*[->][[:space:]]*//' | tr '\n' ' ' | sed 's/  */ /g; s/ *$//' \
-         | sed 's/ *\*([^*]*)\*$//'
+  ' "$1" | sed 's/^[[:space:]]*[->][[:space:]]*//' | tr '\n' ' ' | sed 's/  */ /g; s/ *$//'
+}
+# A nudge has no id, so it is found by its words: one per line, whitespace
+# flattened, as a `- ` item in CRITERIA.md and as a `> ` quote in a ticket.
+nudges_of() {  # file, the marker its nudges start with
+  awk -v m="$2" '
+    function flush() { if (item != "") print item; item = "" }
+    /^#/ { flush(); in_nudges = ($0 == "## Nudges"); next }
+    !in_nudges { next }
+    /^[[:space:]]*$/ { flush(); next }
+    index($0, m) == 1 { if (m == "-") flush(); sub(/^[->][[:space:]]*/, "") }
+    { gsub(/[[:space:]]+/, " "); sub(/^ /, ""); sub(/ $/, ""); item = item (item == "" ? "" : " ") $0 }
+    END { flush() }
+  ' "$1"
 }
 
 # --- the drift pre-flight
 #
-# Before each pass, in both directions. A session never reads the solution and a
+# Before each pass, in both directions. A session never reads CRITERIA.md and a
 # committed ticket is revisited by nobody but a re-slice, so this is the only place the two can
 # be found to disagree - and the report has to say which way, because an edit
 # upstream and a slicing that lost something need different answers.
 
 preflight() {
-  local t solution id dep problems="" culprit="" solutions=()
+  local t criteria id dep nudge problems="" culprit="" all_criteria=()
   for t in "${files[@]}"; do
     # Resolved beside the tickets/ directory, not from the working directory:
-    # the frontmatter says `02-SOLUTION.md` and means the one this slicing came
+    # the frontmatter says `CRITERIA.md` and means the one this slicing came
     # from, whatever the runner was invoked from.
-    solution="$(dirname "$TICKETS")/$(field "$t" solution)"
-    if [ ! -f "$solution" ]; then
-      problems+="$(basename "$t"): names $solution, which is not there"$'\n'
+    criteria="$(dirname "$TICKETS")/$(field "$t" criteria)"
+    if [ ! -f "$criteria" ]; then
+      problems+="$(basename "$t"): names $criteria, which is not there"$'\n'
       [ -n "$culprit" ] || culprit="$t"
       continue
     fi
-    [[ " ${solutions[*]-} " == *" $solution "* ]] || solutions+=("$solution")
+    [[ " ${all_criteria[*]-} " == *" $criteria "* ]] || all_criteria+=("$criteria")
     # A deleted ticket leaves the ones after it waiting on something that will
     # never be done, and the loop would only say so once it had run out of work.
     for dep in $(field "$t" after | tr ',' ' '); do
-      if ! grep -qs '^solution:' "$TICKETS/$dep.md"; then
+      if ! grep -qs '^criteria:' "$TICKETS/$dep.md"; then
         problems+="$(basename "$t"): after: names $dep, which is not a ticket"$'\n'
         [ -n "$culprit" ] || culprit="$t"
       fi
@@ -170,28 +184,34 @@ preflight() {
     for id in $(quoted "$t"); do
       # A criterion deleted upstream and one reworded need the same re-slice,
       # but the person reading the halt should not have to diff to tell which.
-      if [ -z "$(text_of "$solution" "$id")" ]; then
-        problems+="$(basename "$t"): $id is gone from $solution"$'\n'
+      if [ -z "$(text_of "$criteria" "$id")" ]; then
+        problems+="$(basename "$t"): $id is gone from $criteria"$'\n'
         [ -n "$culprit" ] || culprit="$t"
-      elif [ "$(text_of "$t" "$id")" != "$(text_of "$solution" "$id")" ]; then
-        problems+="$(basename "$t"): $id no longer matches $solution"$'\n'
+      elif [ "$(text_of "$t" "$id")" != "$(text_of "$criteria" "$id")" ]; then
+        problems+="$(basename "$t"): $id no longer matches $criteria"$'\n'
         [ -n "$culprit" ] || culprit="$t"
       fi
     done
+    while IFS= read -r nudge; do
+      if ! nudges_of "$criteria" - | grep -qxF -- "$nudge"; then
+        problems+="$(basename "$t"): a nudge it quotes is not in $criteria word for word: $nudge"$'\n'
+        [ -n "$culprit" ] || culprit="$t"
+      fi
+    done < <(nudges_of "$t" '>')
   done
-  # Once per solution, not once per ticket: this direction asks something of the
-  # directory as a whole, and asking it inside the loop above reported a lost
-  # criterion once for every ticket that had not lost it.
-  for solution in ${solutions[@]+"${solutions[@]}"}; do
-    for id in $(declared "$solution"); do
+  # Once per CRITERIA.md, not once per ticket: this direction asks something of
+  # the directory as a whole, and asking it inside the loop above reported a
+  # lost criterion once for every ticket that had not lost it.
+  for criteria in ${all_criteria[@]+"${all_criteria[@]}"}; do
+    for id in $(declared "$criteria"); do
       if ! grep -q "^> \*\*$id\*\*" "${files[@]}"; then
-        problems+="$solution: $id is quoted by no ticket"$'\n'
+        problems+="$criteria: $id is quoted by no ticket"$'\n'
         [ -n "$culprit" ] || culprit="${files[0]}"
       fi
     done
   done
   if [ -n "$problems" ]; then
-    printf 'drift - the tickets and the solution disagree:\n%s' "$problems" >&2
+    printf 'drift - the tickets and CRITERIA.md disagree:\n%s' "$problems" >&2
     # The stop is named in the ticket, not only on someone's terminal - nobody is
     # watching the terminal, which is the whole premise. The first offender
     # carries it, because that is where a person will look; where the offence
@@ -201,7 +221,7 @@ preflight() {
     # the ticket off the text meant two of the three messages named no ticket
     # the `-f` guard could find, and both fell through it silently.
     [ -n "$culprit" ] && halt "$culprit" drift \
-      "the solution and this ticket no longer agree - re-slice the unbuilt tickets through plan mode"
+      "CRITERIA.md and this ticket no longer agree - re-slice the unbuilt tickets with /criteria-to-tickets"
     return 1
   fi
 }
@@ -249,6 +269,7 @@ claude_through_limits() {  # log name, prompt, --session-id or --resume, session
     LOG="$LOG_DIR/$name-$(date +%Y%m%d-%H%M%S)$([ "$waits" = 0 ] || printf -- '-resumed-%s' "$waits").jsonl"
     say "full log in $LOG"
     claude_run "$LOG" "$how" "$id" "$prompt" "$@"; rc=$?
+    printf '%s %s\n' "$name" "$(context_read "$LOG")" >> "$TOKENS"
     reset="$(limit_reset "$LOG")"
     [ -n "$reset" ] || return "$rc"
     waits=$((waits + 1))
@@ -259,6 +280,35 @@ claude_through_limits() {  # log name, prompt, --session-id or --resume, session
     sleep_until "$until"
     how=--resume
     prompt="You were stopped by a usage limit, which has now reset. Carry on with the task from where you stopped; redo any step the limit cut short, a subagent included."
+  done
+}
+
+# --- the token log
+#
+# What each ticket cost, to find out where a slice gets too big to build. It is
+# counted in context read, because a session re-reads its whole context on every
+# turn, and a long session pays for its size again each time. Subagents are
+# counted apart: a review is one. One line per session round, `name main
+# subagents`, in a file per change that outlives a run started again.
+TOKENS="$LOG_DIR/$(realpath --relative-to="$(git rev-parse --show-toplevel)" "$(dirname "$TICKETS")" | tr / _).tokens"
+
+# The CLI writes a message once per content block, each copy carrying the whole
+# message's usage, so a message is counted once by its id.
+context_read() {  # log -> "main subagents"
+  jq -R -s -r '[split("\n")[] | fromjson? | select(.type == "assistant" and .message.usage != null)]
+    | unique_by(.message.id)
+    | map({sub: (.parent_tool_use_id != null),
+           n: (.message.usage | (.input_tokens // 0) + (.cache_read_input_tokens // 0) + (.cache_creation_input_tokens // 0))})
+    | "\(map(select(.sub | not) | .n) | add // 0) \(map(select(.sub) | .n) | add // 0)"' "$1"
+}
+
+token_summary() {
+  local t name
+  [ -f "$TOKENS" ] || return 0
+  printf '\ncontext read, per ticket:\n'
+  for name in $(for t in "${files[@]}"; do basename "$t" .md; done) review; do
+    awk -v n="$name" '$1 == n { m += $2; s += $3; seen = 1 }
+      END { if (seen) printf "  %-30s main %12d  subagents %12d  total %12d\n", n, m, s, m + s }' "$TOKENS"
   done
 }
 
@@ -361,11 +411,11 @@ The project's checks are \`$VERIFY\`, and they passed when this run started. A c
 
 Nothing wakes you once your turn ends: the run moves on, and whatever you left running in the background is killed. Wait for background work with Monitor, or run the checks in the foreground.
 
-That file is the whole brief. Its \`## Done when\` is the definition of done - not the diff, not what you would have built, not what the solution probably meant. Its \`## Not here\` names what a neighbouring ticket owns, and building it is two tickets building the same code. Its \`## Plan\` is how it was decided this gets built; where you find the plan wrong, say so rather than following it off a cliff.
+That file is the whole brief. Its \`## Done when\` is the definition of done - not the diff, not what you would have built, not what CRITERIA.md probably meant. Its \`## Nudges\` are how it was agreed this gets built: follow them, and where you depart from one, say why. Its \`## Not here\` names what a neighbouring ticket owns, and building it is two tickets building the same code. Its \`## Plan\` is how it was decided this gets built; where you find the plan wrong, say so rather than following it off a cliff.
 
-Do not open the solution the frontmatter names. The ticket quotes what it needs, and going upstream is how a ticket quietly becomes a different one.
+Do not open the CRITERIA.md the frontmatter names. The ticket quotes what it needs, and going upstream is how a ticket quietly becomes a different one.
 
-When the criteria are green and the project's checks pass, write the ticket's \`## Record\` - which test names which criterion, the command you ran, and what you left standing: review findings you did not fix and why, checks you did not run, and where you departed from the plan. Nobody reads your closing message in an unattended run; the walk reads the Record. Set \`status: done\` in the frontmatter and commit the code and the ticket file together, in one commit.
+When the criteria are green and the project's checks pass, write the ticket's \`## Record\` - which test names which criterion, and the command you ran - and in it a \`### Left standing\`: review findings you did not fix and why, checks you did not run, where you departed from the plan, and where you departed from a nudge, with the reason. Nobody reads your closing message in an unattended run; Left standing is printed at the end of the run and read at acceptance. Set \`status: done\` in the frontmatter and commit the code and the ticket file together, in one commit.
 
 If you cannot proceed, append a \`## Halt\` section naming the kind and stop: \`blocked\` (a precondition the ticket assumed is not there), \`undecided\` (a decision the ticket's criteria do not settle and that is not yours to settle), or \`mystery\` (a failure you cannot explain, which is different from one you cannot fix). Then set \`status: halted\`.
 
@@ -404,7 +454,7 @@ verify() {
   local log
   claude_through_limits verify "Find this project's verification command: the one shell line, run from $(pwd), that runs everything a change here has to pass - tests, type check, lint. Where CI runs these, what CI runs is the authority. Do not run it and change nothing; answer with the command." --session-id "$(new_session_id)" \
     --json-schema '{"type":"object","properties":{"command":{"type":"string"}},"required":["command"]}'
-  [ $? = "$EX_LIMIT" ] && exit 1
+  [ $? = "$EX_LIMIT" ] && end_run 1
   VERIFY="$(jq -R -r 'fromjson? | select(.type == "result") | .structured_output.command // empty' "$LOG")"
   [ -n "$VERIFY" ] || die "the session found no verification command - see $LOG"
   log="$LOG_DIR/verify-$(date +%Y%m%d-%H%M%S).log"
@@ -414,7 +464,69 @@ verify() {
   say "the checks pass"
 }
 
-preflight || exit 2
+# --- the end of a run
+#
+# Nobody watches a run, so whatever needs a person is printed at the end of it,
+# however it ended. Acceptance is pointed to only when there is something to
+# accept.
+
+end_run() {  # exit status
+  local t left
+  if [ -n "$(unfinished)" ]; then
+    printf 'stopped with work left in %s:\n%s' "$TICKETS" "$(unfinished)" >&2
+  fi
+  for t in "${files[@]}"; do
+    left="$(sed -n '/^### Left standing$/,/^#/{/^#/d;p;}' "$t" | sed '/^[[:space:]]*$/d')"
+    [ -z "$left" ] || printf '\n%s left standing:\n%s\n' "$(basename "$t")" "$left"
+  done
+  [ ! -f "$REVIEW" ] || printf '\nthe final review left:\n%s\n' "$(cat "$REVIEW")"
+  token_summary
+  [ "$1" != 0 ] || printf '\nevery ticket in %s is done - walk it with /accept-criteria %s\n' \
+                          "$TICKETS" "$(dirname "$TICKETS")"
+  exit "$1"
+}
+
+unfinished() {  # the tickets not done, one line each, saying why
+  local t
+  for t in "${files[@]}"; do
+    case "$(field "$t" status)" in
+      done) ;;
+      halted) printf '%s: halted - %s\n' "$(basename "$t")" "$(sed -n '/^## Halt$/,$p' "$t" | sed -n '3p')" ;;
+      *)      printf '%s: %s, after: %s\n' "$(basename "$t")" "$(field "$t" status)" "$(field "$t" after)" ;;
+    esac
+  done
+}
+
+# --- the final review
+#
+# Each build was reviewed on its own, which cannot see what lies between them.
+# Over one ticket there is nothing between. REVIEW.md committed is how the
+# review is known to have finished, so a run started again once it has does not
+# review again - a re-slice deletes it, because it reviewed what is changing.
+
+REVIEW="$(dirname "$TICKETS")/REVIEW.md"
+
+review_brief() {  # -> the prompt the final review starts from
+  printf '%s' "Review the whole change this run built: \`git diff $(review_base)\`. The tickets in $(realpath "$TICKETS") built it, and each build was reviewed on its own - which cannot see what lies between them. Look for that: the same thing built twice, one concept under two names, seams between tickets that do not line up.
+
+The project's checks are \`$VERIFY\`, and they passed when this run started.
+
+Spawn \`critique\` as a subagent with a fresh context. Hand it the diff, the result of the checks, and $(realpath "$(dirname "$TICKETS")/$(field "${files[0]}" criteria)") as what was asked for - not the tickets' plans or Records, which are the reasoning behind the code. Evaluate what comes back, fix what is worth fixing test-first, run the checks and commit. Then review again the same way. Two rounds at most: stop when a review comes back clean or the second round is done.
+
+Nothing wakes you once your turn ends: the run moves on, and whatever you left running in the background is killed. Wait for background work with Monitor, or run the checks in the foreground.
+
+Then write what you left standing to $(realpath "$REVIEW") - findings you did not fix and why, checks you did not run - and commit it. Nobody reads your closing message in an unattended run: REVIEW.md is printed at its end, and the run counts the review as finished only once that file is committed."
+}
+
+# The change starts where its tickets were first added: every build since is
+# part of it, whatever the branch it came from is called.
+review_base() {
+  local added
+  added="$(git log --diff-filter=A --format=%H -- "$TICKETS" | tail -1)"
+  git rev-parse -q --verify "$added^" || git hash-object -t tree /dev/null
+}
+
+preflight || end_run 2
 
 # --- the loop
 
@@ -432,7 +544,7 @@ ready_ticket() {  # the first ticket whose dependencies are done
 }
 
 while :; do
-  preflight || exit 2
+  preflight || end_run 2
 
   # A ticket in flight at the top of the loop is one a killed runner left: every
   # pass below settles its ticket and releases the record. What the record says
@@ -461,7 +573,7 @@ while :; do
     attempts=$(( $(field "$ticket" attempts) + 1 ))
     if [ "$attempts" -gt "$MAX_ATTEMPTS" ]; then
       halt "$ticket" exhausted "$MAX_ATTEMPTS attempts spent without a build that stuck - read the build output and \`git stash list\`, which holds what each attempt left uncommitted, and decide whether to raise the budget or re-slice"
-      exit 1
+      end_run 1
     fi
     set_field "$ticket" attempts "$attempts"
     set_field "$ticket" status doing
@@ -495,14 +607,14 @@ while :; do
     fi
     echo "$(basename "$ticket") is at $(field "$ticket" status) - run again once the limit has lifted" >&2
     release "$ticket"
-    exit 1
+    end_run 1
   fi
 
   # Read off the ticket whatever the exit status: a session that crashed after
   # committing its build has built it, and one that crashed before has left the
   # claim for the runner to put back. The attempt is spent either way.
   case "$(field "$ticket" status)" in
-    halted) release "$ticket"; echo "halted: $ticket" >&2; exit 1 ;;
+    halted) release "$ticket"; end_run 1 ;;
     done) ;;
     *) say "session left $(basename "$ticket") at $(field "$ticket" status) - back to ready"
        put_aside "$ticket" "$attempts"
@@ -521,7 +633,7 @@ while :; do
     if [ "$attempts" -ge "$MAX_ATTEMPTS" ]; then
       halt "$ticket" unbuilt "the session reported a build and committed nothing, and the last of $MAX_ATTEMPTS attempts is spent - read the build output for what stopped it committing, and \`git stash list\` for what each attempt left uncommitted"
       release "$ticket"
-      exit 1
+      end_run 1
     fi
     echo "unbuilt: $ticket reported a build and committed nothing - building it again" >&2
     put_aside "$ticket" "$attempts"
@@ -537,7 +649,7 @@ while :; do
   # commit message needs a session and amending keeps the one it wrote.
   if ! git diff --quiet HEAD -- "$ticket"; then
     git commit -q --amend --no-edit -- "$ticket" \
-      || { echo "could not amend $ticket into $(git rev-parse --short HEAD)" >&2; exit 1; }
+      || { echo "could not amend $ticket into $(git rev-parse --short HEAD)" >&2; end_run 1; }
   fi
   say "done: $(basename "$ticket") at $(git rev-parse --short HEAD)"
   # Whatever the build left lying around besides its commit is not the next
@@ -546,48 +658,16 @@ while :; do
   release "$ticket"
 done
 
-# `break` means nothing could be selected, which is not the same as everything
-# being finished: a halt and a dependency nobody can satisfy look identical from
-# inside the loop.
-stuck=""
-for t in "${files[@]}"; do
-  case "$(field "$t" status)" in
-    done) ;;
-    halted) stuck+="$(basename "$t"): halted - $(sed -n '/^## Halt$/,$p' "$t" | sed -n '3p')"$'\n' ;;
-    *)      stuck+="$(basename "$t"): waiting on $(field "$t" after)"$'\n' ;;
-  esac
-done
-if [ -n "$stuck" ]; then
-  printf 'stopped with work left in %s:\n%s' "$TICKETS" "$stuck" >&2
-  exit 1
+# Nothing selectable is not the same as everything finished: a halt and a
+# dependency nobody can satisfy look identical from inside the loop, and the
+# report says which.
+[ -z "$(unfinished)" ] || end_run 1
+
+if [ "${#files[@]}" -gt 1 ] && ! git cat-file -e "HEAD:./$REVIEW" 2>/dev/null; then
+  [ -n "$VERIFY" ] || verify
+  claude_through_limits review "$(review_brief)" --session-id "$(new_session_id)"
+  [ $? = "$EX_LIMIT" ] && end_run 1
+  git cat-file -e "HEAD:./$REVIEW" 2>/dev/null \
+    || { echo "the final review did not finish: it committed no $REVIEW - see $LOG" >&2; end_run 1; }
 fi
-# Every ticket done is not the same as the problem solved, and nothing so far
-# has asked the second question: each pass compared a commit to the ticket that
-# asked for it. The walk is the only stage that reads a statement written before
-# the solution existed. It is printed and not acted on - a condition nobody
-# could find is for a person to look at, and the runner does not get to decide
-# that the change is good.
-printf 'every ticket in %s is done\n' "$TICKETS"
-
-intent="$(dirname "$TICKETS")/01-INTENT.md"
-# Where the change was small enough that no intent document was written,
-# `/find-solution` puts the conditions in the solution's own `## Intent` section
-# and `/accept-intent` reads them there. So the walk follows the conditions
-# rather than the filename: skipping it on a missing `01-INTENT.md` dropped the
-# only stage that asks whether the problem was solved, on a route the pipeline
-# offers on purpose, with a line on a terminal nobody is watching.
-[ -f "$intent" ] || intent="$(dirname "$TICKETS")/$(field "${files[0]}" solution)"
-
-printf 'walking %s\n\n' "$intent"
-# The prompt starts with the slash command, and has to. `accept-intent` is
-# `disable-model-invocation`, so it is not among the skills a session can
-# reach on its own - naming it in a sentence gets a session that improvises
-# the one stage that asks whether the problem was solved.
-claude_through_limits accept-intent "/accept-intent $intent" --session-id "$(new_session_id)"
-[ $? = "$EX_LIMIT" ] && exit 1
-# The walk's report is the one thing here meant to be read in full - and a walk
-# that died has none, which is a run that did not end well, whatever it prints.
-printf '\n'
-jq -R -r 'fromjson? | select(.type == "result") | .result // empty' "$LOG"
-jq -R -s -e '[split("\n")[] | fromjson? | select(.type == "result" and .is_error == false)] | length > 0' "$LOG" >/dev/null \
-  || { echo "the walk did not finish - see $LOG" >&2; exit 1; }
+end_run 0
