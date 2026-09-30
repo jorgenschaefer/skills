@@ -23,6 +23,8 @@ Each ticket quotes its ACs and nudges exactly as `CRITERIA.md` writes them, and 
 
 **Not one that will clearly run long.** Every turn of a build re-reads its whole context. A ticket whose plan runs to many steps across many files, where a real seam would split it, is a finding.
 
+**Nor cut finer than it needs to be.** Each ticket pays its setup again - a fresh session reading the same standards and files, a reviewer starting the same app. Several tickets that repeat one pattern over the same files, where fewer would each still fit one session, is a finding.
+
 **`after:` reflects need, not convenience.** A dependency asserted between two tickets that could be built in either order serialises a run for nothing. Ask, for each one, what would actually break if it were built first.
 
 ## The plans rest on code that is there

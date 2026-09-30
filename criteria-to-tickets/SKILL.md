@@ -22,6 +22,8 @@ This skill's `TICKET_FORMAT.md` settles the shape of a ticket, its `PLANNING.md`
 
 **A size one session can build.** Among vertical cuts, this is the main constraint: every turn of a build re-reads its whole context, so a long session costs more with every turn. A slice that would clearly run long - many plan steps, many files - is split along a real seam, even where that seam runs through an AC.
 
+**And no smaller than it has to be.** Every ticket pays its setup again: a fresh session reads the ticket, the standards and the files it touches, and its reviewer starts the app, logs in and makes its test data. In one run seven slices each applied one shared dialog in one more place, and each cost a fifth to a third of a five-hour usage window, mostly on that setup. Slices that repeat one pattern over the same files and context go into fewer tickets, as long as each still fits one session.
+
 **`Out of scope` is yours to place.** Each line belongs in the `## Not here` of whichever ticket a builder would otherwise wander into - that is how it reaches the person who needs it, since no builder opens `CRITERIA.md`.
 
 **Ordered by need, not by size.** `after:` is what carries the order. Put a slice after another only when it genuinely cannot be built first; a false dependency serialises a run for no reason.
