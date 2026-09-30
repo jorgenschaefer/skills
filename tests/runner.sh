@@ -760,12 +760,12 @@ else bad "the attempt budget, once spent, halts the ticket as exhausted" "rc=$rc
 
 # --- a session that stops before it finishes
 #
-# In `-p` a session that ends its turn to wait on a check it put in the
-# background is not woken again: the process exits and the check is killed. One
-# build did exactly that with its work done and reviewed, and the retry started
-# from nothing on top of the diff it left. The same session is resumed instead,
-# once, and a second early stop is put aside where the next attempt cannot
-# mistake it for the state the checks were green on.
+# A session can end its turn with the work unfinished. Under an earlier CLI one
+# that ended it to wait on a check it put in the background was not woken again,
+# and the check was killed. That build did so with its work done and reviewed,
+# and the retry started from nothing on top of the diff it left. The same
+# session is resumed instead, once, and a second early stop is put aside where
+# the next attempt cannot mistake it for the state the checks were green on.
 
 workspace
 plan stop-early build build review
@@ -819,8 +819,12 @@ else bad "a halt after abandoned attempts points at the stash" "$(tail -3 <(tkt 
 workspace
 plan build build review
 run > /dev/null
-if grep -q 'Monitor' <(head -1 "$STUB_CALLS"); then ok "the build is told nothing wakes it once its turn ends"
-else bad "the build is told nothing wakes it once its turn ends" "$(head -1 "$STUB_CALLS")"; fi
+# A background task that finishes wakes the session. One run's sessions, told
+# nothing would, waited on their subagents with Monitor timers that outlived them
+# and woke each finished session up to three times more.
+if ! grep -q 'Nothing wakes you' <(head -1 "$STUB_CALLS") && ! grep -q 'Nothing wakes you' <(tail -1 "$STUB_CALLS"); then
+  ok "neither the build nor the review is told nothing wakes it"
+else bad "neither the build nor the review is told nothing wakes it" "$(calls)"; fi
 # What a build leaves standing is printed at the end of the run and read at
 # acceptance, and both find it under one heading. A departure from a nudge is
 # the one thing about a nudge anybody gets to see.

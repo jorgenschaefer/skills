@@ -466,8 +466,6 @@ brief() {  # ticket -> the prompt a fresh session on it starts from
 
 The project's checks are \`$VERIFY\`, and they passed when this run started. A check that fails now failed because of this build.
 
-Nothing wakes you once your turn ends: the run moves on, and whatever you left running in the background is killed. Wait for background work with Monitor, or run the checks in the foreground.
-
 That file is the whole brief. Its \`## Done when\` is the definition of done - not the diff, not what you would have built, not what CRITERIA.md probably meant. Its \`## Nudges\` are how it was agreed this gets built: follow them, and where you depart from one, say why. Its \`## Not here\` names what a neighbouring ticket owns, and building it is two tickets building the same code. Its \`## Plan\` is how it was decided this gets built; where you find the plan wrong, say so rather than following it off a cliff.
 
 A criterion the frontmatter's \`closes:\` names is true once this ticket is built: write its test first and red, where its user acts - the action, the route, the form - and make it pass. One under \`## Toward\` is built only in part here, and closed by a later ticket: prove the narrower behaviour \`## Done when\` states, and leave the whole criterion to the ticket that closes it.
@@ -495,7 +493,7 @@ Each one's \`## Record\` says what its build left standing. Handle an item that 
 }
 
 # The two ways a claimed session is carried on rather than started over.
-STOPPED_EARLY="Your turn ended before the ticket was finished. Nothing wakes an unattended session once its turn ends, so whatever you had running in the background was killed; your uncommitted work is still in the tree. Carry on from there - rerun what was killed - and finish as the brief said."
+STOPPED_EARLY="Your turn ended before the ticket was finished, and whatever you had running in the background was killed; your uncommitted work is still in the tree. Carry on from there - rerun what was killed - and finish as the brief said."
 INTERRUPTED="The run was interrupted while you were working, and has been started again. Your uncommitted work is still in the tree. Carry on from where you stopped - rerun whatever was cut short, a subagent or a check included - and finish as the brief said."
 
 # --- the project's checks, once, before any build
@@ -572,8 +570,6 @@ The project's checks are \`$VERIFY\`, and they passed when this run started.
 
 Spawn \`critique\` as a subagent with a fresh context. Hand it the diff, the result of the checks, and $(realpath "$(dirname "$TICKETS")/$(field "${files[0]}" criteria)") as what was asked for - not the tickets' plans or Records, which are the reasoning behind the code. Evaluate what comes back, fix what is worth fixing test-first, run the checks and commit. The nudges in that file are how it was agreed this gets built, and each build followed them or recorded why not: a fix that departs from a nudge is not made - it goes under what you left standing, with the finding. Then review again the same way. Two rounds at most: stop when a review comes back clean or the second round is done.
 
-Nothing wakes you once your turn ends: the run moves on, and whatever you left running in the background is killed. Wait for background work with Monitor, or run the checks in the foreground.
-
 Then write what you left standing to $(realpath "$REVIEW") - findings you did not fix and why, checks you did not run - and commit it. Nobody reads your closing message in an unattended run: REVIEW.md is printed at its end, and the run counts the review as finished only once that file is committed."
 }
 
@@ -649,9 +645,12 @@ while :; do
   fi
 
   # A session that ended its turn with its work uncommitted and the ticket still
-  # claimed was waiting on something `-p` killed when the turn ended - one did
-  # so with its build done and reviewed. It is resumed once rather than started
-  # over, because everything it did is still in the tree and in its context.
+  # claimed stopped short - one did so with its build done and reviewed, waiting
+  # on a check the CLI of the day killed when the turn ended. The CLI now wakes a
+  # session when its background work finishes, but a session can still stop
+  # short, and this costs nothing when none does. It is resumed once rather than
+  # started over, because everything it did is still in the tree and in its
+  # context.
   if [ "$rc" = 0 ] && [ "$(field "$ticket" status)" = doing ] && [ -n "$(left_behind)" ]; then
     say "session stopped with its work uncommitted - resuming it"
     session "$ticket" --resume "$id" "$STOPPED_EARLY"; rc=$?
