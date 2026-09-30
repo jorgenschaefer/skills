@@ -498,6 +498,19 @@ else bad "the build is given the ticket by its absolute path" "$(head -1 "$STUB_
 if grep -q -- '--allowedTools .*Monitor' <(grep 'Use /implement' "$STUB_ARGS" | head -1); then
   ok "a build may use Monitor to wait on its background checks"
 else bad "a build may use Monitor to wait on its background checks" "$(head -2 "$STUB_ARGS")"; fi
+# Every call pays for every tool defined, so a session is given the tools a
+# build uses and no others. Playwright stays, for testing in the browser; the
+# claude.ai connectors go.
+build_args="$(grep 'Use /implement' "$STUB_ARGS" | head -1)"
+if grep -q -- '--tools Bash .*Agent' <<< "$build_args" && grep -q -- '--tools .*Skill' <<< "$build_args" \
+   && grep -q -- '--tools .*ToolSearch' <<< "$build_args" && grep -q -- '--allowedTools .*mcp__playwright' <<< "$build_args" \
+   && ! grep -q -- '--tools .*CronCreate' <<< "$build_args"; then
+  ok "a build is given only the tools it uses, Playwright among them"
+else bad "a build is given only the tools it uses, Playwright among them" "$build_args"; fi
+if grep -q '^ENABLE_CLAUDEAI_MCP_SERVERS=false ' <<< "$build_args" \
+   && grep -q '^ENABLE_CLAUDEAI_MCP_SERVERS=false .*--tools Bash' <(grep -- '--json-schema' "$STUB_ARGS" | head -1); then
+  ok "the build and the call for the checks run without the claude.ai connectors, on the same tools"
+else bad "the build and the call for the checks run without the claude.ai connectors, on the same tools" "$(head -2 "$STUB_ARGS")"; fi
 if grep -q '1-one' <(head -1 "$STUB_CALLS"); then ok "it builds in dependency order"
 else bad "it builds in dependency order" "$(calls)"; fi
 # Two builds and the final review. There is one session per ticket: the runner

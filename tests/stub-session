@@ -60,8 +60,9 @@
 set -uo pipefail
 
 # Every call's arguments, one line each, for the tests that care how the
-# runner launches a session rather than what the session did.
-printf '%s\n' "$*" >> "$STUB_ARGS"
+# runner launches a session rather than what the session did - led by the one
+# environment variable the runner sets for it.
+printf 'ENABLE_CLAUDEAI_MCP_SERVERS=%s %s\n' "${ENABLE_CLAUDEAI_MCP_SERVERS-}" "$*" >> "$STUB_ARGS"
 
 if [[ " $* " == *" --json-schema "* ]]; then
   jq -nc --arg c "$STUB_VERIFY" \

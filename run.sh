@@ -397,9 +397,17 @@ limit_reset() {  # log -> the epoch the limit lifts, 0 where it named none; noth
 # `Monitor` is how a session waits on checks it put in the background: `sleep`
 # is refused, and without it a build that backgrounded its test run had no way
 # to wait for the result.
+#
+# The same list is every built-in tool a session has, not only the ones it may
+# use unasked: each call carries the definition of every tool there is, and one
+# run made some 850 calls. `ToolSearch` stays because without it the MCP tools
+# are not deferred and their definitions go into every call whole. Playwright is
+# kept, for testing in the browser; the claude.ai connectors are not.
+TOOLS=(Bash Edit Write Read Glob Grep Skill Agent Monitor TaskStop ToolSearch WebFetch WebSearch)
 claude_run() {  # log, --session-id or --resume, session id, prompt, claude's own options... -> claude's exit status
+  ENABLE_CLAUDEAI_MCP_SERVERS=false \
   claude -p --output-format stream-json --verbose --permission-mode acceptEdits \
-    --allowedTools Bash Edit Write Read Glob Grep Skill Agent TodoWrite Monitor \
+    --tools "${TOOLS[@]}" --allowedTools "${TOOLS[@]}" mcp__playwright \
     "$2" "$3" "${@:5}" -- "$4" </dev/null 2>&1 | tee "$1" | narrate
   return "${PIPESTATUS[0]}"
 }
