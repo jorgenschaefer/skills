@@ -15,7 +15,7 @@ This skill's `CODING_STANDARDS.md` is what the software has to look like. Read i
 
 **Know what has to be true when you are finished**, specifically enough that you could hand it to someone else as the test of whether it worked. Where the request does not settle something that changes what gets built, ask. Where it settles it badly, say so once and build it.
 
-**Find the project's way of running the app**, where the change needs seeing - a `run` skill, `CLAUDE.md`, the README - before building a harness of your own. Where you had to build one, write it up as the project's run skill, `.claude/skills/run/SKILL.md`, with the scripts it drives beside it, and commit it with the change.
+**Find the project's way of running the app**, where the change needs seeing - a `run` skill, `CLAUDE.md`, the README - before building a harness of your own. The review drives the app that way. Where you had to build one, write it up as the project's run skill, `.claude/skills/run/SKILL.md`, with the scripts it drives beside it, and commit it with the change.
 
 **Find the project's verification command** - the one that runs the tests, the type check and the linter. Where there is none, run what exists and say so.
 
@@ -23,13 +23,13 @@ This skill's `CODING_STANDARDS.md` is what the software has to look like. Read i
 
 Build it to the standard, in the order the standard says the work happens. Then the project's checks, and report the real result - if you cannot run them, say so rather than assuming.
 
-**Keep your own context for the build.** Side work whose result is a conclusion - surveying code you do not know, a manual check in the running app, chasing a failure you cannot yet explain - goes to a subagent with the question, and only the answer comes back - a large context is paid for on every turn, and again on every resume. The red-green cycles stay here.
-
-**Visual checks always go to a subagent**, whoever started the build. Screenshots and browser checks run there, and it reports back in text: what it did, what it saw, pass or fail. An image in your own context is read again on every later turn. Have it judge what it sees against what was asked for and against this skill's `CODING_STANDARDS.md`, on every screen the change touches, at the narrowest and widest supported size, with the feedback after each action - a UX miss caught now is cheap to fix.
+**Keep your own context for the build.** Side work whose result is a conclusion - surveying code you do not know, chasing a failure you cannot yet explain - goes to a subagent with the question, and only the answer comes back - a large context is paid for on every turn, and again on every resume. The red-green cycles stay here.
 
 ## Review it in a session that did not write it
 
 **Spawn `critique` as a subagent with a fresh context.** Hand it the diff, the result of the checks, and what was asked for - the criteria and what is out of scope, as the request states them. Do not hand it the reasoning that produced the code: not the plan, and not how you tested it.
+
+**The review is where the running app is checked.** `critique` drives it on every screen the change touches, at the narrowest and widest supported size. Do not check the screens yourself before it: in one run each build's own browser check and its reviewer drove the app at the same time, fought over the dev server, and paid for the same check twice.
 
 That last part is the whole point. A reviewer that has already accepted every step of the reasoning is not a reviewer - it will read its own intentions into the code and find the defects it was already looking for. The subagent starts cold, which is the only reason its findings are worth anything.
 

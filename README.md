@@ -156,9 +156,9 @@ statement written before the approach was chosen.
 **Checks that execute rather than judge.** A criterion is pinned by breaking the
 behaviour and watching its named test fail - deleted, and its edges moved - because
 deciding by eye whether a test would notice a change is prediction. `critique` and
-`/accept-criteria` drive the running product rather than reading the diff and concluding,
-and a build's own visual checks run in a subagent that reports back in text, so no screenshot
-is carried through every later turn.
+`/accept-criteria` drive the running product rather than reading the diff and concluding.
+A build does not check its own screens: its reviewer drives them, in a subagent that reports
+back in text, so no screenshot is carried through every later turn.
 
 ## Available skills
 
@@ -169,7 +169,7 @@ skill, rather than steps in building a change.
 - **idea** - the one door in, fired without being typed: the problem underneath the idea the user arrived with, dug at around one real instance until a reader who was not there could restate it, stated back and agreed - or a reasoned no. Proposes nothing and writes no file: the statement stays in the conversation for `find-criteria`
 - **find-criteria** - work out with the user what the change has to do, one question at a time: at least three genuinely different approaches with their effort and code complexity for the user to pick from, a specimen where the difference is visual, the acceptance criteria, the implementation nudges, and every open question settled. Approved, checked by an adversary, approved again, and written to `CRITERIA.md`. Runs `idea` first where no problem is visible. Typed
 - **criteria-to-tickets** - cut `CRITERIA.md` into vertical slices, each small enough for one session, and write a planned ticket for each - one slice included - quoting its criteria and nudges verbatim so no builder has to open `CRITERIA.md`. Checked by an adversary before it is shown for approval, with the product questions planning turned up going to the user and back into `CRITERIA.md`. Typed
-- **implement** - build software to the standard: a failing test first for every piece of behaviour, the project's checks green, visual checks in a subagent that reports in text, then a `critique` subagent with a fresh context reading the diff and not the reasoning behind it. It fixes what comes back, twice at most, and says what it left standing. Fires on any request to write or change code
+- **implement** - build software to the standard: a failing test first for every piece of behaviour, the project's checks green, then a `critique` subagent with a fresh context reading the diff and not the reasoning behind it, and driving the running app where a user sees the change. It fixes what comes back, twice at most, and says what it left standing. Fires on any request to write or change code
 - **critique** - the project's code review, against `CODING_STANDARDS.md`: a diff, a branch, a PR, or the whole codebase - and the running product, wherever a user sees the change. It constructs the trigger behind every finding and tries to refute it before reporting, and writes each one as the change rather than the symptom so the list can go straight to planning
 - **accept-criteria** - walk the finished change with the user: drive the running product through `CRITERIA.md`'s criteria by id, compare it with the agreed design, hold it against the problem, follow the user wherever they try it, and read what the builds and the final review left standing. Reports each criterion as met, not met, or could not be checked. Once the user accepts, it deletes the change's directory and commits that. Typed
 - **git-commit-message** - encode the seven rules of a well-formed commit message (subject/body separation, 50-char imperative subject, no trailing period, 72-char body explaining what and why); auto-loaded when writing a commit, with the repo's existing history as the baseline and the rules as the floor
