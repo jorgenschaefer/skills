@@ -1112,6 +1112,11 @@ else bad "the review is told where REVIEW.md goes, and the project's checks" "$(
 if grep -q 'departs from a nudge is not made' <(tail -1 "$STUB_CALLS"); then
   ok "the review is told a fix that departs from a nudge is left standing, not made"
 else bad "the review is told a fix that departs from a nudge is left standing, not made" "$(tail -1 "$STUB_CALLS")"; fi
+# A second round costs a whole review, and five builds in one run paid it after a
+# first round that found nothing that mattered.
+if grep -q 'found only nits' <(tail -1 "$STUB_CALLS"); then
+  ok "the review is told not to review again after a round of only nits"
+else bad "the review is told not to review again after a round of only nits" "$(tail -1 "$STUB_CALLS")"; fi
 
 # Tickets added in the very first commit have no commit before them, and the
 # change is then everything.

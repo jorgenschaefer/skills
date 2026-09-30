@@ -37,7 +37,9 @@ That last part is the whole point. A reviewer that has already accepted every st
 
 Work the blockers and the should-fix, test-first like anything else. Then review again, the same way.
 
-**Two rounds at most.** Stop when a review comes back clean or when the second round is done, and report what is still standing: the nits, anything you disagreed with and why, anything you chose not to fix and why.
+**A first round of only nits gets no second** - nits by the reviewer's rating, not yours. Fix the ones worth fixing and stop there. A second round is a whole review over again - a fresh reviewer that reads the standard, the diff and the files, and drives the app - and it is paid for a finding that changes nothing a user or the next reader meets.
+
+**Two rounds at most.** Stop when a review comes back clean or with only nits, or when the second round is done, and report what is still standing: the nits, anything you disagreed with and why, anything you chose not to fix and why.
 
 **The pull is to quietly drop a finding.** A budget on the rounds makes that cheap - one more round is expensive, saying nothing is free, and a finding that goes unmentioned looks exactly like a finding that was fixed. Say what you left.
 
