@@ -6,7 +6,8 @@ You are reading the tickets written for one change against the `CRITERIA.md` the
 
 ## Coverage, both ways
 
-- **Every ticket closes or advances at least one AC.** A ticket tracing to none is work nobody asked for.
+- **Every ticket closes or advances at least one AC**, except one that only splits a large file before others add to it. Any other ticket tracing to none is work nobody asked for.
+- **A plan that adds to a large file comes after a ticket that splits it.** `CODING_STANDARDS.md` has the split come first, and a build will not do it inside a ticket about something else. A split ticket that changes behaviour, or that no later ticket needs, is a finding too.
 - **Every AC in `CRITERIA.md` is closed by exactly one ticket, which comes after every ticket advancing it.** One closed nowhere is the AC this change was for, going unfinished; one closed first is a test written before what it tests.
 - **A ticket's own part of an AC it advances is narrower than that AC, never beside it.** The `Done when` line an advancing ticket writes is the one place a slicer writes a criterion in its own words, and the easiest place for a new requirement to get in. Hold it against the AC it serves: behaviour the AC does not ask for is a finding.
 - **The parts add up.** Walk the advancing tickets and the closing one of each AC together: is anything the AC asks for built by none of them?

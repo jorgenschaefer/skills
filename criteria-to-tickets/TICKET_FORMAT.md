@@ -57,6 +57,8 @@ Review findings not fixed and why, checks not run, departures from the plan, and
 
 ## What the frontmatter is for
 
+**A ticket that only splits a large file closes and advances nothing.** Both fields are empty, it quotes no AC, and its `Done when` names the files it splits into, with the behaviour unchanged and the checks green. The tickets that add to the file come `after:` it.
+
 **`closes` and `advances` have to agree with the quotation.** An AC claimed and not quoted is one the builder never sees; an AC quoted and not claimed is work no coverage check knows about. The runner checks both.
 
 **Every AC is closed by exactly one ticket, and that ticket comes after every one that advances it**, directly or by way of others. The closing ticket writes the AC's test, and one built before the parts it rests on writes a test nothing can pass yet. The runner checks this too.

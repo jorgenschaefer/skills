@@ -28,7 +28,9 @@ This skill's `TICKET_FORMAT.md` settles the shape of a ticket, its `PLANNING.md`
 
 **Exactly one ticket closes each AC.** It is the slice after which the AC is true, and it writes the AC's test where the user acts. An AC too big for one slice is also advanced by others, each building a narrower part it can prove on its own; the closing ticket comes `after:` every one of them. The size of the work is never a reason to split an AC - that puts your seams into what the user approved. An AC that turns out to describe two behaviours is: put it to the user and get it split in `CRITERIA.md`.
 
-**Every AC is closed by some ticket, and every ticket closes or advances some AC.** A nudge goes into every ticket it bears on.
+**Every AC is closed by some ticket, and every ticket closes or advances some AC** - except one that only splits a large file. A nudge goes into every ticket it bears on.
+
+**A large file is split in a ticket of its own, first.** `CODING_STANDARDS.md` has a large file split before code is added to it, and a build scoped to its criteria will not do that inside its ticket: in one run, three builds in a row each declined the same split as a separate refactor, and each added to the file. Where the plans add to a file the standard calls large, write a ticket that only splits it - it closes and advances nothing, its `Done when` names the files it splits into, with the behaviour unchanged and the checks green - and put every ticket that adds to the file `after:` it.
 
 Where a slice introduces a concept the codebase has no name for, or moves a boundary between the ones it does, this skill's `CODING_STANDARDS.md` binds the names the ticket will write.
 

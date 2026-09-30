@@ -246,6 +246,32 @@ if [ "$rc" = 0 ] && grep -q 'ignoring' "$WORK/.out"; then
   ok "a file that is not a ticket is ignored, and said so"
 else bad "a file that is not a ticket is ignored, and said so" "rc=$rc $(out)"; fi
 
+# A ticket that only splits a large file before the others add to it closes and
+# advances nothing, and is still a ticket: built first, and no drift.
+workspace
+cat > "$WORK/changes/x/tickets/3-split.md" <<'EOF2'
+---
+criteria:  CRITERIA.md
+closes:
+advances:
+after:
+status:    ready
+attempts:  0
+---
+
+## Build
+Split the large file the other tickets add to.
+
+## Done when
+It is split, the behaviour is unchanged, and the checks pass.
+EOF2
+sed -i 's/^after: *$/after:     3-split/' "$WORK/changes/x/tickets/1-one.md"; commit
+plan build build build review
+rc="$(run)"
+if [ "$rc" = 0 ] && grep -q '3-split.md' <(head -1 "$STUB_CALLS") && [ "$(field 3-split status)" = "done" ]; then
+  ok "a ticket that closes no criterion, only splitting a file, is built first and is no drift"
+else bad "a ticket that closes no criterion, only splitting a file, is built first and is no drift" "rc=$rc $(out) $(calls)"; fi
+
 # --- the drift pre-flight, in both directions
 #
 # A session never reads CRITERIA.md and a committed ticket is revisited by
