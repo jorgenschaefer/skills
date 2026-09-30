@@ -570,7 +570,7 @@ review_brief() {  # -> the prompt the final review starts from
 
 The project's checks are \`$VERIFY\`, and they passed when this run started.
 
-Spawn \`critique\` as a subagent with a fresh context. Hand it the diff, the result of the checks, and $(realpath "$(dirname "$TICKETS")/$(field "${files[0]}" criteria)") as what was asked for - not the tickets' plans or Records, which are the reasoning behind the code. Evaluate what comes back, fix what is worth fixing test-first, run the checks and commit. Then review again the same way. Two rounds at most: stop when a review comes back clean or the second round is done.
+Spawn \`critique\` as a subagent with a fresh context. Hand it the diff, the result of the checks, and $(realpath "$(dirname "$TICKETS")/$(field "${files[0]}" criteria)") as what was asked for - not the tickets' plans or Records, which are the reasoning behind the code. Evaluate what comes back, fix what is worth fixing test-first, run the checks and commit. The nudges in that file are how it was agreed this gets built, and each build followed them or recorded why not: a fix that departs from a nudge is not made - it goes under what you left standing, with the finding. Then review again the same way. Two rounds at most: stop when a review comes back clean or the second round is done.
 
 Nothing wakes you once your turn ends: the run moves on, and whatever you left running in the background is killed. Wait for background work with Monitor, or run the checks in the foreground.
 

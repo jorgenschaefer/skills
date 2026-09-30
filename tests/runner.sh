@@ -1064,6 +1064,11 @@ if grep -qF "$(realpath "$WORK")/changes/x/REVIEW.md" <(tail -1 "$STUB_CALLS") \
    && grep -q '`true`' <(tail -1 "$STUB_CALLS"); then
   ok "the review is told where REVIEW.md goes, and the project's checks"
 else bad "the review is told where REVIEW.md goes, and the project's checks" "$(tail -1 "$STUB_CALLS")"; fi
+# A review fixes what it finds, and one fix went against a nudge the build had
+# kept on purpose. A nudge is how the user agreed it gets built.
+if grep -q 'departs from a nudge is not made' <(tail -1 "$STUB_CALLS"); then
+  ok "the review is told a fix that departs from a nudge is left standing, not made"
+else bad "the review is told a fix that departs from a nudge is left standing, not made" "$(tail -1 "$STUB_CALLS")"; fi
 
 # Tickets added in the very first commit have no commit before them, and the
 # change is then everything.
