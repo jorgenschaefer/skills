@@ -480,15 +480,14 @@ A criterion the frontmatter's \`closes:\` names is true once this ticket is buil
 
 Do not open the CRITERIA.md the frontmatter names. The ticket quotes what it needs, and going upstream is how a ticket quietly becomes a different one.
 
-When the criteria are green and the project's checks pass, write the ticket's \`## Record\` - which test proves each criterion it closes, which proves the part it advances, and the command you ran - and in it a \`### Left standing\`: review findings you did not fix and why, checks you did not run, where you departed from the plan, and where you departed from a nudge, with the reason. Nobody reads your closing message in an unattended run; Left standing is printed at the end of the run and read at acceptance. Set \`status: done\` in the frontmatter and commit the code and the ticket file together, in one commit.
+When the criteria are green and the project's checks pass, write the ticket's \`## Left standing\`: review findings you did not fix and why, checks you did not run, each criterion it closes or advances that no automated test proves and how you checked it instead, where you departed from the plan, and where you departed from a nudge, with the reason. Only those - a finding you fixed and a criterion a test proves are what \`done\` already says. Nobody reads your closing message in an unattended run; Left standing is printed at the end of the run and read at acceptance. Set \`status: done\` in the frontmatter and commit the code and the ticket file together, in one commit.
 
 If you cannot proceed, append a \`## Halt\` section naming the kind and stop: \`blocked\` (a precondition the ticket assumed is not there), \`undecided\` (a decision the ticket's criteria do not settle and that is not yours to settle), or \`mystery\` (a failure you cannot explain, which is different from one you cannot fix). Then set \`status: halted\`.
 
 Never write \`status: doing\`. It belongs to the runner."
-  # What earlier builds left standing is in their Records, and a session reads
-  # its own ticket and no other - so an item one build left for the next was
-  # never seen by it. Pointed at rather than extracted: a Record says it in
-  # whatever shape its build chose.
+  # A session reads its own ticket and no other - so an item one build left
+  # standing for the next was never seen by it. Pointed at rather than
+  # extracted: a Left standing says it in whatever shape its build chose.
   for t in "${files[@]}"; do
     [ "$(field "$t" status)" = "done" ] && built+=$'\n'"- $(realpath "$t")"
   done
@@ -496,7 +495,7 @@ Never write \`status: doing\`. It belongs to the runner."
 
 Tickets in this directory already built:$built
 
-Each one's \`## Record\` says what its build left standing. Handle an item that falls inside this ticket's \`## Done when\`, and leave the rest; this ticket's \`## Not here\` still holds."
+Each one's \`## Left standing\` says what its build did not settle. Handle an item that falls inside this ticket's \`## Done when\`, and leave the rest; this ticket's \`## Not here\` still holds."
   printf '%s' "$prompt"
 }
 
@@ -541,7 +540,7 @@ end_run() {  # exit status
     printf 'stopped with work left in %s:\n%s' "$TICKETS" "$(unfinished)" >&2
   fi
   for t in "${files[@]}"; do
-    left="$(sed -n '/^### Left standing$/,/^#/{/^#/d;p;}' "$t" | sed '/^[[:space:]]*$/d')"
+    left="$(sed -n '/^## Left standing$/,/^#/{/^#/d;p;}' "$t" | sed '/^[[:space:]]*$/d')"
     [ -z "$left" ] || printf '\n%s left standing:\n%s\n' "$(basename "$t")" "$left"
   done
   [ ! -f "$REVIEW" ] || printf '\nthe final review left:\n%s\n' "$(cat "$REVIEW")"
@@ -576,7 +575,7 @@ review_brief() {  # -> the prompt the final review starts from
 
 The project's checks are \`$VERIFY\`, and they passed when this run started.
 
-Spawn \`critique\` as a subagent with a fresh context. Hand it the diff, the result of the checks, and $(realpath "$(dirname "$TICKETS")/$(field "${files[0]}" criteria)") as what was asked for - not the tickets' plans or Records, which are the reasoning behind the code. Evaluate what comes back, fix what is worth fixing test-first, run the checks and commit. The nudges in that file are how it was agreed this gets built, and each build followed them or recorded why not: a fix that departs from a nudge is not made - it goes under what you left standing, with the finding. Then review again the same way - unless the first round found only nits: fix the ones worth fixing and stop there. Two rounds at most: stop when a review comes back clean or with only nits, or when the second round is done.
+Spawn \`critique\` as a subagent with a fresh context. Hand it the diff, the result of the checks, and $(realpath "$(dirname "$TICKETS")/$(field "${files[0]}" criteria)") as what was asked for - not the tickets' plans or what their builds left standing, which are the reasoning behind the code. Evaluate what comes back, fix what is worth fixing test-first, run the checks and commit. The nudges in that file are how it was agreed this gets built, and each build followed them or recorded why not: a fix that departs from a nudge is not made - it goes under what you left standing, with the finding. Then review again the same way - unless the first round found only nits: fix the ones worth fixing and stop there. Two rounds at most: stop when a review comes back clean or with only nits, or when the second round is done.
 
 Then write what you left standing to $(realpath "$REVIEW") - findings you did not fix and why, checks you did not run - and commit it. Nobody reads your closing message in an unattended run: REVIEW.md is printed at its end, and the run counts the review as finished only once that file is committed."
 }

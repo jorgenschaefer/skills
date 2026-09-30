@@ -28,9 +28,9 @@ Where you cannot get the product running at all, stop and say so - every AC is u
 
 ## Read what the builds left
 
-The `## Record` of the ticket that closes an AC names the test that proves it - one test per AC, in the ticket whose `closes:` names it. Each Record's `### Left standing` says what the build did not settle - departures from a nudge among them. `REVIEW.md` says what the final review left. Read them as you walk.
+Each ticket's `## Left standing` says what its build did not settle - departures from a nudge, and ACs no automated test proves, among them. `REVIEW.md` says what the final review left. Read them as you walk.
 
-Where a Record names a test for an AC you could not find in the product, say so plainly: green tests over absent behaviour is the gap this stage exists to catch.
+Where an AC is not met in the product, look in the tests for the one that claims it. A green test over absent behaviour is the gap this stage exists to catch: name it plainly.
 
 ## Follow the user
 
@@ -40,7 +40,7 @@ Beyond the ACs, the user can use the change however they like, and you follow al
 
 Only what needs the user, most serious first, each item ending with the step that would settle it:
 
-- An AC not met: what you did, and what you saw. Where a Record names a test for it, name the test.
+- An AC not met: what you did, and what you saw. Where a test claims it, name the test.
 - An AC you could not check: why, and what it would take to check it.
 - The problem not solved, where the ACs are met.
 - What the user and you found beyond the ACs.

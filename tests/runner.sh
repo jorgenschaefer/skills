@@ -764,7 +764,7 @@ else bad "two claimed tickets are refused, named, and nothing is launched" "rc=$
 # --- what earlier builds left standing
 #
 # A build that leaves something for a later ticket - a rename that belongs to
-# the code the next one touches - says so in its Record, and nothing else ever
+# the code the next one touches - says so in its Left standing, and nothing else ever
 # carried it there: every session reads its own ticket and no other.
 
 workspace
@@ -772,9 +772,9 @@ plan build build review
 run > /dev/null
 if ! grep -q 'already built' <(sed -n 1p "$STUB_CALLS") \
    && grep -qF "$WORK/changes/x/tickets/1-one.md" <(sed -n 2p "$STUB_CALLS") \
-   && grep -q 'already built.*## Record' <(sed -n 2p "$STUB_CALLS"); then
-  ok "a later build is pointed at the Records of the tickets already built"
-else bad "a later build is pointed at the Records of the tickets already built" "$(calls)"; fi
+   && grep -q 'already built.*## Left standing' <(sed -n 2p "$STUB_CALLS"); then
+  ok "a later build is pointed at what the tickets already built left standing"
+else bad "a later build is pointed at what the tickets already built left standing" "$(calls)"; fi
 
 # --- the runner owns the claim
 #
@@ -868,10 +868,16 @@ else bad "neither the build nor the review is told nothing wakes it" "$(calls)";
 # acceptance, and both find it under one heading. A departure from a nudge is
 # the one thing about a nudge anybody gets to see.
 # shellcheck disable=SC2016 # the backticks are Markdown's, matched literally
-if grep -q '`### Left standing`' <(head -1 "$STUB_CALLS") && grep -q 'departed from a nudge' <(head -1 "$STUB_CALLS") \
+if grep -q '`## Left standing`' <(head -1 "$STUB_CALLS") && grep -q 'departed from a nudge' <(head -1 "$STUB_CALLS") \
    && grep -q '`## Nudges`' <(head -1 "$STUB_CALLS"); then
   ok "the build is told its nudges, and to record under Left standing where it departed from one"
 else bad "the build is told its nudges, and to record under Left standing where it departed from one" "$(head -1 "$STUB_CALLS")"; fi
+# A list of which test proves which criterion says of nearly every ticket what
+# `done` already says, and buried the one line in it worth reading: a criterion
+# checked by hand, with no test behind it.
+if grep -q 'no automated test proves' <(head -1 "$STUB_CALLS") && ! grep -qi 'which test proves' <(head -1 "$STUB_CALLS"); then
+  ok "the build lists under Left standing only the criteria no test proves"
+else bad "the build lists under Left standing only the criteria no test proves" "$(head -1 "$STUB_CALLS")"; fi
 
 # --- a build that committed nothing
 #
@@ -1080,7 +1086,7 @@ else bad "a dependency nobody can satisfy is named" "rc=$rc $(out)"; fi
 
 workspace
 # shellcheck disable=SC2016 # a Markdown fence, written literally
-printf '\n## Record\n\n```\nstatus:    review\nattempts:  7\n```\n' >> "$WORK/changes/x/tickets/1-one.md"; commit
+printf '\n## Left standing\n\n```\nstatus:    review\nattempts:  7\n```\n' >> "$WORK/changes/x/tickets/1-one.md"; commit
 plan build build review
 run > /dev/null
 if [ "$(grep -c '^status:    review' "$WORK/changes/x/tickets/1-one.md")" = 1 ]; then

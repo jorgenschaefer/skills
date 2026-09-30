@@ -64,7 +64,7 @@ Only for a decision you newly make while reading the code - one from `/find-crit
 
 Drift, or acceptance routing an unmet AC back, lands here against a directory that already has committed tickets.
 
-- **Edit the tickets the change touches, in place:** the new quote and plan, no `## Halt`, no `## Record`, `status: ready`, `attempts: 0`. A built ticket whose AC changed is rebuilt this way, not annotated - its words are what the code was built against.
+- **Edit the tickets the change touches, in place:** the new quote and plan, no `## Halt`, no `## Left standing`, `status: ready`, `attempts: 0`. A built ticket whose AC changed is rebuilt this way, not annotated - its words are what the code was built against.
 - **Delete a ticket with nothing left to build; add tickets for new work.** Fix every `after:` that named a deleted ticket - the runner halts on one that names nothing.
 - **Delete `REVIEW.md`**, where there is one: it reviewed what is about to change, and the runner does not review again while it is there.
 - **It goes through the same write, check, approve**, because the tickets are what is being changed.

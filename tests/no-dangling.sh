@@ -72,7 +72,7 @@ while IFS= read -r doc; do
              | tr -d '`' | sed 's|^\./||' | sort -u)
 
   # And no section of the standard, named anywhere at all. A section of some
-  # other document - a ticket's `## Done when` or its `## Record` - is a
+  # other document - a ticket's `## Done when` or its `## Left standing` - is a
   # skill specifying a document it writes or reads, which is its own business.
   # shellcheck disable=SC2016 # the backticks are Markdown's, matched literally
   while IFS= read -r tok; do

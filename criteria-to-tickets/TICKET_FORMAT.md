@@ -32,7 +32,7 @@ Then, for each AC under `## Toward`, the part of it this slice makes true, in pl
 
 > <exactly as `CRITERIA.md` writes it>
 
-Soft: nothing checks the build against them, but a departure from one is recorded under `### Left standing`, with the reason. Empty when none bears on this slice.>
+Soft: nothing checks the build against them, but a departure from one is recorded under `## Left standing`, with the reason. Empty when none bears on this slice.>
 
 ## Context
 <Enough to build this without reading `CRITERIA.md` - what exists already, the agreed design and its specimen where it bears on this slice, where the seam is. A session gets this file and the code, nothing else.>
@@ -45,11 +45,8 @@ Written before the build, by whoever cut the slice, against the code as it actua
 ## Not here
 <The boundary against the neighbouring tickets, and where the excluded thing lives instead, and the lines of `CRITERIA.md`'s `Out of scope` a builder here would otherwise wander into.>
 
-## Record
-<Written by the build: the test that proves each AC this slice closes, the test that proves its part of each AC it advances, and the command that ran the checks. The only evidence that an AC was covered rather than claimed.
-
-### Left standing
-Review findings not fixed and why, checks not run, departures from the plan, and departures from a nudge with the reason. Printed at the end of the run and read at acceptance.>
+## Left standing
+<Written by the build: review findings not fixed and why, checks not run, each AC this slice closes or advances that no automated test proves and how it was checked instead, departures from the plan, and departures from a nudge with the reason. Nothing else - a fixed finding or an AC a test proves is what `status: done` already says, and listing them buries the lines worth reading. Printed at the end of the run, read by the later builds and at acceptance. Empty when the build left nothing.>
 
 ## Halt
 <Written by whoever stopped - the session or the runner - naming the kind and what it was blocked on. Absent unless something stopped.>
