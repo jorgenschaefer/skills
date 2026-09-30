@@ -427,8 +427,23 @@ halt() {  # ticket, kind, why
   [ "$(field "$1" status)" != halted ] || return 0
   printf '\n## Halt\n\n%s - %s\n' "$2" "$3" >> "$1"
   set_field "$1" status halted
-  git commit -q -m "Halt $(basename "$1" .md): $2" -- "$1" >/dev/null \
+  commit_halt "$1" "$2"
+}
+
+# A session's own halt is committed the same way, and only the ticket file:
+# whatever the session left besides is its unfinished build, for the person who
+# settles the halt to keep or throw away.
+commit_halt() {  # ticket, kind
+  git diff --quiet HEAD -- "$1" && return 0
+  git commit -q -m "Halt $(basename "$1" .md)${2:+: $2}" -- "$1" >/dev/null \
     || echo "could not commit the halt in $1" >&2
+}
+
+# The kind a session named, read off the first line of its halt in whatever
+# shape it wrote it; empty where that line names none of the three.
+halt_kind() {  # ticket
+  sed -n '/^## Halt$/,$p' "$1" | sed -n '2,$p' | sed '/^[[:space:]]*$/d' | head -1 \
+    | grep -o -m1 -w 'blocked\|undecided\|mystery' | head -1
 }
 
 # The ticket protocol is stated here rather than in the skill. `/implement` is
@@ -658,7 +673,7 @@ while :; do
   # committing its build has built it, and one that crashed before has left the
   # claim for the runner to put back. The attempt is spent either way.
   case "$(field "$ticket" status)" in
-    halted) release "$ticket"; end_run 1 ;;
+    halted) commit_halt "$ticket" "$(halt_kind "$ticket")"; release "$ticket"; end_run 1 ;;
     done) ;;
     *) say "session left $(basename "$ticket") at $(field "$ticket" status) - back to ready"
        put_aside "$ticket" "$attempts"

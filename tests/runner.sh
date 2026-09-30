@@ -883,6 +883,23 @@ else bad "a session halt stops the run" "rc=$rc status=$(field 1-one status)"; f
 if [ "$(field 2-two status)" = ready ]; then ok "a halt leaves the rest of the directory alone"
 else bad "a halt leaves the rest of the directory alone" "$(field 2-two status)"; fi
 
+# A halt is the one thing a run leaves for a person, and the runner commits its
+# own. A session's own was left uncommitted, for the next start to read as
+# someone else's change.
+if [ "$(git -C "$WORK" show HEAD:changes/x/tickets/1-one.md | sed -n 's/^status: *//p')" = halted ] \
+   && [ -z "$(git -C "$WORK" status --porcelain -- changes/x/tickets)" ] \
+   && [ "$(git -C "$WORK" log -1 --format=%s)" = "Halt 1-one: blocked" ]; then
+  ok "a session's halt is committed, named for its kind"
+else bad "a session's halt is committed, named for its kind" "$(git -C "$WORK" log --oneline | head -3) $(git -C "$WORK" status --porcelain)"; fi
+
+# The kind is read off what the session wrote, whichever of the three it is.
+workspace
+plan halt:mystery
+run > /dev/null
+if [ "$(git -C "$WORK" log -1 --format=%s)" = "Halt 1-one: mystery" ]; then
+  ok "a session's halt commit names the kind it wrote"
+else bad "a session's halt commit names the kind it wrote" "$(git -C "$WORK" log --oneline | head -3)"; fi
+
 # --- the usage budget is waited out rather than spent
 #
 # A usage limit is not a failure of the work: the session was stopped, often
