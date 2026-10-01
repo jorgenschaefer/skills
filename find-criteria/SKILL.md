@@ -24,7 +24,7 @@ This skill's `CRITERIA_FORMAT.md` settles the shape of the file.
 
 **Read the codebase first**: what is already there, what the project calls things, what it decided before. The alternatives and what they cost rest on it.
 
-**Propose at least three genuinely different alternatives**, or say why the space holds fewer. Two that differ only in how much of the same thing they do are one. Give each its effort and the complexity it adds to the code. No weighting, no scoring: the user picks, and you may recommend.
+**Propose at least three genuinely different alternatives**, or say why the space holds fewer. Two that differ only in how much of the same thing they do are one.
 
 **Build a specimen where the difference is visual.** Publish it as a Claude Artifact, and keep a copy in `specimens/` in the change's directory - `changes/YYYY-MM-DD-<slug>/specimens/`, made now if it is not there. Once the choice is made, `specimens/` holds the agreed specimen and nothing else.
 
@@ -50,6 +50,8 @@ This skill's `CRITERIA_FORMAT.md` settles the shape of the file.
 A decision made here that this skill's `CODING_STANDARDS.md` says earns an ADR is put to the user with a recommendation. On a yes, write it to `docs/adr/` in this skill's `ADR_FORMAT.md` shape, now, while the argument for it is in front of you.
 
 ## Throughout
+
+**Every time you put alternatives for what the change does or how it is built to the user, give each its effort and the complexity it adds to the code, next to what it gives** - the approach, the variants in a specimen, and any such choice that comes up later in the loop. Effort is a size from XS to XL. Complexity is a few words naming what it adds - "a migration for entries and versions" - not a size. A yes/no question is not such a choice: approving the ACs and nudges, an ADR, an objection to a nudge.
 
 **End your turn at the first question mark.** One turn, one open question.
 

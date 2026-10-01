@@ -3,7 +3,7 @@ criteria:  CRITERIA.md
 closes:    AC-1, AC-2, AC-3, AC-4, AC-5
 advances:
 after:
-status:    ready
+status:    done
 attempts:  0
 ---
 
@@ -55,3 +55,4 @@ Decided here: the rule sits first under `## Throughout`, because it is the only 
 
 ## Left standing
 
+- No automated test proves AC-1 to AC-5: the repository has no test that reads a skill's wording for meaning, and a grep would pin words rather than behaviour. Checked by reading the new text against each AC and nudge, by this build and by the review; `./test.sh` green.
