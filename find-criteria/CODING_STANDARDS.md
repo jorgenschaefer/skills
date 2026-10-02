@@ -112,7 +112,7 @@ Directories and modules should therefore group code by feature. Prefer this over
 
 Put a test next to the file it tests, not in a separate `tests/` tree - unless the project's existing layout clearly says otherwise.
 
-**Before adding code to a file of more than about 500 lines, split it.** Divide it along what changes together into files of roughly 150-300 lines, each holding one part, and split its test file the same way, so each part keeps exactly one test file. When only the test file is over the limit, first shorten it: shared setup, table-driven cases, helpers for repeated assertions. If it is still too long, the source holds more than one part - split the source and its tests together, even though the source is under the limit. A large file keeps growing, because adding to it is always the easiest option, and every later change has to read all of it again. The split changes no behaviour and comes before the change, not mixed into it. Generated files are exempt.
+**Before adding code to a file of more than about 500 lines, split it.** Divide it along what changes together into files of roughly 150-300 lines, each holding one part, and split its test file the same way, so each part keeps exactly one test file. When only the test file is over the limit, first shorten it: shared setup, table-driven cases, helpers for repeated assertions. If it is still too long, the source holds more than one part - split the source and its tests together, even though the source is under the limit. The split changes no behaviour and comes before the change, not mixed into it. Generated files are exempt.
 
 ### Function and Method Names Follow Domain Actions
 
