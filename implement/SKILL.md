@@ -21,7 +21,7 @@ This skill's `CODING_STANDARDS.md` is what the software has to look like. Read i
 
 ## Build it
 
-Build it to the standard, in the order the standard says the work happens. Then the project's checks, and report the real result - if you cannot run them, say so rather than assuming.
+Build it to the standard, in the order the standard says the work happens. While you build, run the tests the change touches. The project's checks run whole before each review and before the commit, and not again where nothing changed since - one run checked every ticket three and four times over. Report the real result; if you cannot run them, say so rather than assuming.
 
 **Keep your own context for the build.** Side work whose result is a conclusion - surveying code you do not know, chasing a failure you cannot yet explain - goes to a subagent with the question, and only the answer comes back - a large context is paid for on every turn, and again on every resume. The red-green cycles stay here.
 
