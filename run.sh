@@ -111,59 +111,12 @@ TOKENS="$LOG_DIR/$(realpath --relative-to="$(git rev-parse --show-toplevel)" "$(
 # shellcheck source=run/checks.sh
 . "$LIB/checks.sh"
 
-# --- the end of a run
-#
-# Nobody watches a run, so whatever needs a person is printed at the end of it,
-# however it ended. Acceptance is pointed to only when there is something to
-# accept.
-
-end_run() {  # exit status
-  local t left
-  if [ -n "$(unfinished)" ]; then
-    printf 'stopped with work left in %s:\n%s' "$TICKETS" "$(unfinished)" >&2
-  fi
-  for t in "${files[@]}"; do
-    left="$(left_standing "$t")"
-    [ -z "$left" ] || printf '\n%s left standing:\n%s\n' "$(basename "$t")" "$left"
-  done
-  [ ! -f "$REVIEW" ] || printf '\nthe final review left:\n%s\n' "$(cat "$REVIEW")"
-  token_summary
-  [ "$1" != 0 ] || printf '\nevery ticket in %s is done - walk it with /accept-criteria %s\n' \
-                          "$TICKETS" "$(dirname "$TICKETS")"
-  exit "$1"
-}
-
-left_standing() {  # ticket -> its ## Left standing, blank lines dropped
-  sed -n '/^## Left standing$/,/^#/{/^#/d;p;}' "$1" | sed '/^[[:space:]]*$/d'
-}
-
-unfinished() {  # the tickets not done, one line each, saying why
-  local t
-  for t in "${files[@]}"; do
-    case "$(field "$t" status)" in
-      done) ;;
-      halted) printf '%s: halted - %s\n' "$(basename "$t")" "$(sed -n '/^## Halt$/,$p' "$t" | sed -n '3p')" ;;
-      *)      printf '%s: %s, after: %s\n' "$(basename "$t")" "$(field "$t" status)" "$(field "$t" after)" ;;
-    esac
-  done
-}
-
-# --- the final review
-#
-# Each build was reviewed on its own, which cannot see what lies between them.
-# Over one ticket there is nothing between. REVIEW.md committed is how the
-# review is known to have finished, so a run started again once it has does not
-# review again - a re-slice deletes it, because it reviewed what is changing.
-
+# The final review leaves its findings here, and its being committed is how the
+# review is known to have finished.
 REVIEW="$(dirname "$TICKETS")/REVIEW.md"
 
-# The change starts where its tickets were first added: every build since is
-# part of it, whatever the branch it came from is called.
-review_base() {
-  local added
-  added="$(git log --diff-filter=A --format=%H -- "$TICKETS" | tail -1)"
-  git rev-parse -q --verify "$added^" || git hash-object -t tree /dev/null
-}
+# shellcheck source=run/report.sh
+. "$LIB/report.sh"
 
 preflight || end_run 2
 
@@ -336,11 +289,5 @@ done
 # report says which.
 [ -z "$(unfinished)" ] || end_run 1
 
-if [ "${#files[@]}" -gt 1 ] && ! git cat-file -e "HEAD:./$REVIEW" 2>/dev/null; then
-  [ -n "$VERIFY" ] || verify
-  claude_through_limits review "$(review_brief)" --session-id "$(new_session_id)"
-  [ $? = "$EX_LIMIT" ] && end_run 1
-  git cat-file -e "HEAD:./$REVIEW" 2>/dev/null \
-    || { echo "the final review did not finish: it committed no $REVIEW - see $LOG" >&2; end_run 1; }
-fi
+final_review
 end_run 0
