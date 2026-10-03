@@ -132,6 +132,31 @@ if [ "$rc" = 0 ] && ! grep -q 'drift' "$WORK/.out"; then
   ok "a nudge broken over two lines still matches its quote"
 else bad "a nudge broken over two lines still matches its quote" "rc=$rc $(out)"; fi
 
+# A nudge can be a list item of several paragraphs as a criterion can, quoted
+# the same way, with the blank line as a bare `>`.
+multi_paragraph_nudge() {  # the closing sentence in CRITERIA.md
+  perl -0pi -e "s/^- reuse the list that is already there\.\n/- reuse the list that is already there:\n  - its rows;\n  - its filters.\n\n  $1\n/m" \
+    "$WORK/changes/x/CRITERIA.md"
+  perl -0pi -e 's/^> reuse the list that is already there\.\n/> reuse the list that is already there:\n> - its rows;\n> - its filters.\n>\n> Not a second one.\n/m' \
+    "$WORK/changes/x/tickets/1-one.md"
+  commit
+}
+workspace
+multi_paragraph_nudge "Not a second one."
+plan build build review
+rc="$(run)"
+if [ "$rc" = 0 ] && ! grep -q 'drift' "$WORK/.out"; then
+  ok "a nudge of several paragraphs, quoted as it stands, is no drift"
+else bad "a nudge of several paragraphs, quoted as it stands, is no drift" "rc=$rc $(out)"; fi
+
+workspace
+multi_paragraph_nudge "Not a second one, ever."
+plan build
+rc="$(run)"
+if [ "$rc" != 0 ] && grep -q 'a nudge it quotes is not in' "$WORK/.out"; then
+  ok "a nudge's second paragraph reworded is drift"
+else bad "a nudge's second paragraph reworded is drift" "rc=$rc $(out)"; fi
+
 # A nudge nobody quotes is not drift: it is guidance, and only the tickets it
 # bears on carry it.
 workspace

@@ -135,15 +135,19 @@ comes_after() {  # ticket, slug of the other
   return 1
 }
 # A nudge has no id, so it is found by its words: one per line, whitespace
-# flattened, as a `- ` item in CRITERIA.md and as a `> ` quote in a ticket.
+# flattened, as a `- ` item in CRITERIA.md and as a `> ` quote in a ticket. A
+# blank line ends one unless an indented line follows, as for a criterion, and
+# a bare `>` adds nothing.
 nudges_of() {  # file, the marker its nudges start with
   awk -v m="$2" '
-    function flush() { if (item != "") print item; item = "" }
+    function flush() { if (item != "") print item; item = ""; blank = 0 }
     /^#/ { flush(); in_nudges = ($0 == "## Nudges"); next }
     !in_nudges { next }
-    /^[[:space:]]*$/ { flush(); next }
+    /^[[:space:]]*$/ { blank = 1; next }
+    blank && !/^[[:space:]]/ { flush() }
     index($0, m) == 1 { if (m == "-") flush(); sub(/^[->][[:space:]]*/, "") }
-    { gsub(/[[:space:]]+/, " "); sub(/^ /, ""); sub(/ $/, ""); item = item (item == "" ? "" : " ") $0 }
+    { blank = 0; gsub(/[[:space:]]+/, " "); sub(/^ /, ""); sub(/ $/, "") }
+    $0 != "" { item = item (item == "" ? "" : " ") $0 }
     END { flush() }
   ' "$1"
 }
