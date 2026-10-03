@@ -37,7 +37,8 @@ light path is the same pipeline with less in it, not a way around it.
 everything that has to hold when a session is dead or lying is a script, and
 everything that is judgement is a skill. A session cannot enforce a budget it is
 spending, reset a claim it is holding when it dies, or wait out a limit that has
-already stopped it.
+already stopped it. Its library is under `run/` - a directory with no `SKILL.md`,
+so not a skill, and `sync.sh` leaves it out.
 
 **Every stage is checked by something that did not produce it.** The first three carry
 their adversary as a `VERIFY.md` beside their `SKILL.md` and hand it to a subagent with
