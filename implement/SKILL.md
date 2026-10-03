@@ -29,7 +29,7 @@ Build it to the standard, in the order the standard says the work happens. While
 
 **Spawn `critique` as a subagent with a fresh context.** Hand it the diff, the result of the checks, and what was asked for - the criteria and what is out of scope, as the request states them. Do not hand it the reasoning that produced the code: not the plan, and not how you tested it.
 
-**The review is where the running app is checked.** `critique` drives it on every screen the change touches, at the narrowest and widest supported size. Do not check the screens yourself before it: in one run each build's own browser check and its reviewer drove the app at the same time, fought over the dev server, and paid for the same check twice.
+**The review is where the running app is checked.** `critique` drives it on every screen the change touches, at the narrowest and widest supported size - in a second round, only the screens the fixes since the first touched. Do not check the screens yourself before it: in one run each build's own browser check and its reviewer drove the app at the same time, fought over the dev server, and paid for the same check twice.
 
 That last part is the whole point. A reviewer that has already accepted every step of the reasoning is not a reviewer - it will read its own intentions into the code and find the defects it was already looking for. The subagent starts cold, which is the only reason its findings are worth anything.
 
@@ -37,7 +37,7 @@ That last part is the whole point. A reviewer that has already accepted every st
 
 Work the blockers and the should-fix, test-first like anything else. Then review again, the same way.
 
-**A first round of only nits gets no second** - nits by the reviewer's rating, not yours. Fix the ones worth fixing and stop there. A second round is a whole review over again - a fresh reviewer that reads the standard, the diff and the files, and drives the app - and it is paid for a finding that changes nothing a user or the next reader meets.
+**A first round of only nits gets no second** - nits by the reviewer's rating, not yours. Fix the ones worth fixing and stop there. A second round is a whole review over again - a fresh reviewer that reads the standard, the diff and the files - and it is paid for a finding that changes nothing a user or the next reader meets. Its driving covers only the screens your fixes touched, and you name them in the hand-off: in one run, all that second rounds found by driving the app was on a screen a first-round fix had changed.
 
 **Two rounds at most.** Stop when a review comes back clean or with only nits, or when the second round is done, and report what is still standing: the nits, anything you disagreed with and why, anything you chose not to fix and why.
 

@@ -1201,6 +1201,11 @@ else bad "the review is told a fix that departs from a nudge is left standing, n
 if grep -q 'found only nits' <(tail -1 "$STUB_CALLS"); then
   ok "the review is told not to review again after a round of only nits"
 else bad "the review is told not to review again after a round of only nits" "$(tail -1 "$STUB_CALLS")"; fi
+# Round two drove every screen again, and the one thing its driving found in a
+# whole run was on a screen a round-one fix had changed.
+if grep -q 'drives only the screens the fixes since the first round touched' <(tail -1 "$STUB_CALLS"); then
+  ok "the review's second round drives only the screens its fixes touched"
+else bad "the review's second round drives only the screens its fixes touched" "$(tail -1 "$STUB_CALLS")"; fi
 # A build left a blocker it had not fixed in its Left standing, and the review,
 # shown none of them, found the same bug again. Left standing is handed over
 # whole, not pointed at: whole tickets are the plans critique must not see.
