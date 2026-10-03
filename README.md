@@ -79,7 +79,9 @@ claims each ticket, builds it, and either finishes it or sends it back. It refus
 start on the main branch or on a dirty tree - the ticket files aside, which are its own
 bookkeeping - and before the first build it has a session name the project's checks and
 runs them itself - a run that starts red does not start, and every build is told the
-checks were green. It checks before every pass that the tickets still quote `CRITERIA.md`'s
+checks were green. It runs them again on every build's commit, rather than believing the
+session's account of them: a red one goes back to the session that made it, the first time
+without spending an attempt. It checks before every pass that the tickets still quote `CRITERIA.md`'s
 acceptance criteria and nudges word for word, that each ticket's `closes:` and `advances:`
 name exactly the criteria it quotes, and that every criterion is closed by exactly one ticket,
 built after every ticket that advances it - a criterion can take several slices, but one of

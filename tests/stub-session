@@ -9,6 +9,12 @@
 #                and commit it with the code
 #   build-dirty  build, and leave an untracked file behind besides
 #   build-killed build, then kill the runner with -9 before it can check the build
+#   build-red    build, and leave .red at the root, which a test's check reads
+#                as red
+#   build-red-killed  build-red, then kill the runner with -9 before it can
+#                check the build
+#   fix-red      remove .red, commit a fix, and set status: done again - the
+#                resumed session a red check was handed back to
 #   claim-only   set status: done having committed nothing
 #   claim-dirty  the same, with code written and left uncommitted
 #   claim-killed set status: done, commit nothing, and kill the runner with -9
@@ -117,7 +123,7 @@ case "$line" in
     git commit -qm "review" >/dev/null 2>&1
     echo '{"type":"result","subtype":"success","is_error":false,"result":"reviewed"}'
     ;;
-  build|limit-passed|build-limit|build-dirty|build-killed)
+  build|limit-passed|build-limit|build-dirty|build-killed|build-red|build-red-killed)
     if [ "$line" = limit-passed ]; then
       echo '{"type":"assistant","message":{"role":"assistant","content":[]},"parent_tool_use_id":"toolu_sub","error":"rate_limit"}'
       rejected_event
@@ -128,8 +134,16 @@ case "$line" in
     git add -A >/dev/null 2>&1
     git commit -qm "build $(basename "$ticket")" >/dev/null 2>&1
     if [ "$line" = build-limit ]; then rejected_event; exit 1; fi
-    if [ "$line" = build-killed ]; then kill -9 "$PPID"; fi
+    case "$line" in build-red*) : > "$(git rev-parse --show-toplevel)/.red" ;; esac
+    if [ "$line" = build-killed ] || [ "$line" = build-red-killed ]; then kill -9 "$PPID"; fi
     if [ "$line" = build-dirty ]; then printf 'stray\n' > "$(git rev-parse --show-toplevel)/stray"; fi
+    ;;
+  fix-red)
+    rm -f "$(git rev-parse --show-toplevel)/.red"
+    printf 'fixed\n' >> "$(git rev-parse --show-toplevel)/fix"
+    set_status "done"
+    git add -A >/dev/null 2>&1
+    git commit -qm "fix $(basename "$ticket")" >/dev/null 2>&1
     ;;
   claim-only|claim-dirty|claim-killed)
     [ "$line" != claim-dirty ] || printf 'half\n' > "$(git rev-parse --show-toplevel)/code"

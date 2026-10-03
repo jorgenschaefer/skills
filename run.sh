@@ -472,7 +472,7 @@ brief() {  # ticket -> the prompt a fresh session on it starts from
   # one in a subdirectory looked for a relative path at the repository root.
   prompt="Use /implement on the work described in $(realpath "$1").
 
-The project's checks are \`$VERIFY\`, and they passed when this run started. A check that fails now failed because of this build.
+The project's checks are \`$VERIFY\`, and they pass on the commit you start from. A check that fails now failed because of this build.
 
 That file is the whole brief. Its \`## Done when\` is the definition of done - not the diff, not what you would have built, not what CRITERIA.md probably meant. Its \`## Nudges\` are how it was agreed this gets built: follow them, and where you depart from one, say why. Its \`## Not here\` names what a neighbouring ticket owns, and building it is two tickets building the same code. Its \`## Plan\` is how it was decided this gets built; where you find the plan wrong, say so rather than following it off a cliff.
 
@@ -503,7 +503,7 @@ Each one's \`## Left standing\` says what its build did not settle. Handle an it
 STOPPED_EARLY="Your turn ended before the ticket was finished, and whatever you had running in the background was killed; your uncommitted work is still in the tree. Carry on from there - rerun what was killed - and finish as the brief said."
 INTERRUPTED="The run was interrupted while you were working, and has been started again. Your uncommitted work is still in the tree. Carry on from where you stopped - rerun whatever was cut short, a subagent or a check included - and finish as the brief said."
 
-# --- the project's checks, once, before any build
+# --- the project's checks, before any build and after every one
 #
 # Finding the command is judgement - what the project gates a change on, which
 # CI says better than the scripts do - so a session names it. Running it is not,
@@ -513,18 +513,28 @@ INTERRUPTED="The run was interrupted while you were working, and has been starte
 # each time by a different route that they were not its own, and in one case
 # halt over them. A run that starts red does not start, and a build that is told
 # the checks were green cannot mistake anything for someone else's.
+#
+# Once at the start, then on every build's commit, below: a build's account of
+# its own checks is an account too.
 
-verify() {
-  local log
+find_checks() {
   claude_through_limits verify "Find this project's verification command: the one shell line, run from $(pwd), that runs everything a change here has to pass - tests, type check, lint. Where CI runs these, what CI runs is the authority. Do not run it and change nothing; answer with the command." --session-id "$(new_session_id)" \
     --json-schema '{"type":"object","properties":{"command":{"type":"string"}},"required":["command"]}'
   [ $? = "$EX_LIMIT" ] && end_run 1
   VERIFY="$(jq -R -r 'fromjson? | select(.type == "result") | .structured_output.command // empty' "$LOG")"
   [ -n "$VERIFY" ] || die "the session found no verification command - see $LOG"
-  log="$LOG_DIR/verify-$(date +%Y%m%d-%H%M%S).log"
+}
+
+run_checks() {  # -> their exit status; CHECKS_LOG names their output
+  CHECKS_LOG="$LOG_DIR/verify-$(date +%Y%m%d-%H%M%S).log"
   say "running the checks: $VERIFY"
-  bash -c "$VERIFY" > "$log" 2>&1 9>&- \
-    || { tail -20 "$log" >&2; die "the checks fail before any build: $VERIFY - full output in $log"; }
+  bash -c "$VERIFY" > "$CHECKS_LOG" 2>&1 9>&-
+}
+
+verify() {
+  find_checks
+  run_checks \
+    || { tail -20 "$CHECKS_LOG" >&2; die "the checks fail before any build: $VERIFY - full output in $CHECKS_LOG"; }
   say "the checks pass"
 }
 
@@ -605,6 +615,10 @@ ready_ticket() {  # the first ticket whose dependencies are done
   return 1
 }
 
+# What the next resume of a claimed session is told, where it is not that the
+# run was interrupted; and how often this claim's checks came back red.
+resume_with="" reds=0
+
 while :; do
   preflight || end_run 2
 
@@ -623,7 +637,8 @@ while :; do
     fi
     case "$(field "$ticket" status)" in
       doing) say "carrying on with $(basename "$ticket"), attempt $attempts of $MAX_ATTEMPTS"
-             session "$ticket" --resume "$id" "$INTERRUPTED"; rc=$? ;;
+             session "$ticket" --resume "$id" "${resume_with:-$INTERRUPTED}"; rc=$?
+             resume_with="" ;;
       *)     say "settling $(basename "$ticket"), left at $(field "$ticket" status)"; rc=0 ;;
     esac
   else
@@ -646,7 +661,7 @@ while :; do
     # record with the session, because a runner killed during the build is
     # started again with neither.
     head_before="$(git rev-parse HEAD)"
-    id="$(new_session_id)"
+    id="$(new_session_id)" reds=0
     printf '%s %s\n' "$id" "$head_before" > "$(claim_record "$ticket")"
     session "$ticket" --session-id "$id"; rc=$?
   fi
@@ -718,8 +733,36 @@ while :; do
   fi
   say "done: $(basename "$ticket") at $(git rev-parse --short HEAD)"
   # Whatever the build left lying around besides its commit is not the next
-  # ticket's, and would read to its session as its own work.
+  # ticket's, and would read to its session as its own work - nor the checks':
+  # an untracked file failed the lint of every session in one run.
   put_aside "$ticket" "$attempts"
+
+  # The build's checks are its session's account of them. The runner runs them
+  # on the commit, and a red one goes back to the session that made it, which
+  # still has the build in its context - so the claim stands until they are
+  # green. The first red is free, as a session stopping early is; each one after
+  # it spends an attempt, and the budget halts it as it halts any other.
+  [ -n "$VERIFY" ] || find_checks
+  if ! run_checks; then
+    reds=$((reds + 1))
+    if [ "$reds" -gt 1 ]; then
+      attempts=$((attempts + 1))
+      if [ "$attempts" -gt "$MAX_ATTEMPTS" ]; then
+        halt "$ticket" exhausted "the project's checks (\`$VERIFY\`) stayed red on its build through $MAX_ATTEMPTS attempts - the last output is in $CHECKS_LOG"
+        release "$ticket"
+        end_run 1
+      fi
+      set_field "$ticket" attempts "$attempts"
+    fi
+    say "the checks fail on $(basename "$ticket")'s build - handing it back to its session"
+    set_field "$ticket" status doing
+    printf '%s %s\n' "$id" "$(git rev-parse HEAD)" > "$(claim_record "$ticket")"
+    resume_with="The project's checks fail on your commit $(git rev-parse --short HEAD): \`$VERIFY\`. The runner ran them and set the ticket back to \`status: doing\`. Fix it test-first like any other failure, commit, and set \`status: done\` again. The last lines of what they printed are below; all of it is in $CHECKS_LOG.
+
+$(tail -40 "$CHECKS_LOG")"
+    continue
+  fi
+  say "the checks pass"
   release "$ticket"
 done
 
