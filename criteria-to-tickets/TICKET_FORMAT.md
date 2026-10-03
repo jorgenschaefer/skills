@@ -54,7 +54,7 @@ Written before the build, by whoever cut the slice, against the code as it actua
 
 ## What the frontmatter is for
 
-**A ticket that only splits a large file closes and advances nothing.** Both fields are empty, it quotes no AC, and its `Done when` names the files it splits into, with the behaviour unchanged and the checks green. The tickets that add to the file come `after:` it.
+**A ticket that only splits a large file closes and advances nothing.** Both fields are empty, it quotes no AC, and its `Done when` names the files it splits into - source and test, one test file per source file - with the behaviour unchanged and the checks green. The tickets that add to the file come `after:` it.
 
 **`closes` and `advances` have to agree with the quotation.** An AC claimed and not quoted is one the builder never sees; an AC quoted and not claimed is work no coverage check knows about. The runner checks both.
 

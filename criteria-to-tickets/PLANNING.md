@@ -4,7 +4,7 @@ What goes in a ticket's `## Plan`. One slice at a time, worked out against the c
 
 ## Read before you plan
 
-**Open the files the slice will touch.** Name them in the plan. One that `CODING_STANDARDS.md` calls large is split in a ticket before this one - `SKILL.md` says how - and the plan is written against the files it splits into. A plan written against an imagined codebase is the failure this step exists to prevent: it reads as confident, it survives review, and it falls apart in the first ten minutes of the build, by which time the person who could have caught it is gone.
+**Open the files the slice will touch.** Name them in the plan. One the slice adds to - source or test - that `CODING_STANDARDS.md` calls large is split in a ticket before this one - `SKILL.md` says how - and the plan is written against the files it splits into. A plan written against an imagined codebase is the failure this step exists to prevent: it reads as confident, it survives review, and it falls apart in the first ten minutes of the build, by which time the person who could have caught it is gone.
 
 **Find what already does this, or half of it.** The plan should reuse what is there. A step that writes something the project already has is a step that adds a second way to do it.
 
