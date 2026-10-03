@@ -59,9 +59,12 @@ expect_counted "$shared" "files held by more than one skill"
 # The tests included: a suite is code that decides what passes. Three reviews
 # reported shellcheck as not installed and ran nothing, so a lint that cannot run
 # fails here rather than reading as a clean one.
+#
+# run.sh's library is named on its own: followed in through run.sh's `source`,
+# an error inside a sourced file is not reported.
 if ! command -v shellcheck >/dev/null; then
   bad "every script passes shellcheck" "shellcheck is not on PATH"
-elif lint="$(shellcheck -x -P SCRIPTDIR "$HERE"/run.sh "$HERE"/sync.sh "$HERE"/test.sh \
+elif lint="$(shellcheck -x -P SCRIPTDIR "$HERE"/run.sh "$HERE"/run/*.sh "$HERE"/sync.sh "$HERE"/test.sh \
                  "$HERE"/tests/*.sh "$HERE"/tests/run/*.sh "$HERE"/tests/stub-session 2>&1)"; then
   ok "every script passes shellcheck"
 else
@@ -72,6 +75,15 @@ fi
 
 printf '\n'
 "$HERE/tests/run.sh"        || failed=$((failed + 1))
+# One suite per file of run.sh's library, beside the harness they all stand on.
+suites=0
+for suite in "$HERE"/tests/run/*.sh; do
+  [ "$(basename "$suite")" != harness.sh ] || continue
+  suites=$((suites + 1))
+  printf '\n'
+  "$suite" || failed=$((failed + 1))
+done
+expect_counted "$suites" "suites of the runner's library"
 printf '\n'
 "$HERE/tests/no-dangling.sh" || failed=$((failed + 1))
 printf '\n'
