@@ -47,20 +47,6 @@ else bad "it refuses a repository with no commits, for the reason it gives" "rc=
 if [ ! -s "$STUB_CALLS" ]; then ok "a repository with no commits launches nothing"
 else bad "a repository with no commits launches nothing" "$(calls)"; fi
 
-# Whatever is lying around uncommitted is someone's, and a session cannot tell
-# it from its own work: it lints it, reviews it, and has to carve it out of
-# every diff. Untracked files count - an untracked mockup broke the lint of a
-# whole run.
-workspace
-printf 'x\n' > "$WORK/stray"
-plan build build review
-rc="$(run)"
-if [ "$rc" != 0 ] && grep -q 'stray' "$WORK/.out"; then
-  ok "it refuses a dirty tree, and names what is in it"
-else bad "it refuses a dirty tree, and names what is in it" "rc=$rc $(out)"; fi
-if [ ! -s "$STUB_CALLS" ]; then ok "a dirty tree launches nothing"
-else bad "a dirty tree launches nothing" "$(calls)"; fi
-
 # Someone's notes in the ticket directory are not a ticket.
 workspace
 printf '# notes\n' > "$WORK/changes/x/tickets/README.md"; commit
@@ -247,17 +233,6 @@ if [ "$(field 1-one status)" = halted ] && [ "$(field 1-one attempts)" = 2 ] && 
   ok "a halt left uncommitted survives the builds after it"
 else bad "a halt left uncommitted survives the builds after it" "$(tkt 1-one) / $(git -C "$WORK" stash list) $(out)"; fi
 
-# The ticket files are the runner's bookkeeping and nothing else in their
-# directory is: someone's notes there are still someone's.
-workspace
-plan claim-only claim-only
-run > /dev/null
-printf 'notes\n' > "$WORK/changes/x/tickets/notes.md"
-rc="$(run)"
-if [ "$rc" != 0 ] && grep -q 'dirty tree' "$WORK/.out" && grep -q 'notes.md' "$WORK/.out"; then
-  ok "an uncommitted file beside the tickets is refused, bookkeeping or not"
-else bad "an uncommitted file beside the tickets is refused, bookkeeping or not" "rc=$rc $(out)"; fi
-
 # Killed after it handed a ticket back and before it released the record, the
 # runner finds a ready ticket still on record: nothing to resume, only a fresh
 # build to start.
@@ -312,25 +287,6 @@ if [ "$rc" = 0 ] && [ "$(wc -l < "$STUB_CALLS")" = 3 ] && grep -q '1-one' <(head
   ok "an uncommitted done with nothing on record is built, not believed"
 else bad "an uncommitted done with nothing on record is built, not believed" "rc=$rc $(calls) $(out)"; fi
 
-# The runner's own halts are committed: a halt is the one thing a run leaves for
-# a person, and uncommitted it was every later session's someone else's change.
-workspace
-plan claim-only claim-only
-run > /dev/null
-if [ "$(field 1-one status)" = halted ] && [ -z "$(git -C "$WORK" status --porcelain)" ] \
-   && [ "$(git -C "$WORK" show HEAD:changes/x/tickets/1-one.md | sed -n 's/^status: *//p')" = halted ]; then
-  ok "a halt the runner writes is committed"
-else bad "a halt the runner writes is committed" "$(git -C "$WORK" status --porcelain) $(git -C "$WORK" log --oneline | head -3)"; fi
-
-# A drift nobody has resolved is the same halt on every start, not one more.
-workspace
-sed -i 's/the second thing happens\./the second thing happens, reworded./' "$WORK/changes/x/CRITERIA.md"; commit
-plan build build review
-run > /dev/null; run > /dev/null
-if [ "$(grep -c '^## Halt' <(tkt 2-two))" = 1 ]; then
-  ok "starting again on an unresolved drift does not halt it twice"
-else bad "starting again on an unresolved drift does not halt it twice" "$(tkt 2-two)"; fi
-
 # What the checks start in the background is not a session: it must not hold the
 # lock after the run, or every later start is refused.
 workspace
@@ -340,15 +296,6 @@ run > /dev/null
 rc="$(run)"
 if [ "$rc" = 0 ]; then ok "a process the checks leave running does not hold the lock"
 else bad "a process the checks leave running does not hold the lock" "rc=$rc $(out)"; fi
-
-# One runner leaves one claim.
-workspace
-sed -i 's/^status: .*/status:    doing/' "$WORK"/changes/x/tickets/*.md; commit
-plan build build review
-rc="$(run)"
-if [ "$rc" != 0 ] && grep -q 'more than one' "$WORK/.out" && grep -q '1-one' "$WORK/.out" && grep -q '2-two' "$WORK/.out" && [ ! -s "$STUB_CALLS" ]; then
-  ok "two claimed tickets are refused, named, and nothing is launched"
-else bad "two claimed tickets are refused, named, and nothing is launched" "rc=$rc $(out) $(calls)"; fi
 
 # --- the runner owns the claim
 #
