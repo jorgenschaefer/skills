@@ -71,7 +71,7 @@ fi
 # --- the suites ----------------------------------------------------------------
 
 printf '\n'
-"$HERE/tests/runner.sh"     || failed=$((failed + 1))
+"$HERE/tests/run.sh"        || failed=$((failed + 1))
 printf '\n'
 "$HERE/tests/no-dangling.sh" || failed=$((failed + 1))
 printf '\n'

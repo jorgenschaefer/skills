@@ -3,7 +3,7 @@
 # The tests for the runner: what it does with a ticket directory when nobody is
 # watching.
 #
-#   tests/runner.sh
+#   tests/run.sh
 #
 # Everything `run.sh` holds is something that has to be true when a session is
 # dead or lying, which is why it is a script and not a skill. Each case below
