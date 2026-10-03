@@ -99,6 +99,19 @@ if [ "$rc" != 0 ] && grep -q 'AC-1 no longer matches' "$WORK/.out"; then
   ok "a criterion's second paragraph reworded is drift"
 else bad "a criterion's second paragraph reworded is drift" "rc=$rc $(out)"; fi
 
+# A ticket's `## Done when` goes on after its quotes, in plain words: the part
+# of each criterion under `## Toward` this slice makes true. That sentence is
+# the ticket's own, and no part of the criterion above it.
+workspace
+perl -0pi -e 's/^(> \*\*AC-1\*\* the first thing happens\.\n)/$1\nThe first part of it, without filters.\n/m' \
+  "$WORK/changes/x/tickets/1-one.md"
+commit
+plan build build review
+rc="$(run)"
+if [ "$rc" = 0 ] && ! grep -q 'drift' "$WORK/.out"; then
+  ok "a sentence after a quoted criterion is not part of it"
+else bad "a sentence after a quoted criterion is not part of it" "rc=$rc $(out) $(tkt 1-one)"; fi
+
 # A nudge is quoted word for word too. Nothing checks the build against it, so
 # the quote is the only thing that carries it to the builder - and a quote that
 # no longer matches carries something nobody agreed to.
