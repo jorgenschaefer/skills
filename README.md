@@ -161,8 +161,9 @@ statement written before the approach was chosen.
 behaviour and watching its named test fail - deleted, and its edges moved - because
 deciding by eye whether a test would notice a change is prediction. `critique` and
 `/accept-criteria` drive the running product rather than reading the diff and concluding.
-A build does not check its own screens: its reviewer drives them, in a subagent that reports
-back in text, so no screenshot is carried through every later turn.
+A build does not check its own screens: its reviewer has them driven, by a subagent of its own
+that reports back in text, so neither the driving nor its screenshots are carried through the
+reviewer's every later turn.
 
 ## Available skills
 
