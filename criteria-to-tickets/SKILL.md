@@ -48,7 +48,7 @@ Where a slice introduces a concept the codebase has no name for, or moves a boun
 
 1. **Write the tickets** to `tickets/NN-<slug>.md` in the change's directory, following `PLANNING.md` for each plan.
 2. **Check them.** Spawn a subagent with a fresh context and give it `VERIFY.md` from this directory, the paths to the ticket files, and the path to `CRITERIA.md`. Nothing else - a reviewer that has your reasoning will read your intentions into the words.
-3. **Fix what it finds, then ask for approval.** Show the slicing, the implementation decisions, and the product questions as one list. A no means editing the tickets and asking again.
+3. **Fix what it finds, then ask for approval.** A ticket added, or whose plan changed, since the check goes through it again first: hand the subagent the whole directory again, naming those tickets, so it holds the rest against them. A check that saw tickets 01 to 20 said nothing about the 21 a rework added after it, and that one built a second copy of something another ticket built. Show the slicing, the implementation decisions, and the product questions as one list. A no means editing the tickets and asking again.
 
 ## Copy, never summarise
 

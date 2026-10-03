@@ -35,6 +35,8 @@ Each plan is steps against real files. **Check that every file a plan names exis
 
 **An AC with no step is one nobody has worked out how to build.**
 
+**One mechanism is built by one ticket.** Two plans that each build the same thing - a reader, a limit, a check, a component - is a finding, whoever wrote them: one ticket builds it, and the others reuse it by name and come `after:` it. Each plan's own search for what already exists cannot see code that is so far only another ticket's plan. In one change two tickets each planned a capped stream reader of their own, and only the review of the finished change found the second.
+
 ## Could a builder execute it
 
 A session gets its ticket and the code, nothing else. **Walk each ticket as its builder, step by step, and name what you would have to guess** - Context the builder would miss, a step that admits two readings that would produce different code. Report both readings; that is the finding, not your preference between them.
