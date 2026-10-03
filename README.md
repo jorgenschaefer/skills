@@ -106,7 +106,9 @@ When more than one ticket was built and none halted, **one final session reviews
 change** - the diff from before its tickets were added - for what no single ticket's review
 can see: the same thing built twice, one concept under two names, seams that do not line up.
 It runs `critique`, fixes what is worth fixing and commits, two rounds at most, and writes what
-it left standing to `REVIEW.md`. It goes through the same usage-limit handling as the builds,
+it left standing to `REVIEW.md`. It is handed what the builds left standing, though critique is
+not, and settles the blockers and should-fix a build left unfixed: fixed, or at the top of
+`REVIEW.md` for the person. It goes through the same usage-limit handling as the builds,
 and a review that ends without committing `REVIEW.md` fails the run. A re-slice deletes
 `REVIEW.md`, so the rebuilt change is reviewed again.
 

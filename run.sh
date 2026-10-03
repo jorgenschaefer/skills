@@ -480,7 +480,7 @@ A criterion the frontmatter's \`closes:\` names is true once this ticket is buil
 
 Do not open the CRITERIA.md the frontmatter names. The ticket quotes what it needs, and going upstream is how a ticket quietly becomes a different one.
 
-When the criteria are green and the project's checks pass, write the ticket's \`## Left standing\`: review findings you did not fix and why, checks you did not run, each criterion it closes or advances that no automated test proves and how you checked it instead, where you departed from the plan, and where you departed from a nudge, with the reason. Only those - a finding you fixed and a criterion a test proves are what \`done\` already says. Nobody reads your closing message in an unattended run; Left standing is printed at the end of the run and read at acceptance. Set \`status: done\` in the frontmatter and commit the code and the ticket file together, in one commit.
+When the criteria are green and the project's checks pass, write the ticket's \`## Left standing\`: review findings you did not fix, with the severity the reviewer gave each, and why, checks you did not run, each criterion it closes or advances that no automated test proves and how you checked it instead, where you departed from the plan, and where you departed from a nudge, with the reason. Only those - a finding you fixed and a criterion a test proves are what \`done\` already says. Nobody reads your closing message in an unattended run; Left standing is printed at the end of the run and read at acceptance. Set \`status: done\` in the frontmatter and commit the code and the ticket file together, in one commit.
 
 If you cannot proceed, append a \`## Halt\` section naming the kind and stop: \`blocked\` (a precondition the ticket assumed is not there), \`undecided\` (a decision the ticket's criteria do not settle and that is not yours to settle), or \`mystery\` (a failure you cannot explain, which is different from one you cannot fix). Then set \`status: halted\`.
 
@@ -550,7 +550,7 @@ end_run() {  # exit status
     printf 'stopped with work left in %s:\n%s' "$TICKETS" "$(unfinished)" >&2
   fi
   for t in "${files[@]}"; do
-    left="$(sed -n '/^## Left standing$/,/^#/{/^#/d;p;}' "$t" | sed '/^[[:space:]]*$/d')"
+    left="$(left_standing "$t")"
     [ -z "$left" ] || printf '\n%s left standing:\n%s\n' "$(basename "$t")" "$left"
   done
   [ ! -f "$REVIEW" ] || printf '\nthe final review left:\n%s\n' "$(cat "$REVIEW")"
@@ -558,6 +558,10 @@ end_run() {  # exit status
   [ "$1" != 0 ] || printf '\nevery ticket in %s is done - walk it with /accept-criteria %s\n' \
                           "$TICKETS" "$(dirname "$TICKETS")"
   exit "$1"
+}
+
+left_standing() {  # ticket -> its ## Left standing, blank lines dropped
+  sed -n '/^## Left standing$/,/^#/{/^#/d;p;}' "$1" | sed '/^[[:space:]]*$/d'
 }
 
 unfinished() {  # the tickets not done, one line each, saying why
@@ -581,13 +585,21 @@ unfinished() {  # the tickets not done, one line each, saying why
 REVIEW="$(dirname "$TICKETS")/REVIEW.md"
 
 review_brief() {  # -> the prompt the final review starts from
+  local t left standing=""
+  for t in "${files[@]}"; do
+    left="$(left_standing "$t")"
+    [ -z "$left" ] || standing+=$'\n\n'"$(basename "$t") left standing:"$'\n'"$left"
+  done
+  [ -z "$standing" ] || standing="
+
+What the builds left standing is below. Among it are review findings a build did not fix, with the severity its reviewer gave each - one run's build left a blocker there, and its review found the same bug again. Every blocker and should-fix among them is yours to settle as you settle critique's: fix it test-first - unless the fix departs from a nudge or needs a decision the criteria do not settle, and then it goes at the top of REVIEW.md, under its own heading, for the person. Leave the nits and everything else for acceptance, and hand none of it to critique.$standing"
   printf '%s' "Review the whole change this run built: \`git diff $(review_base)\`. The tickets in $(realpath "$TICKETS") built it, and each build was reviewed on its own - which cannot see what lies between them. Look for that: the same thing built twice, one concept under two names, seams between tickets that do not line up.
 
-The project's checks are \`$VERIFY\`, and they passed when this run started.
+The project's checks are \`$VERIFY\`, and they pass on the commit you start from.
 
 Spawn \`critique\` as a subagent with a fresh context. Hand it the diff, the result of the checks, and $(realpath "$(dirname "$TICKETS")/$(field "${files[0]}" criteria)") as what was asked for - not the tickets' plans or what their builds left standing, which are the reasoning behind the code. Evaluate what comes back, fix what is worth fixing test-first, run the checks and commit. The nudges in that file are how it was agreed this gets built, and each build followed them or recorded why not: a fix that departs from a nudge is not made - it goes under what you left standing, with the finding. Then review again the same way - unless the first round found only nits: fix the ones worth fixing and stop there. Two rounds at most: stop when a review comes back clean or with only nits, or when the second round is done.
 
-Then write what you left standing to $(realpath "$REVIEW") - findings you did not fix and why, checks you did not run - and commit it. Nobody reads your closing message in an unattended run: REVIEW.md is printed at its end, and the run counts the review as finished only once that file is committed."
+Then write what you left standing to $(realpath "$REVIEW") - findings you did not fix and why, checks you did not run - and commit it. Nobody reads your closing message in an unattended run: REVIEW.md is printed at its end, and the run counts the review as finished only once that file is committed.$standing"
 }
 
 # The change starts where its tickets were first added: every build since is

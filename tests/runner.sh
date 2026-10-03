@@ -1201,6 +1201,18 @@ else bad "the review is told a fix that departs from a nudge is left standing, n
 if grep -q 'found only nits' <(tail -1 "$STUB_CALLS"); then
   ok "the review is told not to review again after a round of only nits"
 else bad "the review is told not to review again after a round of only nits" "$(tail -1 "$STUB_CALLS")"; fi
+# A build left a blocker it had not fixed in its Left standing, and the review,
+# shown none of them, found the same bug again. Left standing is handed over
+# whole, not pointed at: whole tickets are the plans critique must not see.
+if grep -q 'left by 1-one' <(tail -1 "$STUB_CALLS") && grep -q 'left by 2-two' <(tail -1 "$STUB_CALLS"); then
+  ok "the review is handed what every build left standing"
+else bad "the review is handed what every build left standing" "$(tail -1 "$STUB_CALLS")"; fi
+if grep -q 'blocker and should-fix' <(tail -1 "$STUB_CALLS") && grep -q 'top of' <(tail -1 "$STUB_CALLS"); then
+  ok "the review settles the blockers and should-fix the builds left, or puts them at the top of REVIEW.md"
+else bad "the review settles the blockers and should-fix the builds left, or puts them at the top of REVIEW.md" "$(tail -1 "$STUB_CALLS")"; fi
+if grep -q 'severity' <(head -1 "$STUB_CALLS"); then
+  ok "a build leaves its unfixed findings standing with their severity"
+else bad "a build leaves its unfixed findings standing with their severity" "$(head -1 "$STUB_CALLS")"; fi
 
 # Tickets added in the very first commit have no commit before them, and the
 # change is then everything.
