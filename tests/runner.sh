@@ -334,6 +334,33 @@ if grep -q 'drift' <(tkt 1-one) && [ "$(field 1-one status)" = halted ]; then
   ok "drift is written into the ticket: its criterion was deleted"
 else bad "drift is written into the ticket: its criterion was deleted" "$(tkt 1-one)"; fi
 
+# A criterion can be a list item of several paragraphs: sub-items, a blank
+# line, and an indented paragraph that still belongs to it. The ticket quotes
+# the blank line as a bare `>`. Both are the same criterion, and the second
+# paragraph is part of what is compared.
+multi_paragraph() {  # the closing sentence in CRITERIA.md
+  perl -0pi -e "s/^- \*\*AC-1\*\* the first thing happens\.\n/- **AC-1** the first thing happens:\n  - one way;\n  - another way.\n\n  $1\n/m" \
+    "$WORK/changes/x/CRITERIA.md"
+  perl -0pi -e 's/^> \*\*AC-1\*\* the first thing happens\.\n/> **AC-1** the first thing happens:\n> - one way;\n> - another way.\n>\n> It fails otherwise.\n/m' \
+    "$WORK/changes/x/tickets/1-one.md"
+  commit
+}
+workspace
+multi_paragraph "It fails otherwise."
+plan build build review
+rc="$(run)"
+if [ "$rc" = 0 ] && ! grep -q 'drift' "$WORK/.out"; then
+  ok "a criterion of several paragraphs, quoted as it stands, is no drift"
+else bad "a criterion of several paragraphs, quoted as it stands, is no drift" "rc=$rc $(out)"; fi
+
+workspace
+multi_paragraph "It fails otherwise, loudly."
+plan build
+rc="$(run)"
+if [ "$rc" != 0 ] && grep -q 'AC-1 no longer matches' "$WORK/.out"; then
+  ok "a criterion's second paragraph reworded is drift"
+else bad "a criterion's second paragraph reworded is drift" "rc=$rc $(out)"; fi
+
 # A nudge is quoted word for word too. Nothing checks the build against it, so
 # the quote is the only thing that carries it to the builder - and a quote that
 # no longer matches carries something nobody agreed to.

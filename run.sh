@@ -134,11 +134,16 @@ quoted()   { grep -o '^> \*\*AC-[0-9]\+\*\*' "$1" | grep -o 'AC-[0-9]\+' | sort 
 claims()   { printf '%s %s\n' "$(field "$1" closes)" "$(field "$1" advances)" | grep -o 'AC-[0-9]\+' | sort -u; }
 declared() { grep -o '^- \*\*AC-[0-9]\+\*\*' "$1" | grep -o 'AC-[0-9]\+' | sort -u; }
 text_of()  { # file, id -> the criterion as written, marker stripped
+  # A blank line ends a criterion unless an indented line follows it: that is
+  # a further paragraph of the same list item, as Markdown reads it. A ticket
+  # quotes the blank line as a bare `>`, which is no blank line at all.
   awk -v id="$2" '
     index($0, "- **" id "**") == 1 || index($0, "> **" id "**") == 1 { found = 1; print; next }
-    found && (/^[->] \*\*AC-/ || /^#/ || /^$/) { exit }
-    found { print }
-  ' "$1" | sed 's/^[[:space:]]*[->][[:space:]]*//' | tr '\n' ' ' | sed 's/  */ /g; s/ *$//'
+    found && (/^[->] \*\*AC-/ || /^#/) { exit }
+    found && /^$/ { blank = 1; next }
+    found && blank && !/^[[:space:]]/ { exit }
+    found { blank = 0; print }
+  ' "$1" | sed 's/^> \{0,1\}//; s/^[[:space:]]*- //; s/^[[:space:]]*//' | tr '\n' ' ' | sed 's/  */ /g; s/ *$//'
 }
 # Whether a ticket comes after another, directly or by way of others.
 comes_after() {  # ticket, slug of the other
