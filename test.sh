@@ -62,7 +62,7 @@ expect_counted "$shared" "files held by more than one skill"
 if ! command -v shellcheck >/dev/null; then
   bad "every script passes shellcheck" "shellcheck is not on PATH"
 elif lint="$(shellcheck -x -P SCRIPTDIR "$HERE"/run.sh "$HERE"/sync.sh "$HERE"/test.sh \
-                 "$HERE"/tests/*.sh "$HERE"/tests/stub-session 2>&1)"; then
+                 "$HERE"/tests/*.sh "$HERE"/tests/run/*.sh "$HERE"/tests/stub-session 2>&1)"; then
   ok "every script passes shellcheck"
 else
   bad "every script passes shellcheck" "$lint"
