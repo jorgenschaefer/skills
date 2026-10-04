@@ -1,6 +1,6 @@
 ---
 name: improve-skill
-description: Cut an existing agent skill down to what changes what the agent does - "improve this skill", "tighten this SKILL.md", "this skill is too long", "make this skill more concise", "clean up my skill", "my skill never triggers", "fix this skill's description". Use it on any skill that reads as bloated, repetitive or vague, on one that never fires when it should, and on a skill you have just finished writing. It edits the file and leaves the change uncommitted, so the author reads a diff rather than a report.
+description: Cut an existing agent skill down to what changes what the agent does - "improve this skill", "tighten this SKILL.md", "this skill is too long", "make this skill more concise", "clean up my skill", "my skill never triggers", "fix this skill's description". Use it on any skill that reads as bloated, repetitive or vague, on one that never fires when it should, and on a skill you have just finished writing. It edits the file and leaves the change uncommitted.
 ---
 
 # Improve Skill
@@ -41,7 +41,7 @@ Most of the weight of a bloated skill is here.
 
 ## What you propose rather than write
 
-These are the improvements that add, so they belong in the report as the wording you would use, for the author to paste or decline. Look for them in the same pass, and do not write them into the file:
+These improvements add, so they go in the report as wording ready to paste, not into the file. Look for them in the same pass:
 
 - **The description.** The highest-leverage line - it sits in context every turn and decides whether the skill fires. Phrased the way a user actually asks, one trigger per distinct use, separable from the skills it sits beside (read their descriptions - the competition is invisible from inside one file). Keep it to *when to use*: a description recapping the process becomes a shortcut the agent takes instead of the body. Shortening it is a cut and you may make it; a missing trigger is an addition and you may not.
 - **A missing completion criterion.** A step ending on a condition the agent cannot tell done from not-done, or one demanding something rather than everything - "produce a list" where the skill meant "every caller accounted for".
