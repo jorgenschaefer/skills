@@ -5,8 +5,9 @@
 # Each invocation consumes one line of $STUB_PLAN and does to the ticket what
 # that session would have done:
 #
-#   build        set status: done, write a Left standing that names something,
-#                and commit it with the code
+#   build        set status: done, write a Left standing that names something -
+#                with $STUB_LEFT_EXTRA's contents after it, where it names a
+#                file - and commit it with the code
 #   build-dirty  build, and leave an untracked file behind besides
 #   build-killed build, then kill the runner with -9 before it can check the build
 #   build-red    build, and leave .red at the root, which a test's check reads
@@ -131,6 +132,7 @@ case "$line" in
       echo '{"type":"result","subtype":"success","is_error":false,"result":"built"}'
     fi
     printf '\n## Left standing\n\n- left by %s\n' "$(basename "$ticket")" >> "$ticket"
+    [ -z "${STUB_LEFT_EXTRA:-}" ] || cat "$STUB_LEFT_EXTRA" >> "$ticket"
     set_status "done"
     git add -A >/dev/null 2>&1
     git commit -qm "build $(basename "$ticket")" >/dev/null 2>&1

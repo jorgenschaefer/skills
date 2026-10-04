@@ -12,27 +12,40 @@
 #
 # Sourced by run.sh, never run.
 
-end_run() {  # exit status
-  local t left halted="" done=0
+# Told what stopped the run by whoever stopped it: a run started again over a
+# halt nobody settled builds what does not wait on it, and one that ended named
+# the first halt it found named the old one, with another session's log.
+end_run() {  # exit status, what stopped the run: the ticket that halted it, or why in a line
+  local t left why="${2:-}" built=0
   for t in "${TICKET_FILES[@]}"; do
-    case "$(field "$t" status)" in
-      done) done=$((done + 1)) ;;
-      halted) [ -n "$halted" ] || halted="$t" ;;
-    esac
+    [ "$(field "$t" status)" != "done" ] || built=$((built + 1))
   done
-  printf '\n%s of %s tickets done\n' "$done" "${#TICKET_FILES[@]}"
-  if [ -n "$halted" ]; then
-    printf '\nRUN STOPPED: %s halted (%s)\n\n' "$(basename "$halted")" "$(halt_kind "$halted")"
-    section "$halted" Halt | awk 'NR <= 20 { print (NF ? "  " $0 : "") } NR == 21 { print "  ... (rest in the ticket)" }'
-    printf '\n  ticket: %s\n' "$halted"
-    [ -z "${LOG:-}" ] || printf '  log:    %s\n' "$LOG"
+  # Nothing named it where the loop ran out of tickets it could pick, and then
+  # every halt and every dependency that cannot be met is why: the first halt
+  # first, and the rest are listed under it.
+  if [ "$1" != 0 ] && [ -z "$why" ]; then
     for t in "${TICKET_FILES[@]}"; do
-      [ "$t" = "$halted" ] || [ "$(field "$t" status)" = "done" ] \
+      [ "$(field "$t" status)" = halted ] && { why="$t"; break; }
+    done
+    why="${why:-no ticket left is ready: each waits on one that is not done}"
+  fi
+  printf '\n%s of %s tickets done\n' "$built" "${#TICKET_FILES[@]}"
+  if [ "$1" != 0 ]; then
+    if [ -f "$why" ]; then
+      printf '\nRUN STOPPED: %s %s\n\n' "$(basename "$why")" "$(halt_label "$why")"
+      section "$why" Halt | awk 'NR <= 20 { print (NF ? "  " $0 : "") } NR == 21 { print "  ... (rest in the ticket)" }'
+      printf '\n  ticket: %s\n' "$why"
+      # The last session's log, where that session was this ticket's.
+      case "$(basename "${LOG:-}")" in
+        "$(basename "$why" .md)"-*) printf '  log:    %s\n' "$LOG" ;;
+      esac
+    else
+      printf '\nRUN STOPPED: %s\n' "$why"
+    fi
+    for t in "${TICKET_FILES[@]}"; do
+      [ "$t" = "$why" ] || [ "$(field "$t" status)" = "done" ] \
         || printf '  %s\n' "$(unfinished_line "$t")"
     done
-  elif [ "$1" != 0 ]; then
-    printf '\nRUN STOPPED with work left:\n'
-    unfinished | sed 's/^/  /'
   else
     if [ -f "$REVIEW" ]; then
       printf '\nstill open after the final review:\n\n'
@@ -62,7 +75,7 @@ unfinished() {  # the tickets not done, one line each, saying why
 
 unfinished_line() {  # ticket -> why it is not done
   case "$(field "$1" status)" in
-    halted) printf '%s: halted - %s\n' "$(basename "$1")" "$(halt_kind "$1")" ;;
+    halted) printf '%s: %s\n' "$(basename "$1")" "$(halt_label "$1")" ;;
     *)      printf '%s: %s, after: %s\n' "$(basename "$1")" "$(field "$1" status)" "$(field "$1" after)" ;;
   esac
 }
@@ -74,8 +87,12 @@ section() {  # file, heading
     | awk 'NF { if (seen) for (; blank > 0; blank--) print ""; blank = 0; seen = 1; print; next } { blank++ }'
 }
 
+halt_label() {  # ticket -> "halted (<kind>)"
+  printf 'halted (%s)' "$(halt_kind "$1" | grep . || echo 'kind not named')"
+}
+
 left_standing() {  # ticket -> its ## Left standing, blank lines dropped
-  sed -n '/^## Left standing$/,/^#/{/^#/d;p;}' "$1" | sed '/^[[:space:]]*$/d'
+  section "$1" 'Left standing' | sed '/^[[:space:]]*$/d'
 }
 
 # Each build was reviewed on its own, which cannot see what lies between them.
@@ -87,9 +104,9 @@ final_review() {
   git cat-file -e "HEAD:./$REVIEW" 2>/dev/null && return 0
   [ -n "$VERIFY" ] || verify
   claude_through_limits review "$(review_brief)" --session-id "$(new_session_id)"
-  [ $? = "$EX_LIMIT" ] && end_run 1
+  [ $? = "$EX_LIMIT" ] && end_run 1 "a usage limit outlasted every wait in the final review - run again once it has lifted"
   git cat-file -e "HEAD:./$REVIEW" 2>/dev/null \
-    || { echo "the final review did not finish: it committed no $REVIEW - see $LOG" >&2; end_run 1; }
+    || end_run 1 "the final review did not finish: it committed no $REVIEW - see $LOG"
 }
 
 # The change starts where its tickets were first added: every build since is

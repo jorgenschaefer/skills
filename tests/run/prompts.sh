@@ -96,6 +96,17 @@ else bad "the review settles the blockers and should-fix the builds left, or lea
 if grep -q 'most important first' <(tail -1 "$STUB_CALLS") && grep -q 'at most five' <(tail -1 "$STUB_CALLS"); then
   ok "the review opens REVIEW.md with the few most important things still open"
 else bad "the review opens REVIEW.md with the few most important things still open" "$(tail -1 "$STUB_CALLS")"; fi
+# Five lines cannot hold every decision a review leaves, and one that does not
+# fit has to go somewhere the end of the run still points at.
+# shellcheck disable=SC2016 # the backticks are Markdown's, matched literally
+if grep -q 'decision first' <(tail -1 "$STUB_CALLS") && grep -q 'how many more' <(tail -1 "$STUB_CALLS") \
+   && [ "$(grep -o 'under `## For you`' <(tail -1 "$STUB_CALLS") | wc -l)" -ge 2 ]; then
+  ok "the review puts what needs a decision first under For you, and counts what does not fit"
+else bad "the review puts what needs a decision first under For you, and counts what does not fit" "$(tail -1 "$STUB_CALLS")"; fi
+# A one-ticket run has no review, and prints what its build left standing.
+if grep -q 'only ticket' <(head -1 "$STUB_CALLS"); then
+  ok "a build is told where its Left standing goes in a run of one ticket and of several"
+else bad "a build is told where its Left standing goes in a run of one ticket and of several" "$(head -1 "$STUB_CALLS")"; fi
 if grep -q 'severity' <(head -1 "$STUB_CALLS"); then
   ok "a build leaves its unfixed findings standing with their severity"
 else bad "a build leaves its unfixed findings standing with their severity" "$(head -1 "$STUB_CALLS")"; fi

@@ -70,7 +70,12 @@ put_aside() {  # ticket, attempt
 # Committed, and once: a halt is the one thing a run leaves for a person, and
 # left uncommitted it was every later session's someone else's change - and a
 # drift nobody had resolved yet was halted again on every start.
+#
+# HALTED names the last ticket halted here, for the end of the run to name what
+# stopped it: one already halted is named again, as a drift nobody resolved is.
 halt() {  # ticket, kind, why
+  # shellcheck disable=SC2034 # read where the run ends, in run.sh and the loop
+  HALTED="$1"
   [ "$(field "$1" status)" != halted ] || return 0
   printf '\n## Halt\n\n%s - %s\n' "$2" "$3" >> "$1"
   set_field "$1" status halted

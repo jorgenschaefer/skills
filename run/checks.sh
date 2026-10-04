@@ -26,7 +26,7 @@ verify() {
 find_checks() {
   claude_through_limits verify "$(checks_question)" --session-id "$(new_session_id)" \
     --json-schema '{"type":"object","properties":{"command":{"type":"string"}},"required":["command"]}'
-  [ $? = "$EX_LIMIT" ] && end_run 1
+  [ $? = "$EX_LIMIT" ] && end_run 1 "a usage limit outlasted every wait while finding the project's checks - run again once it has lifted"
   VERIFY="$(jq -R -r 'fromjson? | select(.type == "result") | .structured_output.command // empty' "$LOG")"
   [ -n "$VERIFY" ] || die "the session found no verification command - see $LOG"
 }

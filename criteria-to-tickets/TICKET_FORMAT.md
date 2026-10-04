@@ -46,7 +46,7 @@ Written before the build, by whoever cut the slice, against the code as it actua
 <The boundary against the neighbouring tickets, and where the excluded thing lives instead, and the lines of `CRITERIA.md`'s `Out of scope` a builder here would otherwise wander into.>
 
 ## Left standing
-<Written by the build: review findings not fixed and why, checks not run, each AC this slice closes or advances that no automated test proves and how it was checked instead, departures from the plan, and departures from a nudge with the reason. Nothing else - a fixed finding or an AC a test proves is what `status: done` already says, and listing them buries the lines worth reading. Printed at the end of the run, read by the later builds and at acceptance. Empty when the build left nothing.>
+<Written by the build: review findings not fixed and why, checks not run, each AC this slice closes or advances that no automated test proves and how it was checked instead, departures from the plan, and departures from a nudge with the reason. Nothing else - a fixed finding or an AC a test proves is what `status: done` already says, and listing them buries the lines worth reading. Read by the later builds, by the runner's final review and at acceptance, and printed at the end of a run of this one ticket. Empty when the build left nothing.>
 
 ## Halt
 <Written by whoever stopped - the session or the runner - naming the kind and what it was blocked on. Absent unless something stopped.>

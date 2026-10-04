@@ -12,7 +12,7 @@ drive() {
   local ticket attempts id head_before rc resume_with="" reds=0
 
   while :; do
-    preflight || end_run 2
+    preflight || end_run 2 "$HALTED"
 
     # A ticket in flight at the top of the loop is one a killed runner left: every
     # pass below settles its ticket and releases the record. What the record says
@@ -42,7 +42,7 @@ drive() {
       attempts=$(( $(field "$ticket" attempts) + 1 ))
       if [ "$attempts" -gt "$MAX_ATTEMPTS" ]; then
         halt "$ticket" exhausted "$MAX_ATTEMPTS attempts spent without a build that stuck - read the build output and \`git stash list\`, which holds what each attempt left uncommitted, and decide whether to raise the budget or re-slice"
-        end_run 1
+        end_run 1 "$ticket"
       fi
       set_field "$ticket" attempts "$attempts"
       set_field "$ticket" status doing
@@ -77,16 +77,15 @@ drive() {
         set_field "$ticket" status ready
         set_field "$ticket" attempts "$((attempts - 1))"
       fi
-      echo "$(basename "$ticket") is at $(field "$ticket" status) - run again once the limit has lifted" >&2
       release "$ticket"
-      end_run 1
+      end_run 1 "a usage limit outlasted every wait - $(basename "$ticket") is at $(field "$ticket" status), run again once it has lifted"
     fi
 
     # Read off the ticket whatever the exit status: a session that crashed after
     # committing its build has built it, and one that crashed before has left the
     # claim for the runner to put back. The attempt is spent either way.
     case "$(field "$ticket" status)" in
-      halted) commit_halt "$ticket" "$(halt_kind "$ticket")"; release "$ticket"; end_run 1 ;;
+      halted) commit_halt "$ticket" "$(halt_kind "$ticket")"; release "$ticket"; end_run 1 "$ticket" ;;
       done) ;;
       *) say "session left $(basename "$ticket") at $(field "$ticket" status) - back to ready"
          put_aside "$ticket" "$attempts"
@@ -105,7 +104,7 @@ drive() {
       if [ "$attempts" -ge "$MAX_ATTEMPTS" ]; then
         halt "$ticket" unbuilt "the session reported a build and committed nothing, and the last of $MAX_ATTEMPTS attempts is spent - read the build output for what stopped it committing, and \`git stash list\` for what each attempt left uncommitted"
         release "$ticket"
-        end_run 1
+        end_run 1 "$ticket"
       fi
       echo "unbuilt: $ticket reported a build and committed nothing - building it again" >&2
       put_aside "$ticket" "$attempts"
@@ -121,7 +120,7 @@ drive() {
     # commit message needs a session and amending keeps the one it wrote.
     if ! git diff --quiet HEAD -- "$ticket"; then
       git commit -q --amend --no-edit -- "$ticket" \
-        || { echo "could not amend $ticket into $(git rev-parse --short HEAD)" >&2; end_run 1; }
+        || end_run 1 "could not amend $ticket into $(git rev-parse --short HEAD)"
     fi
     say "done: $(basename "$ticket") at $(git rev-parse --short HEAD)"
     # Whatever the build left lying around besides its commit is not the next
@@ -142,7 +141,7 @@ drive() {
         if [ "$attempts" -gt "$MAX_ATTEMPTS" ]; then
           halt "$ticket" exhausted "the project's checks (\`$VERIFY\`) stayed red on its build through $MAX_ATTEMPTS attempts - the last output is in $CHECKS_LOG"
           release "$ticket"
-          end_run 1
+          end_run 1 "$ticket"
         fi
         set_field "$ticket" attempts "$attempts"
       fi

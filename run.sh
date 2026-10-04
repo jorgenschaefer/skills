@@ -30,6 +30,7 @@ WAIT_SECONDS="${WAIT_SECONDS:-300}"   # after a usage limit that names no reset 
 LIMIT_MARGIN="${LIMIT_MARGIN:-120}"   # past a limit's reset time, before carrying on
 MAX_WAITS="${MAX_WAITS:-8}"           # limits in a row before the run gives up
 VERIFY=""                             # the checks, once they have passed - never from outside
+HALTED=""                             # the ticket last halted in this run, for its end to name
 
 die() { printf '%s\n' "$*" >&2; exit 2; }
 say() { printf '%s %s\n' "$(date +%H:%M:%S)" "$*"; }
@@ -115,7 +116,7 @@ TOKENS="$LOG_DIR/$(realpath --relative-to="$(git rev-parse --show-toplevel)" "$(
 # review is known to have finished.
 REVIEW="$(dirname "$TICKETS")/REVIEW.md"
 
-preflight || end_run 2
+preflight || end_run 2 "$HALTED"
 
 drive
 

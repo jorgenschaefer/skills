@@ -115,12 +115,13 @@ if tail -1 "$WORK/.out" | grep -q '/accept-criteria .*changes/x'; then
   ok "a finished run ends pointing on to /accept-criteria"
 else bad "a finished run ends pointing on to /accept-criteria" "$(out)"; fi
 
-# A REVIEW.md written before it had a section for the person is still shown.
-printf 'an old review, all of it\n' > "$WORK/changes/x/REVIEW.md"; commit
+# A REVIEW.md written before it had a section for the person is still shown,
+# from its top - as far as fits a page.
+seq -f 'line %g of an old review' 50 > "$WORK/changes/x/REVIEW.md"; commit
 rc="$(run)"
-if [ "$rc" = 0 ] && ending | grep -q 'an old review, all of it'; then
-  ok "a REVIEW.md with nothing marked for the person is printed whole"
-else bad "a REVIEW.md with nothing marked for the person is printed whole" "rc=$rc $(out)"; fi
+if [ "$rc" = 0 ] && ending | grep -qx 'line 40 of an old review' && ! ending | grep -qx 'line 41 of an old review'; then
+  ok "a REVIEW.md with nothing marked for the person is printed from its top, 40 lines of it"
+else bad "a REVIEW.md with nothing marked for the person is printed from its top, 40 lines of it" "rc=$rc $(out)"; fi
 
 workspace
 sed -i 's/^after: .*/after:/' "$WORK/changes/x/tickets/2-two.md"; commit
@@ -151,7 +152,8 @@ workspace
 plan halt:mystery
 printf '%s\n' "$(seq -f 'line %g of the halt' 30)" > "$WORK/.halt-extra"
 rc="$(STUB_HALT_EXTRA="$WORK/.halt-extra" run)"
-if [ "$rc" != 0 ] && ending | grep -q 'line 10 of the halt' && ! ending | grep -q 'line 30 of the halt' \
+# Twenty lines of it: the stub's own three, then the first seventeen of these.
+if [ "$rc" != 0 ] && ending | grep -q 'line 17 of the halt' && ! ending | grep -q 'line 18 of the halt' \
    && ending | grep -q 'rest in the ticket'; then
   ok "a long halt is cut short, saying where the rest is"
 else bad "a long halt is cut short, saying where the rest is" "rc=$rc $(out)"; fi
@@ -163,6 +165,68 @@ rc="$(run)"
 if [ "$rc" != 0 ] && ending | grep -q 'RUN STOPPED: 1-one.md halted (drift)' && ending | grep -q 're-slice'; then
   ok "a run stopped by drift ends with the halt"
 else bad "a run stopped by drift ends with the halt" "rc=$rc $(out)"; fi
+
+# A halt whose first line names no kind still reads as a halt.
+workspace
+plan 'halt:the migration tool is not installed'
+rc="$(run)"
+if [ "$rc" != 0 ] && ending | grep -q 'RUN STOPPED: 1-one.md halted (kind not named)'; then
+  ok "a halt that names no kind says so"
+else bad "a halt that names no kind says so" "rc=$rc $(out)"; fi
+
+# A run started again over a halt nobody settled builds what does not wait on
+# it - and what stops it then is what the end of the run names, not the halt it
+# started with.
+workspace
+sed -i 's/^after: .*/after:/' "$WORK/changes/x/tickets/2-two.md"; commit
+plan halt:blocked
+run > /dev/null
+plan halt:mystery
+: > "$STUB_CALLS"
+rc="$(run)"
+if [ "$rc" != 0 ] && ending | grep -q 'RUN STOPPED: 2-two.md halted (mystery)' \
+   && ! ending | grep -q 'RUN STOPPED: 1-one'; then
+  ok "a run started again over an old halt ends naming the halt that stopped it"
+else bad "a run started again over an old halt ends naming the halt that stopped it" "rc=$rc $(out)"; fi
+if ending | grep -q 'log: .*/2-two-' && ending | grep -q '1-one.md: halted (blocked)'; then
+  ok "the halt that stopped it comes with its own session's log, and the old halt is listed"
+else bad "the halt that stopped it comes with its own session's log, and the old halt is listed" "$(out)"; fi
+
+workspace
+sed -i 's/^after: .*/after:/' "$WORK/changes/x/tickets/2-two.md"; commit
+plan halt:blocked
+run > /dev/null
+plan limit limit
+: > "$STUB_CALLS"
+rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=0 LIMIT_MARGIN=0 MAX_WAITS=1 \
+           bash "$RUNNER" changes/x/tickets > "$WORK/.out" 2>&1 ); echo $?)"
+if [ "$rc" != 0 ] && ending | grep -q 'RUN STOPPED: .*usage limit' && ending | grep -q '2-two.md' \
+   && ! ending | grep -q 'RUN STOPPED: 1-one'; then
+  ok "a limit that stops a run started over an old halt is what the end of the run names"
+else bad "a limit that stops a run started over an old halt is what the end of the run names" "rc=$rc $(out)"; fi
+if ! ending | grep -q 'log:'; then ok "a stop that is not a halt is given no halt's log"
+else bad "a stop that is not a halt is given no halt's log" "$(out)"; fi
+
+# Every ticket done, and the review did not finish: the end says that, not that
+# work is left.
+workspace
+plan build build review-dies
+rc="$(run)"
+if [ "$rc" != 0 ] && ending | grep -q 'RUN STOPPED: the final review did not finish' \
+   && ! grep -q 'work left' "$WORK/.out"; then
+  ok "a run whose review did not finish ends saying so"
+else bad "a run whose review did not finish ends saying so" "rc=$rc $(out)"; fi
+
+# With no review, Left standing is printed whole, subheadings and all.
+workspace
+rm "$WORK/changes/x/tickets/2-two.md"
+sed -i '/^- \*\*AC-2\*\*/d' "$WORK/changes/x/CRITERIA.md"; commit
+printf '%s\n' '' '### Checks' '' '- the lint was not run' >> "$WORK/.left-extra"
+plan build
+rc="$( STUB_LEFT_EXTRA="$WORK/.left-extra" run )"
+if [ "$rc" = 0 ] && grep -q 'left by 1-one.md' "$WORK/.out" && grep -q 'the lint was not run' "$WORK/.out"; then
+  ok "a Left standing with subheadings is printed to its end"
+else bad "a Left standing with subheadings is printed to its end" "rc=$rc $(out)"; fi
 
 # --- nothing selectable is not the same as everything finished
 
