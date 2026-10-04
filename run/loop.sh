@@ -4,8 +4,7 @@
 # until no ticket is ready. A ticket a killed runner left in flight is settled
 # first, from whatever its ticket file and claim record say.
 #
-# Sourced by run.sh, never run. Reads its `TICKET_FILES`, `TICKETS`, `VERIFY` and
-# `MAX_ATTEMPTS`, and calls into every other part of the library.
+# Sourced by run.sh, never run.
 
 drive() {
   # What the next resume of a claimed session is told, where it is not that the

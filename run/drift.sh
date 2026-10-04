@@ -6,8 +6,7 @@
 # the report has to say which way, because an edit upstream and a slicing that
 # lost something need different answers.
 #
-# Sourced by run.sh, never run. Reads its `TICKET_FILES` and `TICKETS`, and calls its
-# `field` and `halt`.
+# Sourced by run.sh, never run.
 
 preflight() {
   local t criteria id dep nudge problems="" culprit="" all_criteria=() closers=()

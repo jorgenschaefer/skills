@@ -3,8 +3,7 @@
 # The tickets' state in git: what is claimed, what a session left behind, and
 # the halts a run leaves for a person.
 #
-# Sourced by run.sh, never run. Reads its `TICKET_FILES`, `LOG_DIR` and `NOT_TICKETS`,
-# and calls its `field`, `set_field`, `say` and `die`.
+# Sourced by run.sh, never run.
 
 # Whatever is lying around uncommitted is someone's, and a session cannot tell
 # it from its own work: it lints it, reviews it, and carves it out of every

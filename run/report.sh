@@ -7,9 +7,7 @@
 # however it ended. Acceptance is pointed to only when there is something to
 # accept.
 #
-# Sourced by run.sh, never run. Reads its `TICKET_FILES`, `TICKETS`, `REVIEW` and
-# `VERIFY`, and calls its `field`, the session's `claude_through_limits` and
-# `token_summary`, and `verify` and `review_brief`.
+# Sourced by run.sh, never run.
 
 end_run() {  # exit status
   local t left

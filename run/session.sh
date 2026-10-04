@@ -4,8 +4,7 @@
 # reading what its event stream says - what it did, whether a limit stopped it,
 # and what it cost.
 #
-# Sourced by run.sh, never run. Reads its `LOG_DIR`, `TOKENS`, `TICKET_FILES` and the
-# limit settings, sets `LOG`, and calls its `say` and `field`, and `brief`.
+# Sourced by run.sh, never run.
 
 session() {  # ticket, --session-id or --resume, session id, prompt to resume with -> 0 ran, EX_LIMIT gave up on a limit, anything else failed
   local rc prompt="${4:-$(brief "$1")}"

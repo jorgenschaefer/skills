@@ -6,9 +6,7 @@
 # the same things the same way - what Left standing is, that the checks pass on
 # the commit a session starts from.
 #
-# Sourced by run.sh, never run. Reads its `TICKET_FILES`, `TICKETS`, `REVIEW` and
-# `VERIFY`, and `CHECKS_LOG` from run/checks.sh; calls its `field`,
-# `left_standing` and `review_base`.
+# Sourced by run.sh, never run.
 
 # The ticket protocol is stated here rather than in the skill. `/implement` is
 # the generic build skill - it fires when anyone asks for code and knows nothing

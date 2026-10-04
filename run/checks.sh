@@ -14,9 +14,7 @@
 # Once at the start, then on every build's commit: a build's account of its own
 # checks is an account too.
 #
-# Sourced by run.sh, never run. Reads its `LOG_DIR`, sets `VERIFY` and
-# `CHECKS_LOG`, and calls its `say`, `die` and `end_run`, and the session's
-# `claude_through_limits`.
+# Sourced by run.sh, never run.
 
 verify() {
   find_checks
