@@ -157,7 +157,7 @@ workspace
 plan claim-only claim-only
 run > /dev/null
 rc="$(run)"
-if [ "$rc" != 0 ] && ! grep -q 'dirty tree' "$WORK/.out" && grep -q '1-one.md: halted' "$WORK/.out" \
+if [ "$rc" != 0 ] && ! grep -q 'dirty tree' "$WORK/.out" && grep -q 'RUN STOPPED: 1-one.md halted (unbuilt)' "$WORK/.out" \
    && [ "$(wc -l < "$STUB_CALLS")" = 2 ]; then
   ok "a run started again after a halt stops at the halt, not at its own bookkeeping"
 else bad "a run started again after a halt stops at the halt, not at its own bookkeeping" "rc=$rc $(out)"; fi

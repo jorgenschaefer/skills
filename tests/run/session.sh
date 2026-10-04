@@ -137,24 +137,28 @@ else bad "giving up on a limit hands the ticket back rather than halting it" "$(
 # one. The stub's every call reads 111 in its own context, written twice the way
 # the CLI repeats a message per content block, and 1000 in a subagent's.
 
+# It is kept rather than printed: the end of a run is for what needs a person.
 workspace
 plan build build review
 run > /dev/null
-if grep -qE '1-one +main +111 +subagents +1000 +total +1111' "$WORK/.out" \
-   && grep -qE '2-two +main +111 +subagents +1000' "$WORK/.out"; then
-  ok "the end of a run gives each ticket's context read, main session and subagents"
-else bad "the end of a run gives each ticket's context read, main session and subagents" "$(out)"; fi
-if grep -qE 'review +main +111 +subagents +1000' "$WORK/.out"; then
+tokens="$WORK/.git/run-logs/changes_x.tokens"
+if grep -qx '1-one 111 1000' "$tokens" && grep -qx '2-two 111 1000' "$tokens"; then
+  ok "the token log keeps each ticket's context read, main session and subagents"
+else bad "the token log keeps each ticket's context read, main session and subagents" "$(cat "$tokens")"; fi
+if grep -qx 'review 111 1000' "$tokens"; then
   ok "the final review is counted beside the tickets"
-else bad "the final review is counted beside the tickets" "$(out)"; fi
+else bad "the final review is counted beside the tickets" "$(cat "$tokens")"; fi
+if ! grep -q 'context read' "$WORK/.out"; then ok "the end of a run does not print what the sessions cost"
+else bad "the end of a run does not print what the sessions cost" "$(out)"; fi
 
 # Every session a ticket took counts: a failed attempt read its context too.
 workspace
 plan claim-only build build review
 run > /dev/null
-if grep -qE '1-one +main +222 +subagents +2000' "$WORK/.out"; then
-  ok "a ticket's count sums every session it took"
-else bad "a ticket's count sums every session it took" "$(out)"; fi
+tokens="$WORK/.git/run-logs/changes_x.tokens"
+if [ "$(grep -cx '1-one 111 1000' "$tokens")" = 2 ]; then
+  ok "a ticket's count keeps every session it took"
+else bad "a ticket's count keeps every session it took" "$(cat "$tokens")"; fi
 
 # A run is started again after a halt or a kill, and what the first start spent
 # is still spent.
@@ -164,8 +168,9 @@ plan build halt:blocked build review
 run > /dev/null
 sed -i '/^## Halt$/,$d; s/^status: .*/status:    ready/' "$WORK/changes/x/tickets/2-two.md"; commit
 run > /dev/null
-if grep -qE '1-one +main +111 ' "$WORK/.out" && grep -qE '2-two +main +222 ' "$WORK/.out"; then
+tokens="$WORK/.git/run-logs/changes_x.tokens"
+if [ "$(grep -c '^1-one ' "$tokens")" = 1 ] && [ "$(grep -c '^2-two ' "$tokens")" = 2 ]; then
   ok "the count survives a run started again"
-else bad "the count survives a run started again" "$(out)"; fi
+else bad "the count survives a run started again" "$(cat "$tokens")"; fi
 
 finish

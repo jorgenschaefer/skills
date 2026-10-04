@@ -19,7 +19,8 @@
 #   claim-dirty  the same, with code written and left uncommitted
 #   claim-killed set status: done, commit nothing, and kill the runner with -9
 #   code-only    set status: done, and commit the code but not the ticket
-#   halt:<kind>  write the halt and set status: halted
+#   halt:<kind>  write the halt, two paragraphs, and set status: halted - with
+#                $STUB_HALT_EXTRA's contents after them, where it names a file
 #   die          exit 1 having touched nothing, as a crash does
 #   stop-early   write code and leave it uncommitted, the ticket at `doing`, and
 #                exit 0 - a session that ended its turn waiting on background
@@ -118,7 +119,7 @@ case "$line" in
     # The final review names no ticket, which is how the stub tells it apart.
     [ -n "$ticket" ] && { echo "stub: expected the review, got a ticket: $prompt" >&2; exit 97; }
     [ "$line" = review ] || exit 1
-    printf 'the review left: a seam\n' > "$review"
+    printf '## For you\n\n1. the review left: a seam\n\n## Findings\n\nthe review'"'"'s detail\n' > "$review"
     git add "$review" >/dev/null 2>&1
     git commit -qm "review" >/dev/null 2>&1
     echo '{"type":"result","subtype":"success","is_error":false,"result":"reviewed"}'
@@ -158,7 +159,8 @@ case "$line" in
     set_status "done"
     ;;
   halt:*)
-    printf '\n## Halt\n\n%s - the stub was told to\n' "${line#halt:}" >> "$ticket"
+    printf '\n## Halt\n\n%s - the stub was told to\n\nsecond line of the halt\n' "${line#halt:}" >> "$ticket"
+    [ -z "${STUB_HALT_EXTRA:-}" ] || cat "$STUB_HALT_EXTRA" >> "$ticket"
     set_status halted
     ;;
   die) exit 1 ;;

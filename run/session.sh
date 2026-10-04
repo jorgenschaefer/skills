@@ -142,13 +142,3 @@ context_read() {  # log -> "main subagents"
            n: (.message.usage | (.input_tokens // 0) + (.cache_read_input_tokens // 0) + (.cache_creation_input_tokens // 0))})
     | "\(map(select(.sub | not) | .n) | add // 0) \(map(select(.sub) | .n) | add // 0)"' "$1"
 }
-
-token_summary() {
-  local t name
-  [ -f "$TOKENS" ] || return 0
-  printf '\ncontext read, per ticket:\n'
-  for name in $(for t in "${TICKET_FILES[@]}"; do basename "$t" .md; done) review; do
-    awk -v n="$name" '$1 == n { m += $2; s += $3; seen = 1 }
-      END { if (seen) printf "  %-30s main %12d  subagents %12d  total %12d\n", n, m, s, m + s }' "$TOKENS"
-  done
-}

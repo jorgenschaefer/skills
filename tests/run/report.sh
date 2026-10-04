@@ -47,6 +47,9 @@ rc="$(run)"
 if [ "$rc" = 0 ] && [ "$(wc -l < "$STUB_CALLS")" = 1 ] && [ ! -e "$WORK/changes/x/REVIEW.md" ]; then
   ok "a single ticket gets no final review"
 else bad "a single ticket gets no final review" "rc=$rc $(calls) $(out)"; fi
+if grep -q 'left by 1-one.md' "$WORK/.out" && tail -1 "$WORK/.out" | grep -q '/accept-criteria'; then
+  ok "with no review, the one ticket's Left standing is what the run ends with"
+else bad "with no review, the one ticket's Left standing is what the run ends with" "$(out)"; fi
 
 workspace
 sed -i 's/^after: .*/after:/' "$WORK/changes/x/tickets/2-two.md"; commit
@@ -89,35 +92,75 @@ else bad "a run started again after its review reprints it rather than reviewing
 # --- the end of a run
 #
 # Nobody watches a run, so what needs a person is printed at the end of it,
-# however it ended: the halts, what each build left standing, what the final
-# review left, and where to go next.
+# however it ended - and only that, last, where the screen stops. One run that
+# halted ended in pages of what every build left standing, and nothing near
+# the end said a ticket had halted, or why.
+
+# Everything from the line the end of the run starts at: what follows the last
+# line the loop printed, which all start with the time.
+ending() { sed -n '/^[0-9][0-9]:[0-9][0-9]:[0-9][0-9] /=' "$WORK/.out" | tail -1 \
+             | { read -r n; sed -n "$(( ${n:-0} + 1 )),\$p" "$WORK/.out"; }; }
 
 workspace
 plan build build review
 rc="$(run)"
-if [ "$rc" = 0 ] && grep -q 'left by 1-one.md' "$WORK/.out" && grep -q 'left by 2-two.md' "$WORK/.out"; then
-  ok "each ticket's Left standing is printed at the end"
-else bad "each ticket's Left standing is printed at the end" "rc=$rc $(out)"; fi
-if grep -q 'the review left: a seam' "$WORK/.out"; then ok "REVIEW.md is printed at the end"
-else bad "REVIEW.md is printed at the end" "$(out)"; fi
-if grep -q '/accept-criteria .*changes/x' "$WORK/.out"; then
-  ok "a finished run points on to /accept-criteria"
-else bad "a finished run points on to /accept-criteria" "$(out)"; fi
+if [ "$rc" = 0 ] && ending | grep -q 'the review left: a seam'; then
+  ok "a finished run ends with what REVIEW.md leaves for the person"
+else bad "a finished run ends with what REVIEW.md leaves for the person" "rc=$rc $(out)"; fi
+if ! grep -q "the review's detail" "$WORK/.out"; then ok "the rest of REVIEW.md is left for acceptance"
+else bad "the rest of REVIEW.md is left for acceptance" "$(out)"; fi
+if ! grep -q 'left by' "$WORK/.out"; then ok "what each build left standing is not printed - the review has it"
+else bad "what each build left standing is not printed - the review has it" "$(out)"; fi
+if tail -1 "$WORK/.out" | grep -q '/accept-criteria .*changes/x'; then
+  ok "a finished run ends pointing on to /accept-criteria"
+else bad "a finished run ends pointing on to /accept-criteria" "$(out)"; fi
+
+# A REVIEW.md written before it had a section for the person is still shown.
+printf 'an old review, all of it\n' > "$WORK/changes/x/REVIEW.md"; commit
+rc="$(run)"
+if [ "$rc" = 0 ] && ending | grep -q 'an old review, all of it'; then
+  ok "a REVIEW.md with nothing marked for the person is printed whole"
+else bad "a REVIEW.md with nothing marked for the person is printed whole" "rc=$rc $(out)"; fi
 
 workspace
+sed -i 's/^after: .*/after:/' "$WORK/changes/x/tickets/2-two.md"; commit
 plan build halt:blocked
 rc="$(run)"
-if [ "$rc" != 0 ] && grep -q '2-two.md: halted - blocked' "$WORK/.out" && grep -q 'left by 1-one.md' "$WORK/.out"; then
-  ok "a run that halts ends with the halt and what the builds left standing"
-else bad "a run that halts ends with the halt and what the builds left standing" "rc=$rc $(out)"; fi
+if [ "$rc" != 0 ] && ending | grep -q 'RUN STOPPED: 2-two.md halted (blocked)' \
+   && ending | grep -q 'blocked - the stub was told to' && ending | grep -q 'second line of the halt'; then
+  ok "a run that halts ends saying which ticket halted, and the whole of why"
+else bad "a run that halts ends saying which ticket halted, and the whole of why" "rc=$rc $(out)"; fi
+if ending | grep -q 'changes/x/tickets/2-two.md'; then ok "a halt names the ticket file to read"
+else bad "a halt names the ticket file to read" "$(out)"; fi
+if ! grep -q 'left by' "$WORK/.out" && ! grep -q 'context read' "$WORK/.out"; then
+  ok "a run that halts prints neither what the builds left standing nor what they cost"
+else bad "a run that halts prints neither what the builds left standing nor what they cost" "$(out)"; fi
 if ! grep -q '/accept-criteria' "$WORK/.out"; then ok "a run that halts does not point on to acceptance"
 else bad "a run that halts does not point on to acceptance" "$(out)"; fi
+
+# A halt in a shape the runner did not ask for still names its kind.
+workspace
+plan build 'halt:**Kind:** undecided'
+rc="$(run)"
+if [ "$rc" != 0 ] && ending | grep -q 'RUN STOPPED: 2-two.md halted (undecided)'; then
+  ok "a halt is named by its kind wherever its first line puts it"
+else bad "a halt is named by its kind wherever its first line puts it" "rc=$rc $(out)"; fi
+
+# A halt runs on for as long as its session wrote it; the end of the run does not.
+workspace
+plan halt:mystery
+printf '%s\n' "$(seq -f 'line %g of the halt' 30)" > "$WORK/.halt-extra"
+rc="$(STUB_HALT_EXTRA="$WORK/.halt-extra" run)"
+if [ "$rc" != 0 ] && ending | grep -q 'line 10 of the halt' && ! ending | grep -q 'line 30 of the halt' \
+   && ending | grep -q 'rest in the ticket'; then
+  ok "a long halt is cut short, saying where the rest is"
+else bad "a long halt is cut short, saying where the rest is" "rc=$rc $(out)"; fi
 
 workspace
 sed -i 's/the first thing happens./the first thing happens, differently./' "$WORK/changes/x/tickets/1-one.md"; commit
 plan build
 rc="$(run)"
-if [ "$rc" != 0 ] && grep -q '1-one.md: halted - drift' "$WORK/.out"; then
+if [ "$rc" != 0 ] && ending | grep -q 'RUN STOPPED: 1-one.md halted (drift)' && ending | grep -q 're-slice'; then
   ok "a run stopped by drift ends with the halt"
 else bad "a run stopped by drift ends with the halt" "rc=$rc $(out)"; fi
 
@@ -127,7 +170,7 @@ workspace
 sed -i 's/^after: .*/after:     9-ghost/' "$WORK/changes/x/tickets/2-two.md"; commit
 plan build
 rc="$(run)"
-if [ "$rc" != 0 ] && grep -q '9-ghost' "$WORK/.out"; then
+if [ "$rc" != 0 ] && ending | grep -q 'RUN STOPPED' && ending | grep -q '9-ghost'; then
   ok "a dependency nobody can satisfy is named"
 else bad "a dependency nobody can satisfy is named" "rc=$rc $(out)"; fi
 

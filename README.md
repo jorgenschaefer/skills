@@ -108,18 +108,21 @@ change** - the diff from before its tickets were added - for what no single tick
 can see: the same thing built twice, one concept under two names, seams that do not line up.
 It runs `critique`, fixes what is worth fixing and commits, two rounds at most, and writes what
 it left standing to `REVIEW.md`. It is handed what the builds left standing, though critique is
-not, and settles the blockers and should-fix a build left unfixed: fixed, or at the top of
-`REVIEW.md` for the person. It goes through the same usage-limit handling as the builds,
+not, and settles the blockers and should-fix a build left unfixed: fixed, or left for the
+person. `REVIEW.md` opens with `## For you`: at most five things still open once the review is
+done, most important first. It goes through the same usage-limit handling as the builds,
 and a review that ends without committing `REVIEW.md` fails the run. A re-slice deletes
 `REVIEW.md`, so the rebuilt change is reviewed again.
 
 **It records what each ticket cost**, in context tokens read - main session and subagents
 apart - since a long session re-reads its growing context on every turn. The counts are kept
-per change in `.git/run-logs` and survive a run started again.
+per change in `.git/run-logs` and survive a run started again. They are kept, not printed.
 
-However it ends, it prints what needs a person: the halts, each ticket's
-`## Left standing`, `REVIEW.md`, and the token summary. It points on to `/accept-criteria`
-only when everything is built and reviewed. It walks nothing itself: acceptance needs the
+However it ends, it ends with what needs a person, and only that, last on the screen. A halt
+stops the run, which ends saying which ticket halted and printing its whole `## Halt`. A
+finished run prints the review's `## For you` - or, with one ticket and no review, that
+ticket's `## Left standing` - and points on to `/accept-criteria`. What each build left
+standing stays in its ticket, and the rest of `REVIEW.md` is read at acceptance. It walks nothing itself: acceptance needs the
 user in it.
 
 Every unattended stop is a named halt written into the ticket: `blocked`, `undecided`

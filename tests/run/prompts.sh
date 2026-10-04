@@ -35,7 +35,7 @@ run > /dev/null
 if ! grep -q 'Nothing wakes you' <(head -1 "$STUB_CALLS") && ! grep -q 'Nothing wakes you' <(tail -1 "$STUB_CALLS"); then
   ok "neither the build nor the review is told nothing wakes it"
 else bad "neither the build nor the review is told nothing wakes it" "$(calls)"; fi
-# What a build leaves standing is printed at the end of the run and read at
+# What a build leaves standing is handed to the final review and read at
 # acceptance, and both find it under one heading. A departure from a nudge is
 # the one thing about a nudge anybody gets to see.
 # shellcheck disable=SC2016 # the backticks are Markdown's, matched literally
@@ -88,9 +88,14 @@ else bad "the review's second round drives only the screens its fixes touched" "
 if grep -q 'left by 1-one' <(tail -1 "$STUB_CALLS") && grep -q 'left by 2-two' <(tail -1 "$STUB_CALLS"); then
   ok "the review is handed what every build left standing"
 else bad "the review is handed what every build left standing" "$(tail -1 "$STUB_CALLS")"; fi
-if grep -q 'blocker and should-fix' <(tail -1 "$STUB_CALLS") && grep -q 'top of' <(tail -1 "$STUB_CALLS"); then
-  ok "the review settles the blockers and should-fix the builds left, or puts them at the top of REVIEW.md"
-else bad "the review settles the blockers and should-fix the builds left, or puts them at the top of REVIEW.md" "$(tail -1 "$STUB_CALLS")"; fi
+if grep -q 'blocker and should-fix' <(tail -1 "$STUB_CALLS") && grep -q '## For you' <(tail -1 "$STUB_CALLS"); then
+  ok "the review settles the blockers and should-fix the builds left, or leaves them for the person"
+else bad "the review settles the blockers and should-fix the builds left, or leaves them for the person" "$(tail -1 "$STUB_CALLS")"; fi
+# The end of a run prints this section and nothing else of REVIEW.md, so it is
+# the only place the most important of what is still open can go.
+if grep -q 'most important first' <(tail -1 "$STUB_CALLS") && grep -q 'at most five' <(tail -1 "$STUB_CALLS"); then
+  ok "the review opens REVIEW.md with the few most important things still open"
+else bad "the review opens REVIEW.md with the few most important things still open" "$(tail -1 "$STUB_CALLS")"; fi
 if grep -q 'severity' <(head -1 "$STUB_CALLS"); then
   ok "a build leaves its unfixed findings standing with their severity"
 else bad "a build leaves its unfixed findings standing with their severity" "$(head -1 "$STUB_CALLS")"; fi

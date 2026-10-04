@@ -86,9 +86,9 @@ commit_halt() {  # ticket, kind
     || echo "could not commit the halt in $1" >&2
 }
 
-# The kind a session named, read off the first line of its halt in whatever
-# shape it wrote it; empty where that line names none of the three.
+# The kind a halt names, read off its first line in whatever shape its writer
+# put it; empty where that line names none of them.
 halt_kind() {  # ticket
   sed -n '/^## Halt$/,$p' "$1" | sed -n '2,$p' | sed '/^[[:space:]]*$/d' | head -1 \
-    | grep -o -m1 -w 'blocked\|undecided\|mystery' | head -1
+    | grep -o -m1 -w 'blocked\|undecided\|mystery\|exhausted\|drift\|unbuilt' | head -1
 }
