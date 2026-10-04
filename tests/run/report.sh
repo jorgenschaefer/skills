@@ -228,6 +228,17 @@ if [ "$rc" = 0 ] && grep -q 'left by 1-one.md' "$WORK/.out" && grep -q 'the lint
   ok "a Left standing with subheadings is printed to its end"
 else bad "a Left standing with subheadings is printed to its end" "rc=$rc $(out)"; fi
 
+# The review is handed every build's Left standing, and one run's 33 tickets
+# came to 148 KB of it - more than Linux takes in a single argument, so the
+# review died before it started.
+workspace
+yes -- '- a thing left standing' | head -c 140000 > "$WORK/.left-extra"
+plan build build review
+rc="$( STUB_LEFT_EXTRA="$WORK/.left-extra" run )"
+if [ "$rc" = 0 ] && [ -f "$WORK/changes/x/REVIEW.md" ] && grep -q 'a thing left standing' <(tail -1 "$STUB_CALLS"); then
+  ok "a review handed more than 128 KiB of Left standing still starts"
+else bad "a review handed more than 128 KiB of Left standing still starts" "rc=$rc $(tail -5 "$WORK/.out")"; fi
+
 # --- nothing selectable is not the same as everything finished
 
 workspace

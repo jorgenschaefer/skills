@@ -47,7 +47,8 @@
 # asks its answer in, consumes no plan line and is not recorded: it answers
 # $STUB_VERIFY as the command, or no command at all where that is empty.
 #
-# Every call's arguments go to $STUB_ARGS, the verification call's included.
+# Every call's arguments go to $STUB_ARGS, the verification call's included, with
+# the prompt it read on stdin after them.
 #
 # Every other call reads context the way the CLI reports it, for the token log:
 # 111 in its own context, on one message written twice as the CLI repeats a
@@ -67,10 +68,12 @@
 
 set -uo pipefail
 
+prompt="$(cat)"
+
 # Every call's arguments, one line each, for the tests that care how the
 # runner launches a session rather than what the session did - led by the one
-# environment variable the runner sets for it.
-printf 'ENABLE_CLAUDEAI_MCP_SERVERS=%s %s\n' "${ENABLE_CLAUDEAI_MCP_SERVERS-}" "$*" >> "$STUB_ARGS"
+# environment variable the runner sets for it, and followed by the prompt.
+printf 'ENABLE_CLAUDEAI_MCP_SERVERS=%s %s | %s\n' "${ENABLE_CLAUDEAI_MCP_SERVERS-}" "$*" "${prompt//$'\n'/ }" >> "$STUB_ARGS"
 
 if [[ " $* " == *" --json-schema "* ]]; then
   jq -nc --arg c "$STUB_VERIFY" \
@@ -79,7 +82,6 @@ if [[ " $* " == *" --json-schema "* ]]; then
   exit 0
 fi
 
-prompt="${*: -1}"
 ticket="$(printf '%s' "$prompt" | grep -o '[^ ]*tickets/[^ ]*\.md' | head -1)"
 review="$(printf '%s' "$prompt" | grep -o '[^ `]*REVIEW\.md' | head -1)"
 

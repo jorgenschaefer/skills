@@ -65,12 +65,15 @@ claude_through_limits() {  # log name, prompt, --session-id or --resume, session
 # run made some 850 calls. `ToolSearch` stays because without it the MCP tools
 # are not deferred and their definitions go into every call whole. Playwright is
 # kept, for testing in the browser; the claude.ai connectors are not.
+#
+# The prompt goes in on stdin: Linux takes no single argument over 128 KiB, and
+# a final review handed 33 tickets' Left standing died before it started.
 TOOLS=(Bash Edit Write Read Glob Grep Skill Agent Monitor TaskStop ToolSearch WebFetch WebSearch)
 claude_run() {  # log, --session-id or --resume, session id, prompt, claude's own options... -> claude's exit status
   ENABLE_CLAUDEAI_MCP_SERVERS=false \
   claude -p --output-format stream-json --verbose --permission-mode acceptEdits \
     --tools "${TOOLS[@]}" --allowedTools "${TOOLS[@]}" mcp__playwright \
-    "$2" "$3" "${@:5}" -- "$4" </dev/null 2>&1 | tee "$1" | narrate
+    "$2" "$3" "${@:5}" <<<"$4" 2>&1 | tee "$1" | narrate
   return "${PIPESTATUS[0]}"
 }
 
