@@ -112,11 +112,12 @@ declared() { grep -o '^- \*\*AC-[0-9]\+\*\*' "$1" | grep -o 'AC-[0-9]\+' | sort 
 text_of()  { # file, id -> the criterion as written, marker stripped
   # A blank line ends a criterion unless an indented line follows it: that is
   # a further paragraph of the same list item, as Markdown reads it. A ticket
-  # quotes the blank line as a bare `>`, which is no blank line at all.
+  # quotes the blank line as a bare `>`, which is no blank line at all. A line of
+  # only whitespace is blank, as it is between nudges.
   awk -v id="$2" '
     index($0, "- **" id "**") == 1 || index($0, "> **" id "**") == 1 { found = 1; print; next }
     found && (/^[->] \*\*AC-/ || /^#/) { exit }
-    found && /^$/ { blank = 1; next }
+    found && /^[[:space:]]*$/ { blank = 1; next }
     found && blank && !/^[[:space:]]/ { exit }
     found { blank = 0; print }
   ' "$1" | sed 's/^> \{0,1\}//; s/^[[:space:]]*- //; s/^[[:space:]]*//' | tr '\n' ' ' | sed 's/  */ /g; s/ *$//'

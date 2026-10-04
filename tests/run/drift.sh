@@ -112,6 +112,17 @@ if [ "$rc" = 0 ] && ! grep -q 'drift' "$WORK/.out"; then
   ok "a sentence after a quoted criterion is not part of it"
 else bad "a sentence after a quoted criterion is not part of it" "rc=$rc $(out) $(tkt 1-one)"; fi
 
+# A line of only spaces looks blank and is blank, as it is between nudges.
+workspace
+perl -0pi -e 's/^(> \*\*AC-1\*\* the first thing happens\.\n)/$1  \nThe first part of it, without filters.\n/m' \
+  "$WORK/changes/x/tickets/1-one.md"
+commit
+plan build build review
+rc="$(run)"
+if [ "$rc" = 0 ] && ! grep -q 'drift' "$WORK/.out"; then
+  ok "a line of only spaces after a quoted criterion ends it"
+else bad "a line of only spaces after a quoted criterion ends it" "rc=$rc $(out) $(tkt 1-one)"; fi
+
 # A nudge is quoted word for word too. Nothing checks the build against it, so
 # the quote is the only thing that carries it to the builder - and a quote that
 # no longer matches carries something nobody agreed to.
