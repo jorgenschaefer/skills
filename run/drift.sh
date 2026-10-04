@@ -1,5 +1,4 @@
 # shellcheck shell=bash
-# shellcheck disable=SC2154
 #
 # The drift pre-flight: before each pass, in both directions. A session never
 # reads CRITERIA.md and a committed ticket is revisited by nobody but a
@@ -7,12 +6,12 @@
 # the report has to say which way, because an edit upstream and a slicing that
 # lost something need different answers.
 #
-# Sourced by run.sh, never run. Reads its `files` and `TICKETS`, and calls its
+# Sourced by run.sh, never run. Reads its `TICKET_FILES` and `TICKETS`, and calls its
 # `field` and `halt`.
 
 preflight() {
   local t criteria id dep nudge problems="" culprit="" all_criteria=() closers=()
-  for t in "${files[@]}"; do
+  for t in "${TICKET_FILES[@]}"; do
     # Resolved beside the tickets/ directory, not from the working directory:
     # the frontmatter says `CRITERIA.md` and means the one this slicing came
     # from, whatever the runner was invoked from.
@@ -71,13 +70,13 @@ preflight() {
     # advances it, or that test is red for want of work still to run.
     for id in $(declared "$criteria"); do
       closers=()
-      for t in "${files[@]}"; do
+      for t in "${TICKET_FILES[@]}"; do
         field "$t" closes | grep -qw -- "$id" && closers+=("$t")
       done
       case "${#closers[@]}" in
         0) problems+="$criteria: $id is closed by no ticket"$'\n'
-           [ -n "$culprit" ] || culprit="${files[0]}" ;;
-        1) for t in "${files[@]}"; do
+           [ -n "$culprit" ] || culprit="${TICKET_FILES[0]}" ;;
+        1) for t in "${TICKET_FILES[@]}"; do
              field "$t" advances | grep -qw -- "$id" || continue
              comes_after "${closers[0]}" "$(basename "$t" .md)" && continue
              problems+="$(basename "${closers[0]}"): closes $id and does not come after $(basename "$t" .md), which advances it"$'\n'

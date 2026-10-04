@@ -1,5 +1,4 @@
 # shellcheck shell=bash
-# shellcheck disable=SC2154
 #
 # The project's checks, before any build and after every one.
 #

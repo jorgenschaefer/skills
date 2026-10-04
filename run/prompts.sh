@@ -1,5 +1,4 @@
 # shellcheck shell=bash
-# shellcheck disable=SC2154
 #
 # What a session is told: the brief a build starts from, what a carried-on
 # session is told on resuming, the question that finds the checks, and the
@@ -7,7 +6,7 @@
 # the same things the same way - what Left standing is, that the checks pass on
 # the commit a session starts from.
 #
-# Sourced by run.sh, never run. Reads its `files`, `TICKETS`, `REVIEW` and
+# Sourced by run.sh, never run. Reads its `TICKET_FILES`, `TICKETS`, `REVIEW` and
 # `VERIFY`, and `CHECKS_LOG` from run/checks.sh; calls its `field`,
 # `left_standing` and `review_base`.
 
@@ -37,7 +36,7 @@ Never write \`status: doing\`. It belongs to the runner."
   # A session reads its own ticket and no other - so an item one build left
   # standing for the next was never seen by it. Pointed at rather than
   # extracted: a Left standing says it in whatever shape its build chose.
-  for t in "${files[@]}"; do
+  for t in "${TICKET_FILES[@]}"; do
     [ "$(field "$t" status)" = "done" ] && built+=$'\n'"- $(realpath "$t")"
   done
   [ -z "$built" ] || prompt+="
@@ -67,7 +66,7 @@ checks_question() {  # -> what the session that finds the checks is asked
 
 review_brief() {  # -> the prompt the final review starts from
   local t left standing=""
-  for t in "${files[@]}"; do
+  for t in "${TICKET_FILES[@]}"; do
     left="$(left_standing "$t")"
     [ -z "$left" ] || standing+=$'\n\n'"$(basename "$t") left standing:"$'\n'"$left"
   done
@@ -78,7 +77,7 @@ What the builds left standing is below. Among it are review findings a build did
 
 The project's checks are \`$VERIFY\`, and they pass on the commit you start from.
 
-Spawn \`critique\` as a subagent with a fresh context. Hand it the diff, the result of the checks, and $(realpath "$(dirname "$TICKETS")/$(field "${files[0]}" criteria)") as what was asked for - not the tickets' plans or what their builds left standing, which are the reasoning behind the code. Evaluate what comes back, fix what is worth fixing test-first, run the checks and commit. The nudges in that file are how it was agreed this gets built, and each build followed them or recorded why not: a fix that departs from a nudge is not made - it goes under what you left standing, with the finding. Then review again the same way, except that the second round drives only the screens the fixes since the first round touched - name them to critique - unless the first round found only nits: fix the ones worth fixing and stop there. Two rounds at most: stop when a review comes back clean or with only nits, or when the second round is done.
+Spawn \`critique\` as a subagent with a fresh context. Hand it the diff, the result of the checks, and $(realpath "$(dirname "$TICKETS")/$(field "${TICKET_FILES[0]}" criteria)") as what was asked for - not the tickets' plans or what their builds left standing, which are the reasoning behind the code. Evaluate what comes back, fix what is worth fixing test-first, run the checks and commit. The nudges in that file are how it was agreed this gets built, and each build followed them or recorded why not: a fix that departs from a nudge is not made - it goes under what you left standing, with the finding. Then review again the same way, except that the second round drives only the screens the fixes since the first round touched - name them to critique - unless the first round found only nits: fix the ones worth fixing and stop there. Two rounds at most: stop when a review comes back clean or with only nits, or when the second round is done.
 
 Then write what you left standing to $(realpath "$REVIEW") - findings you did not fix and why, checks you did not run - and commit it. Nobody reads your closing message in an unattended run: REVIEW.md is printed at its end, and the run counts the review as finished only once that file is committed.$standing"
 }

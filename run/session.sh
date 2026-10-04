@@ -1,11 +1,10 @@
 # shellcheck shell=bash
-# shellcheck disable=SC2154
 #
 # One session: launching `claude`, carrying it through usage limits, and
 # reading what its event stream says - what it did, whether a limit stopped it,
 # and what it cost.
 #
-# Sourced by run.sh, never run. Reads its `LOG_DIR`, `TOKENS`, `files` and the
+# Sourced by run.sh, never run. Reads its `LOG_DIR`, `TOKENS`, `TICKET_FILES` and the
 # limit settings, sets `LOG`, and calls its `say` and `field`, and `brief`.
 
 session() {  # ticket, --session-id or --resume, session id, prompt to resume with -> 0 ran, EX_LIMIT gave up on a limit, anything else failed
@@ -149,7 +148,7 @@ token_summary() {
   local t name
   [ -f "$TOKENS" ] || return 0
   printf '\ncontext read, per ticket:\n'
-  for name in $(for t in "${files[@]}"; do basename "$t" .md; done) review; do
+  for name in $(for t in "${TICKET_FILES[@]}"; do basename "$t" .md; done) review; do
     awk -v n="$name" '$1 == n { m += $2; s += $3; seen = 1 }
       END { if (seen) printf "  %-30s main %12d  subagents %12d  total %12d\n", n, m, s, m + s }' "$TOKENS"
   done

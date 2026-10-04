@@ -1,11 +1,10 @@
 # shellcheck shell=bash
-# shellcheck disable=SC2154
 #
 # The loop: claim a ticket, build it, and either finish it or send it back,
 # until no ticket is ready. A ticket a killed runner left in flight is settled
 # first, from whatever its ticket file and claim record say.
 #
-# Sourced by run.sh, never run. Reads its `files`, `TICKETS`, `VERIFY` and
+# Sourced by run.sh, never run. Reads its `TICKET_FILES`, `TICKETS`, `VERIFY` and
 # `MAX_ATTEMPTS`, and calls into every other part of the library.
 
 drive() {
@@ -161,7 +160,7 @@ drive() {
 
 ready_ticket() {  # the first ticket whose dependencies are done
   local t dep ok
-  for t in "${files[@]}"; do
+  for t in "${TICKET_FILES[@]}"; do
     [ "$(field "$t" status)" = ready ] || continue
     ok=yes
     for dep in $(field "$t" after | tr ',' ' '); do

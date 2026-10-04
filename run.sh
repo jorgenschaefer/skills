@@ -88,13 +88,13 @@ exec 9>"$LOCK"
 flock -n 9 || die "another run, or a session one started, is still working this repository (pids:$(exec 9>&-; fuser "$LOCK" 2>/dev/null | tr -s ' ' '\n' | grep -vx "$$" | tr '\n' ' ')) - let it finish or stop it, then start again"
 
 shopt -s nullglob
-files=()
+TICKET_FILES=()
 for f in "$TICKETS"/*.md; do
   # A ticket is a file with criteria behind it. Anything else in the directory
   # is someone's notes, and reading it as a ticket fails every pass.
-  grep -q '^criteria:' "$f" && files+=("$f") || printf 'ignoring %s: not a ticket\n' "$f" >&2
+  grep -q '^criteria:' "$f" && TICKET_FILES+=("$f") || printf 'ignoring %s: not a ticket\n' "$f" >&2
 done
-[ "${#files[@]}" -gt 0 ] || die "no tickets in $TICKETS"
+[ "${#TICKET_FILES[@]}" -gt 0 ] || die "no tickets in $TICKETS"
 
 # Where each session's full event stream goes. Inside the git directory, so a
 # session that commits everything it sees cannot commit its own transcript.
@@ -103,8 +103,8 @@ mkdir -p "$LOG_DIR"
 
 # Everything but the ticket files, as a pathspec: what is uncommitted in them is
 # the runner's own bookkeeping, and a run started again carries on from it.
-not_tickets=(':/')
-for t in "${files[@]}"; do not_tickets+=(":!$t"); done
+NOT_TICKETS=(':/')
+for t in "${TICKET_FILES[@]}"; do NOT_TICKETS+=(":!$t"); done
 check_tree
 
 # Where the token log goes - one file per change - and what it counts is in

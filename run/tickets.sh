@@ -1,10 +1,9 @@
 # shellcheck shell=bash
-# shellcheck disable=SC2154
 #
 # The tickets' state in git: what is claimed, what a session left behind, and
 # the halts a run leaves for a person.
 #
-# Sourced by run.sh, never run. Reads its `files`, `LOG_DIR` and `not_tickets`,
+# Sourced by run.sh, never run. Reads its `TICKET_FILES`, `LOG_DIR` and `NOT_TICKETS`,
 # and calls its `field`, `set_field`, `say` and `die`.
 
 # Whatever is lying around uncommitted is someone's, and a session cannot tell
@@ -20,7 +19,7 @@
 # not something this script did.
 check_tree() {
   local dirty
-  dirty="$(git status --porcelain -- "${not_tickets[@]}")"
+  dirty="$(git status --porcelain -- "${NOT_TICKETS[@]}")"
   case "$(claimed | wc -l)" in
     0) [ -z "$dirty" ] || die "refusing to run on a dirty tree: commit or remove what is here first"$'\n'"$dirty" ;;
     1) [ -z "$dirty" ] || say "carrying on with $(claimed), taking this as its session's work:"$'\n'"$dirty" ;;
@@ -30,7 +29,7 @@ check_tree() {
 
 claimed() {  # the tickets in flight - at `doing`, on record, or `done` unchecked - one per line
   local t
-  for t in "${files[@]}"; do
+  for t in "${TICKET_FILES[@]}"; do
     if [ "$(field "$t" status)" = doing ] || [ -f "$(claim_record "$t")" ] || unchecked_done "$t"; then
       printf '%s\n' "$t"
     fi
@@ -57,7 +56,7 @@ release() { rm -f "$(claim_record "$1")"; }
 # runner's bookkeeping - another ticket's halt among them, which went into the
 # stash with a later build's leftovers and came back out as a fresh budget.
 left_behind() {  # -> git status lines, empty for none
-  git status --porcelain -- "${not_tickets[@]}"
+  git status --porcelain -- "${NOT_TICKETS[@]}"
 }
 
 # The next attempt is told the checks were green when the run started, which is
@@ -65,7 +64,7 @@ left_behind() {  # -> git status lines, empty for none
 # dropped: it may be most of a build.
 put_aside() {  # ticket, attempt
   [ -n "$(left_behind)" ] || return 0
-  git stash push -q -u -m "run.sh: $(basename "$1") attempt $2, left uncommitted" -- "${not_tickets[@]}"
+  git stash push -q -u -m "run.sh: $(basename "$1") attempt $2, left uncommitted" -- "${NOT_TICKETS[@]}"
   say "what it left uncommitted is in the stash"
 }
 
