@@ -43,7 +43,7 @@ Keep the surviving scenario with the finding; it is the proof and the reader's r
 
 ## Output
 
-**Report only once every subagent you spawned has reported back.** Your last message is the review: a turn ended while one is still running hands your caller "waiting for the area reviews" in place of findings, and leaves that subagent working with nobody to read it. In one run that happened twice, and one of the orphans went on driving the app into another session's browser.
+**Spawn every subagent in the foreground, and report only once all of them have reported back.** Several started in one message run in parallel, and the call returns when the last one does - so no `run_in_background`, and no waiting on them with `sleep`. Your last message is the review: a turn ended while one is still running hands your caller "waiting for the area reviews" in place of findings, and leaves that subagent working with nobody to read it. In one run that happened twice, and one of the orphans went on driving the app into another session's browser; in another, a reviewer waiting on background subagents with `sleep` ended its turn, the unattended session around it exited, and the run's final review was lost.
 
 **The bar is code health, not perfection.** Each finding has to answer whether the code is worse for what it does - not whether you can imagine something better. A choice you would have made differently is not a finding, and neither is a rewrite you would prefer to the working code in front of you.
 

@@ -27,7 +27,7 @@ Build it to the standard, in the order the standard says the work happens. While
 
 ## Review it in a session that did not write it
 
-**Spawn `critique` as a subagent with a fresh context.** Hand it the diff, the result of the checks, and what was asked for - the criteria and what is out of scope, as the request states them. Do not hand it the reasoning that produced the code: not the plan, and not how you tested it.
+**Spawn `critique` as a subagent with a fresh context, in the foreground** - the review is the next thing you need, and a turn ended while it runs in the background loses it. Hand it the diff, the result of the checks, and what was asked for - the criteria and what is out of scope, as the request states them. Do not hand it the reasoning that produced the code: not the plan, and not how you tested it.
 
 **The review is where the running app is checked.** `critique` drives it on every screen the change touches, at the narrowest and widest supported size - in a second round, only the screens the fixes since the first touched. Do not check the screens yourself before it: in one run each build's own browser check and its reviewer drove the app at the same time, fought over the dev server, and paid for the same check twice.
 
