@@ -277,7 +277,7 @@ else bad "started from a subdirectory, what is left at the root is stashed too" 
 # Only a session that ended cleanly is resumed: a crash was not waiting on
 # anything, and what a finished build left lying around is not the next one's.
 workspace
-plan build-dirty die build build review
+plan build-dirty die build review
 run > /dev/null
 if ! grep -q '^resume' "$STUB_SESSIONS" && git -C "$WORK" stash list | grep -q '1-one'; then
   ok "what a finished build leaves behind is put aside under its own name, not resumed on"

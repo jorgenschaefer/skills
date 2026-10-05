@@ -45,12 +45,14 @@ Each one's \`## Left standing\` says what its build did not settle. Handle an it
   printf '%s' "$prompt"
 }
 
-# The two ways a claimed session is carried on rather than started over.
-# Both are read by the loop.
+# The ways a session is carried on rather than started over. The first two are
+# read by the loop, the last by the final review.
 # shellcheck disable=SC2034
 STOPPED_EARLY="Your turn ended before the ticket was finished, and whatever you had running in the background was killed; your uncommitted work is still in the tree. Carry on from there - rerun what was killed - and finish as the brief said."
 # shellcheck disable=SC2034
 INTERRUPTED="The run was interrupted while you were working, and has been started again. Your uncommitted work is still in the tree. Carry on from where you stopped - rerun whatever was cut short, a subagent or a check included - and finish as the brief said."
+# shellcheck disable=SC2034
+REVIEW_STOPPED_EARLY="Your turn ended before REVIEW.md was committed, and whatever you had running in the background was killed, critique included. Carry on from there - rerun what was killed, in the foreground this time - and finish as the brief said."
 
 red_checks() {  # -> what a build's session is told when the checks fail on its commit
   printf '%s' "The project's checks fail on your commit $(git rev-parse --short HEAD): \`$VERIFY\`. The runner ran them and set the ticket back to \`status: doing\`. Fix it test-first like any other failure, commit, and set \`status: done\` again. The last lines of what they printed are below; all of it is in $CHECKS_LOG.

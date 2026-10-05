@@ -99,12 +99,23 @@ left_standing() {  # ticket -> its ## Left standing, blank lines dropped
 # Over one ticket there is nothing between. REVIEW.md committed is how the
 # review is known to have finished, so a run started again once it has does not
 # review again - a re-slice deletes it, because it reviewed what is changing.
+#
+# A review that ends its turn while its critique still runs is ended by `-p`,
+# critique killed - one did, and its run stopped with nothing reviewed. It is
+# resumed once, as a build that stops short is, since what it found so far is in
+# its context.
 final_review() {
+  local id rc
   [ "${#TICKET_FILES[@]}" -gt 1 ] || return 0
   git cat-file -e "HEAD:./$REVIEW" 2>/dev/null && return 0
   [ -n "$VERIFY" ] || verify
-  claude_through_limits review "$(review_brief)" --session-id "$(new_session_id)"
-  [ $? = "$EX_LIMIT" ] && end_run 1 "a usage limit outlasted every wait in the final review - run again once it has lifted"
+  id="$(new_session_id)"
+  claude_through_limits review "$(review_brief)" --session-id "$id"; rc=$?
+  if [ "$rc" = 0 ] && ! git cat-file -e "HEAD:./$REVIEW" 2>/dev/null; then
+    say "final review stopped without committing $REVIEW - resuming it"
+    claude_through_limits review "$REVIEW_STOPPED_EARLY" --resume "$id"; rc=$?
+  fi
+  [ "$rc" = "$EX_LIMIT" ] && end_run 1 "a usage limit outlasted every wait in the final review - run again once it has lifted"
   git cat-file -e "HEAD:./$REVIEW" 2>/dev/null \
     || end_run 1 "the final review did not finish: it committed no $REVIEW - see $LOG"
 }

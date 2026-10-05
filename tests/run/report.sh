@@ -80,6 +80,25 @@ if [ "$rc" = 0 ] && git -C "$WORK" cat-file -e HEAD:changes/x/REVIEW.md 2>/dev/n
   ok "a run started again after a failed review runs it again, told the checks"
 else bad "a run started again after a failed review runs it again, told the checks" "rc=$rc $(calls) $(out)"; fi
 
+# A review that ends its turn while what it spawned still runs is ended by
+# `-p` with that work killed and no REVIEW.md - one did, waiting on its
+# critique. It is resumed once rather than started over, as a build is.
+workspace
+plan build build review-stop-early review
+rc="$(run)"
+review_id="$(awk '$1 == "start" && $3 ~ /REVIEW\.md$/ { print $2 }' "$STUB_SESSIONS")"
+if [ "$rc" = 0 ] && git -C "$WORK" cat-file -e HEAD:changes/x/REVIEW.md 2>/dev/null \
+   && grep -qx "resume $review_id" "$STUB_SESSIONS" && grep -q 'REVIEW.md was committed' <(tail -1 "$STUB_CALLS"); then
+  ok "a final review that stops short is resumed, told why"
+else bad "a final review that stops short is resumed, told why" "rc=$rc $(cat "$STUB_SESSIONS") $(calls) $(out)"; fi
+
+workspace
+plan build build review-stop-early review-stop-early
+rc="$(run)"
+if [ "$rc" != 0 ] && [ "$(wc -l < "$STUB_CALLS")" = 4 ] && grep -q 'the final review did not finish' "$WORK/.out"; then
+  ok "a final review is resumed once, and a second stop fails the run"
+else bad "a final review is resumed once, and a second stop fails the run" "rc=$rc $(calls) $(out)"; fi
+
 # And where it did finish, it does not run again.
 workspace
 plan build build review

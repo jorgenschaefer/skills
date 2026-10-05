@@ -40,6 +40,8 @@
 #   review       the final review - write and commit the REVIEW.md its prompt
 #                names, and end in a successful result, as the CLI does
 #   review-dies  the final review, dying with no REVIEW.md and no result
+#   review-stop-early  the final review, ending in a successful result with no
+#                REVIEW.md - a review that ended its turn waiting on a subagent
 #   orphaned     write code, kill the runner with -9, and keep running a while -
 #                a session outliving the runner that launched it
 #
@@ -118,10 +120,14 @@ rejected_event() {
 set_status() { sed -i "2,/^---$/s/^status: .*/status:    $1/" "$ticket"; }
 
 case "$line" in
-  review|review-dies)
+  review|review-dies|review-stop-early)
     # The final review names no ticket, which is how the stub tells it apart.
     [ -n "$ticket" ] && { echo "stub: expected the review, got a ticket: $prompt" >&2; exit 97; }
-    [ "$line" = review ] || exit 1
+    [ "$line" = review-dies ] && exit 1
+    if [ "$line" = review-stop-early ]; then
+      echo '{"type":"result","subtype":"success","is_error":false,"result":"waiting for critique"}'
+      exit 0
+    fi
     printf '## For you\n\n1. the review left: a seam\n\n## Findings\n\nthe review'"'"'s detail\n' > "$review"
     git add "$review" >/dev/null 2>&1
     git commit -qm "review" >/dev/null 2>&1
