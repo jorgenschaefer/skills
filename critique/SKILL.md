@@ -43,6 +43,8 @@ Keep the surviving scenario with the finding; it is the proof and the reader's r
 
 ## Output
 
+**Report only once every subagent you spawned has reported back.** Your last message is the review: a turn ended while one is still running hands your caller "waiting for the area reviews" in place of findings, and leaves that subagent working with nobody to read it. In one run that happened twice, and one of the orphans went on driving the app into another session's browser.
+
 **The bar is code health, not perfection.** Each finding has to answer whether the code is worse for what it does - not whether you can imagine something better. A choice you would have made differently is not a finding, and neither is a rewrite you would prefer to the working code in front of you.
 
 **Severity is what the defect does, never what it could become.** A **blocker** produces a wrong result, a crash, a loss or a breach. A **should-fix** costs the next reader or the next change real effort. Everything else is a nit, and between two levels you take the lower one.
