@@ -1,9 +1,9 @@
 ---
-name: ubiquitous-language-init
+name: ubiquitous-language
 description: Use this skill to bootstrap a UBIQUITOUS_LANGUAGE.md glossary in a brownfield project that has no existing domain language documentation, or to audit and refresh an existing glossary for drift. Trigger when the user wants to capture the domain vocabulary baked into an existing codebase, says "document domain terms", "create a glossary", "check if our glossary is still accurate", or is starting to use agent workflows in a project without a shared language baseline. Output is UBIQUITOUS_LANGUAGE.md in the project root, plus a drift report if the file already exists.
 ---
 
-# Ubiquitous Language Init
+# Ubiquitous Language
 
 The goal is to excavate and document the domain vocabulary already embedded in a brownfield codebase - the shared language between developers and domain experts that lives in class names, method names, test descriptions, and documentation.
 
