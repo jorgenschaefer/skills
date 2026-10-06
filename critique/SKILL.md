@@ -1,6 +1,6 @@
 ---
 name: critique
-description: Use for any request to review or clean up code in this project - a diff, a branch, a PR or the whole codebase, including "/critique" and "look this over before I merge" - and whenever a caller needs code judged against `CODING_STANDARDS.md`. This is the project's code review; use it in place of a generic one.
+description: Use for any request to review or clean up code - a diff, a branch, a PR or the whole codebase, including "look this over before I merge" - and whenever a caller needs code judged against `CODING_STANDARDS.md`. Use it in place of a generic code review.
 ---
 
 # Critique
