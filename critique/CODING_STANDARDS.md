@@ -11,7 +11,7 @@ Two principles run through every property below:
 
 They never justify less than correct or secure code.
 
-You are looking for four properties. Check them in order. Where two of them pull against each other the earlier one wins.
+You are looking for four properties. Check them in order; where two pull against each other, the earlier one wins.
 
 - Correctness
 - Security
@@ -22,7 +22,7 @@ You are looking for four properties. Check them in order. Where two of them pull
 
 Does the code do what it is supposed to do?
 
-What that is may have to be derived from the context first - the ticket, the callers, the domain - before it can be checked, and it is checked for the general case _and_ the edge cases, not the one input somebody had in mind.
+What that is may have to be derived first, from the ticket, the callers, the domain, and it is checked for the general case _and_ the edge cases.
 
 Code should also be obvious in what it is meant to do. If you have to guess, or if the context points in another direction than the code would hint, that's a flag.
 
@@ -34,7 +34,7 @@ Code should also be obvious in what it is meant to do. If you have to guess, or 
 
 **Every change is one of two kinds, and each has its own proof.**
 
-- **It changes behaviour:** a failing test first. Write the test, watch it fail for the reason you expect, then write the code that makes it pass.
+- **It changes behaviour:** a failing test first, watched fail for the reason you expect.
 - **It keeps behaviour** - a refactor, a split, a move, a rename, deleting dead code: the suite is green before and after, and no test changes except to follow a moved or renamed name. Where no test covers the code it touches, pin it with one first - green proves only what the suite covers.
 
 Never mix the two in one step.
@@ -57,7 +57,7 @@ Never mix the two in one step.
 
 ### Concurrency and Shared State
 
-Code that reads correctly from top to bottom can still be wrong, because it does not run alone. Two requests, a double-clicked button, a retried webhook - each is a second execution interleaved with the first, and the defect lives in the gap between two lines that look adjacent.
+Code does not run alone. Two requests, a double-clicked button, a retried webhook - each is a second execution interleaved with the first, and the defect lives in the gap between two lines that look adjacent.
 
 - **A decision made from a value you loaded is stale by the time you act on it.** Read a balance, check it, write it back, and two concurrent runs both decide from the same load - one write is lost. "Does this exist? No - create it" is the same bug: the row appears in the gap. Push the decision down to where the data is - a conditional update, a unique constraint, `SET n = n + 1`, a transaction at an isolation level you chose on purpose - rather than holding it in application memory across an `await`.
 - **No mutable state outside a request.** A module-level cache, counter, or accumulator is shared by every request the process handles at once - and in a serverless runtime it survives between them too, so one user's data reaches the next. State belongs in the request or in the store.
@@ -99,9 +99,9 @@ The reader decides the wording. An end user gets the domain's words and no stack
 
 ### Sufficient Efficiency
 
-The software has to be fast enough to be usable. Performance is not an absolute requirement, but follows from usability: past that point, speed does not justify code that is harder to read. An improvement that costs nothing in clarity is not an optimization, and needs no measurement.
+The software has to be fast enough to be usable. Past that point, speed does not justify code that is harder to read. An improvement that costs nothing in clarity is not an optimization, and needs no measurement.
 
-**No optimization without measurement.** Never make code "more efficient" without having measured it and defined the efficiency as a problem - a win that does not cross the threshold above is not one. Two costs are the exception, because they follow from the shape of the code plus a number you can go and look up: a query inside a loop, and a query with no bound or no index on what it filters or sorts.
+**No optimization without a measurement** showing the software is not fast enough. Two costs are the exception, because they follow from the shape of the code plus a number you can go and look up: a query inside a loop, and a query with no bound or no index on what it filters or sorts.
 
 ### Sufficient Reliability
 
@@ -130,7 +130,7 @@ The test: when a bug is reported, can its location be found quickly? When a chan
 
 ### One Way to Do Each Thing
 
-The next agent learns how this codebase does a thing from the nearest example and repeats it. Two ways of doing the same thing - two error styles, two HTTP clients, two test helpers - get a random mix and then a third.
+The next agent repeats the nearest example. Two ways of doing the same thing - two error styles, two HTTP clients, two test helpers - get a random mix and then a third.
 
 - **Follow the existing way,** even where you would have chosen another, and report it: "I wanted to do X, but the codebase does Y, so I did Y."
 - **A new way replaces the old one** everywhere, in its own change that keeps behaviour, or it is not introduced.
@@ -205,7 +205,7 @@ Every function call should be fully understandable from the name and parameters 
 
 ### The Compiler Checks First
 
-A type error reaches the agent in seconds, at the line that is wrong; a test, later and somewhere else; a review, last. Put every rule you can where the compiler enforces it.
+Put every rule you can where the compiler enforces it.
 
 - **Turn on the strictest checking** the language and project allow.
 - **No escape hatches:** no `any`, unchecked cast, `# type: ignore` or `!` without a comment saying why it is safe.
