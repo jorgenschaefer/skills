@@ -112,6 +112,15 @@ Directories and modules should therefore group code by feature. Prefer this over
 
 Put a test next to the file it tests, not in a separate `tests/` tree - unless the project's existing layout clearly says otherwise.
 
+### Fields Listed Once
+
+Code that has to cover every field of a domain object - equality, a merge or sum, a copy, a column list, a mapping to storage or the wire - is a second definition of the type: the next field added has to be added there too, and nothing says so.
+
+- Keep it beside the type, as a function the rest of the code calls, rather than repeating the list where it is needed. Derive it only where the language does so plainly (`#[derive(PartialEq)]`, a dataclass's `__eq__`).
+- Where the list has to stand on its own - SQL, a wire format - make a forgotten field fail: a compiler check of completeness (in TypeScript, `satisfies Record<keyof T, …>`) or a test that goes through every field.
+- Where it leaves fields out on purpose - equality that ignores `id` - name the fields it leaves out, so a new field has to go on one side or the other.
+- Code that picks a few fields for its own purpose, such as a view showing three of them, is not such a list.
+
 ### Files Small Enough to Read Whole
 
 An agent should be able to read a file whole. So **before adding code to a file of more than about 500 lines, split it.**
