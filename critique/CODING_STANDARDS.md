@@ -233,9 +233,7 @@ A change that touches commented code keeps the comment true, in the same change.
 
 ### Language
 
-Code is in English, whatever language the domain or `UBIQUITOUS_LANGUAGE.md` uses: identifiers, test names, comments, commit messages. Each glossary entry carries the English identifier the code uses - `Vertrag` in the user's mouth is `Contract` in the source.
-
-Where an entry says its term has no English equivalent, the term is the identifier: in the glossary's form, transliterated to ASCII (`ä` -> `ae`, `ß` -> `ss`), cased like any other name. Where an entry just lacks an identifier, ask the user; do not invent one.
+Code is in English, whatever language the domain or `UBIQUITOUS_LANGUAGE.md` uses: identifiers, test names, comments, commit messages. Use the identifier the glossary entry gives, exactly - `Vertrag` in the user's mouth is `Contract` in the source, and an untranslatable term carries its own ASCII form there. Where an entry has no identifier, ask the user; do not invent one.
 
 ### Dependencies
 

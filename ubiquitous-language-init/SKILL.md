@@ -46,7 +46,7 @@ Read the following layers, aiming for breadth, not depth. Each layer is a place 
 5. **Tests** (especially `describe`/`it`/docstrings) - test names often spell out workflows and invariants in plain language.
 6. **Comments and documentation** (README, inline) - invariants, role distinctions, and intent behind names.
 
-While exploring, also detect the **domain language** (the language stakeholders use when talking about the business). It may differ from the code language: a German insurance platform may have classes named `Contract` while domain experts speak of `Vertrag`. Write the whole glossary file in the domain language, and give the English code identifier in parentheses after every term that has one - leaving them off only where the term has no English equivalent and saying so in the entry, since that statement is what tells a builder to use the domain term in code: `**Vertrag** (\`Contract\`) - Eine vertragliche Vereinbarung ...`.
+While exploring, also detect the **domain language** (the language stakeholders use when talking about the business). It may differ from the code language: a German insurance platform may have classes named `Contract` while domain experts speak of `Vertrag`. Write the whole glossary file in the domain language, and give the English code identifier in parentheses after every term - for a term with no English equivalent, the term itself in ASCII, saying so in the entry: `**Vertrag** (\`Contract\`) - Eine vertragliche Vereinbarung ...`.
 
 When the same concept appears under two names in different layers (e.g. `Customer` in code, `Account` in UI strings), record the rejected one in **Aliases to avoid**.
 
