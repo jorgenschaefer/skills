@@ -97,7 +97,7 @@ The reader decides the wording. An end user gets the domain's words and no stack
 
 ### Sufficient Efficiency
 
-The software should be fast enough to be usable, but not faster. Performance is not an absolute requirement, but follows from usability.
+The software has to be fast enough to be usable. Performance is not an absolute requirement, but follows from usability: past that point, speed does not justify code that is harder to read. An improvement that costs nothing in clarity is not an optimization, and needs no measurement.
 
 **No optimization without measurement.** Never make code "more efficient" without having measured it and defined the efficiency as a problem - a win that does not cross the threshold above is not one. Two costs are the exception, because they follow from the shape of the code plus a number you can go and look up: a query inside a loop, and a query with no bound or no index on what it filters or sorts.
 
