@@ -41,7 +41,7 @@ Work the blockers and the should-fix, test-first. Then review again the same way
 
 ## Every change gets one, whatever its size
 
-The fresh-context review runs on every change this skill builds, down to the three-line one, and so does the failing test. The size of a diff is not evidence about the size of what it can break, and a build run with nobody watching has nothing behind this review.
+The fresh-context review runs on every change this skill builds, down to the three-line one. The size of a diff is not evidence about the size of what it can break, and a build run with nobody watching has nothing behind this review.
 
 ## Stop rather than improvise
 

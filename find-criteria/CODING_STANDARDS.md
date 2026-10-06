@@ -32,7 +32,7 @@ Code should also be obvious in what it is meant to do. If you have to guess, or 
 
 **Coverage is never lost.** A test deleted, renamed away or weakened - an assertion loosened, a case dropped, two suites merged into one that covers less - unpins what it pinned. Merging is where this hides, because it reads as tidying.
 
-**Every change is one of two kinds, and each has its own proof.**
+**Every change is one of two kinds, and each has its own proof** - down to the three-line one.
 
 - **It changes behaviour:** a failing test first, watched fail for the reason you expect.
 - **It keeps behaviour** - a refactor, a split, a move, a rename, deleting dead code: the suite is green before and after, and no test changes except to follow a moved or renamed name. Where no test covers the code it touches, pin it with one first - green proves only what the suite covers.
@@ -54,6 +54,8 @@ Never mix the two in one step.
 **External adapters** - the thin edge that talks to a third-party SDK, the network, or IO - may be untested when they genuinely can't be tested at all. The business logic behind them must be fully tested. Wrap the dependency in the thinnest possible adapter (just the calls you need, no logic), mock that adapter to test everything behind it, and accept the adapter itself going untested.
 
 **The suite runs with one command, fast and the same every time.** Name the command where the next agent looks first - the README or CLAUDE.md - and have it build, type-check, lint and test, exiting non-zero on any failure. It runs everything the CI workflow gates on, so green here is green there. A flaky test teaches the agent to ignore failures: fix it or delete it, never retry it until it passes.
+
+**The app starts the same way for every agent.** Where it has something to see or drive, how to start it is written where the next agent looks first - a `run` skill, the README or CLAUDE.md - with any script it needs beside it in the repository.
 
 ### Concurrency and Shared State
 
