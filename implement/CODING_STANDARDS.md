@@ -110,6 +110,8 @@ If two pieces of code are similar and always change the same, they should be uni
 
 Directories and modules should therefore group code by feature. Prefer this over splitting by type, for example having all controllers in one directory and all models in another.
 
+Features nest. When a directory holds several features that change independently, each gets its own subdirectory, named with the feature's term from `UBIQUITOUS_LANGUAGE.md`, so that a task naming a feature names the directory too. Check for this before adding a file to a directory of more than about 15 source files, counting a file and its test as one. Split only along features the directory already holds: a directory whose name is not a domain term is not a split, and a directory that is one feature stays whole however many files it has. The split moves files, changes no behaviour, and comes before the change.
+
 Put a test next to the file it tests, not in a separate `tests/` tree - unless the project's existing layout clearly says otherwise.
 
 ### Fields Listed Once

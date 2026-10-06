@@ -13,7 +13,7 @@ You change nothing. The output is a list of changes somebody else will make.
 
 Where the code in scope is larger than you can hold at once, spawn parallel `Explore` subagents across different areas and synthesize what they bring back - a review that stopped where the context ran out looks exactly like one that found nothing.
 
-A property the code lacks is a candidate finding. Five things are your own work to establish rather than a read of the code:
+A property the code lacks is a candidate finding. Six things are your own work to establish rather than a read of the code:
 
 - **The product, where a user sees the change.** Drive it in the running app and judge what you see against the standard: every screen the change touches - or the ones your caller names, as after a round of fixes - at the narrowest and widest supported size, with the feedback after each action. A builder checking its own work cannot stand in for this.
 
@@ -26,6 +26,7 @@ A property the code lacks is a candidate finding. Five things are your own work 
 - **Tests that left.** Coverage that existed before the change and does not after it is work. A test deleted, renamed away, or weakened - an assertion loosened, a case dropped, two suites consolidated into one that covers less - is a finding. Consolidation is where this hides, because the diff reads as tidying.
 - **Callers still work.** For every signature, exported name, return shape, thrown error, default, and stored or serialised format the change touches - including the ones it renames or removes - go find the other side: grep for the callers, the readers of that stored shape, the tests that construct it, and check each against the new behavior. This costs tool calls, and that is the point - the finding is in the code you weren't shown. When the change adds or renames a field of a domain object, grep for the name of a field next to it: every hand-written list of the fields outside the type's own file has to change in the same diff or check its own completeness.
 - **Code you want deleted is really dead.** Before proposing any deletion, find a use that proves it live rather than settling for the absence of an obvious caller, and hunt the paths the standard names as only _looking_ dead. Where you cannot prove it dead, the finding is "this looks unused, confirm it" - not "delete this".
+- **Sizes.** For every file and directory the change adds to, check its size against the limits in the standard - the diff shows neither.
 
 ## Verify before reporting
 
