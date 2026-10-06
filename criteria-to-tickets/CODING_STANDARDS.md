@@ -30,10 +30,12 @@ Code should also be obvious in what it is meant to do. If you have to guess, or 
 
 **Every piece of business logic is pinned by a test:** removing or changing it would make a test fail. For each piece, you should be able to name the test that pins it; where you cannot, that is a coverage gap.
 
+**Coverage is never lost.** A test deleted, renamed away or weakened - an assertion loosened, a case dropped, two suites merged into one that covers less - unpins what it pinned. Merging is where this hides, because it reads as tidying.
+
 **Every change is one of two kinds, and each has its own proof.**
 
 - **It changes behaviour:** a failing test first. Write the test, watch it fail for the reason you expect, then write the code that makes it pass.
-- **It keeps behaviour** - a refactor, a split, a move, a rename, deleting dead code: the suite is green before and after, and no test changes except to follow a moved or renamed name.
+- **It keeps behaviour** - a refactor, a split, a move, a rename, deleting dead code: the suite is green before and after, and no test changes except to follow a moved or renamed name. Where no test covers the code it touches, pin it with one first - green proves only what the suite covers.
 
 Never mix the two in one step.
 
@@ -51,7 +53,7 @@ Never mix the two in one step.
 
 **External adapters** - the thin edge that talks to a third-party SDK, the network, or IO - may be untested when they genuinely can't be tested at all. The business logic behind them must be fully tested. Wrap the dependency in the thinnest possible adapter (just the calls you need, no logic), mock that adapter to test everything behind it, and accept the adapter itself going untested.
 
-**The suite runs with one command, fast and the same every time.** Name the command where the next agent looks first - the README or CLAUDE.md - and have it build, type-check, lint and test, exiting non-zero on any failure. A flaky test teaches the agent to ignore failures: fix it or delete it, never retry it until it passes.
+**The suite runs with one command, fast and the same every time.** Name the command where the next agent looks first - the README or CLAUDE.md - and have it build, type-check, lint and test, exiting non-zero on any failure. It runs everything the CI workflow gates on, so green here is green there. A flaky test teaches the agent to ignore failures: fix it or delete it, never retry it until it passes.
 
 ### Concurrency and Shared State
 
