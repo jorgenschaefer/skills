@@ -9,13 +9,11 @@ This extends your existing standards, it does not replace them.
 - **YAGNI.** Only build and keep what is actually needed now, not in an imagined future.
 - **KISS.** Prefer the simplest thing that works over "clever" designs or needless optimization.
 
-You are looking for six properties. Check them in order. Where two of them pull against each other the earlier one wins.
+You are looking for four properties. Check them in order. Where two of them pull against each other the earlier one wins.
 
 - Correctness
 - Security
 - Usability
-- Sufficient Efficiency
-- Sufficient Reliability
 - Maintainability
 
 ## Correctness
@@ -34,7 +32,7 @@ Code should also be obvious in what it is meant to do. If you have to guess, or 
 
 Deleting code can happen without a failing test first.
 
-**Each phase is a separate test run.** Red, green, refactor, in the smallest steps that make sense. Writing the test and the code and then running once is not TDD even when the artifacts end up identical, because the RED run is the only thing that proves the test exercises the behaviour.
+**Use TDD.** Red, green, refactor, in the smallest steps that make sense. Each phase is a separate test run. Writing the test and the code and then running once is not TDD even when the artifacts end up identical, because the RED run is the only thing that proves the test exercises the behaviour.
 
 1. **RED.** One trivially small failing test for the next bit of behaviour. Run it, and confirm **the assertion fires and reports an expected/actual mismatch**. "Module not found", an import error or a syntax error is not RED - it only proves the test could not run. If the test passes immediately, you wrote the code first: revert it, get the failure, re-implement.
 2. **GREEN.** The simplest change that could possibly work. Faking the answer with a constant is fine; the next test forces the general case. If you cannot see a small change that passes, the test is too big - revert and write a smaller one.
@@ -64,7 +62,7 @@ A new file is judged against the spec. Everything else is judged against what is
 
 ## Security
 
-Code assumes a malicious user. Can they see what they should not see, or do things they should not be able to do?
+Assume a malicious user. Can they see what they should not see, or do things they should not be able to do?
 
 Be especially wary when it comes to personally identifiable information.
 
@@ -86,19 +84,22 @@ An error message tells whoever reads it what to do next. It names what went wron
 
 The reader decides the wording. An end user gets the domain's words and no stack trace, table name or internal id - those are for the log, and showing them is a leak. A developer calling a function or running a command gets the parameter, the constraint it broke and the value it received. An error that reliably leads its reader to the wrong move is a defect.
 
-## Sufficient Efficiency
+### Sufficient Efficiency
 
-The software should be fast enough to be usable, but not faster. Performance is not an absolute requirement. 10 ms to 5 ms is a performance improvement but an irrelevant one; 500 ms to 250 ms is not.
+The software should be fast enough to be usable, but not faster. Performance is not an absolute requirement, but follows from usability.
 
 **No optimization without measurement.** Never make code "more efficient" without having measured it and defined the efficiency as a problem - a win that does not cross the threshold above is not one. Two costs are the exception, because they follow from the shape of the code plus a number you can go and look up: a query inside a loop, and a query with no bound or no index on what it filters or sorts.
 
-## Sufficient Reliability
+### Sufficient Reliability
 
 Outside of the happy path, software fails gracefully. But the less likely a failure path is, the less graceful it needs to be. A regular error case might need automatic retries and a well-phrased error display. A rare, unusual error might do with an "an error occurred, try again" popup.
 
 ## Maintainability
 
-Finally, software is written to be maintained and extended in the future. When a bug is reported, can its location be found quickly? When a change is asked for, is every place it touches easy to find?
+Finally, software is written to be maintained and extended in the future - by a coding agent, not a human.
+
+- When a bug is reported, can its location be found quickly?
+- When a change is asked for, is it quick to add without missing anything important?
 
 ### What Changes Together, Stays Together
 
@@ -110,18 +111,14 @@ If two pieces of code are similar and always change the same, they should be uni
 
 Directories and modules should therefore group code by feature. Prefer this over splitting by type, for example having all controllers in one directory and all models in another.
 
-Features nest. When a directory holds several features that change independently, each gets its own subdirectory, named with the feature's term from `UBIQUITOUS_LANGUAGE.md`, so that a task naming a feature names the directory too. Check for this before adding a file to a directory of more than about 15 source files, counting a file and its test as one. Split only along features the directory already holds: a directory whose name is not a domain term is not a split, and a directory that is one feature stays whole however many files it has. The split moves files, changes no behaviour, and comes before the change.
+Features nest. A feature made of more than one source file gets its own subdirectory, so that a task naming a feature names the directory too.
+
+- **Check** whenever a file is added to a directory: do the directory's files, the new one included, belong to features that change for different reasons?
+- **Move** a feature into its own subdirectory as soon as it has two source files, together with their tests. A feature of a single file stays where it is, and so does a directory that is all one feature.
+- **Name** the subdirectory after the feature, using its term from `UBIQUITOUS_LANGUAGE.md` where there is one. A grab-bag name (`utils`, `common`, `helpers`) or a type name (`models`, `controllers`) is not a split.
+- **The split comes first,** only moves files, and changes no behaviour.
 
 Put a test next to the file it tests, not in a separate `tests/` tree - unless the project's existing layout clearly says otherwise.
-
-### Fields Listed Once
-
-Code that has to cover every field of a domain object - equality, a merge or sum, a copy, a column list, a mapping to storage or the wire - is a second definition of the type: the next field added has to be added there too, and nothing says so.
-
-- Keep it beside the type, as a function the rest of the code calls, rather than repeating the list where it is needed. Derive it only where the language does so plainly (`#[derive(PartialEq)]`, a dataclass's `__eq__`).
-- Where the list has to stand on its own - SQL, a wire format - make a forgotten field fail: a compiler check of completeness (in TypeScript, `satisfies Record<keyof T, …>`) or a test that goes through every field.
-- Where it leaves fields out on purpose - equality that ignores `id` - name the fields it leaves out, so a new field has to go on one side or the other.
-- Code that picks a few fields for its own purpose, such as a view showing three of them, is not such a list.
 
 ### Files Small Enough to Read Whole
 
@@ -164,6 +161,15 @@ No reflection, monkey-patching, implicit registration, come-from, introspection,
 
 **Calls are named where they happen**, so a reader can find what runs by searching for it. Dispatch through a computed name - `handlers["on_" + event]`, `getattr(self, name)`, reflection, monkey-patching - hides the call from a search. Where the set of cases is known, name each one in a `switch` or `match`. An event with a single listener, or a hook, decorator or higher-order wrapper of your own with a single user, is an abstraction built too early: make the call - unless it keeps the emitter's module from depending on the listener's.
 
+### Fields Listed Once
+
+Code that has to cover every field of a domain object - equality, a merge or sum, a copy, a column list, a mapping to storage or the wire - is a second definition of the type: the next field added has to be added there too, and nothing says so.
+
+- Keep it beside the type, as a function the rest of the code calls, rather than repeating the list where it is needed. Derive it only where the language does so plainly (`#[derive(PartialEq)]`, a dataclass's `__eq__`).
+- Where the list has to stand on its own - SQL, a wire format - make a forgotten field fail: a compiler check of completeness (in TypeScript, `satisfies Record<keyof T, …>`) or a test that goes through every field.
+- Where it leaves fields out on purpose - equality that ignores `id` - name the fields it leaves out, so a new field has to go on one side or the other.
+- Code that picks a few fields for its own purpose, such as a view showing three of them, is not such a list.
+
 ### Comments
 
 Comments should be rare, as they are outdated the moment they are written. The intent of code should be obvious: make it explicit with well-named helper functions before writing one. Only if that fails, and a future reader would have trouble understanding the intent, add a comment. Reluctantly.
@@ -178,13 +184,35 @@ An entry with no English identifier that does not explicitly say its term has no
 
 ### Dependencies
 
-When adding a dependency, do not rely on your training data - it is almost always stale. Before adding it, check the registry for the package name, which you might misremember, and look the latest stable release up.
+When adding a dependency, do not rely on your training data - it is almost always stale.
+
+Before adding it, check the registry:
+
+- Is the package name you remember correct?
+- Is the package still maintained?
+- What is the current stable release?
+
+Do not use unmaintained packages.
 
 ### No Dead Code
 
-Code that is not used anywhere outside of its tests should not be in the repository - down to a parameter, a field, an option, or a branch no input reaches. Note what only _looks_ dead but is live: dynamic or reflective access, DI registration, string-referenced routes, config and env, framework entry points, a parameter a signature it must match requires, a field in a stored or wire format, an exhaustiveness assertion, and exported API consumed from outside this repo - an exported symbol with no internal caller is not dead.
+Remove code that nothing but its tests uses - down to a single parameter, field or option, and any branch no input reaches.
 
-### Architecture Decisions
+When a change removes a use of something - a call to a function, an import of a module, a read of a field - check whether anything else still uses it, and remove it if nothing does. The code left unused is outside the changed lines, so the diff will not point to it.
+
+Code can look dead and still be live. Keep it when it is:
+
+- accessed dynamically or by reflection
+- registered for dependency injection
+- a route referenced by a string
+- named in config or an environment variable
+- a framework entry point
+- a parameter that a signature it has to match requires
+- a field in a stored or wire format
+- an exhaustiveness assertion
+- exported API used outside this repo, even with no caller inside it
+
+### Architecture Decisions (ADRs)
 
 A record is rare. Write one only when a later change made without it would harm the project - by undoing or re-deciding this choice without a fact or argument the code cannot carry - and no comment, test or structure in the code can guard against that. Harm means concrete damage: lost data, broken operations, a costly mistake repeated. Taste, style and tidiness are not harm.
 
