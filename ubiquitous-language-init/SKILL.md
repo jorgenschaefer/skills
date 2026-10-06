@@ -33,7 +33,7 @@ Spawn up to 3 `Explore` subagents in parallel for the six layers below. Suggeste
 
 Each agent returns the candidate terms it found, with file-and-usage evidence. Synthesize the three lists in the main loop before presenting findings.
 
-For the drift check (only when `UBIQUITOUS_LANGUAGE.md` already exists), give a single `Explore` agent the full existing term list and ask it to classify each as active, drifted, or absent in one pass - one batched search, not one per term.
+For the drift check (only when `UBIQUITOUS_LANGUAGE.md` already exists), give a single general-purpose subagent - not `Explore`, which locates code but does not judge it - the full existing entries, definitions and aliases included. It reads the uses of each term and returns a verdict per term - active, drifted, identifier mismatch or absent - and every alias still in use; for every verdict but active and absent, it returns the file, line and usage as well. That is all the later steps use, and the occurrences of active terms stay out of your context. Finding the word does not make a term active; its use has to match the definition.
 
 ## Explore the codebase
 
@@ -58,7 +58,9 @@ For each existing term, search the codebase and classify it:
 
 - **Active** - appears in code, tests, or docs and matches the documented definition.
 - **Drifted** - appears, but usage conflicts with the documented definition. Record the specific file and usage as evidence. Do not rewrite the definition without user confirmation.
+- **Identifier mismatch** - the concept is in the code and matches the definition, but under an identifier other than the one in the entry's parentheses. Record the file and the identifier used. Either the entry or the code is renamed; ask which.
 - **Absent** - not found as a code identifier, test description, or comment. Search three forms, not one: the entry's English identifier, the term itself, and the term transliterated to ASCII. Where the domain language is not English the code usually carries the identifier rather than the term, and a term with no English equivalent reaches the code as itself with any umlaut transliterated - so searching the term alone reports compliant entries as absent, and searching term and identifier alone still misses that last case. Do not delete; the term may live in prose docs or in conversations with domain experts. Flag for user confirmation.
+- **Alias in use** - an entry under **Aliases to avoid** still names the concept in code, tests or UI strings. Record the file and usage. Either the code missed the decision or the decision no longer holds; ask which.
 
 ## Verify with scenarios
 
@@ -72,11 +74,13 @@ Present in two parts.
 
 **Part 1 - Drift findings** (only if the file already exists):
 
-List drifted terms with specific file-and-usage evidence. List absent terms as a group for confirmation. Summarize active terms in one line (e.g. "23 existing terms confirmed active").
+List drifted terms and identifier mismatches with specific file-and-usage evidence. List absent terms as a group for confirmation. List aliases still in use with their file and usage. Summarize active terms in one line (e.g. "23 existing terms confirmed active").
 
 Then ask:
 
-> I found [D] drifted and [A] absent terms - listed above. Let me know how to handle each before I write.
+> I found [D] drifted terms, [M] identifier mismatches, [A] absent terms and [U] aliases still in use - listed above. Let me know how to handle each before I write.
+
+Where the existing file departs from the format - a table, other headings, no line naming the domain language, another language - name each difference and ask whether to convert the file or keep its format for the new entries. Convert only in a write of its own, separate from the content changes.
 
 **Part 2 - New terms found:**
 
@@ -118,18 +122,7 @@ Flagged: 1 ambiguity left unresolved (see "account" in Flagged ambiguities)
 ```
 Active: 23 terms confirmed in codebase
 Drifted: 1 - "Invoice" (definition says "sent after delivery"; code now generates invoices at order placement - see src/billing/invoice.ts:42)
+Identifier mismatch: 1 - **Vertrag** (`Contract`), code uses `Agreement` (src/contracts/agreement.ts:3)
 Absent: 2 - "Fulfillment", "Shipment" (not found as code identifiers; marked for user confirmation)
+Aliases in use: 1 - "Account" for **Customer** (src/orders/checkout.ts:17)
 ```
-
-## Wire it into CLAUDE.md / AGENTS.md
-
-After writing, check whether `CLAUDE.md` or `AGENTS.md` at the project root already contains a read instruction for `UBIQUITOUS_LANGUAGE.md`.
-
-- If a read instruction already covers `UBIQUITOUS_LANGUAGE.md`, no change needed.
-- If neither file mentions it, add an instruction. A suitable one:
-
-  ```
-  At the start of every conversation, read [`UBIQUITOUS_LANGUAGE.md`](UBIQUITOUS_LANGUAGE.md) for canonical domain vocabulary.
-  ```
-
-- If neither `CLAUDE.md` nor `AGENTS.md` exists, tell the user: "No `CLAUDE.md` or `AGENTS.md` found. Create one at the project root with an instruction to read `UBIQUITOUS_LANGUAGE.md` at the start of every session, so agents always have canonical vocabulary in context."
