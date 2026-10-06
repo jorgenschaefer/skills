@@ -58,7 +58,7 @@ The same holds of the plan under them: it implements the ACs quoted above it and
 
 ## ADRs
 
-Only for a decision you newly make while reading the code - one from `/find-criteria` already has its record. Where `CODING_STANDARDS.md` says it earns one, put it to the user at the approval with a recommendation, and on a yes write it to `docs/adr/` in this skill's `ADR_FORMAT.md` shape.
+Only for a decision you newly make while reading the code - one from `/find-criteria` already has its record. Where this skill's `ADR_FORMAT.md` says it earns one, put it to the user at the approval with a recommendation, and on a yes write it to `docs/adr/` in that file's shape.
 
 ## Re-slicing
 

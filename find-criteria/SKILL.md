@@ -47,7 +47,7 @@ This skill's `CRITERIA_FORMAT.md` settles the shape of the file.
 
 ## ADRs
 
-A decision made here that this skill's `CODING_STANDARDS.md` says earns an ADR is put to the user with a recommendation. On a yes, write it to `docs/adr/` in this skill's `ADR_FORMAT.md` shape, now, while the argument for it is in front of you.
+A decision made here that this skill's `ADR_FORMAT.md` says earns an ADR is put to the user with a recommendation. On a yes, write it to `docs/adr/` in that file's shape, now, while the argument for it is in front of you.
 
 ## Throughout
 

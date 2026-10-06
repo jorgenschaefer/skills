@@ -1,8 +1,29 @@
 # ADR format
 
-The shape of an architecture decision record: one choice, the alternatives that were live when it was made, and what it costs. `CODING_STANDARDS.md` says which decisions earn one and that the decision goes to a person first; `/find-criteria` and `/criteria-to-tickets` write the ratified record on their yes, while the argument for it is still in context. `/critique` reads them, and so does anyone planning the next change.
+Which decisions earn an architecture decision record, and the shape of one: one choice, the alternatives that were live when it was made, and what it costs. `/find-criteria` and `/criteria-to-tickets` write the ratified record on the person's yes, while the argument for it is still in context. `/critique` reads them, and so does anyone planning the next change.
 
-An ADR is permanent-tier. It outlives the feature that produced it and the criteria that carried it, so it is never written autonomously - the decision and a recommendation are put to the user, and the ADR exists only once they say yes to it. What does not clear that bar is an implementation decision and belongs in `CRITERIA.md` or a ticket, where it is deleted with the rest of the change's paper on acceptance.
+## When to write one
+
+An ADR outlives the feature that produced it and the criteria that carried it, so a record is rare. Write one only when a later change made without it would harm the project - by undoing or re-deciding this choice without a fact or argument the code cannot carry - and no comment, test or structure in the code can guard against that. Harm means concrete damage: lost data, broken operations, a costly mistake repeated. Taste, style and tidiness are not harm.
+
+It takes one of two shapes:
+
+- **Looks wrong, and fixing it does damage.** A competent developer or agent reading the code would take the choice for a mistake and "fix" it, or add the obvious missing piece - a cache, an ORM, a volume - and doing so would cause harm. Uploaded files stored in Postgres rather than on a volume, because only the database is backed up, is one.
+- **Contested, and will be re-proposed.** Harm, plus at least two of: the person argued it out themselves - an agent listing options and the person agreeing does not count; the losing option is likely to be proposed again; the winning reasons are specific to this project, not general best practice.
+
+Not a record:
+
+- What the code, schema or glossary already shows, even a domain model that took real thought.
+- A surprising choice confined to one place. It gets a comment there.
+- A design guideline for the change in front of you, such as "one writer per file". If it still holds later, the next design rediscovers it; if it does not, it should be free to drop it without overruling anything.
+- A big, expensive choice that looks normal - Postgres, an ORM - unless it is contested as above.
+- Anything a test or the structure can enforce. Enforce it instead.
+
+Anything else decided during a change belongs in `CRITERIA.md` or a ticket, which are deleted with the rest of the change's paper on acceptance.
+
+When unsure, mention it in one line in the plan and write nothing unless the person says yes.
+
+**Never write one unilaterally.** Put the decision and a recommendation to the person, and write the record only once they have said yes.
 
 ## Where they live
 
