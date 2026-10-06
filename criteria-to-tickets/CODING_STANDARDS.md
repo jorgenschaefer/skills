@@ -47,7 +47,7 @@ Never mix the two in one step.
 
 **The edges of the input range are pinned too.** The happy path runs on the value someone had in mind; the behavior has to be right on the boundaries around it, and those come from a list rather than from inspiration. Walk it against what this code takes in: empty and absent (not the same thing), zero, one, negative, the largest input that is realistic rather than the largest that is possible, the value on each side of every comparison, a duplicate, and - where the domain has them - non-ASCII text, a timezone or DST boundary, and money that will not survive a float. An entry that means something here and that the code has never seen is either a missing test or a defect.
 
-**The failure paths are pinned too.** What the code does when things go wrong is business logic: the rejected input, the failed call, the missing record, the conflicting write. A suite that only walks the happy path leaves the branches that run on the worst day as the only ones nobody has executed. Where the code cleans up, retries, or rolls back on failure, a test drives it there.
+**The failure paths are pinned too.** What the code does when things go wrong is business logic: the rejected input, the failed call, the missing record, the conflicting write. Where the code cleans up, retries, or rolls back on failure, a test drives it there.
 
 **External adapters** - the thin edge that talks to a third-party SDK, the network, or IO - may be untested when they genuinely can't be tested at all. The business logic behind them must be fully tested. Wrap the dependency in the thinnest possible adapter (just the calls you need, no logic), mock that adapter to test everything behind it, and accept the adapter itself going untested.
 
@@ -237,15 +237,7 @@ Code is in English, whatever language the domain or `UBIQUITOUS_LANGUAGE.md` use
 
 ### Dependencies
 
-When adding a dependency, do not rely on your training data - it is almost always stale.
-
-Before adding it, check the registry:
-
-- Is the package name you remember correct?
-- Is the package still maintained?
-- What is the current stable release?
-
-Do not use unmaintained packages.
+When adding a dependency, check the registry rather than your training data, which is almost always stale: that the name you remember is right, the current stable release, and that the package is still maintained - an unmaintained one is not used.
 
 ### No Dead Code
 
