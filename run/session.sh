@@ -56,9 +56,13 @@ claude_through_limits() {  # log name, prompt, --session-id or --resume, session
 # not write it, and there is no review pass here to fall back on. Without it the
 # build declines the spawn and every ticket reaches `done` unreviewed.
 #
-# `Monitor` is how a session waits on checks it put in the background: `sleep`
-# is refused, and without it a build that backgrounded its test run had no way
-# to wait for the result.
+# Nothing a session starts runs in the background. A turn ended with work still
+# running ends `claude -p` and kills that work, and telling sessions to stay in
+# the foreground did not hold: "no `run_in_background`" was read as leaving the
+# parameter out, which starts a subagent in the background. A reviewer reported
+# before its browser pass came back, and a build ended its turn on checks it had
+# backgrounded and was claimed again from scratch. With nothing in the
+# background, `Monitor` and `TaskStop` have nothing to act on.
 #
 # The same list is every built-in tool a session has, not only the ones it may
 # use unasked: each call carries the definition of every tool there is, and one
@@ -68,9 +72,9 @@ claude_through_limits() {  # log name, prompt, --session-id or --resume, session
 #
 # The prompt goes in on stdin: Linux takes no single argument over 128 KiB, and
 # a final review handed 33 tickets' Left standing died before it started.
-TOOLS=(Bash Edit Write Read Glob Grep Skill Agent Monitor TaskStop ToolSearch WebFetch WebSearch)
+TOOLS=(Bash Edit Write Read Glob Grep Skill Agent ToolSearch WebFetch WebSearch)
 claude_run() {  # log, --session-id or --resume, session id, prompt, claude's own options... -> claude's exit status
-  ENABLE_CLAUDEAI_MCP_SERVERS=false \
+  ENABLE_CLAUDEAI_MCP_SERVERS=false CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1 \
   claude -p --output-format stream-json --verbose --permission-mode acceptEdits \
     --tools "${TOOLS[@]}" --allowedTools "${TOOLS[@]}" mcp__playwright \
     "$2" "$3" "${@:5}" <<<"$4" 2>&1 | tee "$1" | narrate

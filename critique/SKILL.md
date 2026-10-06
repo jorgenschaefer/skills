@@ -44,7 +44,7 @@ Keep the surviving scenario with the finding. A finding whose trigger you cannot
 
 ## Output
 
-**Spawn every subagent in the foreground, and report only once all of them have reported back.** Several started in one message run in parallel, and the call returns when the last one does - so no `run_in_background`, and no waiting on them with `sleep`. Your last message is the review: a turn ended while one is still running hands your caller "waiting for the area reviews" in place of findings, and leaves that subagent working with nobody to read it.
+**Report only once every subagent has reported back.** Several started in one message run in parallel, and the call returns when the last one does. Your last message is the review: a turn ended while one is still running hands your caller "waiting for the area reviews" in place of findings, and leaves that subagent working with nobody to read it.
 
 **The bar is code health, not perfection.** Each finding has to answer whether the code is worse for what it does - not whether you can imagine something better. A choice you would have made differently is not a finding, and neither is a rewrite you would prefer to the working code in front of you.
 

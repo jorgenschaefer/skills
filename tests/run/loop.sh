@@ -31,11 +31,14 @@ else bad "a clean run leaves nothing uncommitted, and done is committed" "$(git 
 if grep -qF "$(realpath "$WORK")/changes/x/tickets/1-one.md" <(head -1 "$STUB_CALLS"); then
   ok "the build is given the ticket by its absolute path"
 else bad "the build is given the ticket by its absolute path" "$(head -1 "$STUB_CALLS")"; fi
-# A session that runs its checks in the background has to be able to wait on
-# them, and `sleep` is refused.
-if grep -q -- '--allowedTools .*Monitor' <(grep 'Use /implement' "$STUB_ARGS" | head -1); then
-  ok "a build may use Monitor to wait on its background checks"
-else bad "a build may use Monitor to wait on its background checks" "$(head -2 "$STUB_ARGS")"; fi
+# A turn ended on work left in the background ends `claude -p` and kills it: a
+# reviewer reported before its browser pass came back, and a build ended its
+# turn on its checks. Every session, the checks call and the review included.
+if [ "$(grep -c 'CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1 ' "$STUB_ARGS")" = "$(wc -l < "$STUB_ARGS")" ] \
+   && grep -q -- '--json-schema' "$STUB_ARGS" && grep -q 'REVIEW\.md' "$STUB_ARGS" \
+   && ! grep -q -- '--tools .*Monitor' "$STUB_ARGS"; then
+  ok "every session runs with background tasks off"
+else bad "every session runs with background tasks off" "$(cut -c1-160 "$STUB_ARGS")"; fi
 # Every call pays for every tool defined, so a session is given the tools a
 # build uses and no others. Playwright stays, for testing in the browser; the
 # claude.ai connectors go.
@@ -250,8 +253,8 @@ first="$(awk 'NR == 1 && $1 == "start" { print $2 }' "$STUB_SESSIONS")"
 if [ -n "$first" ] && [ "$(sed -n 2p "$STUB_SESSIONS")" = "resume $first" ]; then
   ok "a session that stopped early is resumed, not started over"
 else bad "a session that stopped early is resumed, not started over" "$(cat "$STUB_SESSIONS")"; fi
-if grep -q 'background' <(sed -n 2p "$STUB_CALLS"); then ok "the resumed session is told its background work was killed"
-else bad "the resumed session is told its background work was killed" "$(calls)"; fi
+if grep -q 'still in the tree' <(sed -n 2p "$STUB_CALLS"); then ok "the resumed session is told its work is still in the tree"
+else bad "the resumed session is told its work is still in the tree" "$(calls)"; fi
 
 workspace
 plan stop-early stop-early build build review

@@ -60,9 +60,9 @@ drive() {
 
     # A session that ended its turn with its work uncommitted and the ticket still
     # claimed stopped short - one did so with its build done and reviewed, waiting
-    # on a check the CLI of the day killed when the turn ended. The CLI now wakes a
-    # session when its background work finishes, but a session can still stop
-    # short, and this costs nothing when none does. It is resumed once rather than
+    # on a check the CLI of the day killed when the turn ended. Nothing runs in
+    # the background now, but a session can still stop short, and this costs
+    # nothing when none does. It is resumed once rather than
     # started over, because everything it did is still in the tree and in its
     # context.
     if [ "$rc" = 0 ] && [ "$(field "$ticket" status)" = doing ] && [ -n "$(left_behind)" ]; then

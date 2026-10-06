@@ -27,7 +27,7 @@ Build it in the order the standard says the work happens. While you build, run t
 
 ## Review it in a session that did not write it
 
-**Spawn `critique` as a subagent with a fresh context, in the foreground** - a turn ended while it runs in the background loses it. Hand it the diff, the result of the checks, and what was asked for - the criteria and what is out of scope, as the request states them. Do not hand it the reasoning that produced the code: not the plan, and not how you tested it. A reviewer that has accepted every step of the reasoning reads its own intentions into the code; the subagent starts cold, which is the only reason its findings are worth anything.
+**Spawn `critique` as a subagent with a fresh context.** Hand it the diff, the result of the checks, and what was asked for - the criteria and what is out of scope, as the request states them. Do not hand it the reasoning that produced the code: not the plan, and not how you tested it. A reviewer that has accepted every step of the reasoning reads its own intentions into the code; the subagent starts cold, which is the only reason its findings are worth anything.
 
 **The review is where the running app is checked.** Do not check the screens yourself before it: in one run the build and its reviewer drove the app at the same time, fought over the dev server, and paid for the same check twice.
 

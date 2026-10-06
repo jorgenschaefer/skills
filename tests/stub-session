@@ -73,9 +73,10 @@ set -uo pipefail
 prompt="$(cat)"
 
 # Every call's arguments, one line each, for the tests that care how the
-# runner launches a session rather than what the session did - led by the one
-# environment variable the runner sets for it, and followed by the prompt.
-printf 'ENABLE_CLAUDEAI_MCP_SERVERS=%s %s | %s\n' "${ENABLE_CLAUDEAI_MCP_SERVERS-}" "$*" "${prompt//$'\n'/ }" >> "$STUB_ARGS"
+# runner launches a session rather than what the session did - led by the
+# environment variables the runner sets for it, and followed by the prompt.
+printf 'ENABLE_CLAUDEAI_MCP_SERVERS=%s CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=%s %s | %s\n' \
+  "${ENABLE_CLAUDEAI_MCP_SERVERS-}" "${CLAUDE_CODE_DISABLE_BACKGROUND_TASKS-}" "$*" "${prompt//$'\n'/ }" >> "$STUB_ARGS"
 
 if [[ " $* " == *" --json-schema "* ]]; then
   jq -nc --arg c "$STUB_VERIFY" \
