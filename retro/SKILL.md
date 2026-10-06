@@ -19,13 +19,13 @@ The logs are too large to read into your context. Write a script into your scrat
 
 **Find the skills the run read.** A run reads the skills as they were on its date, so `git log --since` in this repository: a finding a later commit already addresses is reported as already fixed, not fixed again.
 
-**Did the last fixes hold?** For every commit here since the previous run on this project that touches what this session exercised, check whether what it fixed happened again. A recurrence comes first in the report, and its fix is a different mechanism from the one that failed: a rule that a reviewer was told to follow and that did not hold is not repaired by saying it again.
+**Did the last fixes hold?** For every commit here since the previous run on this project - the newest log in `<project>/.git/run-logs/` before this run's, or the previous retro's commits here - that touches what this session exercised, check whether what it fixed happened again. A recurrence comes first in the report, and its fix is a different mechanism from the one that failed: a rule that a reviewer was told to follow and that did not hold is not repaired by saying it again.
 
 Before running anything in the project, check that no run or session is working it - `fuser <project>/.git/run.lock`, and `git status` for work in progress. One analysis that ran the tests to check a fix hit the shared test database under a live build's reviewer.
 
 ## Find the moments
 
-- **A person stepped in.** A halt, a question the person had to answer, a fix they made by hand. Each is the pipeline failing at the one thing an unattended run is for.
+- **A person stepped in.** A halt, a question the person had to answer, a fix they made by hand. Each is the pipeline failing at the one thing an unattended run is for. Every halt, every question the person answered and every commit they made by hand after the run appears in the report, as a finding or as already fixed.
 - **A defect caught late, or not at all.** Name the earliest stage that could have caught it and why it did not. The fix goes there, which is often upstream of where it tripped: a red baseline in a build came from a mockup an earlier stage wrote where the linter reads.
 - **A rule that exists and did not hold.** Find why - it was scoped to the first of several choices, or it said to wait without a way of waiting that keeps an unattended session alive. Restating it changes nothing.
 - **A rule that held and did harm.** A number that became the target: the 500-line limit met by merging tests and leaving five files at 495-499 lines.
