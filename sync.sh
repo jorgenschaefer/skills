@@ -13,6 +13,9 @@
 # here: nothing errors, the agent reads nothing, and the instruction that was
 # supposed to bind it silently does not.
 #
+# A skill the repository links from its own .claude/skills is for working on
+# the skills here, so it stays out of the target.
+#
 # It only ever removes symlinks. `~/.claude/skills` holds skills synced from
 # elsewhere and skills written in place, and those are directories.
 
@@ -30,6 +33,7 @@ for skill in "$HERE"/*/; do
   skill="${skill%/}"
   [ -f "$skill/SKILL.md" ] || continue
   name="$(basename "$skill")"
+  [ -e "$HERE/.claude/skills/$name" ] && continue
 
   # A real directory of that name is somebody else's skill, and replacing it
   # with a link deletes the only copy. Say so and leave it.

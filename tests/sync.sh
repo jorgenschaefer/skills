@@ -63,6 +63,18 @@ if [ ! -e "$DEST/sync.sh" ]; then
   ok "a file beside the skills is left out"
 else bad "a file beside the skills is left out" "$(ls -l "$DEST")"; fi
 
+# --- a skill this repository keeps for itself --------------------------------
+#
+# A skill linked from the repository's own .claude/skills is for working on
+# the skills here, and a session in any other project has no use for it.
+
+workspace
+mkdir -p "$SRC/.claude/skills" && ln -s ../../alpha "$SRC/.claude/skills/alpha"
+sync >/dev/null 2>&1
+if [ ! -e "$DEST/alpha" ] && [ -L "$DEST/beta" ]; then
+  ok "a skill linked from the repository's .claude/skills is left out"
+else bad "a skill linked from the repository's .claude/skills is left out" "$(ls -l "$DEST")"; fi
+
 # --- running it twice ---------------------------------------------------------
 #
 # The `-n` bug: the second `ln` follows the existing link and writes inside the
