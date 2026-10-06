@@ -13,11 +13,11 @@ Read this skill's `CODING_STANDARDS.md` whole and apply all of it - no part of i
 
 **Look at what is there.** What already exists that does this, or half of it. What the project calls things. What it decided before.
 
-**Know what has to be true when you are finished**, specifically enough that you could hand it to someone else as the test of whether it worked. Where the request does not settle something that changes what gets built, ask. Where it settles it badly, say so once and build it.
+**Know what has to be true when you are finished**, specifically enough that you could hand it to someone else as the test of whether it worked. Where the request does not settle something that changes what gets built, ask - before or during the build - and do not build past it. Where it settles it badly, say so once and build it.
 
 **Find the project's way of running the app**, where the change needs seeing - a `run` skill, `CLAUDE.md`, the README. The review drives the app that way. Where there is none, build one, write it up as the project's run skill, `.claude/skills/run/SKILL.md`, with the scripts it drives beside it, and commit it with the change.
 
-**Find the project's verification command** - the one that runs the tests, the type check and the linter. Where there is none, run what exists and say so.
+**Find the project's verification command** - the one that runs the tests, the type check and the linter. Where there is none, run what exists and say so; creating one is a separate change.
 
 ## Build it
 
