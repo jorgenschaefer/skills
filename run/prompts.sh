@@ -48,7 +48,7 @@ Each one's \`## Left standing\` says what its build did not settle. Handle an it
 # The ways a session is carried on rather than started over. The first two are
 # read by the loop, the last by the final review.
 # shellcheck disable=SC2034
-STOPPED_EARLY="Your turn ended before the ticket was finished; your uncommitted work is still in the tree. Carry on from there and finish as the brief said."
+STOPPED_EARLY="Your turn ended before the ticket was finished; what you did is still in the tree and in your commits. Carry on from there and finish as the brief said."
 # shellcheck disable=SC2034
 INTERRUPTED="The run was interrupted while you were working, and has been started again. Your uncommitted work is still in the tree. Carry on from where you stopped - rerun whatever was cut short, a subagent or a check included - and finish as the brief said."
 # shellcheck disable=SC2034

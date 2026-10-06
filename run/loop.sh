@@ -58,15 +58,16 @@ drive() {
       session "$ticket" --session-id "$id"; rc=$?
     fi
 
-    # A session that ended its turn with its work uncommitted and the ticket still
-    # claimed stopped short - one did so with its build done and reviewed, waiting
-    # on a check the CLI of the day killed when the turn ended. Nothing runs in
+    # A session that ended its turn with the ticket still claimed stopped short -
+    # one did so with its build done and reviewed, waiting on a check the CLI of
+    # the day killed when the turn ended; another committed its build and stopped
+    # on the checks it had started, and with nothing uncommitted it was claimed
+    # again from scratch and halted over a build already in HEAD. Nothing runs in
     # the background now, but a session can still stop short, and this costs
-    # nothing when none does. It is resumed once rather than
-    # started over, because everything it did is still in the tree and in its
-    # context.
-    if [ "$rc" = 0 ] && [ "$(field "$ticket" status)" = doing ] && [ -n "$(left_behind)" ]; then
-      say "session stopped with its work uncommitted - resuming it"
+    # nothing when none does. It is resumed once rather than started over,
+    # because everything it did is still in the tree, the commits and its context.
+    if [ "$rc" = 0 ] && [ "$(field "$ticket" status)" = doing ]; then
+      say "session stopped with the ticket unfinished - resuming it"
       session "$ticket" --resume "$id" "$STOPPED_EARLY"; rc=$?
     fi
     if [ "$rc" = "$EX_LIMIT" ]; then

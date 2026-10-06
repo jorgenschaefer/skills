@@ -26,6 +26,9 @@
 #   stop-early   write code and leave it uncommitted, the ticket at `doing`, and
 #                exit 0 - a session that ended its turn waiting on background
 #                work, which `-p` then killed
+#   commit-stop  commit code, leave the ticket at `doing` and nothing
+#                uncommitted, and exit 0 - a session that committed its build
+#                and ended its turn on the checks it had started
 #   limit        be rejected by a usage limit, in the events the CLI really
 #                writes: a rejected rate_limit_event carrying the reset time,
 #                the assistant's rate_limit error, and an error result
@@ -185,6 +188,11 @@ case "$line" in
     kill -9 "$PPID"
     ;;
   stop-early) printf 'half\n' > "$(git rev-parse --show-toplevel)/code" ;;
+  commit-stop)
+    printf 'built\n' > "$(git rev-parse --show-toplevel)/code"
+    git add "$(git rev-parse --show-toplevel)/code" >/dev/null 2>&1
+    git commit -qm "build $(basename "$ticket")" >/dev/null 2>&1
+    ;;
   limit-sub)
     echo '{"type":"assistant","message":{"role":"assistant","content":[]},"parent_tool_use_id":"toolu_sub","error":"rate_limit"}'
     exit 1
