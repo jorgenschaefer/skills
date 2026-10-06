@@ -1,10 +1,8 @@
 # UBIQUITOUS_LANGUAGE.md format
 
-The project-wide canonical vocabulary lives in `UBIQUITOUS_LANGUAGE.md` at the project root. It captures the domain language - the shared terms that mean the same thing to developers, users, and stakeholders.
+`UBIQUITOUS_LANGUAGE.md` at the project root holds the domain language - the terms that mean the same thing to developers, users, and stakeholders - and is the source of truth for the domain's names in code, tests, and documentation.
 
-`CODING_STANDARDS.md` names it as the source of truth for the domain's names - while a change is being shaped, and again when the names are typed - and an entry is proposed when a change coins a term. Other agents and humans read it to use consistent vocabulary across code, tests, and documentation.
-
-Only terms with a clear, project-specific meaning that would not be immediately obvious without the entry go in here. Terms that could be misunderstood definitely belong here.
+Only a term with a clear, project-specific meaning that would not be obvious without the entry goes in, and above all one that could be misunderstood.
 
 ## Language
 
@@ -22,13 +20,13 @@ Where the term genuinely has no English equivalent - a legal or regulatory word 
 
 ## Sections
 
-The file always has **Terminology**; **Aliases to avoid** is there once there is an alias to record. Two more are appended only when the updating rules call for them: **Flagged ambiguities** and **Retired**. Use these exact headings.
+The file always has **Terminology**; **Aliases to avoid** is there once there is an alias to record. **Flagged ambiguities** and **Retired** are appended at the bottom only when the updating rules call for them. Use these exact headings.
 
 Within each section, entries are bullets sorted alphabetically by the bold canonical term. Each entry starts with the **canonical term in bold**; references to other glossary terms inside an entry are also bolded so the cross-references jump out.
 
 ### Terminology
 
-One sentence per term: define its meaning in the project, and if it's ambiguous, add a note on how to disambiguate it.
+One sentence per term: its meaning in the project, not how it is implemented, and if it's ambiguous, how to disambiguate it.
 
 ```markdown
 - **Contract** - the legal document that outlines the terms of service for our API.
@@ -36,21 +34,16 @@ One sentence per term: define its meaning in the project, and if it's ambiguous,
 
 ### Aliases to avoid
 
-The rejected term in quotes, the canonical one in bold, then a short reason. This section is the project's record of disambiguation decisions.
+The rejected term in quotes, the canonical one in bold, then a short reason. The section is the project's record of disambiguation decisions.
 
 ```markdown
 - "Account" - use **Customer** for the order-placing entity. "Account" is reserved for authentication identity.
 - "Item" - use **Line Item** instead. "Item" was used for both products and order lines.
 ```
 
-### Flagged ambiguities and Retired
-
-Created on demand by the updating rules below - Flagged ambiguities holds unresolved conflicts awaiting user input, Retired holds obsolete terms kept for history. Both live at the bottom of the file.
-
 ## Updating rules
 
-- **Add, don't rewrite.** Never modify an existing definition without explicit user confirmation. New terms go into the right section.
-- **Sort alphabetically within each section.** Insert in place, keyed on the bold canonical term.
+- **Add, don't rewrite.** Never modify an existing definition without explicit user confirmation. Insert new terms in place, keyed on the bold canonical term.
 - **Cross-reference, don't redefine.** If a definition names another domain term, that term must have its own entry in **Terminology**. If you find an unresolved reference, add a stub entry and flag it as needing user input.
 - **Flag conflicts, don't overwrite.** If a new term contradicts an existing one, append a `## Flagged ambiguities` section at the bottom describing the conflict, and ask the user to resolve before merging.
 - **No silent deletions.** If a term seems obsolete, move it to a `## Retired` section at the bottom rather than removing it; the history matters.
