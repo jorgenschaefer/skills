@@ -36,7 +36,7 @@ Before running anything in the project, check that no run or session is working 
 
 ## Every finding rests on an instance
 
-Point at the log line, the commit or the ticket. A failure that could plainly happen but did not is not a finding.
+Point at the log line, the commit or the ticket. A failure that could plainly happen but did not is a weak finding: say it was not observed, and rank it below every one that was.
 
 **Try to refute each finding before you report it.** Name what in the record would show it wrong, and look. Test a threshold you want to propose against the other runs in the logs - a file-count limit drawn from one run's outlier correlated at 0.43 across 51 tickets. Check a claim about how Claude Code behaves against its documentation, not memory. Say which numbers you measured and which you estimated.
 
