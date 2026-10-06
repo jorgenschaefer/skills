@@ -41,20 +41,24 @@ preflight() {
       fi
     done
     # Coverage is counted from the frontmatter and the builder reads the quote.
+    #
+    # No `grep -q` at the end of a pipe in here: it stops reading at the first
+    # match, the writer before it dies of SIGPIPE, and under pipefail a match
+    # found reads as none - drift on whatever the race picked that run.
     for id in $(claims "$t"); do
-      if ! quoted "$t" | grep -qx "$id"; then
+      if ! quoted "$t" | grep -x "$id" >/dev/null; then
         problems+="$(basename "$t"): claims $id and does not quote it"$'\n'
         [ -n "$culprit" ] || culprit="$t"
       fi
     done
     for id in $(quoted "$t"); do
-      if ! claims "$t" | grep -qx "$id"; then
+      if ! claims "$t" | grep -x "$id" >/dev/null; then
         problems+="$(basename "$t"): quotes $id and neither closes nor advances it"$'\n'
         [ -n "$culprit" ] || culprit="$t"
       fi
     done
     while IFS= read -r nudge; do
-      if ! nudges_of "$criteria" - | grep -qxF -- "$nudge"; then
+      if ! nudges_of "$criteria" - | grep -xF -- "$nudge" >/dev/null; then
         problems+="$(basename "$t"): a nudge it quotes is not in $criteria word for word: $nudge"$'\n'
         [ -n "$culprit" ] || culprit="$t"
       fi
@@ -70,13 +74,13 @@ preflight() {
     for id in $(declared "$criteria"); do
       closers=()
       for t in "${TICKET_FILES[@]}"; do
-        field "$t" closes | grep -qw -- "$id" && closers+=("$t")
+        field "$t" closes | grep -w -- "$id" >/dev/null && closers+=("$t")
       done
       case "${#closers[@]}" in
         0) problems+="$criteria: $id is closed by no ticket"$'\n'
            [ -n "$culprit" ] || culprit="${TICKET_FILES[0]}" ;;
         1) for t in "${TICKET_FILES[@]}"; do
-             field "$t" advances | grep -qw -- "$id" || continue
+             field "$t" advances | grep -w -- "$id" >/dev/null || continue
              comes_after "${closers[0]}" "$(basename "$t" .md)" && continue
              problems+="$(basename "${closers[0]}"): closes $id and does not come after $(basename "$t" .md), which advances it"$'\n'
              [ -n "$culprit" ] || culprit="${closers[0]}"

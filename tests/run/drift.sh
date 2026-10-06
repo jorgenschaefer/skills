@@ -178,6 +178,20 @@ if [ "$rc" = 0 ] && ! grep -q 'drift' "$WORK/.out"; then
   ok "a nudge no ticket quotes is no drift"
 else bad "a nudge no ticket quotes is no drift" "rc=$rc $(out)"; fi
 
+# A quoted nudge found early in a long list is found, not lost: under pipefail
+# a `grep -q` that stops reading at the match fails the pipe it ends, and the
+# runner read that as drift - on whichever nudges the race picked that time.
+workspace
+for i in $(seq 1 2000); do
+  printf -- '- an unquoted nudge number %s, long enough to fill the pipe before the match is read.\n' "$i"
+done > "$WORK/.more"
+sed -i "/^- reuse the list/r $WORK/.more" "$WORK/changes/x/CRITERIA.md"; commit
+plan build build review
+rc="$(run)"
+if [ "$rc" = 0 ] && ! grep -q 'drift' "$WORK/.out"; then
+  ok "a nudge followed by many others still matches its quote"
+else bad "a nudge followed by many others still matches its quote" "rc=$rc $(out)"; fi
+
 # --- which ticket closes which criterion
 #
 # A criterion can take several tickets to build. Exactly one closes it - the
