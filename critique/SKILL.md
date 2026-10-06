@@ -5,7 +5,7 @@ description: Use for any request to review or clean up code in this project - a 
 
 # Critique
 
-You are reviewing software against this skill's `CODING_STANDARDS.md` and everything you already know about good code. Read it first, along with `UBIQUITOUS_LANGUAGE.md` where the repo has one, and never excuse or downgrade a problem you would otherwise flag just because no rule there names it.
+Read this skill's `CODING_STANDARDS.md` first, and `UBIQUITOUS_LANGUAGE.md` where the repo has one. Review against them and everything you already know about good code: a problem no rule names is still reported at full severity.
 
 You change nothing. The output is a list of changes somebody else will make.
 
@@ -17,7 +17,7 @@ A property the code lacks is a candidate finding. Six things are your own work t
 
 - **The product, where a user sees the change.** Drive it in the running app and judge what you see against the standard: every screen the change touches - or the ones your caller names, as after a round of fixes - at the narrowest and widest supported size, with the feedback after each action. A builder checking its own work cannot stand in for this.
 
-  The driving goes to one subagent with a fresh context. Every turn of it re-reads the context it runs in, and yours holds the diff and the standard: in one run, reviewers driving the app themselves at about 88k tokens a turn spent a third of the whole run. Write it the scenarios - each screen, each size, the actions, and what should be visible after each - and point it at how the project starts the app: a `run` skill, `CLAUDE.md`, the README. It gets neither the diff nor the standard, judges nothing and spawns nothing; it reports, step by step, what happened and what it saw, the console errors, and the path of each screenshot. Open the last screenshot of each screen at each size where how it looks is part of the judgement, not every step. Where it cannot get the app running, say so rather than judging the screens from the diff.
+  The driving goes to one subagent with a fresh context. Every turn of it re-reads the context it runs in, and yours holds the diff and the standard, so every step you drive yourself pays for both. Write it the scenarios - each screen, each size, the actions, and what should be visible after each - and point it at how the project starts the app: a `run` skill, `CLAUDE.md`, the README. It gets neither the diff nor the standard, judges nothing and spawns nothing; it reports, step by step, what happened and what it saw, the console errors, and the path of each screenshot. Open the last screenshot of each screen at each size where how it looks is part of the judgement, not every step. Where it cannot get the app running, say so rather than judging the screens from the diff.
 
 - **The checks pass.** Where the caller hands you the result of the project's combined check command for the tree in front of you, report it as handed and say you did not run it again. Otherwise run that command - the one bundling typecheck, lint and tests - and confirm green; where there is none, assemble the pieces yourself. The CI workflow is the authoritative statement of what the project gates on, so a check it runs and you don't is one you are skipping. Report the actual result, and say so rather than assuming where you cannot run it. Note any failure that predates the code in scope, so it is not later mistaken for damage.
 
@@ -40,11 +40,11 @@ What refutes it is the attempt to construct its **trigger**: the concrete situat
 
 Where you were handed a change to review, a problem that is pre-existing and untouched by it is out of scope; where you were handed a whole project, nothing is out of scope for being pre-existing. Code the change _breaks_ is never out of scope, however far from the diff it sits: that is this change's defect, not a pre-existing one.
 
-Keep the surviving scenario with the finding; it is the proof and the reader's reproduction both. A finding whose trigger you cannot construct, or that does not survive the attempt, is not reported, softened, or filed as a nit - it is dropped.
+Keep the surviving scenario with the finding. A finding whose trigger you cannot construct, or that does not survive the attempt, is not reported, softened, or filed as a nit - it is dropped.
 
 ## Output
 
-**Spawn every subagent in the foreground, and report only once all of them have reported back.** Several started in one message run in parallel, and the call returns when the last one does - so no `run_in_background`, and no waiting on them with `sleep`. Your last message is the review: a turn ended while one is still running hands your caller "waiting for the area reviews" in place of findings, and leaves that subagent working with nobody to read it. In one run that happened twice, and one of the orphans went on driving the app into another session's browser; in another, a reviewer waiting on background subagents with `sleep` ended its turn, the unattended session around it exited, and the run's final review was lost.
+**Spawn every subagent in the foreground, and report only once all of them have reported back.** Several started in one message run in parallel, and the call returns when the last one does - so no `run_in_background`, and no waiting on them with `sleep`. Your last message is the review: a turn ended while one is still running hands your caller "waiting for the area reviews" in place of findings, and leaves that subagent working with nobody to read it.
 
 **The bar is code health, not perfection.** Each finding has to answer whether the code is worse for what it does - not whether you can imagine something better. A choice you would have made differently is not a finding, and neither is a rewrite you would prefer to the working code in front of you.
 
@@ -54,7 +54,7 @@ Two arguments do not move severity. "This could become a problem later" describe
 
 This bounds what you _report_, not what you look for - a defect is a defect however small the diff carrying it.
 
-**Write each entry as the change, not as the symptom.** The list is handed to a planning session verbatim, and a planner that has to work out what you meant is a planner writing its own requirements. The change is what has to become true, not how to get there: designing the fix is the planner's work, and you have read the code but not the problem it was solving.
+**Write each entry as the change, not as the symptom.** The list goes to a planning session verbatim. The change is what has to become true, not how to get there: designing the fix is the planner's work, and you have read the code but not the problem it was solving.
 
 ```markdown
 ### Blockers
@@ -62,12 +62,12 @@ This bounds what you _report_, not what you look for - a defect is a defect howe
 1. **<the change, as an imperative - specific enough to act on>** — `path/to/file.ts:88`
    What is wrong: <the defect, one sentence>
    Why it matters: <the cost, concretely>
-   Trigger: <correctness and security only - the input or state, and the
-             wrong result it produces; the one that survived refutation>
+   Trigger: <the scenario that survived refutation - for correctness and
+             security, the input or state and the wrong result it produces>
 
 ### Should-fix
 
 ### Nits
 ```
 
-If a section is empty, say so rather than padding it, and don't invent findings to fill one.
+If a section is empty, say so rather than padding it.
