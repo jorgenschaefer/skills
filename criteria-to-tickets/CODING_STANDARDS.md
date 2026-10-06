@@ -112,7 +112,16 @@ Directories and modules should therefore group code by feature. Prefer this over
 
 Put a test next to the file it tests, not in a separate `tests/` tree - unless the project's existing layout clearly says otherwise.
 
-**Before adding code to a file of more than about 500 lines, split it.** The limit is there so an agent can read a file whole, so it counts what has to be read together: a fixture or helper file that only one other file uses counts toward that file. A change that only removes code from it leaves it whole. Code that changes together with code in it counts as added to it, wherever it is put. Divide it along what changes together into files of roughly 150-300 lines, each holding one part, and split its test file the same way, so each part keeps exactly one test file. When only the test file is over the limit, first shorten it: shared setup, table-driven cases, helpers for repeated assertions. Shortening is enough only where it brings the file down to about 400 lines. A file squeezed to just under 500 has every change after it shorten it again. Otherwise the source holds more than one part - split the source and its tests together, even though the source is under the limit. The split changes no behaviour and comes before the change, not mixed into it. Generated files are exempt.
+### Files Small Enough to Read Whole
+
+An agent should be able to read a file whole. So **before adding code to a file of more than about 500 lines, split it.**
+
+- **Size** counts what has to be read together: the file plus any fixture or helper file that only it uses.
+- **Adding** is any change that does more than remove code. Code that changes together with code in the file counts as added to it, wherever it is put.
+- **Split** along what changes together, into files of roughly 150-300 lines that each hold one part. Split the test file the same way, so each part has exactly one test file.
+- **When only the test file is over the limit,** shorten it first: shared setup, table-driven cases, helpers for repeated assertions. That is enough only if it gets the file to about 400 lines - one squeezed to just under 500 has to be shortened again on every change. Otherwise the source holds more than one part: split source and tests together, even though the source is under the limit.
+- **The split comes first,** changes no behaviour, and is not mixed into the change.
+- Generated files are exempt.
 
 ### Function and Method Names Follow Domain Actions
 
