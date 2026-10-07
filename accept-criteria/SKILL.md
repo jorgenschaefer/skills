@@ -44,14 +44,28 @@ Only what needs the user, most serious first, each item ending with the step tha
 - An AC you could not check: why, and what it would take to check it.
 - The problem not solved, where the ACs are met.
 - What the user and you found beyond the ACs.
-- An item a build or the final review left standing that the walk did not settle, with where it came from.
 - The run skill, if you wrote one.
 
-Then one line naming the ids you found met, so every id is accounted for. Whether to accept is the user's call.
+Then one line naming the ids you found met, so every id is accounted for.
+
+## Settle what was left open
+
+Every item in `REVIEW.md` and in each ticket's `## Left standing` needs an outcome before the change can be accepted - with a single ticket there is no final review, and the ticket is the only record. Drop, after checking, what the walk settled or the code no longer shows.
+
+Show the rest as one list, each item with where it came from, a proposed outcome and a one-line reason:
+
+- **Fix now** - small enough for this session: `/implement` it, then walk again the ACs it touches.
+- **Re-slice** - too big for this session: back to `/criteria-to-tickets`, and the change is not accepted yet.
+- **Skip** - not worth doing, with the reason. Where the reason is a decision this skill's `ADR_FORMAT.md` says earns an ADR, recommend one, and on a yes write it to `docs/adr/` in that file's shape.
+- **Follow-up** - worth doing, but not in this change: the start of a later `/idea`.
+
+The user agrees to the list or names items to discuss. Take those one at a time - and, even where the user agrees to the list, every item that departs from a nudge or needs a decision the criteria leave open: present it, suggest a concrete fix or decision, and wait for the user's view before the next.
+
+Whether to accept is the user's call.
 
 ## Once the user accepts
 
-Delete the change's directory - `CRITERIA.md`, the tickets, the specimens, `REVIEW.md` - and commit the deletion, staging nothing else. What the change was for survives in git history and in the commits that built it; ADRs live in `docs/adr/` and stay.
+Delete the change's directory - `CRITERIA.md`, the tickets, the specimens, `REVIEW.md` - and commit the deletion with any ADR you wrote, staging nothing else. The commit message lists each skip with its reason and each follow-up - the files that held them are gone. What the change was for survives in git history and in the commits that built it; ADRs live in `docs/adr/` and stay.
 
 Where the user does not accept, delete nothing. An AC not met goes back to `/criteria-to-tickets` as a re-slice, and one that turned out wrong to `/find-criteria`.
 
