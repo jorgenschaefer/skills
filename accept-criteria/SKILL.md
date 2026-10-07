@@ -52,7 +52,7 @@ Then one line naming the ids you found met, so every id is accounted for.
 
 Every item in `REVIEW.md` and in each ticket's `## Left standing` needs an outcome before the change can be accepted - with a single ticket there is no final review, and the ticket is the only record. Drop, after checking, what the walk settled or the code no longer shows.
 
-Show the rest as one list, each item with where it came from, a proposed outcome and a one-line reason:
+Show the rest as one list, each item with where it came from, a proposed outcome - for a fix, the fix itself - and a one-line reason:
 
 - **Fix now** - small enough for this session: `/implement` it, then walk again the ACs it touches.
 - **Re-slice** - too big for this session: back to `/criteria-to-tickets`, and the change is not accepted yet.
