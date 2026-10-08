@@ -53,7 +53,7 @@ Never mix the two in one step.
 
 **External adapters** - the thin edge that talks to a third-party SDK, the network, or IO - may be untested when they genuinely can't be tested at all. The business logic behind them must be fully tested. Wrap the dependency in the thinnest possible adapter (just the calls you need, no logic), mock that adapter to test everything behind it, and accept the adapter itself going untested.
 
-**The suite runs with one command, fast and the same every time.** Name the command where the next agent looks first - the README or CLAUDE.md - and have it build, type-check, lint and test, exiting non-zero on any failure. It runs everything the CI workflow gates on, so green here is green there. A flaky test teaches the agent to ignore failures: fix it or delete it, never retry it until it passes.
+**The suite runs with one command, fast and the same every time.** Declare it in `CLAUDE.md`, on a line of its own: ``Check: `npm run check` ``. It builds, type-checks, lints, tests and runs the structural checks, exiting non-zero on any failure. It runs everything the CI workflow gates on, so green here is green there, and the pre-commit hook and CI run this same command. A flaky test teaches the agent to ignore failures: fix it or delete it, never retry it until it passes.
 
 **The app starts the same way for every agent.** Where it has something to see or drive, how to start it is written where the next agent looks first - a `run` skill, the README or CLAUDE.md - with any script it needs beside it in the repository.
 
@@ -134,8 +134,9 @@ The test: when a bug is reported, can its location be found quickly? When a chan
 
 The next agent repeats the nearest example. Two ways of doing the same thing - two error styles, two HTTP clients, two test helpers - get a random mix and then a third.
 
+- **Search before you write.** Before writing a function, type, constant or rule, search for one that already does it - by its domain word and by its shape.
 - **Follow the existing way,** even where you would have chosen another, and report it: "I wanted to do X, but the codebase does Y, so I did Y."
-- **A new way replaces the old one** everywhere, in its own change that keeps behaviour, or it is not introduced.
+- **A new way replaces the old one** everywhere, in its own change that keeps behaviour, or it is not introduced. Moving code over only as it is touched does not replace the old way.
 - **Where two ways already exist,** use the one most of the code uses.
 
 A review reports each of these: a change that strays from the existing way, a new way that leaves the old one standing, and every place where two ways already exist.
@@ -154,7 +155,7 @@ Features nest. A feature made of more than one source file gets its own subdirec
 
 - **Check** whenever a file is added to a directory: do the directory's files, the new one included, belong to features that change for different reasons?
 - **Move** a feature into its own subdirectory as soon as it has two source files, together with their tests. A feature of a single file stays where it is, and so does a directory that is all one feature.
-- **Name** the subdirectory after the feature, using its term from `UBIQUITOUS_LANGUAGE.md` where there is one. A grab-bag name (`utils`, `common`, `helpers`) or a type name (`models`, `controllers`) is not a split.
+- **Name** the subdirectory after the feature, using its term from `UBIQUITOUS_LANGUAGE.md`. Where the glossary has none, ask the user for it and add it there; a missing name is never a reason to leave the split out. A grab-bag name (`utils`, `common`, `helpers`) or a type name (`models`, `controllers`) is not a split.
 - **The split comes first,** only moves files, and changes no behaviour.
 
 Put a test next to the file it tests, not in a separate `tests/` tree - unless the project's existing layout clearly says otherwise.
@@ -211,6 +212,7 @@ Put every rule you can where the compiler enforces it.
 
 - **Turn on the strictest checking** the language and project allow.
 - **No escape hatches:** no `any`, unchecked cast, `# type: ignore` or `!` without a comment saying why it is safe.
+- **Structural rules are checks too.** A rule about where code lives or what may use what - which directory may import which, where the clock is read, how a file is named - is a check the check command runs, added in the change that introduces the rule. A rule written into `CLAUDE.md` comes with its check in the same commit. Where code breaks the rule today, the check reads a list of those breaks, which only shrinks.
 - **Make invalid states unrepresentable.** A union of the real cases, not a bag of optional fields and a status string.
 - **Exhaustive matches.** A `switch` or `match` over a known set has no `default` that swallows the next case added.
 
@@ -226,6 +228,8 @@ Code that has to cover every field of a domain object - equality, a merge or sum
 ### Comments
 
 Make intent obvious from the code first: a better name, a well-named helper. Comments that restate the code are noise.
+
+A comment describes the code as it is now. It never names a ticket, slice, story or change, or what the code used to do.
 
 A comment is required where the code alone would lead the next reader to change it wrongly:
 
