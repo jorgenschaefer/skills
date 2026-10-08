@@ -9,14 +9,14 @@ Cut the skill to what changes what the agent does. What you would *add* is a pro
 
 Every edit is a deletion, or a replacement by something shorter - a clause out of the middle of a sentence counts. That is the whole of your licence over the file.
 
-An edit is legitimate when nobody can name an instruction it drops. An instruction is anything that changes what the agent does, however it is phrased - a reason that carries a definition, a test, a threshold or the scope of a rule is one. So are:
+An edit is legitimate when nobody can name an instruction it drops. An instruction is anything that changes what the agent does, however it is phrased - a reason that carries a definition, a test or a threshold is one. So are:
 
-- a qualifier or condition: *only*, *every*, *unless*, *if it exists*, *should* against *is*
-- a step, or the order between two steps
+- a qualifier or condition: *only*, *every*, *unless*, *if it exists*
+- a step, or the order between two steps where one depends on the other
 - a rule's own exception, and an example that settles which case a rule covers
 - a count, a template, a format, a pointer, and what a subagent is told to return
 
-An edit that loses one is not a shorter version of the passage; it is a behaviour change, and belongs in the list you declare at the end. Where you cannot tell whether a line carries one, it stays.
+An edit that loses one is not a shorter version of the passage; it is a behaviour change, and belongs in the list you declare at the end.
 
 Never change `name:` or the directory name. People have that word in their prompts and their other skills.
 
@@ -37,8 +37,8 @@ Quote it where it is there. Where it is not, derive it and write it in - a skill
 ## Cut
 
 - **Lines the model already obeys.** Read one sentence in isolation: would a competent agent behave differently without it - not on the run you are imagining, but across five of them? A skill is there to get the same process out of a stochastic system, so a line that only narrows what a bad run does is load-bearing, however redundant it looks against a good one. Encouragement ("be thorough", "think carefully"), descriptions of the agent's own tools, and principles any competent agent brings with it fail even that test. The project's definition of a familiar term - what *YAGNI* or *verification* means here - is not one of them. Delete the sentence whole - tightening a no-op leaves a shorter no-op.
-- **Consequences of the base.** From the pass above.
-- **Duplication.** Each rule in one authoritative place, so changing the behaviour is a one-place edit. Repetition also inflates a rule's rank past what the author intended. A line is not a duplicate where it is the copy in a file or subagent prompt that is read alone, where it is the only imperative under its heading, or where it narrows the rule it repeats.
+- **Restatements of the base.** From the pass above.
+- **Duplication.** Each rule in one authoritative place, so changing the behaviour is a one-place edit. Repetition also inflates a rule's rank past what the author intended. A line is not a duplicate where it is the copy in a file or subagent prompt that is read alone, or where it narrows the rule it repeats.
 - **Words around the instruction.** Agent-written prose explains itself to a reader: rationale trailing the instruction, the same point in other words, hedges, a preamble setting up the next line. Cut to the instruction. Keep the rationale only where it lets the agent apply the instruction to cases it doesn't name, or where the agent is expected to resist the instruction.
 - **A concept the model already holds.** A triad spelled out at three sites, or a sentence circling one idea, often collapses into a word the model already thinks with - *lesson*, *fog of war*, *tracer bullets*, *red*. "Fast, deterministic, low-overhead" is a *tight* loop. The word recruits the priors and retires the restatements, and where it is one the author's own docs and prompts use, it anchors invocation too. Collapse only where the word carries every part it replaces; a label kept without its definition is not a replacement.
 - **Sediment.** Lines that bear on what the skill used to do.
@@ -48,7 +48,7 @@ Quote it where it is there. Where it is not, derive it and write it in - a skill
 
 These improvements add, so they go in the report as wording ready to paste, not into the file. Look for them in the same pass:
 
-- **The description.** The highest-leverage line - it sits in context every turn and decides whether the skill fires. Phrased the way a user actually asks, one trigger per distinct use, separable from the skills it sits beside (read their descriptions - the competition is invisible from inside one file). Keep it to *when to use*: a description recapping the process becomes a shortcut the agent takes instead of the body. Shortening it is a cut and you may make it; a missing trigger is an addition and you may not.
+- **The description.** The highest-leverage line - it sits in context every turn and decides whether the skill fires. Phrased the way a user actually asks, one trigger per distinct use, separable from the skills it sits beside (read their descriptions - the competition is invisible from inside one file). Keep it to *when to use*: a description recapping the process becomes a shortcut the agent takes instead of the body. Shortening it is a cut and you may make it, keeping every trigger it has; a missing trigger is an addition and you may not.
 - **A missing completion criterion.** A step ending on a condition the agent cannot tell done from not-done, or one demanding something rather than everything - "produce a list" where the skill meant "every caller accounted for".
 - **Altitude.** Hardcoded paths, counts and line numbers that will drift or generalize wrongly, and what to say instead.
 - **A form that does not fit its failure.** A wrong-shaped output wants a positive recipe; an omitted element wants a required slot in a template; a rule broken under pressure wants a prohibition with the rationalizations named. Prohibition is the default mistake - *don't think of an elephant* names the elephant.
