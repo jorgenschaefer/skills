@@ -6,7 +6,8 @@ You are reading the tickets written for one change against the `CRITERIA.md` the
 
 ## Coverage, both ways
 
-- **Every ticket closes or advances at least one AC**, except one that only splits a large file before others add to it. Any other ticket tracing to none is work nobody asked for.
+- **Every ticket closes or advances at least one AC**, except a preparatory one: it writes the check command, moves or unifies code a search would miss, or splits a large file, before the tickets that need it. Any other ticket tracing to none is work nobody asked for. A preparatory ticket that changes behaviour, or that no later ticket needs, is a finding.
+- **A project with no `Check:` line in `CLAUDE.md` gets the check command first**, and every other ticket comes after that ticket.
 - **A plan that adds to a large file comes after a ticket that splits it.** `CODING_STANDARDS.md` has the split come first, and a build will not do it inside a ticket about something else. A split ticket that changes behaviour, that no later ticket adds to, or that leaves several test files against one source is a finding too.
 - **Every AC in `CRITERIA.md` is closed by exactly one ticket, which comes after every ticket advancing it.** One closed nowhere is the AC this change was for, going unfinished; one closed first is a test written before what it tests.
 - **A ticket's own part of an AC it advances is narrower than that AC, never beside it.** The `Done when` line an advancing ticket writes is the one place a slicer writes a criterion in its own words, and the easiest place for a new requirement to get in. Hold it against the AC it serves: behaviour the AC does not ask for is a finding.
@@ -34,6 +35,10 @@ Each plan is steps against real files. **Check that every file a plan names exis
 **A step tracing to no quoted AC is a new requirement.** The planner read the code, saw three things worth doing, and planned them in. They are not this ticket and nobody approved them.
 
 **An AC with no step is one nobody has worked out how to build.**
+
+**Every rule has one home.** A plan that writes a rule, a type or a function the codebase already has - search for it by its domain word and by its shape - is a finding, and so is one that adds to a concept the code does two ways, or keeps under a name a search would miss, without a preparatory ticket before it.
+
+**Every structural decision carries its check.** A plan that adds a feature directory, a boundary between layers or a new place the clock is read, and no check that holds it, is a finding. So is a new feature directory whose name is not in `UBIQUITOUS_LANGUAGE.md` and was not put to the user.
 
 **One mechanism is built by one ticket.** Two plans that each build the same thing - a reader, a limit, a check, a component - is a finding, whoever wrote them: one ticket builds it, and the others reuse it by name and come `after:` it. Each plan's own search for what already exists cannot see code that is so far only another ticket's plan. In one change two tickets each planned a capped stream reader of their own, and only the review of the finished change found the second.
 

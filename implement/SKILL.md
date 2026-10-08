@@ -17,7 +17,7 @@ Read this skill's `CODING_STANDARDS.md` whole and apply all of it - no part of i
 
 **Find the project's way of running the app**, where the change needs seeing - a `run` skill, `CLAUDE.md`, the README. The review drives the app that way. Where there is none, build one, write it up as the project's run skill, `.claude/skills/run/SKILL.md`, with the scripts it drives beside it, and commit it with the change.
 
-**Find the project's verification command** - the one that runs the tests, the type check and the linter. Where there is none, run what exists and say so; creating one is a separate change.
+**Find the project's check command** - the `Check:` line in `CLAUDE.md`. Where there is none, run what exists and say so; creating it is a ticket of its own.
 
 ## Build it
 

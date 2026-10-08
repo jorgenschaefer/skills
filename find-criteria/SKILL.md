@@ -34,6 +34,12 @@ This skill's `CRITERIA_FORMAT.md` settles the shape of the file.
 
 **Raise the implementation decisions the approach makes visible as nudges** - "reuse the phone components", "do not touch DeviceView". What the product does is for the user to approve; how it is built is for them to see, with the chance to object.
 
+**Give every new domain rule one home.** Where the criteria introduce a rule - a sign, a status, a classification - a nudge names the one place it lives, named after the rule.
+
+**Get the name of every new feature directory from the user.** Where the approach needs a feature directory whose term `UBIQUITOUS_LANGUAGE.md` does not have, ask for the term. On their answer, add it to the glossary, in the shape its existing entries have.
+
+**In a repository with no code yet, settle the conventions as nudges**: the directory layout, the layers, how errors reach the caller, where data is loaded, where the clock is read.
+
 **Settle every open question.** Each one ends as an AC, a nudge, a ruled-out line, or explicitly out of scope. None survives into the file.
 
 **The loop is done when every AC and nudge can be written so that `/criteria-to-tickets` would not have to ask anything.**
