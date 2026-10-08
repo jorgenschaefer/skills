@@ -48,15 +48,19 @@ Give a single general-purpose subagent - not `Explore`, which locates code but d
 - **Absent** - not found as a code identifier, test description, or comment. Search three forms, not one: the entry's English identifier, the term itself, and the term transliterated to ASCII - the code usually carries the identifier, and an untranslatable term reaches it as itself with umlauts transliterated, so any two forms report compliant entries absent. Do not delete; the term may live in prose docs or with domain experts. Flag it for user confirmation.
 - **Alias in use** - an entry under **Aliases to avoid** still names the concept in code, tests or UI strings. Either the code missed the decision or the decision no longer holds; ask which.
 
+Read the entries yourself for one more class, which needs no code:
+
+- **Over-long** - an entry that holds more than the format's one sentence: behaviour, screens, rationale, how it is built. Propose the one sentence that keeps its meaning.
+
 ## Verify with scenarios
 
 Walk each major workflow through the candidate terms: actor → action → entity → outcome, reading naturally. Where a walk-through exposes a contradiction (a missing entity, an unresolved synonym, an invariant you hadn't surfaced), refine the term list before presenting. The walk-throughs stay out of the glossary.
 
 ## Present findings before writing
 
-**Part 1 - Drift findings** (only if the file already exists): drifted terms, identifier mismatches and aliases still in use, each with its file and usage; absent terms as a group for confirmation; active terms in one line (e.g. "23 existing terms confirmed active"). Then ask:
+**Part 1 - Drift findings** (only if the file already exists): drifted terms, identifier mismatches and aliases still in use, each with its file and usage; absent terms as a group for confirmation; over-long entries, each with its proposed sentence; active terms in one line (e.g. "23 existing terms confirmed active"). Then ask:
 
-> I found [D] drifted terms, [M] identifier mismatches, [A] absent terms and [U] aliases still in use - listed above. Let me know how to handle each before I write.
+> I found [D] drifted terms, [M] identifier mismatches, [A] absent terms, [U] aliases still in use and [L] over-long entries - listed above. Let me know how to handle each before I write.
 
 Where the existing file departs from the format - a table, other headings, no line naming the domain language, another language - name each difference and ask whether to convert the file or keep its format for the new entries. Convert only in a write of its own, separate from the content changes.
 
@@ -89,4 +93,5 @@ Drifted: 1 - "Invoice" (definition says "sent after delivery"; code now generate
 Identifier mismatch: 1 - **Vertrag** (`Contract`), code uses `Agreement` (src/contracts/agreement.ts:3)
 Absent: 2 - "Fulfillment", "Shipment" (not found as code identifiers; marked for user confirmation)
 Aliases in use: 1 - "Account" for **Customer** (src/orders/checkout.ts:17)
+Over-long: 1 - "Abruf" (2,700 characters of screens and order of steps; proposed: "fetching the bank's new entries into the ledger")
 ```
