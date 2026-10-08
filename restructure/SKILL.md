@@ -1,6 +1,6 @@
 ---
 name: restructure
-description: Restructure a whole codebase so it is easier to change - code that changes together moved together, grab-bag modules split up, hidden coupling made explicit, dead and needlessly complex code gone, and features that cost more than they give proposed for removal.
+description: Restructure a whole codebase so it is easier to change - its structural rules made checks, code that changes together moved together, grab-bag modules split up, hidden coupling made explicit, misleading names and comments fixed, dead and needlessly complex code gone, the docs agents read held to the code, and features that cost more than they give proposed for removal. Run it every one to two weeks.
 disable-model-invocation: true
 ---
 
@@ -11,6 +11,16 @@ You are making the codebase easier to change. For any likely change, the code th
 This skill's `CODING_STANDARDS.md` is what the result has to look like. Read it whole first, along with `UBIQUITOUS_LANGUAGE.md` where the repo has one.
 
 Where the codebase is larger than you can hold at once, have parallel `Explore` subagents each inventory one area - its concepts, entry points, enums, string keys, UI flows - and do the cross-matching yourself: coupling and duplication live between areas, where no single subagent sees them. A pass that stopped where the context ran out looks exactly like one that found nothing.
+
+Every run reads the whole codebase. The areas the history changed since the last run are read first; none is skipped.
+
+## Checks first
+
+Before moving anything, make the structure something the checks hold.
+
+- **The check command.** Where `CLAUDE.md` declares no single command on a `Check:` line, write one - build, type check, lint, tests and the structural checks - and declare it. Where the pre-commit hook or CI runs something else, make them run it.
+- **Every structural rule `CLAUDE.md` states becomes a check** the command runs, with the places that break it today in a list the check reads, which only shrinks. This changes no behaviour, so apply it.
+- **A rule the code follows only by habit** - a layout, a boundary nobody wrote down - goes to the user as a proposal, with the check that would hold it.
 
 ## Find what changes together
 
@@ -37,6 +47,8 @@ Before each change, name the concrete future change that will touch fewer places
 6. **Collapse layers** that spare their caller nothing.
 7. **Generalize.** Where special cases pile up on a shared mechanism, change the mechanism so they can go - only where that leaves less code to read than the special cases did.
 8. **Simplify** code you had to read twice to follow - deep nesting, long functions, clever constructs - until it reads the way the standard says code should.
+9. **Rename** what a search for its concept would not find, or what names something else - a module, a function, a field, a directory - to the glossary's term. A name in stored data or on the wire is a proposal.
+10. **Correct comments** that are false, or that tell history - a ticket, a slice, what the code used to do.
 
 ## Act or propose
 
@@ -47,6 +59,16 @@ Before each change, name the concrete future change that will touch fewer places
 
 **Everything you cannot prove preserves behavior goes to the user as a proposal** - feature cuts, merged concepts, and restructurings you could not pin. For each one: what the user loses, which parts of the code stop being entangled with it, and which future changes get easier. Order them by what they free against what they cost the user.
 
+## Docs last
+
+Once the code has moved, hold what agents read before they work against it.
+
+- **`CLAUDE.md`:** every statement about the code - a layout, a layer, a file, a rule - is checked against the code, and whichever is wrong is fixed. A fix to the document is a commit of its own; a fix to the code is a restructuring like the others.
+- **`ARCHITECTURE.md`**, where `/repo-overview` wrote it: never edited by hand. Where the structure changed, run `/repo-overview` again.
+- **`UBIQUITOUS_LANGUAGE.md`**, where the repo has one: run `/ubiquitous-language` for its drift.
+
 ## Finish
 
 One commit per restructuring, so each can be read and reverted on its own. Move a file in a commit of its own with its content unchanged, so `git log --follow` and the next run's history still see through it. Then report what you changed, and the proposals.
+
+Count, for each step above - the checks, each kind of restructuring, the docs - how many things you found and how many you fixed. Put the counts in the report and in the message of the run's last commit, and compare them with the counts the previous run's last commit left.
