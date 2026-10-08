@@ -13,7 +13,7 @@ An edit is legitimate when nobody can name an instruction it drops. An instructi
 
 - a qualifier or condition: *only*, *every*, *unless*, *if it exists*
 - a step, or the order between two steps where one depends on the other
-- a rule's own exception, and an example that settles which case a rule covers
+- a rule's own exception, and an example or instance attached to a rule, unless the rule without it covers exactly the same cases - one you judge merely illustrative is a cut you are guessing about
 - a count, a template, a format, a pointer, and what a subagent is told to return
 
 An edit that loses one is not a shorter version of the passage; it is a behaviour change, and belongs in the list you declare at the end.
