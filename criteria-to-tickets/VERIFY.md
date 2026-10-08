@@ -17,9 +17,9 @@ You are reading the tickets written for one change against the `CRITERIA.md` the
 
 Each ticket quotes its ACs and nudges exactly as `CRITERIA.md` writes them, and `closes` and `advances` name exactly the ACs it quotes. Check the words, not the sense: a quotation that stops a sentence early has dropped a requirement, and a paraphrase is a criterion quietly changed in a file that claims to be quoting one. A nudge a ticket's plan runs against, and does not quote, is one the builder will never see.
 
-## Each slice is vertical, and one session long
+## Each slice is provable on its own, and one session long
 
-**Buildable and testable on its own, end to end.** "The database part" is not a slice: it cannot be verified without the thing above it, and it leaves the tree in a state no criterion describes. This is the finding this review exists to catch, because a layered slicing looks perfectly orderly and fails only at the first build.
+**Provable on its own.** Each ticket's `Done when` is behaviour its build can test and its reviewer can see. A ticket that only builds what a later ticket will use is a finding.
 
 **Not one past the size a session builds well.** Estimate each ticket's footprint from its plan and the code it names: the lines it changes and the files it touches, a moved block counted twice. A ticket at 2000 lines or 25 files is a finding. One between 1000 and 2000 lines, or 15 and 25 files, is a finding where a real seam would split it.
 

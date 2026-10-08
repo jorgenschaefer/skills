@@ -1,6 +1,6 @@
 ---
 name: criteria-to-tickets
-description: Turn an agreed CRITERIA.md into the tickets that build it - cut into vertical slices, one planned ticket each, checked by an adversary and then approved. Typed, because a stage reached only by description is a stage that stops being reached.
+description: Turn an agreed CRITERIA.md into the tickets that build it - cut into slices each provable on its own, one planned ticket each, checked by an adversary and then approved. Typed, because a stage reached only by description is a stage that stops being reached.
 disable-model-invocation: true
 ---
 
@@ -18,9 +18,9 @@ This skill's `TICKET_FORMAT.md` settles the shape of a ticket, its `PLANNING.md`
 
 ## What a slice is
 
-**Vertical.** Buildable and testable on its own, end to end. "The database part" is not a slice; it cannot be verified without the thing above it, and it leaves the tree in a state no criterion describes. When small and vertical conflict, vertical wins.
+**Provable on its own.** Each slice ends in behaviour its build can test and its reviewer can see: an AC it closes, or the narrower part of one it advances. A slice that only builds what a later slice will use is not one.
 
-**Sized by its footprint.** Among vertical cuts, this is the main constraint. Estimate each slice's footprint from the code you open while planning: the lines it changes and the files it touches, counting a moved block twice and a deletion like any other change. Plan steps and ACs do not count.
+**Sized by its footprint.** Among provable cuts, this is the main constraint. Estimate each slice's footprint from the code you open while planning: the lines it changes and the files it touches, counting a moved block twice and a deletion like any other change. Plan steps and ACs do not count.
 
 - **At 2000 lines or 25 files, split** along a real seam, even where that seam runs through an AC.
 - **Between 1000 and 2000 lines, or 15 and 25 files,** split along a seam the slice has, or have a reason not to.
