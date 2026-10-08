@@ -133,8 +133,9 @@ drive() {
     # on the commit, and a red one goes back to the session that made it, which
     # still has the build in its context - so the claim stands until they are
     # green. The first red is free, as a session stopping early is; each one after
-    # it spends an attempt, and the budget halts it as it halts any other.
-    [ -n "$VERIFY" ] || find_checks
+    # it spends an attempt, and the budget halts it as it halts any other. The
+    # command is read again from the commit, which may be the one declaring it.
+    checks_command
     if ! run_checks; then
       reds=$((reds + 1))
       if [ "$reds" -gt 1 ]; then

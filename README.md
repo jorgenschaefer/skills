@@ -78,11 +78,13 @@ out to be shared rather than over any file by name.
 `./run.sh changes/<slug>/tickets` drives a ticket directory with nobody watching: it
 claims each ticket, builds it, and either finishes it or sends it back. It refuses to
 start on the main branch or on a dirty tree - the ticket files aside, which are its own
-bookkeeping - and before the first build it has a session name the project's checks and
-runs them itself - a run that starts red does not start, and every build is told the
-checks were green. It runs them again on every build's commit, rather than believing the
-session's account of them: a red one goes back to the session that made it, the first time
-without spending an attempt. It checks before every pass that the tickets still quote `CRITERIA.md`'s
+bookkeeping - and before the first build it runs the project's checks itself - a run
+that starts red does not start, and every build is told the checks were green. The
+command is the `Check:` line in the project's `CLAUDE.md`, read again before every run of
+the checks, so a ticket that declares one is held to it from its own commit on; only
+where there is none does a session name it, once per run. It runs them again on every
+build's commit, rather than believing the session's account of them: a red one goes back
+to the session that made it, the first time without spending an attempt. It checks before every pass that the tickets still quote `CRITERIA.md`'s
 acceptance criteria and nudges word for word, that each ticket's `closes:` and `advances:`
 name exactly the criteria it quotes, and that every criterion is closed by exactly one ticket,
 built after every ticket that advances it - a criterion can take several slices, but one of

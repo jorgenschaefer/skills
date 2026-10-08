@@ -29,7 +29,8 @@ MAX_ATTEMPTS="${MAX_ATTEMPTS:-3}"     # builds of one ticket before it is exhaus
 WAIT_SECONDS="${WAIT_SECONDS:-300}"   # after a usage limit that names no reset time
 LIMIT_MARGIN="${LIMIT_MARGIN:-120}"   # past a limit's reset time, before carrying on
 MAX_WAITS="${MAX_WAITS:-8}"           # limits in a row before the run gives up
-VERIFY=""                             # the checks, once they have passed - never from outside
+VERIFY=""                             # the checks, once they have run - never from outside
+ASKED_VERIFY=""                       # a session's answer where CLAUDE.md declares none
 HALTED=""                             # the ticket last halted in this run, for its end to name
 
 die() { printf '%s\n' "$*" >&2; exit 2; }

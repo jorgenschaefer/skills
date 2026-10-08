@@ -57,4 +57,42 @@ if [ "$rc" != 0 ] && [ ! -s "$STUB_CALLS" ]; then
   ok "a VERIFY already in the environment does not skip the checks"
 else bad "a VERIFY already in the environment does not skip the checks" "rc=$rc $(out)"; fi
 
+# --- the command the project declares
+#
+# A Check: line in CLAUDE.md is the project's own answer, read with a grep before
+# every run of the checks. A session is asked only where there is none, and only
+# once in a run.
+
+questions() { grep -c -- '--json-schema' "$STUB_ARGS"; }
+
+workspace
+# shellcheck disable=SC2016 # the backticks are Markdown's, written literally
+printf '# x\n\nCheck: `touch .declared`\n' > "$WORK/CLAUDE.md"; commit
+STUB_VERIFY='touch .asked'
+plan build build review
+rc="$(run)"
+if [ "$rc" = 0 ] && [ -f "$WORK/.declared" ] && [ ! -f "$WORK/.asked" ] && [ "$(questions)" = 0 ]; then
+  ok "a Check: line in CLAUDE.md is run, and no session is asked"
+else bad "a Check: line in CLAUDE.md is run, and no session is asked" "rc=$rc questions=$(questions) $(out)"; fi
+
+workspace
+STUB_VERIFY='touch .asked'
+plan build build review
+rc="$(run)"
+if [ "$rc" = 0 ] && [ "$(questions)" = 1 ]; then
+  ok "without a Check: line, a session is asked once for the whole run"
+else bad "without a Check: line, a session is asked once for the whole run" "rc=$rc questions=$(questions) $(out)"; fi
+
+workspace
+STUB_VERIFY='touch .asked'
+export STUB_DECLARE='touch .declared'
+plan build-declare build review
+rc="$(run)"
+if [ "$rc" = 0 ] && [ -f "$WORK/.declared" ] && [ "$(questions)" = 1 ]; then
+  ok "a Check: line a build adds is run from its commit on, without asking again"
+else bad "a Check: line a build adds is run from its commit on, without asking again" "rc=$rc questions=$(questions) $(out)"; fi
+if grep -q 'touch .declared' <(sed -n 2p "$STUB_CALLS"); then
+  ok "the next build is told the command the project declared"
+else bad "the next build is told the command the project declared" "$(calls)"; fi
+
 finish
