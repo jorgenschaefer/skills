@@ -21,9 +21,9 @@ Each ticket quotes its ACs and nudges exactly as `CRITERIA.md` writes them, and 
 
 **Buildable and testable on its own, end to end.** "The database part" is not a slice: it cannot be verified without the thing above it, and it leaves the tree in a state no criterion describes. This is the finding this review exists to catch, because a layered slicing looks perfectly orderly and fails only at the first build.
 
-**Not one that will clearly run long.** Every turn of a build re-reads its whole context. A ticket whose plan runs to many steps across many files, where a real seam would split it, is a finding.
+**Not one past the size a session builds well.** Estimate each ticket's footprint from its plan and the code it names: the lines it changes and the files it touches, a moved block counted twice. A ticket at 2000 lines or 25 files is a finding. One between 1000 and 2000 lines, or 15 and 25 files, is a finding where a real seam would split it.
 
-**Nor cut finer than it needs to be.** Each ticket pays its setup again - a fresh session reading the same standards and files, a reviewer starting the same app. Several tickets that repeat one pattern over the same files, where fewer would each still fit one session, is a finding.
+**Nor cut finer than it needs to be.** A ticket under 500 lines and 10 files that reads the same files as a neighbour, where the two together stay under 1000 lines and 15 files, is a finding. So is a ticket whose visible result a later ticket deletes or rewrites.
 
 **`after:` reflects need, not convenience.** A dependency asserted between two tickets that could be built in either order serialises a run for nothing. Ask, for each one, what would actually break if it were built first.
 

@@ -20,9 +20,13 @@ This skill's `TICKET_FORMAT.md` settles the shape of a ticket, its `PLANNING.md`
 
 **Vertical.** Buildable and testable on its own, end to end. "The database part" is not a slice; it cannot be verified without the thing above it, and it leaves the tree in a state no criterion describes. When small and vertical conflict, vertical wins.
 
-**A size one session can build.** Among vertical cuts, this is the main constraint: every turn of a build re-reads its whole context, so a long session costs more with every turn. A slice that would clearly run long - many plan steps, many files - is split along a real seam, even where that seam runs through an AC.
+**Sized by its footprint.** Among vertical cuts, this is the main constraint. Estimate each slice's footprint from the code you open while planning: the lines it changes and the files it touches, counting a moved block twice and a deletion like any other change. Plan steps and ACs do not count.
 
-**And no smaller than it has to be.** Every ticket pays its setup again: a fresh session reads the ticket, the standards and the files it touches, and its reviewer starts the app, logs in and makes its test data. In one run seven slices each applied one shared dialog in one more place, and each cost a fifth to a third of a five-hour usage window, mostly on that setup. Slices that repeat one pattern over the same files and context go into fewer tickets, as long as each still fits one session.
+- **At 2000 lines or 25 files, split** along a real seam, even where that seam runs through an AC.
+- **Between 1000 and 2000 lines, or 15 and 25 files,** split along a seam the slice has, or have a reason not to.
+- **Under 500 lines and 10 files,** merge the slice into a neighbour that reads the same files, as long as the two together stay under 1000 lines and 15 files.
+
+**Split where the context divides, not where the work does.** Two slices that read the same files are one, within the bounds above. So is a slice whose visible result a later slice deletes or rewrites. A separation wanted only for history - a mechanical move kept apart from a behaviour change - is two commits in one ticket.
 
 **`Out of scope` is yours to place.** Each line belongs in the `## Not here` of whichever ticket a builder would otherwise wander into - that is how it reaches the person who needs it, since no builder opens `CRITERIA.md`.
 
@@ -48,7 +52,7 @@ Where a slice introduces a concept the codebase has no name for, or moves a boun
 
 1. **Write the tickets** to `tickets/NN-<slug>.md` in the change's directory, following `PLANNING.md` for each plan.
 2. **Check them.** Spawn a subagent with a fresh context and give it `VERIFY.md` from this directory, the paths to the ticket files, and the path to `CRITERIA.md`. Nothing else - a reviewer that has your reasoning will read your intentions into the words.
-3. **Fix what it finds, then ask for approval.** A ticket added, or whose plan changed, since the check goes through it again first: hand the subagent the whole directory again, naming those tickets, so it holds the rest against them. A check that saw tickets 01 to 20 said nothing about the 21 a rework added after it, and that one built a second copy of something another ticket built. Show the slicing, the implementation decisions, and the product questions as one list. A no means editing the tickets and asking again.
+3. **Fix what it finds, then ask for approval.** A ticket added, or whose plan changed, since the check goes through it again first: hand the subagent the whole directory again, naming those tickets, so it holds the rest against them. A check that saw tickets 01 to 20 said nothing about the 21 a rework added after it, and that one built a second copy of something another ticket built. Show the slicing - each slice with its estimated footprint, and the reason for any between 1000 and 2000 lines or 15 and 25 files - the implementation decisions, and the product questions as one list. A no means editing the tickets and asking again.
 
 ## Copy, never summarise
 
