@@ -7,9 +7,16 @@ description: Cut an existing agent skill down to what changes what the agent doe
 
 Cut the skill to what changes what the agent does. What you would *add* is a proposal in the report, never an edit, and a skill that was already tight comes back nearly untouched.
 
-Every edit is a deletion, or a replacement by something shorter - a clause out of the middle of a sentence counts, and is usually where the most is available. That is the whole of your licence over the file.
+Every edit is a deletion, or a replacement by something shorter - a clause out of the middle of a sentence counts. That is the whole of your licence over the file.
 
-A replacement is legitimate when nobody can name an instruction the short version drops. One that loses a caveat, a condition or a pointer is not a shorter version of the passage; it is a behaviour change, and belongs in the list you declare at the end.
+An edit is legitimate when nobody can name an instruction it drops. An instruction is anything that changes what the agent does, however it is phrased - a reason that carries a definition, a test, a threshold or the scope of a rule is one. So are:
+
+- a qualifier or condition: *only*, *every*, *unless*, *if it exists*, *should* against *is*
+- a step, or the order between two steps
+- a rule's own exception, and an example that settles which case a rule covers
+- a count, a template, a format, a pointer, and what a subagent is told to return
+
+An edit that loses one is not a shorter version of the passage; it is a behaviour change, and belongs in the list you declare at the end. Where you cannot tell whether a line carries one, it stays.
 
 Never change `name:` or the directory name. People have that word in their prompts and their other skills.
 
@@ -23,19 +30,17 @@ Then find what its runs left behind - transcripts, the artifacts it produced, th
 
 ## Name the base
 
-A skill has one sentence that says what it is for. Everything downstream that merely follows from that sentence is already said, and can go.
+A skill has one sentence that says what it is for. A line that restates it in other words is already said, and can go; a line the agent would have to work out from it is not.
 
 Quote it where it is there. Where it is not, derive it and write it in - a skill whose thesis was never stated accumulates that thesis in pieces, a clause at a time, at five sites, and stating it once retires all five. That is usually the largest cut available and the one to make first, and it is the single addition this skill is allowed, because it is written in order to delete with. Where it does not retire more than it costs, it is a proposal like any other.
 
 ## Cut
 
-Most of the weight of a bloated skill is here.
-
-- **Lines the model already obeys.** Read one sentence in isolation: would a competent agent behave differently without it - not on the run you are imagining, but across five of them? A skill is there to get the same process out of a stochastic system, so a line that only narrows what a bad run does is load-bearing, however redundant it looks against a good one. Encouragement ("be thorough", "think carefully"), descriptions of the agent's own tools, and principles any competent agent brings with it fail even that test. Delete the sentence whole - tightening a no-op leaves a shorter no-op.
+- **Lines the model already obeys.** Read one sentence in isolation: would a competent agent behave differently without it - not on the run you are imagining, but across five of them? A skill is there to get the same process out of a stochastic system, so a line that only narrows what a bad run does is load-bearing, however redundant it looks against a good one. Encouragement ("be thorough", "think carefully"), descriptions of the agent's own tools, and principles any competent agent brings with it fail even that test. The project's definition of a familiar term - what *YAGNI* or *verification* means here - is not one of them. Delete the sentence whole - tightening a no-op leaves a shorter no-op.
 - **Consequences of the base.** From the pass above.
-- **Duplication.** Each rule in one authoritative place, so changing the behaviour is a one-place edit. Repetition also inflates a rule's rank past what the author intended.
+- **Duplication.** Each rule in one authoritative place, so changing the behaviour is a one-place edit. Repetition also inflates a rule's rank past what the author intended. A line is not a duplicate where it is the copy in a file or subagent prompt that is read alone, where it is the only imperative under its heading, or where it narrows the rule it repeats.
 - **Words around the instruction.** Agent-written prose explains itself to a reader: rationale trailing the instruction, the same point in other words, hedges, a preamble setting up the next line. Cut to the instruction. Keep the rationale only where it lets the agent apply the instruction to cases it doesn't name, or where the agent is expected to resist the instruction.
-- **A concept the model already holds.** A triad spelled out at three sites, or a sentence circling one idea, often collapses into a word the model already thinks with - *lesson*, *fog of war*, *tracer bullets*, *red*. "Fast, deterministic, low-overhead" is a *tight* loop. The word recruits the priors and retires the restatements, and where it is one the author's own docs and prompts use, it anchors invocation too.
+- **A concept the model already holds.** A triad spelled out at three sites, or a sentence circling one idea, often collapses into a word the model already thinks with - *lesson*, *fog of war*, *tracer bullets*, *red*. "Fast, deterministic, low-overhead" is a *tight* loop. The word recruits the priors and retires the restatements, and where it is one the author's own docs and prompts use, it anchors invocation too. Collapse only where the word carries every part it replaces; a label kept without its definition is not a replacement.
 - **Sediment.** Lines that bear on what the skill used to do.
 - **One side of a contradiction.** Two lines pulling opposite ways leave the agent to pick, and it picks differently every run. Deleting the wrong one is a behaviour change; say which you kept.
 
@@ -55,17 +60,17 @@ Where you cannot tell from the text whether a line is load-bearing, don't guess 
 
 Read the samples rather than counting them. Converged samples mean the wording binds; five readings across five samples mean it does not, and the fix is a tighter form, not more words.
 
-This costs real time, so spend it only on the cuts you would otherwise be guessing at.
+This costs real time, so spend it only on the cuts you would otherwise be guessing at. A cut you neither tested nor could settle by reading is not made.
 
 ## Review in a session that did not rewrite it
 
-Spawn a subagent with a fresh context. Hand it the original text, your rewrite, and the skill's purpose - **not** your reasoning for any edit. A reviewer that has followed you to each decision will read your intentions into the result. Ask it for:
+Spawn a subagent with a fresh context. Hand it the original text, your rewrite, and the skill's purpose - **not** your reasoning for any edit. A reviewer that has followed you to each decision will read your intentions into the result. Ask it for the following, reported without judging whether each loss matters:
 
-- Every instruction in the original that is absent from the rewrite, quoted from the original. Most of what goes missing is a clause rather than a sentence - *if it exists*, *where the repo has one*, *a short structured summary* - which disappears inside a line being shortened and leaves prose that still reads correctly.
+- Every instruction in the original that is absent from the rewrite, quoted from the original, including what is phrased as a reason. Most of what goes missing is a clause rather than a sentence - *if it exists*, *where the repo has one*, *a short structured summary* - which disappears inside a line being shortened and leaves prose that still reads correctly.
 - Every difference in what the skill will do that your declared list does not name.
 - Any passage the rewrite made harder to follow.
 
-Then put back every instruction it found missing, or, where you meant the loss, name it in the behaviour list - one or the other for each finding, with nothing argued away. Check that every file the skill still points at exists and every pointer still fires.
+Then put back every instruction it found missing. Name a loss in the behaviour list instead only where you meant to change the behaviour before the reviewer found it; a loss from an edit you made as cleanup goes back. One or the other for each finding, with nothing argued away. Check that every file the skill still points at exists and every pointer still fires.
 
 Run the project's checks and report what they said. Where you cannot find them, say so. The pull here is to decide from the outside that they do not apply to you - that the suite is about the real repository rather than this copy, that the environment is not set up, that nothing you touched could have broken them. Run them and find out; the guess is free to make and wrong about half the time.
 
