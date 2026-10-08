@@ -1,6 +1,6 @@
 ---
 name: restructure
-description: Restructure a whole codebase so it is easier to change - its structural rules made checks, code that changes together moved together, grab-bag modules split up, hidden coupling made explicit, misleading names and comments fixed, dead and needlessly complex code gone, the docs agents read held to the code, and features that cost more than they give proposed for removal. Run it every one to two weeks.
+description: Restructure a whole codebase so it is easier to change - its structural rules made checks, and the docs agents read held to the code. Run it every one to two weeks.
 disable-model-invocation: true
 ---
 
@@ -12,11 +12,11 @@ This skill's `CODING_STANDARDS.md` is what the result has to look like. Read it 
 
 Where the codebase is larger than you can hold at once, have parallel `Explore` subagents each inventory one area - its concepts, entry points, enums, string keys, UI flows - and do the cross-matching yourself: coupling and duplication live between areas, where no single subagent sees them. A pass that stopped where the context ran out looks exactly like one that found nothing.
 
-Every run reads the whole codebase. The areas the history changed since the last run are read first; none is skipped.
+Every run reads the whole codebase. The areas the history changed since the last run are read first.
 
 ## Checks first
 
-Before moving anything, make the structure something the checks hold.
+Before proposing or moving anything, make the structure something the checks hold.
 
 - **The check command.** Where `CLAUDE.md` declares no single command on a `Check:` line, write one - build, type check, lint, tests and the structural checks - and declare it. Where the pre-commit hook or CI runs something else, make them run it.
 - **Every structural rule `CLAUDE.md` states becomes a check** the command runs, with the places that break it today in a list the check reads, which only shrinks. This changes no behaviour, so apply it.
@@ -60,8 +60,6 @@ Before each change, name the concrete future change that will touch fewer places
 **Everything you cannot prove preserves behavior goes to the user as a proposal** - feature cuts, merged concepts, and restructurings you could not pin. For each one: what the user loses, which parts of the code stop being entangled with it, and which future changes get easier. Order them by what they free against what they cost the user.
 
 ## Docs last
-
-Once the code has moved, hold what agents read before they work against it.
 
 - **`CLAUDE.md`:** every statement about the code - a layout, a layer, a file, a rule - is checked against the code, and whichever is wrong is fixed. A fix to the document is a commit of its own; a fix to the code is a restructuring like the others.
 - **`ARCHITECTURE.md`**, where `/repo-overview` wrote it: never edited by hand. Where the structure changed, run `/repo-overview` again.

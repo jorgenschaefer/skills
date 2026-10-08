@@ -36,7 +36,7 @@ This skill's `TICKET_FORMAT.md` settles the shape of a ticket, its `PLANNING.md`
 
 **Every AC is closed by some ticket, and every ticket closes or advances some AC** - except a preparatory ticket, below. A nudge goes into every ticket it bears on.
 
-**Preparatory tickets come first.** Each closes and advances nothing, keeps behaviour, and leaves the checks green; its `Done when` names what it leaves in place. Every ticket that needs it comes `after:` it.
+**Preparatory tickets come first.** Every ticket that needs one comes `after:` it.
 
 - **No check command:** where `CLAUDE.md` has no `Check:` line, the first ticket writes the single check command - including a structural check with no rules in it yet - and declares it there. Every other ticket comes after it.
 - **Code a search would miss:** where a slice adds to a concept that lives under a name or in a place a search for it would not find, or that the code does two ways, a ticket moves, renames or unifies it first.
@@ -46,7 +46,7 @@ This skill's `TICKET_FORMAT.md` settles the shape of a ticket, its `PLANNING.md`
 
 **A feature directory gets its name from the glossary.** Where planning needs one whose term `UBIQUITOUS_LANGUAGE.md` does not have, that is a product question for the approval; the answer goes into the glossary before a ticket names the directory. A missing name is never a reason to leave the directory out.
 
-**A large file is split in a ticket of its own, first.** `CODING_STANDARDS.md` has a large file split before code is added to it, and a build scoped to its criteria will not do that inside its ticket: in one run, three builds in a row each declined the same split as a separate refactor, and each added to the file. Where the plans add to a file the standard calls large, write a ticket that only splits it - it closes and advances nothing, its `Done when` names the files it splits into, with the behaviour unchanged and the checks green - and put every ticket that adds to the file `after:` it. A plan that only removes from the file needs no split. Where the large file is a test file, the split ticket shortens it first, as the standard says; if that is not enough, it splits the source and its tests together, and its `Done when` names both, one test file per source file.
+**A large file is split in a ticket of its own, first.** `CODING_STANDARDS.md` has a large file split before code is added to it, and a build scoped to its criteria will not do that inside its ticket: in one run, three builds in a row each declined the same split as a separate refactor, and each added to the file. Where the plans add to a file the standard calls large, write a ticket that only splits it and put every ticket that adds to the file `after:` it. A plan that only removes from the file needs no split. Where the large file is a test file, the split ticket shortens it first, as the standard says; if that is not enough, it splits the source and its tests together, and its `Done when` names both, one test file per source file.
 
 Where a slice introduces a concept the codebase has no name for, or moves a boundary between the ones it does, this skill's `CODING_STANDARDS.md` binds the names the ticket will write.
 
