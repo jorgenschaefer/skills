@@ -109,9 +109,10 @@ NOT_TICKETS=(':/')
 for t in "${TICKET_FILES[@]}"; do NOT_TICKETS+=(":!$t"); done
 check_tree
 
-# Where the token log goes - one file per change - and what it counts is in
-# run/session.sh.
+# Where the token log and the refused log go - one of each per change - and
+# what they hold is in run/session.sh.
 TOKENS="$LOG_DIR/$(realpath --relative-to="$(git rev-parse --show-toplevel)" "$(dirname "$TICKETS")" | tr / _).tokens"
+REFUSED="${TOKENS%.tokens}.refused"
 
 # The final review leaves its findings here, and its being committed is how the
 # review is known to have finished.

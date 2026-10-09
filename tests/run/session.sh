@@ -173,4 +173,22 @@ if [ "$(grep -c '^1-one ' "$tokens")" = 1 ] && [ "$(grep -c '^2-two ' "$tokens")
   ok "the count survives a run started again"
 else bad "the count survives a run started again" "$(cat "$tokens")"; fi
 
+# --- the refused log
+#
+# A call the session's permissions refuse does not stop it: it carries on, works
+# around it or halts, and nothing else records that it was refused. One line
+# per refused call, beside the token log, named by the session it came from.
+workspace
+plan build-refused build review
+run > /dev/null
+refused="$WORK/.git/run-logs/changes_x.refused"
+if grep -qx "1-one Edit: $(realpath "$WORK")/.claude/skills/run/SKILL.md" "$refused" \
+   && grep -qx '1-one Bash: rm -rf lager/.env' "$refused"; then
+  ok "each refused call is logged by the session it came from, one line each"
+else bad "each refused call is logged by the session it came from, one line each" "$(cat "$refused" 2>&1)"; fi
+if [ "$(cat "$refused" 2>/dev/null | wc -l)" = 2 ]; then ok "a session with nothing refused logs nothing"
+else bad "a session with nothing refused logs nothing" "$(cat "$refused" 2>&1)"; fi
+if grep -q '! refused Bash: rm -rf lager/.env' "$WORK/.out"; then ok "a refused call is narrated as it happens"
+else bad "a refused call is narrated as it happens" "$(out)"; fi
+
 finish

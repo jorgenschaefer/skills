@@ -32,6 +32,7 @@ claude_through_limits() {  # log name, prompt, --session-id or --resume, session
     say "full log in $LOG"
     claude_run "$LOG" "$how" "$id" "$prompt" "$@"; rc=$?
     printf '%s %s\n' "$name" "$(context_read "$LOG")" >> "$TOKENS"
+    refused "$LOG" | sed "s/^/$name /" >> "$REFUSED"
     reset="$(limit_reset "$LOG")"
     [ -n "$reset" ] || return "$rc"
     waits=$((waits + 1))
@@ -58,7 +59,8 @@ claude_through_limits() {  # log name, prompt, --session-id or --resume, session
 # hands those writes to the classifier. It also drops the blanket `Bash` and
 # `Agent` rules below, so the classifier sees every command and every spawn;
 # the list still holds where auto mode is unavailable and the session starts in
-# Manual instead. A call the classifier blocks is refused as before.
+# Manual instead. A call the classifier blocks is refused as before, and the
+# refused log says which.
 #
 # `Agent` is the subagent tool, and it is what makes the review real:
 # `/implement` reviews its own diff by spawning `critique` in a session that did
@@ -94,8 +96,14 @@ claude_run() {  # log, --session-id or --resume, session id, prompt, claude's ow
 # Subagents are left out - their spawn shows, their insides are in the log.
 # Lines that are not JSON are the CLI talking rather than the session, and are
 # passed through as they are.
+#
+# A call the session's permissions refused is narrated too, and kept in the
+# refused log: it does not stop the session - it carries on, works around it or
+# halts - and the CLI records it only in the result. The tool, and the file or
+# the first line of the command.
+DENIAL='def denial: "\(.tool_name): \(.tool_input | (.file_path // .command // .pattern // .url // tostring) | tostring | split("\n")[0] | .[0:160])";'
 narrate() {
-  jq -R --unbuffered -r '
+  jq -R --unbuffered -r "$DENIAL"'
     def line(n): tostring | split("\n")[0] | .[0:n];
     (fromjson? // {type: "raw", line: .})
     | select(.parent_tool_use_id == null)
@@ -110,8 +118,14 @@ narrate() {
         select(.rate_limit_info.status == "rejected")
         | "    ! usage limit, resets \(.rate_limit_info.resetsAt // 0 | strflocaltime("%a %H:%M"))"
       elif .type == "result" then
-        "    = \(.subtype)\(if .is_error then " (error)" else "" end), \(.num_turns // "?") turns, $\(.total_cost_usd // 0 | . * 100 | round / 100)"
+        "    = \(.subtype)\(if .is_error then " (error)" else "" end), \(.num_turns // "?") turns, $\(.total_cost_usd // 0 | . * 100 | round / 100)",
+        (.permission_denials[]? | "    ! refused \(denial)")
       else empty end'
+}
+
+refused() {  # log -> "Tool: target", one line per call the session was refused
+  jq -R -r "$DENIAL"' fromjson? | select(.type == "result" and .parent_tool_use_id == null)
+    | .permission_denials[]? | denial' "$1"
 }
 
 # Read off the events the CLI writes, never its wording: the message changed

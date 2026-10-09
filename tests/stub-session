@@ -10,6 +10,9 @@
 #                file - and commit it with the code
 #   build-declare  build, and declare $STUB_DECLARE as the project's check
 #                command on a Check: line in CLAUDE.md, in the same commit
+#   build-refused  build, ending in a result whose permission_denials name an
+#                Edit under .claude/ and a Bash command, as the CLI reports a
+#                call it would not run
 #   build-dirty  build, and leave an untracked file behind besides
 #   build-killed build, then kill the runner with -9 before it can check the build
 #   build-red    build, and leave .red at the root, which a test's check reads
@@ -139,7 +142,7 @@ case "$line" in
     git commit -qm "review" >/dev/null 2>&1
     echo '{"type":"result","subtype":"success","is_error":false,"result":"reviewed"}'
     ;;
-  build|build-declare|limit-passed|build-limit|build-dirty|build-killed|build-red|build-red-killed)
+  build|build-declare|limit-passed|build-limit|build-refused|build-dirty|build-killed|build-red|build-red-killed)
     if [ "$line" = limit-passed ]; then
       echo '{"type":"assistant","message":{"role":"assistant","content":[]},"parent_tool_use_id":"toolu_sub","error":"rate_limit"}'
       rejected_event
@@ -153,6 +156,13 @@ case "$line" in
     git add -A >/dev/null 2>&1
     git commit -qm "build $(basename "$ticket")" >/dev/null 2>&1
     if [ "$line" = build-limit ]; then rejected_event; exit 1; fi
+    if [ "$line" = build-refused ]; then
+      jq -nc --arg f "$(git rev-parse --show-toplevel)/.claude/skills/run/SKILL.md" \
+        '{type: "result", subtype: "success", is_error: false, result: "built",
+          permission_denials: [
+            {tool_name: "Edit", tool_use_id: "toolu_1", tool_input: {file_path: $f, old_string: "a", new_string: "b"}},
+            {tool_name: "Bash", tool_use_id: "toolu_2", tool_input: {command: "rm -rf lager/.env\nls", description: "Remove lager"}}]}'
+    fi
     case "$line" in build-red*) : > "$(git rev-parse --show-toplevel)/.red" ;; esac
     if [ "$line" = build-killed ] || [ "$line" = build-red-killed ]; then kill -9 "$PPID"; fi
     if [ "$line" = build-dirty ]; then printf 'stray\n' > "$(git rev-parse --show-toplevel)/stray"; fi

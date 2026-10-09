@@ -120,6 +120,8 @@ and a review that ends without committing `REVIEW.md` fails the run. A re-slice 
 **It records what each ticket cost**, in context tokens read - main session and subagents
 apart - since a long session re-reads its growing context on every turn. The counts are kept
 per change in `.git/run-logs` and survive a run started again. They are kept, not printed.
+Beside them it keeps every call a session's permissions refused, one line each with the
+session it came from - sessions run in auto mode, and a refused call does not stop one.
 
 However it ends, it ends with what needs a person, and only that, last on the screen. A halt
 stops the run, which ends saying which ticket halted and printing its whole `## Halt`. A
