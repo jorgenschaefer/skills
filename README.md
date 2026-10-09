@@ -17,9 +17,10 @@ npx skills add jorgenschaefer/skills@<skill-name>
 ## The pipeline
 
 ```
-/idea ──(context)──→ /find-criteria ──→ CRITERIA.md ──→ /criteria-to-tickets ─┬─ 1 ticket  → /implement <ticket>
-  ↑                        │                                                    └─ n tickets → ./run.sh changes/<slug>/tickets
-  └── no problem visible ──┘                                                              then: /accept-criteria
+backlog ──→ /idea ──(context)──→ /find-criteria ──→ CRITERIA.md ──→ /criteria-to-tickets ─┬─ 1 ticket  → /implement <ticket>
+   ↑          ↑                        │                                                    └─ n tickets → ./run.sh changes/<slug>/tickets
+   │          └── no problem visible ──┘                                                              then: /accept-criteria
+   └────────────────────────────────────────────────── follow-ups ──────────────────────────────────────────────────┘
 ```
 
 Everything one change produces lives in `changes/YYYY-MM-DD-<slug>/`: `CRITERIA.md`, the
@@ -179,6 +180,7 @@ The pipeline is most of them. `repo-overview`, `improve-skill`, `restructure`, `
 `upgrade-dependencies` stand outside it - they are things you run on a codebase, on a
 skill or on a finished run, rather than steps in building a change.
 
+- **backlog** - the ideas not started yet, one file per item in `changes/backlog/` with its effort and utility from XS to XL, proposed from the code and confirmed by the user. Adding reads the code for evidence and extends an item that overlaps rather than writing a second; picking ranks by utility against effort, checks the top three against the current code, proposes deleting what is already solved, recommends one and hands it to `idea` or `find-criteria`. `accept-criteria` hands it each follow-up and deletes the items a change finished. Converts an older backlog's items to its shape on first use
 - **idea** - the one door in, fired without being typed: the problem underneath the idea the user arrived with, dug at around one real instance until a reader who was not there could restate it, stated back and agreed - or a reasoned no. Proposes nothing and writes no file: the statement stays in the conversation for `find-criteria`
 - **find-criteria** - work out with the user what the change has to do, one question at a time: at least three genuinely different approaches for the user to pick from, a specimen where the difference is visual, the acceptance criteria, the implementation nudges, and every open question settled. Every choice between alternatives, the approach and any later one such as a specimen's variants, shows each option's effort as a size from XS to XL and what it adds to the code in words, next to what it gives. Approved, checked by an adversary, approved again, and written to `CRITERIA.md`. Runs `idea` first where no problem is visible. Typed
 - **criteria-to-tickets** - cut `CRITERIA.md` into slices, each provable on its own and small enough for one session, and write a planned ticket for each - one slice included - quoting its criteria and nudges verbatim so no builder has to open `CRITERIA.md`. Checked by an adversary before it is shown for approval, and again for any ticket added or replanned after that check, with the product questions planning turned up going to the user and back into `CRITERIA.md`. Typed
