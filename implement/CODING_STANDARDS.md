@@ -167,7 +167,7 @@ An agent should be able to read a file whole. So **before adding code to a file 
 - **Size** counts what has to be read together: the file plus any fixture or helper file that only it uses.
 - **Adding** is any change that does more than remove code.
 - **No side-stepping.** Putting new code in a fresh file to keep this one under the limit still counts as adding to it, when the new code changes together with code here. Split first, then add to the part it belongs to.
-- **Split** along what changes together, into files of roughly 150-300 lines that each hold one part. Split the test file the same way, so each part has exactly one test file.
+- **Split** along what changes together, into files of roughly 150-300 lines that each hold one part. Splitting a source file always splits its test file the same way, and a test file is never split on its own: each part has exactly one test file.
 - **When only the test file is over the limit,** shorten it first: shared setup, table-driven cases, helpers for repeated assertions. That is enough only if it gets the file to about 400 lines - one squeezed to just under 500 has to be shortened again on every change. Otherwise the source holds more than one part: split source and tests together, even though the source is under the limit.
 - **The split comes first,** changes no behaviour, and is not mixed into the change.
 - Generated files are exempt.
