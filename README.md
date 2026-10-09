@@ -54,7 +54,8 @@ still proves nothing about what started it.
 
 **What is approved, and what is only seen.** Product behaviour - the acceptance criteria - is
 approved by the user. Implementation choices are nudges: shown, so the user can object, and
-carried to the builder, but checked by nothing; a build that departs from one records why.
+carried to the builder as ideas it checks against the code, not orders; a build that departs
+from one records why.
 
 **Stops for a person.** Agree the problem, pick an approach and approve the criteria, approve the
 tickets, walk the finished change. Everything else is conditional and named - a halt, a ceiling

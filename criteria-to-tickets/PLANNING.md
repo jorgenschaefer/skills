@@ -8,7 +8,7 @@ What goes in a ticket's `## Plan`. One slice at a time, worked out against the c
 
 **Find what already does this, or half of it.** Search by the domain word and by the shape of the code, and write in the plan what the search found. The plan should reuse what is there. A step that writes something the project already has is a step that adds a second way to do it. Where what you found sits under a name or in a place the search barely reached, or the code does it two ways, it moves first, in a preparatory ticket - `SKILL.md` says how.
 
-**Follow the nudges the ticket quotes.** They are how the user agreed it gets built. Where the code makes one wrong, that is a question for the approval, not a plan that quietly departs from it.
+**Check the nudges the ticket quotes against the code.** They are ideas for how it gets built, not orders. Plan along one where it holds up; where the code shows it wrong, plan what the code calls for and name in the plan the nudge it departs from, and why.
 
 ## The plan is steps, in order
 

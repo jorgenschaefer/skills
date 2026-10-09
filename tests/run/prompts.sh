@@ -67,11 +67,11 @@ if grep -qF "$(realpath "$WORK")/changes/x/REVIEW.md" <(tail -1 "$STUB_CALLS") \
    && grep -q '`true`' <(tail -1 "$STUB_CALLS"); then
   ok "the review is told where REVIEW.md goes, and the project's checks"
 else bad "the review is told where REVIEW.md goes, and the project's checks" "$(tail -1 "$STUB_CALLS")"; fi
-# A review fixes what it finds, and one fix went against a nudge the build had
-# kept on purpose. A nudge is how the user agreed it gets built.
-if grep -q 'departs from a nudge is not made' <(tail -1 "$STUB_CALLS"); then
-  ok "the review is told a fix that departs from a nudge is left standing, not made"
-else bad "the review is told a fix that departs from a nudge is left standing, not made" "$(tail -1 "$STUB_CALLS")"; fi
+# A nudge is an idea, not an order: it does not stop a fix, but the person sees
+# where a fix went against one.
+if grep -q 'A nudge does not stop a fix' <(tail -1 "$STUB_CALLS"); then
+  ok "the review is told a nudge does not stop a fix, and to name the departure"
+else bad "the review is told a nudge does not stop a fix, and to name the departure" "$(tail -1 "$STUB_CALLS")"; fi
 # A second round costs a whole review, and five builds in one run paid it after a
 # first round that found nothing that mattered.
 if grep -q 'found only nits' <(tail -1 "$STUB_CALLS"); then
