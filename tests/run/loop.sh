@@ -39,6 +39,13 @@ if [ "$(grep -c 'CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1 ' "$STUB_ARGS")" = "$(wc
    && ! grep -q -- '--tools .*Monitor' "$STUB_ARGS"; then
   ok "every session runs with background tasks off"
 else bad "every session runs with background tasks off" "$(cut -c1-160 "$STUB_ARGS")"; fi
+# Nobody can approve a call in `-p`, so what the mode does not let through is
+# refused. Under acceptEdits that was every write under .claude/: a build that
+# moved the app could not fix the run skill, and its ticket halted twice. Auto
+# mode hands such a write to the classifier.
+if [ "$(grep -c -- '--permission-mode auto ' "$STUB_ARGS")" = "$(wc -l < "$STUB_ARGS")" ]; then
+  ok "every session runs in auto mode"
+else bad "every session runs in auto mode" "$(cut -c1-160 "$STUB_ARGS")"; fi
 # Every call pays for every tool defined, so a session is given the tools a
 # build uses and no others. Playwright stays, for testing in the browser; the
 # claude.ai connectors go.

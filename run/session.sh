@@ -51,6 +51,15 @@ claude_through_limits() {  # log name, prompt, --session-id or --resume, session
 # exactly that way. So the tools a build needs are named here rather than left
 # to whatever the operator has in settings.
 #
+# Sessions run in auto mode. No allow rule lets a write to a protected path
+# through - `.claude/`, `.vscode/`, `.husky/` - so under acceptEdits every such
+# write was refused: a build that moved the app out of a subdirectory could not
+# fix the run skill that still pointed into it, and halted twice. Auto mode
+# hands those writes to the classifier. It also drops the blanket `Bash` and
+# `Agent` rules below, so the classifier sees every command and every spawn;
+# the list still holds where auto mode is unavailable and the session starts in
+# Manual instead. A call the classifier blocks is refused as before.
+#
 # `Agent` is the subagent tool, and it is what makes the review real:
 # `/implement` reviews its own diff by spawning `critique` in a session that did
 # not write it, and there is no review pass here to fall back on. Without it the
@@ -75,7 +84,7 @@ claude_through_limits() {  # log name, prompt, --session-id or --resume, session
 TOOLS=(Bash Edit Write Read Glob Grep Skill Agent ToolSearch WebFetch WebSearch)
 claude_run() {  # log, --session-id or --resume, session id, prompt, claude's own options... -> claude's exit status
   ENABLE_CLAUDEAI_MCP_SERVERS=false CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1 \
-  claude -p --output-format stream-json --verbose --permission-mode acceptEdits \
+  claude -p --output-format stream-json --verbose --permission-mode auto \
     --tools "${TOOLS[@]}" --allowedTools "${TOOLS[@]}" mcp__playwright \
     "$2" "$3" "${@:5}" <<<"$4" 2>&1 | tee "$1" | narrate
   return "${PIPESTATUS[0]}"
