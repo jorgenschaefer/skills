@@ -32,7 +32,7 @@ This skill's `CRITERIA_FORMAT.md` settles the shape of the file.
 
 **For anything a user sees, ask about**: the feedback after every action, actions that cannot be undone, the layout at the narrowest and widest supported screen, and how prominent rarely used actions are. These are what slipped through when nobody asked.
 
-**Raise the implementation decisions the approach makes visible as nudges** - "reuse the phone components", "do not touch DeviceView". What the product does is for the user to approve; how it is built is for them to see, with the chance to object.
+**Raise the implementation decisions the approach makes visible as nudges** - "reuse the phone components", "do not touch DeviceView". What the product does is for the user to approve; how it is built is for them to see, with the chance to object. A nudge never restates `CODING_STANDARDS.md`; `/criteria-to-tickets` plans against the standard directly.
 
 **Give every new domain rule one home.** Where the criteria introduce a rule - a sign, a status, a classification - a nudge names the one place it lives, named after the rule.
 
