@@ -48,6 +48,8 @@ This skill's `TICKET_FORMAT.md` settles the shape of a ticket, its `PLANNING.md`
 
 **A large file is split in a ticket of its own, first.** `CODING_STANDARDS.md` has a large file split before code is added to it, and a build scoped to its criteria will not do that inside its ticket: in one run, three builds in a row each declined the same split as a separate refactor, and each added to the file. Where the plans add to a file the standard calls large, write a ticket that only splits it and put every ticket that adds to the file `after:` it. A plan that only removes from the file needs no split. Where the large file is a test file, the split ticket shortens it first, as the standard says; if that is not enough, it splits the source and its tests together, and its `Done when` names both, one test file per source file.
 
+**Small files are combined the same way.** Where the plans add to source files the standard says to combine, write a ticket that only combines them and their tests, and put every ticket that adds to them `after:` it.
+
 Where a slice introduces a concept the codebase has no name for, or moves a boundary between the ones it does, this skill's `CODING_STANDARDS.md` binds the names the ticket will write.
 
 ## What planning turns up
