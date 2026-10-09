@@ -5,11 +5,9 @@ description: Add to, extend or pick from the project's backlog in changes/backlo
 
 # Backlog
 
-The backlog is `changes/backlog/`, one file per item.
-
 ## The item
 
-`changes/backlog/<slug>.md`:
+`changes/backlog/<slug>.md`, one file per item:
 
 ```markdown
 ---
@@ -32,7 +30,7 @@ Where `changes/backlog/` holds items in another shape - numbered files, a direct
 
 ## Adding an item
 
-1. **Read the code the item touches** and note where it shows.
+1. **Read the code the item touches.**
 2. **Look for an item it overlaps.** Where one exists, add the new finding to that item instead of writing a new one, and propose its sizes again.
 3. **Propose effort and utility**, each with a one-line reason. Write the file once the user confirms or corrects them.
 4. **Commit that file alone.** When `/accept-criteria` handed you the item, do not commit - it commits the item with its deletion.
@@ -44,4 +42,4 @@ Where `changes/backlog/` holds items in another shape - numbered files, a direct
 3. **Recommend one item and a runner-up**, each with why.
 4. **Hand on the item the user picks.** Where it states a problem a reader who was not here could restate, tell the user to type `/find-criteria changes/backlog/<slug>.md`. Otherwise run `/idea` with the item.
 
-Do not delete a picked item; `/accept-criteria` does that once the change is accepted.
+Do not delete a picked item; `/accept-criteria` deletes it once the change is accepted.
