@@ -18,7 +18,7 @@ Every run reads the whole codebase. The areas the history changed since the last
 
 Before proposing or moving anything, make the structure something the checks hold.
 
-- **The check command.** Where `CLAUDE.md` declares no single command on a `Check:` line, write one - build, type check, lint, tests and the structural checks - and declare it. Where the pre-commit hook or CI runs something else, make them run it.
+- **The check command.** Where `CLAUDE.md` declares no single command on a `Check:` line, write one - build, type check, lint, tests and the structural checks - and declare it. A check line in any other form than `CODING_STANDARDS.md` gives, rewrite in that form. Where the pre-commit hook or CI runs something else, make them run it.
 - **Every structural rule `CLAUDE.md` states becomes a check** the command runs, with the places that break it today in a list the check reads, which only shrinks. This changes no behaviour, so apply it.
 - **A rule the code follows only by habit** - a layout, a boundary nobody wrote down - goes to the user as a proposal, with the check that would hold it.
 

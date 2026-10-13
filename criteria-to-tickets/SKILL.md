@@ -38,7 +38,7 @@ This skill's `TICKET_FORMAT.md` settles the shape of a ticket. This file is what
 
 **Preparatory tickets come first.** Every ticket that needs one comes `after:` it.
 
-- **No check command:** where `CLAUDE.md` has no `Check:` line, the first ticket writes the single check command - including a structural check with no rules in it yet - and declares it there. Every other ticket comes after it.
+- **No check command:** where `CLAUDE.md` has no `Check:` line in the form `CODING_STANDARDS.md` gives, the first ticket writes the single check command - including a structural check with no rules in it yet - and declares it there in that form. Every other ticket comes after it.
 - **Code a search would miss:** where a slice adds to a concept that lives under a name or in a place a search for it would not find, or that the code does two ways, a ticket moves, renames or unifies it first.
 - **A large file:** below.
 
