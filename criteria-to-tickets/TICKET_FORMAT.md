@@ -35,18 +35,14 @@ Then, for each AC under `## Toward`, the part of it this slice makes true, in pl
 Soft: nothing checks the build against them, but a departure from one is recorded under `## Left standing`, with the reason. Empty when none bears on this slice.>
 
 ## Context
-<Enough to build this without reading `CRITERIA.md` - what exists already, the agreed design and its specimen where it bears on this slice, where the seam is. A session gets this file and the code, nothing else.>
+<Enough to build this without reading `CRITERIA.md` - what exists already, the agreed design and its specimen where it bears on this slice, where the seam is, and what this ticket shares with others: which ticket builds what several need, and a name or format other tickets build on. A session gets this file and the code, nothing else.
 
-## Plan
-<How this gets built: the steps in order, the files each one touches, and what proves each one worked. `PLANNING.md` is the shape.
-
-Written before the build, by whoever cut the slice, against the code as it actually is. It is not binding the way `Done when` is - a builder who finds the plan wrong says so - but it is the difference between a ticket that has been thought about and one that has been described.>
-
+Not how to build it: no steps, no test lists, no file names per step, no line estimates. The builder works that out from the code.>
 ## Not here
 <The boundary against the neighbouring tickets, and where the excluded thing lives instead, and the lines of `CRITERIA.md`'s `Out of scope` a builder here would otherwise wander into.>
 
 ## Left standing
-<Written by the build: review findings not fixed and why, checks not run, each AC this slice closes or advances that no automated test proves and how it was checked instead, departures from the plan, and departures from a nudge with the reason. Nothing else - a fixed finding or an AC a test proves is what `status: done` already says, and listing them buries the lines worth reading. Read by the later builds, by the runner's final review and at acceptance, and printed at the end of a run of this one ticket. Empty when the build left nothing.>
+<Written by the build: review findings not fixed and why, checks not run, each AC this slice closes or advances that no automated test proves and how it was checked instead, decisions taken that would be costly to reverse, and departures from a nudge with the reason. Nothing else - a fixed finding or an AC a test proves is what `status: done` already says, and listing them buries the lines worth reading. Read by the later builds, by the runner's final review and at acceptance, and printed at the end of a run of this one ticket. Empty when the build left nothing.>
 
 ## Halt
 <Written by whoever stopped - the session or the runner - naming the kind and what it was blocked on. Absent unless something stopped.>
