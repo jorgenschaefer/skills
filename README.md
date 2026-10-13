@@ -48,8 +48,9 @@ and the solution the user arrived with; the criteria's, which checks they serve 
 can be tested, make sense for the person who will use the thing, and can be sliced without
 asking; the tickets', which checks the quotes, the coverage, the slices, the code the tickets
 rest on, that no two tickets build the same thing, and the ACs that pull against each other. Then `critique`, which each build spawns against its own diff, and which drives the
-running product where a user sees the change. Only the last stage judges against the problem:
-every check before it compares an artifact to the one before it, and a chain of sound links
+running product where a user sees the change. Only the last two judge against the problem - the run's final review, whose critique
+drives the product through the user's situation, and acceptance: every check before them
+compares an artifact to the one before it, and a chain of sound links
 still proves nothing about what started it.
 
 **What is approved, and what is only seen.** Product behaviour - the acceptance criteria - is
