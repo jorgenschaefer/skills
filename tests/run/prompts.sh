@@ -82,6 +82,14 @@ else bad "the review is told not to review again after a round of only nits" "$(
 if grep -q 'drives only the screens the fixes since the first round touched' <(tail -1 "$STUB_CALLS"); then
   ok "the review's second round drives only the screens its fixes touched"
 else bad "the review's second round drives only the screens its fixes touched" "$(tail -1 "$STUB_CALLS")"; fi
+# A nit's fix added a redirect nobody drove, and acceptance found it showing an
+# outdated result.
+if grep -q 'review again only if one of those fixes changes what a screen shows or where an action leads' <(tail -1 "$STUB_CALLS"); then
+  ok "the review drives a nit's fix that changes a screen"
+else bad "the review drives a nit's fix that changes a screen" "$(tail -1 "$STUB_CALLS")"; fi
+if grep -q 'A fix that needs a decision the criteria do not settle is not made' <(tail -1 "$STUB_CALLS"); then
+  ok "the review leaves a fix of its own findings that needs a decision to the person"
+else bad "the review leaves a fix of its own findings that needs a decision to the person" "$(tail -1 "$STUB_CALLS")"; fi
 # A build left a blocker it had not fixed in its Left standing, and the review,
 # shown none of them, found the same bug again. Left standing is handed over
 # whole, not pointed at: whole tickets are the plans critique must not see.

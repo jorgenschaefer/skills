@@ -35,7 +35,7 @@ Build it in the order the standard says the work happens. While you build, run t
 
 Work the blockers and the should-fix, test-first. Then review again the same way, with a fresh reviewer - except that in the second round critique drives only the screens your fixes touched, and you name them in the hand-off.
 
-**A first round of only nits gets no second** - nits by the reviewer's rating, not yours. Fix the ones worth fixing and stop there.
+**A first round of only nits gets no second** - nits by the reviewer's rating, not yours. Fix the ones worth fixing and stop there, unless one of those fixes changes what a screen shows or where an action leads: then the second round drives that screen.
 
 **Two rounds at most.** Stop when a review comes back clean or with only nits, or when the second round is done, and report what is still standing: the nits, anything you disagreed with and why, anything you chose not to fix and why. The pull is to quietly drop a finding, and one that goes unmentioned looks exactly like one that was fixed.
 
