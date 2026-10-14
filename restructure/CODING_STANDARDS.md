@@ -119,6 +119,7 @@ Graceful failure is for the user, at the edge. Inside the code, a case that shou
 - **Catch only what you handle.** A `catch` that cannot do anything useful lets the error through.
 - **Check where data enters, trust it after.** Validation belongs at the boundary, as under _Business Logic Works with Domain Objects_, not repeated defensively in every function.
 - **Report it once, where it is handled,** with the values that caused it - ids, input, the unexpected state - and no PII or secrets, so the next agent can get from the symptom to the line without guessing.
+- **A log line is an event, not a sentence:** a fixed event name a search finds (`payment_failed`), with the values as fields rather than spliced into text. Every line carries the id of the request or run it belongs to, set where that starts and passed across every queue and call, and - where more than one entry point starts the same work - which one did.
 
 ## Maintainability
 
