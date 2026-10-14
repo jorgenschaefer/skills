@@ -71,7 +71,8 @@ Code does not run alone. Two requests, a double-clicked button, a retried webhoo
 A new file is judged against the spec. Everything else is judged against what is already deployed and already stored, neither of which appears in the diff.
 
 - **Deploy order is part of the design.** For the length of a rollout, old code runs against the new schema and new code against the old one. A change that is only correct once both halves have landed is two changes, and the order they land in is a decision.
-- **A column is dropped only once nothing reads it**, which is a later deploy and not this one. Add a column nullable or defaulted before anything writes it, and backfill as its own step.
+- **A column is dropped only once nothing reads it**, which is a later deploy and not this one. Add a column nullable or defaulted before anything writes it, and backfill as its own step, in batches that never lock the whole table.
+- **A stored or wire format changes by addition.** Whatever a reader outside this deploy can observe - a field, a column, an error code, an ordering - is depended on. Renaming or reshaping one takes steps, each its own deploy: add the new form, write both, backfill, move the reads, stop writing the old, then remove it.
 
 ## Security
 
