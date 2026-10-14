@@ -26,6 +26,8 @@ What that is may have to be derived first, from the ticket, the callers, the dom
 
 Code should also be obvious in what it is meant to do. If you have to guess, or if the context points in another direction than the code would hint, that's a flag.
 
+**A fix goes where the cause is.** A defect shows in one place and is caused in another: duplicate rows in a list come from the query that joins them, not from the list. Find the cause before changing anything - for a regression, `git bisect run` with the failing test - and fix it there. A fix at the place the symptom shows needs a comment naming the cause and why it cannot be fixed there.
+
 ### Test Coverage
 
 **Every piece of business logic is pinned by a test:** removing or changing it would make a test fail. For each piece, you should be able to name the test that pins it; where you cannot, that is a coverage gap.
