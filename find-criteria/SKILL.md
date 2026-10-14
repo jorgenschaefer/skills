@@ -38,7 +38,7 @@ This skill's `CRITERIA_FORMAT.md` settles the shape of the file.
 
 **Give every new domain rule one home.** Where the criteria introduce a rule - a sign, a status, a classification - a nudge names the one place it lives, named after the rule.
 
-**Get the name of every new feature directory from the user.** Where the approach needs a feature directory whose term `UBIQUITOUS_LANGUAGE.md` does not have, ask for the term. On their answer, add it to the glossary, in the shape its existing entries have.
+**Get the name of every new feature directory that is a domain concept from the user.** Where the approach needs one whose term `UBIQUITOUS_LANGUAGE.md` does not have, ask for the term. On their answer, add it to the glossary, in the shape its existing entries have.
 
 **In a repository with no code yet, settle the conventions as nudges**: the directory layout, the layers, how errors reach the caller, where data is loaded, where the clock is read.
 

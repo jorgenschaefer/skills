@@ -44,7 +44,7 @@ This skill's `TICKET_FORMAT.md` settles the shape of a ticket. This file is what
 
 **A slice that introduces a structure adds its check.** A new feature directory, a boundary between layers, where the clock is read: the ticket that introduces it also adds the check that holds it, to the check command.
 
-**A feature directory gets its name from the glossary.** Where a slice needs one whose term `UBIQUITOUS_LANGUAGE.md` does not have, that is a product question for the approval; the answer goes into the glossary before a ticket names the directory. A missing name is never a reason to leave the directory out.
+**A feature directory that is a domain concept gets its name from the glossary.** Where a slice needs one whose term `UBIQUITOUS_LANGUAGE.md` does not have, that is a product question for the approval; the answer goes into the glossary before a ticket names the directory. A missing name is never a reason to leave the directory out.
 
 **A large file is split in a ticket of its own, first.** `CODING_STANDARDS.md` has a large file split before code is added to it, and a build scoped to its criteria will not do that inside its ticket: in one run, three builds in a row each declined the same split as a separate refactor, and each added to the file. Where a slice adds to a file the standard calls large, write a ticket that only splits it and put every ticket that adds to the file `after:` it. A slice that only removes from the file needs no split. Where the large file is a test file, the split ticket shortens it first, as the standard says; if that is not enough, it splits the source and its tests together, and its `Done when` names both, one test file per source file.
 

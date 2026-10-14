@@ -161,7 +161,7 @@ Features nest. A feature made of more than one source file gets its own subdirec
 
 - **Check** whenever a file is added to a directory: do the directory's files, the new one included, belong to features that change for different reasons?
 - **Move** a feature into its own subdirectory as soon as it has two source files, together with their tests. A feature of a single file stays where it is, and so does a directory that is all one feature.
-- **Name** the subdirectory after the feature, using its term from `UBIQUITOUS_LANGUAGE.md`. Where the glossary has none, ask the user for it and add it there; a missing name is never a reason to leave the split out. A grab-bag name (`utils`, `common`, `helpers`) or a type name (`models`, `controllers`) is not a split.
+- **Name** the subdirectory after the feature. A domain concept takes its term from `UBIQUITOUS_LANGUAGE.md`; where the glossary has none, ask the user for it and add it there. A part of one feature that is no domain concept - its form, its import - takes the plain word for that part and needs no entry. A missing name is never a reason to leave the split out. A grab-bag name (`utils`, `common`, `helpers`) or a type name (`models`, `controllers`) is not a split.
 - **The split comes first,** only moves files, and changes no behaviour.
 
 Put a test next to the file it tests, not in a separate `tests/` tree - unless the project's existing layout clearly says otherwise.

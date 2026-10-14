@@ -36,7 +36,7 @@ Each ticket quotes its ACs, all four technical decisions and its nudges exactly 
 
 **Every rule has one home.** A ticket that adds to a concept the code does two ways, or keeps under a name a search would miss, without a preparatory ticket before it, is a finding.
 
-**Every structural decision carries its check.** A ticket that introduces a feature directory, a boundary between layers or a new place the clock is read, and does not add the check that holds it, is a finding. So is a new feature directory whose name is not in `UBIQUITOUS_LANGUAGE.md` and was not put to the user.
+**Every structural decision carries its check.** A ticket that introduces a feature directory, a boundary between layers or a new place the clock is read, and does not add the check that holds it, is a finding. So is a new feature directory for a domain concept whose name is not in `UBIQUITOUS_LANGUAGE.md` and was not put to the user.
 
 **One mechanism is built by one ticket.** Two tickets whose ACs each need the same thing - a reader, a limit, a check, a component - and whose `## Context` does not say which one builds it, is a finding: one ticket builds it, and the others reuse it by name and come `after:` it.
 
