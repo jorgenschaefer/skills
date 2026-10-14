@@ -62,12 +62,14 @@ while IFS= read -r doc; do
              | tr -d '`' | sed 's|^/||' | sort -u)
 
   # And the scripts. With or without the `./`: the leftover that got through
-  # this check the first time was written `loop.sh`, not `./loop.sh`.
+  # this check the first time was written `loop.sh`, not `./loop.sh`. Found at
+  # the root, where the runner's are, or beside the document, where a skill's
+  # own are - a skill installs alone, so its scripts travel with it.
   # shellcheck disable=SC2016 # the backticks are Markdown's, matched literally
   while IFS= read -r script; do
     [ -n "$script" ] || continue
     refs=$((refs + 1))
-    [ -f "$ROOT/$script" ] || missing+="$from -> $script"$'\n'
+    [ -f "$ROOT/$script" ] || [ -f "$(dirname "$doc")/$script" ] || missing+="$from -> $script"$'\n'
   done < <(grep -o '`\.\{0,1\}/\{0,1\}[a-z][a-z0-9-]*\.sh`' "$doc" \
              | tr -d '`' | sed 's|^\./||' | sort -u)
 
