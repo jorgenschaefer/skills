@@ -27,9 +27,11 @@ A finding here is an AC that should exist, or one that should say something else
 
 ## It can be sliced without asking
 
-Walk the file as `/criteria-to-tickets` will, and name what you would have to ask. Where an AC or a nudge admits two readings that would build different things, report both readings - that is the finding, not your preference between them.
+Walk the file as `/criteria-to-tickets` will, and name what you would have to ask. Where an AC, a technical decision or a nudge admits two readings that would build different things, report both readings - that is the finding, not your preference between them.
 
-**Check the shape by reading**, and say in your report that you read it: the sections `CRITERIA_FORMAT.md` requires are present; every AC is numbered `AC-n` with no number used twice - a gap is an AC that was deleted, not a defect; the agreed design says how it is to be built and, where there is a specimen, links both copies.
+**Check the shape by reading**, and say in your report that you read it: the sections `CRITERIA_FORMAT.md` requires are present; every AC is numbered `AC-n` with no number used twice - a gap is an AC that was deleted, not a defect; the agreed design says how it is to be built and, where there is a specimen, links both copies; all four technical decisions are there.
+
+**Hold each technical decision against the code.** A migration the approach needs and `Stored formats` does not name, an endpoint whose old callers `Wire formats` does not mention, a library the code would have to take on: each is a decision the user approves without having seen it.
 
 ## Reporting
 

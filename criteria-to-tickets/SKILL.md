@@ -34,7 +34,7 @@ This skill's `TICKET_FORMAT.md` settles the shape of a ticket. This file is what
 
 **Exactly one ticket closes each AC.** It is the slice after which the AC is true, and it writes the AC's test where the user acts. An AC too big for one slice is also advanced by others, each building a narrower part it can prove on its own; the closing ticket comes `after:` every one of them. The size of the work is never a reason to split an AC - that puts your seams into what the user approved. An AC that turns out to describe two behaviours is: put it to the user and get it split in `CRITERIA.md`.
 
-**Every AC is closed by some ticket, and every ticket closes or advances some AC** - except a preparatory ticket, below. A nudge goes into every ticket it bears on.
+**Every AC is closed by some ticket, and every ticket closes or advances some AC** - except a preparatory ticket, below. Every ticket quotes all four technical decisions, so a builder knows a table or a library it adds is a departure even where the change agreed none. A nudge goes into every ticket it bears on.
 
 **Preparatory tickets come first.** Every ticket that needs one comes `after:` it.
 
@@ -54,9 +54,9 @@ Where a slice introduces a concept the codebase has no name for, or moves a boun
 
 ## What slicing turns up
 
-Read the code each slice will touch before you cut: what exists already, what it is called, which files it adds to. Then walk each slice against that code as its builder would, looking for what only the user can decide: behaviour the user sees that the ACs leave open, ACs that conflict, a nudge the code contradicts. The walk is thinking, not a document: its answers go into `CRITERIA.md` or `## Context`, and its steps go nowhere. It turns up two kinds of question.
+Read the code each slice will touch before you cut: what exists already, what it is called, which files it adds to. Then walk each slice against that code as its builder would, looking for what only the user can decide: behaviour the user sees that the ACs leave open, ACs that conflict, a nudge the code contradicts, a technical decision the code shows to be short - a table it does not name, a caller it does not mention. The walk is thinking, not a document: its answers go into `CRITERIA.md` or `## Context`, and its steps go nowhere. It turns up two kinds of question.
 
-**Product questions are the user's.** An AC that could mean two things, an edge case nobody owns, a behaviour nobody specified. Answering one yourself is inventing a requirement. Put it to the user at the approval, and write the answer into `CRITERIA.md` as a new or amended AC before any ticket quotes it. Where the answer changes the cut, stop and hand back to `/find-criteria`: the slicing in your hands was made against criteria that no longer say what they said.
+**Product questions are the user's.** An AC that could mean two things, an edge case nobody owns, a behaviour nobody specified. So is a technical decision that falls short: it was approved, and widening it is the user's call. Answering one yourself is inventing a requirement. Put it to the user at the approval, and write the answer into `CRITERIA.md` before any ticket quotes it - as a new or amended AC, or for a technical decision as the amended decision, never as an AC. Where the answer changes the cut, stop and hand back to `/find-criteria`: the slicing in your hands was made against criteria that no longer say what they said.
 
 **Implementation decisions between tickets are yours.** Which ticket builds what several need, a name or format other tickets build on. Decide them, write them into the tickets' `## Context`, and show them at the approval so the user can object. They are not written back into `CRITERIA.md`. Decisions inside one ticket are its builder's.
 
@@ -68,7 +68,7 @@ Read the code each slice will touch before you cut: what exists already, what it
 
 ## Copy, never summarise
 
-A ticket quotes its ACs and nudges exactly as `CRITERIA.md` writes them - `TICKET_FORMAT.md` says why. Exactly means exactly: a quotation that stops a sentence early has dropped a requirement, and it is the most natural way this goes wrong.
+A ticket quotes its ACs, technical decisions and nudges exactly as `CRITERIA.md` writes them - `TICKET_FORMAT.md` says why. Exactly means exactly: a quotation that stops a sentence early has dropped a requirement, and it is the most natural way this goes wrong.
 
 The same holds of the `## Context` under them: it adds no requirement to the ACs quoted above it. A Context that does has widened work nobody approved.
 
@@ -81,6 +81,7 @@ Only for a decision you newly make while reading the code - one from `/find-crit
 Drift, or acceptance routing an unmet AC back, lands here against a directory that already has committed tickets.
 
 - **Edit the tickets the change touches, in place:** the new quote and Context, no `## Halt`, no `## Left standing`, `status: ready`, `attempts: 0`. A built ticket whose AC changed is rebuilt this way, not annotated - its words are what the code was built against.
+- **A technical decision that changed is re-quoted in every ticket**, since every ticket carries all four. A ticket not yet built takes the new quote with the rest of its edit. A built one takes it in place and stays `done` - unless its code no longer holds to the new decision, and then it is rebuilt like a ticket whose AC changed.
 - **Delete a ticket with nothing left to build; add tickets for new work.** Fix every `after:` that named a deleted ticket - the runner halts on one that names nothing.
 - **Delete `REVIEW.md`**, where there is one: it reviewed what is about to change, and the runner does not review again while it is there.
 - **It goes through the same write, check, approve**, because the tickets are what is being changed.
@@ -90,7 +91,7 @@ Drift, or acceptance routing an unmet AC back, lands here against a directory th
 
 Commit the change's directory - `CRITERIA.md`, specimens, tickets - and any ADRs before handing off; the runner refuses a dirty tree.
 
-**One ticket:** `/implement` on it, then `/accept-criteria`.
+**One ticket:** `/implement` on it, telling it what the runner tells every build: its technical decisions were agreed, and where the code calls for more than one says, or departs from a nudge, it builds what the code calls for and records under `## Left standing` what was agreed, what it built and why. Then `/accept-criteria`.
 
 **Several:** `./run.sh changes/<slug>/tickets` drives them with nobody watching, and ends by pointing to `/accept-criteria`.
 

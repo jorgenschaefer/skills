@@ -16,7 +16,7 @@ You are reading the tickets written for one change against the `CRITERIA.md` the
 
 ## The quotes match, word for word
 
-Each ticket quotes its ACs and nudges exactly as `CRITERIA.md` writes them, and `closes` and `advances` name exactly the ACs it quotes. Check the words, not the sense: a quotation that stops a sentence early has dropped a requirement, and a paraphrase is a criterion quietly changed in a file that claims to be quoting one. A nudge that bears on a ticket's ACs, and that it does not quote, is one the builder will never see.
+Each ticket quotes its ACs, all four technical decisions and its nudges exactly as `CRITERIA.md` writes them, and `closes` and `advances` name exactly the ACs it quotes. Check the words, not the sense: a quotation that stops a sentence early has dropped a requirement, and a paraphrase is a criterion quietly changed in a file that claims to be quoting one. A nudge that bears on a ticket's ACs, and that it does not quote, is one the builder will never see.
 
 ## Each slice is provable on its own, and one session long
 

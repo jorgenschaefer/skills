@@ -64,7 +64,7 @@ expect_counted "$shared" "files held by more than one skill"
 # an error inside a sourced file is not reported.
 if ! command -v shellcheck >/dev/null; then
   bad "every script passes shellcheck" "shellcheck is not on PATH"
-elif lint="$(shellcheck -x -P SCRIPTDIR "$HERE"/run.sh "$HERE"/run/*.sh "$HERE"/sync.sh "$HERE"/test.sh \
+elif lint="$(shellcheck -x -P SCRIPTDIR "$HERE"/run.sh "$HERE"/run/*.sh "$HERE"/sync.sh "$HERE"/test.sh "$HERE"/accept-criteria/signals.sh \
                  "$HERE"/tests/*.sh "$HERE"/tests/run/*.sh "$HERE"/tests/stub-session 2>&1)"; then
   ok "every script passes shellcheck"
 else
@@ -88,6 +88,8 @@ printf '\n'
 "$HERE/tests/no-dangling.sh" || failed=$((failed + 1))
 printf '\n'
 "$HERE/tests/sync.sh"        || failed=$((failed + 1))
+printf '\n'
+"$HERE/tests/signals.sh"     || failed=$((failed + 1))
 
 printf '\n%d passed, %d failed, of the cases in this file\n' "$passed" "$failed"
 [ "$failed" -eq 0 ]

@@ -39,10 +39,18 @@ else bad "neither the build nor the review is told nothing wakes it" "$(calls)";
 # acceptance, and both find it under one heading. A departure from a nudge is
 # the one thing about a nudge anybody gets to see.
 # shellcheck disable=SC2016 # the backticks are Markdown's, matched literally
-if grep -q '`## Left standing`' <(head -1 "$STUB_CALLS") && grep -q 'departed from a nudge' <(head -1 "$STUB_CALLS") \
+if grep -q '`## Left standing`' <(head -1 "$STUB_CALLS") && grep -q 'departed from a technical decision or a nudge' <(head -1 "$STUB_CALLS") \
    && grep -q '`## Nudges`' <(head -1 "$STUB_CALLS"); then
   ok "the build is told its nudges, and to record under Left standing where it departed from one"
 else bad "the build is told its nudges, and to record under Left standing where it departed from one" "$(head -1 "$STUB_CALLS")"; fi
+
+# The technical decisions were approved, so the build is told to build to them,
+# and that going beyond one is a departure the person approves at acceptance.
+# shellcheck disable=SC2016 # the backticks are Markdown's, matched literally
+if grep -q '`## Technical decisions` were agreed' <(head -1 "$STUB_CALLS") \
+   && grep -q 'record the departure' <(head -1 "$STUB_CALLS"); then
+  ok "the build is told its technical decisions, and to record under Left standing where it departed from one"
+else bad "the build is told its technical decisions, and to record under Left standing where it departed from one" "$(head -1 "$STUB_CALLS")"; fi
 # A list of which test proves which criterion says of nearly every ticket what
 # `done` already says, and buried the one line in it worth reading: a criterion
 # checked by hand, with no test behind it.
@@ -67,11 +75,12 @@ if grep -qF "$(realpath "$WORK")/changes/x/REVIEW.md" <(tail -1 "$STUB_CALLS") \
    && grep -q '`true`' <(tail -1 "$STUB_CALLS"); then
   ok "the review is told where REVIEW.md goes, and the project's checks"
 else bad "the review is told where REVIEW.md goes, and the project's checks" "$(tail -1 "$STUB_CALLS")"; fi
-# A nudge is an idea, not an order: it does not stop a fix, but the person sees
+# A nudge is an idea, not an order, and a technical decision can be widened
+# where the code calls for it: neither stops a fix, but the person sees
 # where a fix went against one.
-if grep -q 'A nudge does not stop a fix' <(tail -1 "$STUB_CALLS"); then
-  ok "the review is told a nudge does not stop a fix, and to name the departure"
-else bad "the review is told a nudge does not stop a fix, and to name the departure" "$(tail -1 "$STUB_CALLS")"; fi
+if grep -q 'A nudge or a technical decision does not stop a fix' <(tail -1 "$STUB_CALLS"); then
+  ok "the review is told a nudge or a technical decision does not stop a fix, and to name the departure"
+else bad "the review is told a nudge or a technical decision does not stop a fix, and to name the departure" "$(tail -1 "$STUB_CALLS")"; fi
 # A second round costs a whole review, and five builds in one run paid it after a
 # first round that found nothing that mattered.
 if grep -q 'found only nits' <(tail -1 "$STUB_CALLS"); then

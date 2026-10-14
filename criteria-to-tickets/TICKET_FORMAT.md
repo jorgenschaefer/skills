@@ -27,6 +27,13 @@ Then, for each AC under `## Toward`, the part of it this slice makes true, in pl
 ## Toward
 <The ACs named in `advances`, quoted verbatim the same way, so the builder sees the whole of what its part is for. Omit the section when `advances` is empty.>
 
+## Technical decisions
+<All four technical decisions, quoted verbatim from `CRITERIA.md`, one quote each with a blank line between:
+
+> **Stored formats** <exactly as `CRITERIA.md` writes it>
+
+All four, in every ticket, "none" included: a table, an endpoint or a library the build adds is a departure the user approves at acceptance, and a builder that never saw "none" cannot know it departed. Agreed with the user, unlike a nudge: build to them, and where the code calls for more - another table, another field - build it and record the departure under `## Left standing`.>
+
 ## Nudges
 <The nudges this slice bears on, quoted verbatim from `CRITERIA.md`, one quote each with a blank line between:
 
@@ -42,7 +49,7 @@ Not how to build it: no steps, no test lists, no file names per step, no line es
 <The boundary against the neighbouring tickets, and where the excluded thing lives instead, and the lines of `CRITERIA.md`'s `Out of scope` a builder here would otherwise wander into.>
 
 ## Left standing
-<Written by the build: review findings not fixed and why, checks not run, each AC this slice closes or advances that no automated test proves and how it was checked instead, decisions taken that would be costly to reverse, and departures from a nudge with the reason. Nothing else - a fixed finding or an AC a test proves is what `status: done` already says, and listing them buries the lines worth reading. Read by the later builds, by the runner's final review and at acceptance, and printed at the end of a run of this one ticket. Empty when the build left nothing.>
+<Written by the build: review findings not fixed and why, checks not run, each AC this slice closes or advances that no automated test proves and how it was checked instead, decisions taken that would be costly to reverse, and departures from a technical decision or a nudge with the reason. Nothing else - a fixed finding or an AC a test proves is what `status: done` already says, and listing them buries the lines worth reading. Read by the later builds, by the runner's final review and at acceptance, and printed at the end of a run of this one ticket. Empty when the build left nothing.>
 
 ## Halt
 <Written by whoever stopped - the session or the runner - naming the kind and what it was blocked on. Absent unless something stopped.>

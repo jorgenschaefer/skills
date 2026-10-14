@@ -122,6 +122,8 @@ final_review() {
 
 # The change starts where its tickets were first added: every build since is
 # part of it, whatever the branch it came from is called.
+# accept-criteria/signals.sh holds the same rule, found from the change's
+# directory rather than from tickets/: keep the two together.
 review_base() {
   local added
   added="$(git log --diff-filter=A --format=%H -- "$TICKETS" | tail -1)"

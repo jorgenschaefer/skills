@@ -9,7 +9,7 @@
 # Sourced by run.sh, never run.
 
 preflight() {
-  local t criteria id dep nudge problems="" culprit="" all_criteria=() closers=()
+  local t criteria id dep nudge decision problems="" culprit="" all_criteria=() closers=()
   for t in "${TICKET_FILES[@]}"; do
     # Resolved beside the tickets/ directory, not from the working directory:
     # the frontmatter says `CRITERIA.md` and means the one this slicing came
@@ -58,11 +58,26 @@ preflight() {
       fi
     done
     while IFS= read -r nudge; do
-      if ! nudges_of "$criteria" - | grep -xF -- "$nudge" >/dev/null; then
+      if ! items_of "$criteria" - Nudges | grep -xF -- "$nudge" >/dev/null; then
         problems+="$(basename "$t"): a nudge it quotes is not in $criteria word for word: $nudge"$'\n'
         [ -n "$culprit" ] || culprit="$t"
       fi
-    done < <(nudges_of "$t" '>')
+    done < <(items_of "$t" '>' Nudges)
+    # Unlike a nudge, every ticket carries every technical decision: "none" is
+    # what makes a table the build adds a departure, and a builder only knows
+    # it departed from what it was shown.
+    while IFS= read -r decision; do
+      if ! items_of "$criteria" - "Technical decisions" | grep -xF -- "$decision" >/dev/null; then
+        problems+="$(basename "$t"): a technical decision it quotes is not in $criteria word for word: $decision"$'\n'
+        [ -n "$culprit" ] || culprit="$t"
+      fi
+    done < <(items_of "$t" '>' "Technical decisions")
+    while IFS= read -r decision; do
+      if ! items_of "$t" '>' "Technical decisions" | grep -xF -- "$decision" >/dev/null; then
+        problems+="$(basename "$t"): does not quote a technical decision in $criteria: $decision"$'\n'
+        [ -n "$culprit" ] || culprit="$t"
+      fi
+    done < <(items_of "$criteria" - "Technical decisions")
   done
   # Once per CRITERIA.md, not once per ticket: this direction asks something of
   # the directory as a whole, and asking it inside the loop above reported a
@@ -137,15 +152,15 @@ comes_after() {  # ticket, slug of the other
   done
   return 1
 }
-# A nudge has no id, so it is found by its words: one per line, whitespace
-# flattened, as a `- ` item in CRITERIA.md and as a `> ` quote in a ticket. A
-# blank line ends one unless an indented line follows, as for a criterion, and
-# a bare `>` adds nothing.
-nudges_of() {  # file, the marker its nudges start with
-  awk -v m="$2" '
+# A nudge or a technical decision is found by its words: one per line,
+# whitespace flattened, as a `- ` item in CRITERIA.md and as a `> ` quote in a
+# ticket, under the section's heading in both. A blank line ends one unless an
+# indented line follows, as for a criterion, and a bare `>` adds nothing.
+items_of() {  # file, the marker its items start with, the section's heading
+  awk -v m="$2" -v heading="## $3" '
     function flush() { if (item != "") print item; item = ""; blank = 0 }
-    /^#/ { flush(); in_nudges = ($0 == "## Nudges"); next }
-    !in_nudges { next }
+    /^#/ { flush(); in_section = ($0 == heading); next }
+    !in_section { next }
     /^[[:space:]]*$/ { blank = 1; next }
     blank && !/^[[:space:]]/ { flush() }
     index($0, m) == 1 { if (m == "-") flush(); sub(/^[->][[:space:]]*/, "") }

@@ -192,6 +192,39 @@ if [ "$rc" = 0 ] && ! grep -q 'drift' "$WORK/.out"; then
   ok "a nudge followed by many others still matches its quote"
 else bad "a nudge followed by many others still matches its quote" "rc=$rc $(out)"; fi
 
+# The technical decisions were approved, and every ticket carries all of them
+# word for word: a builder that never saw "none" cannot know that the table it
+# adds is a departure.
+workspace
+sed -i 's/^> \*\*Stored formats\*\* none\./> **Stored formats** none yet./' "$WORK/changes/x/tickets/1-one.md"; commit
+plan build
+rc="$(run)"
+if [ "$rc" != 0 ] && grep -q '1-one.md: a technical decision it quotes is not in' "$WORK/.out" \
+   && [ "$(field 1-one status)" = halted ] && [ ! -s "$STUB_CALLS" ]; then
+  ok "a ticket whose technical decision is not in CRITERIA.md word for word stops the run"
+else bad "a ticket whose technical decision is not in CRITERIA.md word for word stops the run" "rc=$rc $(out)"; fi
+
+workspace
+sed -i 's/^- \*\*Dependencies\*\* none\./- **Dependencies** none, beyond the parser./' "$WORK/changes/x/CRITERIA.md"; commit
+plan build
+rc="$(run)"
+if [ "$rc" != 0 ] && grep -q '1-one.md: does not quote a technical decision in' "$WORK/.out" \
+   && grep -q '2-two.md: does not quote a technical decision in' "$WORK/.out"; then
+  ok "a technical decision a ticket does not quote stops the run"
+else bad "a technical decision a ticket does not quote stops the run" "rc=$rc $(out)"; fi
+
+# A change sliced before technical decisions existed has none on either side.
+workspace
+for f in "$WORK/changes/x/CRITERIA.md" "$WORK"/changes/x/tickets/*.md; do
+  perl -0pi -e 's/^## Technical decisions\n.*?(?=^## )//ms' "$f"
+done
+commit
+plan build build review
+rc="$(run)"
+if [ "$rc" = 0 ] && ! grep -q 'drift' "$WORK/.out"; then
+  ok "a change with no technical decisions is no drift"
+else bad "a change with no technical decisions is no drift" "rc=$rc $(out)"; fi
+
 # --- which ticket closes which criterion
 #
 # A criterion can take several tickets to build. Exactly one closes it - the
@@ -319,6 +352,16 @@ Split the large file the other tickets add to.
 
 ## Done when
 It is split, the behaviour is unchanged, and the checks pass.
+
+## Technical decisions
+
+> **Stored formats** none.
+
+> **Wire formats** none.
+
+> **Trust boundaries** none.
+
+> **Dependencies** none.
 EOF2
 sed -i 's/^after: *$/after:     3-split/' "$WORK/changes/x/tickets/1-one.md"; commit
 plan build build build review

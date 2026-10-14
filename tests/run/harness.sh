@@ -22,7 +22,7 @@ cleanup() {
 trap cleanup EXIT
 
 # One change: two criteria and a ticket for each, the second after the first,
-# and a nudge the first one quotes. On a branch whose history starts before the
+# the technical decisions both quote, and a nudge the first one quotes. On a branch whose history starts before the
 # change's paper, as a real one does.
 workspace() {
   WORK="$(mktemp -d)"; WORKSPACES+=("$WORK")
@@ -39,6 +39,12 @@ x
 ## Acceptance criteria
 - **AC-1** the first thing happens.
 - **AC-2** the second thing happens.
+
+## Technical decisions
+- **Stored formats** none.
+- **Wire formats** none.
+- **Trust boundaries** none.
+- **Dependencies** none.
 
 ## Nudges
 - reuse the list that is already there.
@@ -94,6 +100,16 @@ x
 
 > **$2** $3
 
+## Technical decisions
+
+> **Stored formats** none.
+
+> **Wire formats** none.
+
+> **Trust boundaries** none.
+
+> **Dependencies** none.
+
 ## Nudges
 ${5:+
 > $5
@@ -127,6 +143,16 @@ part of it happens.
 ## Toward
 
 > **$2** $3
+
+## Technical decisions
+
+> **Stored formats** none.
+
+> **Wire formats** none.
+
+> **Trust boundaries** none.
+
+> **Dependencies** none.
 
 ## Nudges
 
