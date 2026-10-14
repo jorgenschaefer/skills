@@ -134,6 +134,8 @@ Finally, software is written to be maintained and extended in the future - by a 
 
 The test: when a bug is reported, can its location be found quickly? When a change is asked for, can it be added without missing anything?
 
+**Judge a change by how the code reads afterwards, not by the size of its diff.** Re-indented and moved lines cost nothing; a worse shape chosen to keep the diff small costs every later reader.
+
 ### One Way to Do Each Thing
 
 The next agent repeats the nearest example. Two ways of doing the same thing - two error styles, two HTTP clients, two test helpers - get a random mix and then a third.
