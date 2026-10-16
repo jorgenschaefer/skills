@@ -28,9 +28,13 @@ For each: what it gives, its effort as a size from XS to XL, the complexity it a
 
 **Larger than S, now or once building: stop and recommend `/find-criteria`.**
 
+## What done means
+
+**Propose what "done" means and ask whether that is it** - one or two statements that can be checked true or false. Picking an approach is not agreeing on done. Edit nothing until the user agrees.
+
 ## Build it
 
-**Agree what "done" means** in one or two statements that can be checked true or false, then build the chosen approach.
+**Build the chosen approach.**
 
 **Show it holding** - the test that failed before and passes now, or the running app doing it - and name anything built beyond what was agreed.
 
