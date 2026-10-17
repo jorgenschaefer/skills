@@ -45,6 +45,6 @@ The numbers are the contract with everything downstream: tickets quote them word
 
 ## What this format is not
 
-**It is not a plan.** It says what the finished thing does and how it was agreed to be built, not what order to build it in. The slicing reads this and decides that.
+**It is not a plan.** It says what the finished thing does and how it was agreed to be built, not what order to build it in.
 
 **It is not permanent.** It is deleted with the rest of the change's directory once the change is accepted. A decision that has to outlive the change is an ADR, in `docs/adr/`.

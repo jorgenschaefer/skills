@@ -1,6 +1,6 @@
 ---
 name: find-criteria
-description: Work out with the user what a change has to do - its acceptance criteria, the approach they pick from real alternatives, the technical decisions and the implementation nudges - until nothing is left to ask, and write it to CRITERIA.md. Typed, not inferred.
+description: Work out with the user what a change has to do - its acceptance criteria, the approach they pick from real alternatives, the technical decisions and the implementation nudges - until nothing is left to ask, and write it to CRITERIA.md.
 disable-model-invocation: true
 ---
 
@@ -14,15 +14,15 @@ This skill's `CRITERIA_FORMAT.md` settles the shape of the file.
 
 **Take the problem statement from the conversation** or the argument of the skill.
 
-**Where there is none, and none is visible behind the request, run `/idea` first** and carry on here once it has ended. The problem comes first, and its rules live in that one skill.
+**Where there is none, and none is visible behind the request, run `/idea` first** - the rules for the problem live there - and carry on here once it has ended.
 
-**Where the change is trivial and the problem plain from the request**, state the problem in a sentence and get a yes.
+**Where the change is trivial and the problem plain from the request**, state the problem in a sentence and get a yes - "unless you object" is not one.
 
 **Do not reopen the problem once it is agreed.** Where you become convinced it is wrong, say so plainly and stop - that is a route back to `/idea`, not something to design around.
 
 ## The loop
 
-**Read the codebase first**: what is already there, what the project calls things, what it decided before. The alternatives and what they cost rest on it.
+**Read the codebase first**: what is already there, what the project calls things, what it decided before.
 
 **Propose at least three genuinely different alternatives**, or say why the space holds fewer. Two that differ only in how much of the same thing they do are one.
 
@@ -30,19 +30,19 @@ This skill's `CRITERIA_FORMAT.md` settles the shape of the file.
 
 **Work out the criteria.** Each AC is observable and checkable true or false. Hold every one against a solution nobody thought of: where that solution would solve the problem and still fail the AC, the AC is a mechanism in disguise.
 
-**For anything a user sees, ask about**: the feedback after every action, actions that cannot be undone, the layout at the narrowest and widest supported screen, and how prominent rarely used actions are. These are what slipped through when nobody asked.
+**For anything a user sees, ask about**: the feedback after every action, actions that cannot be undone, the layout at the narrowest and widest supported screen, and how prominent rarely used actions are.
 
-**Settle the four technical decisions** `CRITERIA_FORMAT.md` names - stored formats, wire formats, trust boundaries, dependencies - from the approach and the code it touches. They are approved like the ACs, because a mistake in one lands outside the repository, and "none" is an answer the user approves too. Where one is a choice between alternatives, it is put like any other.
+**Settle the four technical decisions** `CRITERIA_FORMAT.md` names - stored formats, wire formats, trust boundaries, dependencies - from the approach and the code it touches. They are approved like the ACs, and so is an answer of "none". Where one is a choice between alternatives, it is put like any other.
 
 **Raise the implementation decisions the approach makes visible as nudges** - "reuse the phone components", "do not touch DeviceView". What the product does is for the user to approve; how it is built is for them to see, with the chance to object. A nudge never restates `CODING_STANDARDS.md`; `/criteria-to-tickets` plans against the standard directly.
 
 **Give every new domain rule one home.** Where the criteria introduce a rule - a sign, a status, a classification - a nudge names the one place it lives, named after the rule.
 
-**Get the name of every new feature directory that is a domain concept from the user.** Where the approach needs one whose term `UBIQUITOUS_LANGUAGE.md` does not have, ask for the term. On their answer, add it to the glossary, in the shape its existing entries have.
+**Ask the user to name each new feature directory that is a domain concept**, where `UBIQUITOUS_LANGUAGE.md` has no term for it. On their answer, add it to the glossary where the project has one, in the shape its existing entries have.
 
 **In a repository with no code yet, settle the conventions as nudges**: the directory layout, the layers, how errors reach the caller, where data is loaded, where the clock is read.
 
-**Settle every open question.** Each one ends as an AC, a technical decision, a nudge, a ruled-out line, or explicitly out of scope. None survives into the file.
+**Settle every open question.** Each one ends as an AC, a technical decision, a nudge, a ruled-out line, or explicitly out of scope. None survives into the file, and none is settled by guessing what only the user knows - where they are, who uses the thing.
 
 **The loop is done when every AC, technical decision and nudge can be written so that `/criteria-to-tickets` would not have to ask anything.**
 
@@ -65,4 +65,4 @@ A decision made here that this skill's `ADR_FORMAT.md` says earns an ADR is put 
 
 **Push back once.** A decision reaffirmed after hearing the objection is theirs.
 
-**Stopping here is an ending.** Criteria agreed and not built are a whole use of this skill. Say that `/criteria-to-tickets` is what turns them into work - name it, because it will not find its own way in - and leave going on to them to ask for.
+**Stopping here is an ending.** Say that `/criteria-to-tickets` is what turns them into work - name it, because it will not find its own way in - and leave going on to them to ask for.
