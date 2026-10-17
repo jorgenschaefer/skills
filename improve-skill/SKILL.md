@@ -1,85 +1,90 @@
 ---
 name: improve-skill
-description: Cut an existing agent skill down to what changes what the agent does - "improve this skill", "tighten this SKILL.md", "this skill is too long", "make this skill more concise", "clean up my skill", "my skill never triggers", "fix this skill's description". Use it on any skill that reads as bloated, repetitive or vague, on one that never fires when it should, and on a skill you have just finished writing. It edits the file and leaves the change uncommitted.
+description: Improve an existing agent skill so it does its job better in fewer words - "improve this skill", "tighten this SKILL.md", "review this skill", "this skill is too long", "make this skill more concise", "clean up my skill", "my skill never triggers", "fix this skill's description". Use it on any skill that reads as bloated, repetitive, vague or contradictory, on one that never fires when it should, and on a skill you have just finished writing. It edits the file and leaves the change uncommitted.
 ---
 
 # Improve Skill
 
-Cut the skill to what changes what the agent does. What you would *add* is a proposal in the report, never an edit, and a skill that was already tight comes back nearly untouched.
+Make the skill achieve its purpose in as few words as the purpose allows: fix what works against the purpose, cut what does nothing, and declare every change to what the agent will do.
 
-Every edit is a deletion, or a replacement by something shorter - a clause out of the middle of a sentence counts. That is the whole of your licence over the file.
+Never change `name:` or the directory name; people use that word in prompts and other skills.
 
-An edit is legitimate when nobody can name an instruction it drops. An instruction is anything that changes what the agent does, however it is phrased - a reason that carries a definition, a test or a threshold is one. So are:
-
-- a qualifier or condition: *only*, *every*, *unless*, *if it exists*
-- a step, or the order between two steps where one depends on the other
-- a rule's own exception, and an example or instance attached to a rule, unless the rule without it covers exactly the same cases - one you judge merely illustrative is a cut you are guessing about
-- a count, a template, a format, a pointer, and what a subagent is told to return
-
-An edit that loses one is not a shorter version of the passage; it is a behaviour change, and belongs in the list you declare at the end.
-
-Never change `name:` or the directory name. People have that word in their prompts and their other skills.
-
-Every file the skill carries is in scope, not just SKILL.md. Where one of them exists word for word under another skill it is a copy kept identical by hand, because a skill installs alone and cannot reach a sibling's directory. Cut it, then write the result over every other holder in the same change - a copy that drifts is worse than the sentence you tightened. Where the other holders are not in front of you, name the file you changed and say it has copies, so whoever can see them finishes it. The other holders are not out of scope: a shared file left alone because touching it "also affects the siblings" is the one file in the skill that never gets better.
+Every file the skill carries is in scope. A file that exists word for word under another skill is a copy kept identical by hand, because a skill installs alone. Write your result over every copy in the same change; where you cannot see the others, name the file and say it has copies.
 
 ## Read it whole first
 
-SKILL.md and every file it points at, before you judge a line: the outcome it exists to produce, the judgment it encodes, the moment it fires. A line you cut because you could not see its job is the failure mode of this skill.
+Read SKILL.md and every file it points at before judging a line. Then find what its runs left behind: transcripts, artifacts, the complaint that brought you here. Behaviour outranks text. Where nothing survives, say so.
 
-Then find what its runs left behind - transcripts, the artifacts it produced, the complaint that brought you here. Behaviour outranks text. Where nothing survives, say so, and be slower to call a line dead, because nothing in front of you shows a run going right without it.
+## State the purpose
 
-## Name the base
+Quote the sentence that says what the skill is for. Where there is none, derive it and write it at the top. Judge every line against it.
 
-A skill has one sentence that says what it is for. A line that restates it in other words is already said, and can go; a line the agent would have to work out from it is not.
+## Fix what works against the purpose
 
-Quote it where it is there. Where it is not, derive it and write it in - a skill whose thesis was never stated accumulates that thesis in pieces, a clause at a time, at five sites, and stating it once retires all five. That is usually the largest cut available and the one to make first, and it is the single addition this skill is allowed, because it is written in order to delete with. Where it does not retire more than it costs, it is a proposal like any other.
+Read the skill as the agent that will follow it, and rewrite in the file each passage that would make a run miss the purpose:
 
-## Cut
+- A contradiction: two lines pulling opposite ways. Keep one.
+- A line with two readings that lead to different runs.
+- An instruction that works against the purpose.
+- A step with no way to tell done from not done, or one asking for something where it meant everything - "produce a list" where every caller had to be accounted for.
+- A form that does not fit its failure. Wrong-shaped output wants a positive recipe; an omitted element wants a slot in a template; a rule broken under pressure wants a prohibition that names the rationalizations.
+- Hardcoded paths, counts and line numbers that will drift.
+- Reference material that belongs behind a pointer, or a pointer the agent will not follow.
+- The description. It decides whether the skill fires: phrased the way users ask, one trigger per distinct use, distinguishable from the skills beside it (read their descriptions), and only *when* to use - a process recap there becomes a shortcut past the body.
 
-- **Lines the model already obeys.** Read one sentence in isolation: would a competent agent behave differently without it - not on the run you are imagining, but across five of them? A skill is there to get the same process out of a stochastic system, so a line that only narrows what a bad run does is load-bearing, however redundant it looks against a good one. Encouragement ("be thorough", "think carefully"), descriptions of the agent's own tools, and principles any competent agent brings with it fail even that test. The project's definition of a familiar term - what *YAGNI* or *verification* means here - is not one of them. Delete the sentence whole - tightening a no-op leaves a shorter no-op.
-- **Restatements of the base.** From the pass above.
-- **Duplication.** Each rule in one authoritative place, so changing the behaviour is a one-place edit. Repetition also inflates a rule's rank past what the author intended. A line is not a duplicate where it is the copy in a file or subagent prompt that is read alone, or where it narrows the rule it repeats.
-- **Words around the instruction.** Agent-written prose explains itself to a reader: rationale trailing the instruction, the same point in other words, hedges, a preamble setting up the next line. Cut to the instruction. Keep the rationale only where it lets the agent apply the instruction to cases it doesn't name, or where the agent is expected to resist the instruction.
-- **A concept the model already holds.** A triad spelled out at three sites, or a sentence circling one idea, often collapses into a word the model already thinks with - *lesson*, *fog of war*, *tracer bullets*, *red*. "Fast, deterministic, low-overhead" is a *tight* loop. The word recruits the priors and retires the restatements, and where it is one the author's own docs and prompts use, it anchors invocation too. Collapse only where the word carries every part it replaces; a label kept without its definition is not a replacement.
-- **Sediment.** Lines that bear on what the skill used to do.
-- **One side of a contradiction.** Two lines pulling opposite ways leave the agent to pick, and it picks differently every run. Deleting the wrong one is a behaviour change; say which you kept.
+Each of these is a behaviour change and goes on the declared list with the problem it fixes. Add text only to fix a named problem.
 
-## What you propose rather than write
+## Cut what does nothing
 
-These improvements add, so they go in the report as wording ready to paste, not into the file. Look for them in the same pass:
+A cut must not drop an instruction - anything that changes what the agent does: a qualifier (*only*, *every*, *unless*, *if it exists*, *genuinely*), a step or the order between dependent steps, an exception, a count, a format, a pointer, what a subagent returns. Most losses are a clause inside a shortened sentence.
 
-- **The description.** The highest-leverage line - it sits in context every turn and decides whether the skill fires. Phrased the way a user actually asks, one trigger per distinct use, separable from the skills it sits beside (read their descriptions - the competition is invisible from inside one file). Keep it to *when to use*: a description recapping the process becomes a shortcut the agent takes instead of the body. Shortening it is a cut and you may make it, keeping every trigger it has; a missing trigger is an addition and you may not.
-- **A missing completion criterion.** A step ending on a condition the agent cannot tell done from not-done, or one demanding something rather than everything - "produce a list" where the skill meant "every caller accounted for".
-- **Altitude.** Hardcoded paths, counts and line numbers that will drift or generalize wrongly, and what to say instead.
-- **A form that does not fit its failure.** A wrong-shaped output wants a positive recipe; an omitted element wants a required slot in a template; a rule broken under pressure wants a prohibition with the rationalizations named. Prohibition is the default mistake - *don't think of an elephant* names the elephant.
-- **The ladder.** Reference material that should move behind a pointer, or a pointer whose wording will not make the agent go.
+Cut:
 
-## Test the cuts you are guessing about
+- Lines a competent agent obeys without them, across five runs rather than on a good one: encouragement, descriptions of its own tools, general principles. A project's own definition of a familiar term is not one of these.
+- Restatements of the purpose.
+- Duplication. Keep each rule in one place. A copy in a file or subagent prompt that is read alone is not a duplicate, nor is a repeat that narrows the rule.
+- Sediment: lines about what the skill used to do.
+- Words circling one idea, where a word the model already thinks with carries every part - *tight loop*, *tracer bullet*.
 
-Where you cannot tell from the text whether a line is load-bearing, don't guess - run it. The task is one that tempts the failure the line exists to prevent, across several fresh subagents, three ways: with the line, with your rewrite, and with the line simply removed. That last one is the control that matters. If the control does not fail, the line was a no-op and the cut stands; if the control matches your rewrite, the rewrite is words for their own sake.
+### Reasons, stories and filler
 
-Read the samples rather than counting them. Converged samples mean the wording binds; five readings across five samples mean it does not, and the fix is a tighter form, not more words.
+Model-written skills explain themselves to a reader. The usual shapes:
 
-This costs real time, so spend it only on the cuts you would otherwise be guessing at. A cut you neither tested nor could settle by reading is not made.
+- incident reports from past runs - "one analysis that...", "in four runs..."
+- the author's measurements behind a rule
+- lines addressed to the reader rather than the agent - "this is the step that makes..."
+- closing aphorisms
+- the consequence of a rule restated after the rule
+- "X, not Y" where Y is not a mistake the agent would make
 
-## Review in a session that did not rewrite it
+History goes in git, not in the skill. Handle each reason or story one of three ways:
 
-Spawn a subagent with a fresh context. Hand it the original text, your rewrite, and the skill's purpose - **not** your reasoning for any edit. A reviewer that has followed you to each decision will read your intentions into the result. Ask it for the following, reported without judging whether each loss matters:
+1. **Keep it as one clause** only where it does one of three jobs, and name which: it lets the agent apply the rule to cases the rule does not list; it holds a rule the agent will be tempted to break; it stops the agent "fixing" a rule that looks wrong without it.
+2. **Distill it** where it carries an instruction: replace it by that instruction, stated directly. "Before running anything, check... One analysis that ran the tests hit the shared test database" becomes "Before running anything, tests included, check...".
+3. **Delete it.**
 
-- Every instruction in the original that is absent from the rewrite, quoted from the original, including what is phrased as a reason. Most of what goes missing is a clause rather than a sentence - *if it exists*, *where the repo has one*, *a short structured summary* - which disappears inside a line being shortened and leaves prose that still reads correctly.
-- Every difference in what the skill will do that your declared list does not name.
-- Any passage the rewrite made harder to follow.
+### Guessed cuts
 
-Then put back every instruction it found missing. Name a loss in the behaviour list instead only where you meant to change the behaviour before the reviewer found it; a loss from an edit you made as cleanup goes back. One or the other for each finding, with nothing argued away. Check that every file the skill still points at exists and every pointer still fires.
+Where reading cannot settle whether a line carries an instruction, either test it or make the cut and mark it guessed in the report. To test, give several fresh subagents a task that tempts the failure the line prevents, three ways: with the line, with your rewrite, and with the line removed. If the removed version does not fail, the cut stands. Read the samples rather than counting them.
 
-Run the project's checks and report what they said. Where you cannot find them, say so. The pull here is to decide from the outside that they do not apply to you - that the suite is about the real repository rather than this copy, that the environment is not set up, that nothing you touched could have broken them. Run them and find out; the guess is free to make and wrong about half the time.
+## Review in a fresh session
+
+Spawn a subagent with a fresh context. Give it the original, the rewrite, the purpose and your declared list - not your reasoning for any edit. Ask it for, without judging whether each matters:
+
+- every instruction in the original that is absent from the rewrite, quoted, including those phrased as reasons or stories
+- every difference in behaviour the declared list does not name
+- any passage the rewrite made harder to follow
+
+Put back every loss that is not on the declared list and not a guessed or tested cut, as the instruction stated directly rather than the passage it came from. Check that every pointer still resolves.
+
+Run the project's checks, even where they seem not to touch a skill, and report what they said. Where you find none, say so.
 
 ## Report
 
-- What it weighed before and after, in characters. Lines understate a pass that worked mostly inside them. It is shorter, or you have something to explain.
-- **What you changed about its behaviour**, as a list. Scope, a judgment call, the output shape, when it fires. This is the author's territory and a behaviour change smuggled in as cleanup is the outcome this whole skill exists to avoid - when you cannot tell which kind an edit was, list it.
-- **What you would add**, as wording ready to paste. Say what each one fixes.
-- What you tested, and what you cut on reading alone.
-- What the reviewer found.
+- Size before and after, in characters.
+- **Behaviour changes**, each with the problem it fixes.
+- **Guessed cuts**, so the author can revert them.
+- What you tested and what it showed.
+- What the reviewer found and what you did with each finding.
 
-Leave the change uncommitted. The author reads a diff.
+Leave the change uncommitted.
