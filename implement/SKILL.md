@@ -15,6 +15,8 @@ Read this skill's `CODING_STANDARDS.md` whole and apply all of it - no part of i
 
 **Know what has to be true when you are finished**, specifically enough that you could hand it to someone else as the test of whether it worked. Where the request does not settle something that changes what gets built, ask - before or during the build - and do not build past it. Where it settles it badly, say so once and build it.
 
+**Given a `CRITERIA.md` rather than a ticket**, its ACs are what has to be true, and a test that pins one names its id. Its technical decisions are limits: a table, field, endpoint, permission, outgoing call or dependency they do not name, and anything at all behind a "none", is a departure. So is building against a nudge. Make one only where the code calls for it, and name each with its reason when you report what is left standing. Hand `critique` the ACs, the technical decisions and `Out of scope`. Commit `CRITERIA.md` with the change, so what it was for survives the directory's deletion.
+
 **Find the project's way of running the app**, where the change needs seeing - a `run` skill, `CLAUDE.md`, the README. The review drives the app that way. Where there is none, build one, write it up as the project's run skill, `.claude/skills/run/SKILL.md`, with the scripts it drives beside it, and commit it with the change.
 
 **Find the project's check command** - the `Check:` line in `CLAUDE.md`. Where there is none, run what exists and say so; creating it is a ticket of its own.
