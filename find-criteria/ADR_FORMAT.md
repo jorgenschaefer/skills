@@ -1,6 +1,6 @@
 # ADR format
 
-Which decisions earn an architecture decision record, and the shape of one: one choice, the alternatives that were live when it was made, and what it costs. `/find-criteria` and `/criteria-to-tickets` write the ratified record on the person's yes, while the argument for it is still in context. `/critique` reads them, and so does anyone planning the next change.
+Which decisions earn an architecture decision record, and the shape of one: one choice, the alternatives that were live when it was made, and what it costs.
 
 ## When to write one
 
@@ -21,7 +21,7 @@ Not a record:
 
 Anything else decided during a change belongs in `CRITERIA.md` or a ticket, which are deleted with the rest of the change's paper on acceptance.
 
-When unsure, mention it in one line in the plan and write nothing unless the person says yes.
+When unsure, mention it to the person in one line and write nothing unless they say yes.
 
 **Never write one unilaterally.** Put the decision and a recommendation to the person, and write the record only once they have said yes.
 
