@@ -50,6 +50,8 @@ A build runs with nobody to ask. **Behaviour the user sees that a build of a tic
 
 Report only what would make a build halt, build the wrong thing, or build the same thing twice. Rank by what it would cost to be wrong. For each: where it is, what is wrong in a sentence or two, and what would fix it.
 
+**Say whether each finding is silent or loud.** Silent: the run would go through and leave it wrong - behaviour nobody asked for, a hole a malicious person could use, the same thing built twice, a question only the user can settle. Loud: a build or the runner stops on it before anything is built on top, and the stop says why - a dirty tree, a permission prompt, a file that does not open. A halt partway through a run, after tickets were built on what it stops on, is silent.
+
 **Try to refute your own finding before you file it.** A first pass produces hypotheses. The ones that survive an attempt to kill them are the review; the rest are noise that teaches the next reader to skim.
 
 **Say who each finding is for** - the tickets to fix, or the user to decide.

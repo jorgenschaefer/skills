@@ -64,7 +64,11 @@ Read the code each slice will touch before you cut: what exists already, what it
 
 1. **Write the tickets** to `tickets/NN-<slug>.md` in the change's directory.
 2. **Check them.** Spawn a subagent with a fresh context and give it `VERIFY.md` from this directory, the paths to the ticket files, and the path to `CRITERIA.md`. Nothing else - a reviewer that has your reasoning will read your intentions into the words.
-3. **Fix what it finds, then ask for approval.** A ticket added, or whose `closes`, `advances`, `after:` or `## Context` changed, since the check goes through it again first: hand the subagent the whole directory again, naming those tickets, so it holds the rest against them. A check that saw tickets 01 to 20 said nothing about the 21 a rework added after it, and that one built a second copy of something another ticket built. Show the slicing - each slice with its estimated footprint, and the reason for any between 1000 and 2000 lines or 15 and 25 files - the implementation decisions, and the product questions as one list. A no means editing the tickets and asking again.
+3. **Fix what it finds, then ask for approval.** Fix a finding with the least text that settles it: name the ticket that owns a thing, not how it is built. Every sentence added to `## Context` is one the next check reads - in one run, an import rule written into a ticket to back up where a shared rule lived was the next check's main finding.
+
+   A ticket added, or whose `closes`, `advances`, `after:` or `## Context` changed to fix a silent finding, goes through the check again first: hand the subagent the whole directory again, naming those tickets, so it holds the rest against them. A check that saw tickets 01 to 20 said nothing about the 21 a rework added after it, and that one built a second copy of something another ticket built. A fix to a loud finding alone does not go back: the stop it fixes was already the check, and another round costs more than that stop would have. Name what changed when you hand it back, not what to look for - a reviewer told where to look finds something there.
+
+   Show the slicing - each slice with its estimated footprint, and the reason for any between 1000 and 2000 lines or 15 and 25 files - the implementation decisions, and the product questions as one list. A no means editing the tickets and asking again.
 
 ## Copy, never summarise
 
