@@ -5,86 +5,96 @@ description: Improve an existing agent skill so it does its job better in fewer 
 
 # Improve Skill
 
-Make the skill achieve its purpose in as few words as the purpose allows: fix what works against the purpose, cut what does nothing, and declare every change to what the agent will do.
+Make the skill achieve its purpose in as few words as the purpose allows, in language a developer new to the project understands on first reading. Fix what works against the purpose, cut what does nothing, and list every change to what the agent will do. Shorter must not mean harder to read.
 
-Never change `name:` or the directory name; people use that word in prompts and other skills.
+Never change `name:` or the directory name. People use that name in prompts and in other skills.
 
-Every file the skill carries is in scope. A file that exists word for word under another skill is a copy kept identical by hand, because a skill installs alone. Write your result over every copy in the same change; where you cannot see the others, name the file and say it has copies.
+Improve every file the skill carries, not only SKILL.md. If a file exists word for word under another skill, it is a copy kept identical by hand, because a skill installs alone. Write your result over every copy in the same change. If you cannot see the other copies, name the file you changed and say that it has copies.
 
 ## Read it whole first
 
-Read SKILL.md and every file it points at before judging a line. Then find what its runs left behind: transcripts, artifacts, the complaint that brought you here. Behaviour outranks text. Where nothing survives, say so.
+Read SKILL.md and every file it points at before you judge a line. Then look for what its runs left behind: transcripts, the files they produced, the complaint that brought you here. If the runs and the text disagree, trust the runs. If no runs left anything, say so.
 
 ## State the purpose
 
-Quote the sentence that says what the skill is for. Where there is none, derive it and write it at the top. Judge every line against it.
+Quote the sentence that says what the skill is for. If there is none, work it out and write it at the top. Judge every line against it.
 
 ## Fix what works against the purpose
 
-Read the skill as the agent that will follow it, and rewrite in the file each passage that would make a run miss the purpose:
+Read the skill as the agent that will follow it. Rewrite in the file every passage that would make a run miss the purpose:
 
-- A contradiction: two lines pulling opposite ways. Keep one.
-- A line with two readings that lead to different runs.
+- Two lines that contradict each other. Keep one.
+- A line that can be read two ways, where the two readings lead to different runs.
 - An instruction that works against the purpose.
-- A step with no way to tell done from not done, or one asking for something where it meant everything - "produce a list" where every caller had to be accounted for.
-- A form that does not fit its failure. Wrong-shaped output wants a positive recipe; an omitted element wants a slot in a template; a rule broken under pressure wants a prohibition that names the rationalizations.
-- Hardcoded paths, counts and line numbers that will drift.
-- Reference material that belongs behind a pointer, or a pointer the agent will not follow.
-- The description. It decides whether the skill fires: phrased the way users ask, one trigger per distinct use, distinguishable from the skills beside it (read their descriptions), and only *when* to use - a process recap there becomes a shortcut past the body.
+- A step where the agent cannot tell whether it is done, or one that asks for some where it means all: "produce a list" when every caller has to be accounted for.
+- An instruction in the wrong form. If runs produce output of the wrong shape, describe the right shape. If they leave something out, add a slot for it to a template. If they break a rule under pressure, forbid it and name the excuses.
+- Paths, counts and line numbers written into the text that will go out of date.
+- Reference material the agent needs only in some runs. Move it to a separate file behind a pointer.
+- A pointer worded so that the agent will not follow it.
+- Hard language. Rewrite so each sentence is understood on first reading: one instruction per sentence, the agent as subject, "if" rather than "where", no stacked negations. Use only terms that already exist in the project, the field or a dictionary. Replace a label the author invented, or a metaphor used as a name, by the plain statement. A thing mentioned once needs no name.
+- The description. It decides whether the skill fires. Phrase it the way users ask, with one trigger for each distinct use, and make it distinguishable from the descriptions of the skills next to it - read them. Keep it to when to use the skill: if it summarises the process, the agent follows the summary and skips the body.
 
-Each of these is a behaviour change and goes on the declared list with the problem it fixes. Add text only to fix a named problem.
+Each of these fixes changes behaviour. List each one with the problem it fixes. Add text only to fix a problem you name.
 
 ## Cut what does nothing
 
-A cut must not drop an instruction - anything that changes what the agent does: a qualifier (*only*, *every*, *unless*, *if it exists*, *genuinely*), a step or the order between dependent steps, an exception, a count, a format, a pointer, what a subagent returns. Most losses are a clause inside a shortened sentence.
+A cut must not drop an instruction. An instruction is anything that changes what the agent does, including:
+
+- a qualifier: *only*, *every*, *unless*, *if it exists*, and a word that raises a bar, such as *genuinely* in "three genuinely different approaches"
+- a step, or the order of two steps when one depends on the other
+- an exception
+- a count, a format or a pointer
+- what a subagent is told to return
+
+Most lost instructions are a clause dropped while shortening a sentence.
 
 Cut:
 
-- Lines a competent agent obeys without them, across five runs rather than on a good one: encouragement, descriptions of its own tools, general principles. A project's own definition of a familiar term is not one of these.
-- Restatements of the purpose.
-- Duplication. Keep each rule in one place. A copy in a file or subagent prompt that is read alone is not a duplicate, nor is a repeat that narrows the rule.
-- Sediment: lines about what the skill used to do.
-- Words circling one idea, where a word the model already thinks with carries every part - *tight loop*, *tracer bullet*.
+- A line a competent agent would follow without being told, across five runs and not only on a good one: encouragement, descriptions of the agent's own tools, general principles. Keep the project's own definition of a familiar term.
+- A line that restates the purpose.
+- Duplication. Keep each rule in one place. A copy in a file or subagent prompt that is read on its own is not a duplicate. Neither is a repeat that narrows the rule.
+- A line about what the skill used to do.
+- Several sentences circling one idea, if an existing term says all of it: *tight loop*, *tracer bullet*.
 
 ### Reasons, stories and filler
 
-Model-written skills explain themselves to a reader. The usual shapes:
+Model-written skills explain themselves to a human reader. Look for:
 
-- incident reports from past runs - "one analysis that...", "in four runs..."
-- the author's measurements behind a rule
-- lines addressed to the reader rather than the agent - "this is the step that makes..."
-- closing aphorisms
-- the consequence of a rule restated after the rule
-- "X, not Y" where Y is not a mistake the agent would make
+- reports of past runs: "one analysis that...", "in four runs..."
+- the measurements the author used to justify a rule
+- sentences addressed to the reader rather than the agent: "this is the step that makes..."
+- a short saying at the end of a paragraph
+- a rule's consequence, restated after the rule
+- "X, not Y", where Y is not a mistake the agent would make
 
-History goes in git, not in the skill. Handle each reason or story one of three ways:
+The history of a rule belongs in the commit message, not in the skill. For each reason or story, do one of these:
 
-1. **Keep it as one clause** only where it does one of three jobs, and name which: it lets the agent apply the rule to cases the rule does not list; it holds a rule the agent will be tempted to break; it stops the agent "fixing" a rule that looks wrong without it.
-2. **Distill it** where it carries an instruction: replace it by that instruction, stated directly. "Before running anything, check... One analysis that ran the tests hit the shared test database" becomes "Before running anything, tests included, check...".
+1. **Keep it as one clause** if it does one of the following, and say which: it lets the agent apply the rule to cases the rule does not list; it holds a rule the agent will be tempted to break; or it stops the agent from "fixing" a rule that looks wrong without it.
+2. **Replace it by the instruction it carries**, stated directly. "Before running anything, check... One analysis that ran the tests hit the shared test database" becomes "Before running anything, including tests, check...".
 3. **Delete it.**
 
-### Guessed cuts
+### Cuts you are unsure about
 
-Where reading cannot settle whether a line carries an instruction, either test it or make the cut and mark it guessed in the report. To test, give several fresh subagents a task that tempts the failure the line prevents, three ways: with the line, with your rewrite, and with the line removed. If the removed version does not fail, the cut stands. Read the samples rather than counting them.
+If reading cannot tell you whether a line carries an instruction, either test the cut, or make it and mark it as guessed in the report. To test it, give several fresh subagents a task that tempts the mistake the line prevents, three ways: with the line, with your rewrite, and with the line removed. If the version without the line does not fail, the cut stands. Read what the subagents did; do not just count results.
 
 ## Review in a fresh session
 
-Spawn a subagent with a fresh context. Give it the original, the rewrite, the purpose and your declared list - not your reasoning for any edit. Ask it for, without judging whether each matters:
+Spawn a subagent with a fresh context. Give it the original, the rewrite, the purpose and your list of behaviour changes. Do not give it your reasons for any edit. Ask it to report the following without judging whether each one matters:
 
-- every instruction in the original that is absent from the rewrite, quoted, including those phrased as reasons or stories
-- every difference in behaviour the declared list does not name
-- any passage the rewrite made harder to follow
+- every instruction in the original that is missing from the rewrite, quoted, including those written as reasons or stories
+- every difference in behaviour that your list does not name
+- every passage the rewrite made harder to understand
 
-Put back every loss that is not on the declared list and not a guessed or tested cut, as the instruction stated directly rather than the passage it came from. Check that every pointer still resolves.
+Put back every lost instruction that is not on your list and not a guessed or tested cut. Put it back as the instruction, stated directly, not as the passage it came from. Check that every pointer still leads to a file that exists.
 
-Run the project's checks, even where they seem not to touch a skill, and report what they said. Where you find none, say so.
+Run the project's checks, even if they seem unrelated to a skill, and report what they said. If you find no checks, say so.
 
 ## Report
 
 - Size before and after, in characters.
 - **Behaviour changes**, each with the problem it fixes.
 - **Guessed cuts**, so the author can revert them.
-- What you tested and what it showed.
-- What the reviewer found and what you did with each finding.
+- What you tested, and what the test showed.
+- What the reviewer found, and what you did with each finding.
 
 Leave the change uncommitted.
