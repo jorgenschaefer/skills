@@ -2,7 +2,7 @@
 
 `UBIQUITOUS_LANGUAGE.md` at the project root holds the domain language - the terms that mean the same thing to developers, users, and stakeholders - and is the source of truth for the domain's names in code, tests, and documentation.
 
-Only a term with a clear, project-specific meaning that would not be obvious without the entry goes in, and above all one that could be misunderstood.
+An entry is only for a term with a clear, project-specific meaning that a reader would not know without the entry, above all one that could be misunderstood.
 
 ## Language
 
@@ -26,7 +26,7 @@ Within each section, entries are bullets sorted alphabetically by the bold canon
 
 ### Terminology
 
-One sentence per term: its meaning in the project, not how it is implemented, and if it's ambiguous, how to disambiguate it.
+One sentence per term: what it means in the project and, if it is ambiguous, how to tell the meanings apart. Not how it is built, what a screen shows, or why it is so.
 
 ```markdown
 - **Contract** - the legal document that outlines the terms of service for our API.
@@ -43,9 +43,9 @@ The rejected term in quotes, the canonical one in bold, then a short reason. The
 
 ## Updating rules
 
-- **Add, don't rewrite.** Never modify an existing definition without explicit user confirmation. Insert new terms in place, keyed on the bold canonical term.
-- **Cross-reference, don't redefine.** If a definition names another domain term, that term must have its own entry in **Terminology**. If you find an unresolved reference, add a stub entry and flag it as needing user input.
-- **Flag conflicts, don't overwrite.** If a new term contradicts an existing one, append a `## Flagged ambiguities` section at the bottom describing the conflict, and ask the user to resolve before merging.
+- **Add, don't rewrite.** Never modify an existing definition without explicit user confirmation. Insert each new term at its alphabetical place.
+- **Cross-reference, don't redefine.** If a definition names another domain term, that term must have its own entry in **Terminology**. If it has none, add a stub entry and ask the user for its definition.
+- **Flag conflicts, don't overwrite.** If a new term contradicts an existing one, ask the user to resolve the conflict before writing the new term. If it stays unresolved, describe it in a `## Flagged ambiguities` section at the bottom.
 - **No silent deletions.** If a term seems obsolete, move it to a `## Retired` section at the bottom rather than removing it; the history matters.
 
 ## Minimal example
