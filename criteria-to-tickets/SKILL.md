@@ -40,15 +40,10 @@ This skill's `TICKET_FORMAT.md` settles the shape of a ticket. This file is what
 
 - **No check command:** where `CLAUDE.md` has no `Check:` line in the form `CODING_STANDARDS.md` gives, the first ticket writes the single check command - including a structural check with no rules in it yet - and declares it there in that form. Every other ticket comes after it.
 - **Code a search would miss:** where a slice adds to a concept that lives under a name or in a place a search for it would not find, or that the code does two ways, a ticket moves, renames or unifies it first.
-- **A large file:** below.
 
 **A slice that introduces a structure adds its check.** A new feature directory, a boundary between layers, where the clock is read: the ticket that introduces it also adds the check that holds it, to the check command.
 
 **A feature directory that is a domain concept gets its name from the glossary.** Where a slice needs one whose term `UBIQUITOUS_LANGUAGE.md` does not have, that is a product question for the approval; the answer goes into the glossary before a ticket names the directory. A missing name is never a reason to leave the directory out.
-
-**A large file is split in a ticket of its own, first.** `CODING_STANDARDS.md` has a large file split before code is added to it, and a build scoped to its criteria will not do that inside its ticket: in one run, three builds in a row each declined the same split as a separate refactor, and each added to the file. Where a slice adds to a file the standard calls large, write a ticket that only splits it and put every ticket that adds to the file `after:` it. A slice that only removes from the file needs no split. Where the large file is a test file, the split ticket shortens it first, as the standard says; if that is not enough, it splits the source and its tests together, and its `Done when` names both, one test file per source file.
-
-**Small files are combined the same way.** Where slices add to source files the standard says to combine, write a ticket that only combines them and their tests, and put every ticket that adds to them `after:` it.
 
 Where a slice introduces a concept the codebase has no name for, or moves a boundary between the ones it does, this skill's `CODING_STANDARDS.md` binds the names the ticket will write.
 
