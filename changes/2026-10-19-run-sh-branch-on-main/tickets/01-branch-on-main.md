@@ -3,7 +3,7 @@ criteria:  CRITERIA.md
 closes:    AC-1, AC-2, AC-3, AC-4, AC-5, AC-6
 advances:
 after:
-status:    ready
+status:    done
 attempts:  0
 ---
 
@@ -48,3 +48,6 @@ Today `run.sh` refuses on `main`/`master` in its refusal section, before the loc
 - A detached HEAD, and default branches with other names (`trunk`, `develop`).
 - Deleting the branch after the change is accepted.
 - Working beside a run in a separate worktree.
+
+## Left standing
+- AC-4: the missing ticket directory, the dirty tree and a name git rejects are tested on `main`. The lock, `claude` on PATH, no tickets and no commits are not: they come before the branch step in `run.sh`, and the dirty-tree test on `main` fails if the branch step moves above `check_tree`.

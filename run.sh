@@ -64,19 +64,13 @@ LIB="$(dirname "${BASH_SOURCE[0]}")/run"
 [ -n "$TICKETS" ] || die "usage: run.sh changes/<slug>/tickets"
 [ -d "$TICKETS" ] || die "no ticket directory: $TICKETS"
 git rev-parse --is-inside-work-tree >/dev/null 2>&1 || die "not a git repository"
-# The branch refusal just above passes by accident in a repository with no
-# commits: it reads the branch that has nothing on it yet. The HEAD check below
-# would survive there - `rev-parse HEAD` prints the literal `HEAD` when it
-# fails, so a build still moves it and a claim still does not - but a
+# A repository with no commits has a branch with nothing on it yet. The HEAD
+# check below would survive there - `rev-parse HEAD` prints the literal `HEAD`
+# when it fails, so a build still moves it and a claim still does not - but a
 # correctness check resting on a command echoing its own argument back is not
 # one to leave standing.
 git rev-parse HEAD >/dev/null 2>&1 \
-  || die "no commits here: the branch refusal passes in an empty repository, and the build check would rest on rev-parse echoing HEAD back - commit something first"
-
-branch="$(git rev-parse --abbrev-ref HEAD)"
-case "$branch" in
-  main|master) die "refusing to run on $branch: a run belongs on a branch of its own" ;;
-esac
+  || die "no commits here: the build check would rest on rev-parse echoing HEAD back - commit something first"
 
 command -v claude >/dev/null || die "no claude on PATH: the runner drives sessions, it does not do the work"
 
@@ -108,6 +102,20 @@ mkdir -p "$LOG_DIR"
 NOT_TICKETS=(':/')
 for t in "${TICKET_FILES[@]}"; do NOT_TICKETS+=(":!$t"); done
 check_tree
+
+# A run belongs on a branch of its own. Started on main, it makes that branch
+# here, after the last refusal - so a refused run leaves none behind - and
+# before preflight, whose halts are commits.
+branch="$(git rev-parse --abbrev-ref HEAD)"
+case "$branch" in
+  main|master)
+    RUN_BRANCH="$(basename "$(realpath "$(dirname "$TICKETS")")")"
+    git show-ref -q --verify "refs/heads/$RUN_BRANCH" \
+      && die "refusing to run on $branch: the run's branch $RUN_BRANCH is already there - switch to it to carry its run on, or remove it, then start again"
+    git checkout -q -b "$RUN_BRANCH" || die "refusing to run on $branch: could not make the run's branch $RUN_BRANCH - make a branch by hand and start again there"
+    say "made branch $RUN_BRANCH from $branch, and running there"
+    ;;
+esac
 
 # Where the token log and the refused log go - one of each per change - and
 # what they hold is in run/session.sh.

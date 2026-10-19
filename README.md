@@ -84,10 +84,11 @@ out to be shared rather than over any file by name.
 ### The runner
 
 `./run.sh changes/<slug>/tickets` drives a ticket directory with nobody watching: it
-claims each ticket, builds it, and either finishes it or sends it back. It refuses to
-start on the main branch or on a dirty tree - the ticket files aside, which are its own
-bookkeeping - and before the first build it runs the project's checks itself - a run
-that starts red does not start, and every build is told the checks were green. The
+claims each ticket, builds it, and either finishes it or sends it back. Started on the
+main branch, it makes a branch named after the change's directory and runs there, and
+refuses where that branch already exists. It refuses to start on a dirty tree - the
+ticket files aside, which are its own bookkeeping - and before the first build it runs
+the project's checks itself - a run that starts red does not start, and every build is told the checks were green. The
 command is the `Check:` line in the project's `CLAUDE.md`, read again before every run of
 the checks, so a ticket that declares one is held to it from its own commit on; only
 where there is none does a session name it, once per run. It runs them again on every

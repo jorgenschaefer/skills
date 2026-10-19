@@ -18,22 +18,13 @@ set -uo pipefail
 
 # --- refusals, before anything is launched
 
-workspace; git -C "$WORK" checkout -q main
-plan build
-rc="$(run)"
-if [ "$rc" != 0 ] && grep -qi 'branch' "$WORK/.out"; then
-  ok "it refuses to run on the main branch"
-else bad "it refuses to run on the main branch" "rc=$rc $(out)"; fi
-if [ ! -s "$STUB_CALLS" ]; then ok "it launches nothing when it refuses"
-else bad "it launches nothing when it refuses" "$(calls)"; fi
-
 workspace
 rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" bash "$RUNNER" changes/x/nope >"$WORK/.out" 2>&1 ); echo $?)"
 if [ "$rc" != 0 ]; then ok "it refuses a ticket directory that is not there"
 else bad "it refuses a ticket directory that is not there" "$(out)"; fi
 
-# A repository with nothing committed yet is inside a work tree and has a branch
-# name, so the two refusals above pass it. The HEAD check would in fact get it
+# A repository with nothing committed yet is inside a work tree, so the
+# refusals above pass it. The HEAD check would in fact get it
 # right - `rev-parse HEAD` prints the literal `HEAD` when it fails - but a
 # correctness check resting on a command echoing its argument back is not one to
 # leave standing, and the message says so.
@@ -43,7 +34,7 @@ git -C "$WORK" init -q -b topic
 git -C "$WORK" config user.email t@t; git -C "$WORK" config user.name t
 plan build
 rc="$(run)"
-if [ "$rc" != 0 ] && grep -q 'no commits' "$WORK/.out" && grep -q 'branch refusal' "$WORK/.out"; then
+if [ "$rc" != 0 ] && grep -q 'no commits' "$WORK/.out" && grep -q 'echoing HEAD' "$WORK/.out"; then
   ok "it refuses a repository with no commits, for the reason it gives"
 else bad "it refuses a repository with no commits, for the reason it gives" "rc=$rc $(out)"; fi
 if [ ! -s "$STUB_CALLS" ]; then ok "a repository with no commits launches nothing"
@@ -57,6 +48,90 @@ rc="$(run)"
 if [ "$rc" = 0 ] && grep -q 'ignoring' "$WORK/.out"; then
   ok "a file that is not a ticket is ignored, and said so"
 else bad "a file that is not a ticket is ignored, and said so" "rc=$rc $(out)"; fi
+
+# --- on main: a branch of its own, named after the change directory
+#
+# Started on main, a run makes its branch and runs there, rather than refusing
+# and being started a second time by hand.
+
+on()  { git -C "$WORK" rev-parse --abbrev-ref HEAD; }
+tip() { git -C "$WORK" rev-parse "$1"; }
+from_main() { workspace; git -C "$WORK" checkout -q main; started="$(tip main)"; }
+# Refused on main: nothing launched, no branch made, and main where it was.
+untouched() { [ ! -s "$STUB_CALLS" ] && [ "$(on)" = main ] && [ "$(tip main)" = "$started" ] \
+                && [ "$(git -C "$WORK" branch --list | wc -l)" = 2 ]; }
+
+from_main
+plan build build review
+rc="$(run)"
+if [ "$rc" = 0 ] && [ "$(on)" = x ] && [ "$(tip main)" = "$started" ] \
+   && [ "$(git -C "$WORK" merge-base x main)" = "$started" ]; then
+  ok "started on main, it runs on a branch named after the change, and main gains nothing"
+else bad "started on main, it runs on a branch named after the change, and main gains nothing" "rc=$rc on=$(on) $(out)"; fi
+if grep -q 'made branch x from main' "$WORK/.out"; then
+  ok "it says which branch it made, and from which"
+else bad "it says which branch it made, and from which" "$(out)"; fi
+
+from_main; git -C "$WORK" branch -q -m main master
+plan build build review
+rc="$(run)"
+if [ "$rc" = 0 ] && [ "$(on)" = x ] && [ "$(tip master)" = "$started" ]; then
+  ok "started on master, it runs on a branch of its own as on main"
+else bad "started on master, it runs on a branch of its own as on main" "rc=$rc on=$(on) $(out)"; fi
+
+# A branch of that name is some earlier run's, and may need more than resuming.
+from_main; git -C "$WORK" branch x topic
+plan build
+rc="$(run)"
+if [ "$rc" = 2 ] && [ "$(tip x)" = "$(tip topic)" ] && grep -q 'branch x is already there' "$WORK/.out" \
+   && [ ! -s "$STUB_CALLS" ] && [ "$(on)" = main ] && [ "$(tip main)" = "$started" ]; then
+  ok "started on main beside a branch of the change's name, it stops, touching nothing"
+else bad "started on main beside a branch of the change's name, it stops, touching nothing" "rc=$rc on=$(on) $(out) $(calls)"; fi
+
+from_main
+plan build
+rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" bash "$RUNNER" changes/x/nope >"$WORK/.out" 2>&1 ); echo $?)"
+if [ "$rc" = 2 ] && untouched; then ok "on main, a refusal before the branch is made leaves no branch"
+else bad "on main, a refusal before the branch is made leaves no branch" "rc=$rc on=$(on) $(out)"; fi
+
+from_main
+echo x > "$WORK/stray"
+plan build
+rc="$(run)"
+if [ "$rc" = 2 ] && grep -q 'dirty tree' "$WORK/.out" && untouched; then
+  ok "on main, a dirty tree is refused before the branch is made"
+else bad "on main, a dirty tree is refused before the branch is made" "rc=$rc on=$(on) $(out)"; fi
+
+from_main
+git -C "$WORK" mv changes/x changes/x..y; git -C "$WORK" commit -qm rename; started="$(tip main)"
+plan build
+rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" bash "$RUNNER" changes/x..y/tickets >"$WORK/.out" 2>&1 ); echo $?)"
+if [ "$rc" = 2 ] && grep -q "could not make the run's branch x..y" "$WORK/.out" && untouched; then
+  ok "on main, a change directory git cannot name a branch after is refused"
+else bad "on main, a change directory git cannot name a branch after is refused" "rc=$rc on=$(on) $(out)"; fi
+
+# The checks before the first build halt a ticket by committing it, and that
+# commit is the run's: it lands on the branch, which a second start carries on.
+from_main
+sed -i '/^- \*\*AC-1\*\*/d' "$WORK/changes/x/CRITERIA.md"; git -C "$WORK" commit -qam delete; started="$(tip main)"
+plan build
+rc="$(run)"
+if [ "$rc" != 0 ] && [ "$(on)" = x ] && [ "$(tip main)" = "$started" ] \
+   && git -C "$WORK" log --format=%s main..x | grep -q '^Halt 1-one'; then
+  ok "a halt before the first build, started on main, is committed on the run's branch"
+else bad "a halt before the first build, started on main, is committed on the run's branch" "rc=$rc on=$(on) $(out)"; fi
+rc="$(run)"
+if [ "$rc" != 0 ] && [ "$(on)" = x ] && grep -q 'AC-1 is gone from' "$WORK/.out" \
+   && ! grep -q 'already there' "$WORK/.out"; then
+  ok "started again on the run's branch, it carries on there"
+else bad "started again on the run's branch, it carries on there" "rc=$rc on=$(on) $(out)"; fi
+
+workspace
+plan build build review
+rc="$(run)"
+if [ "$rc" = 0 ] && [ "$(on)" = topic ] && [ "$(git -C "$WORK" branch --list | wc -l)" = 2 ]; then
+  ok "on any other branch, it makes and switches no branch"
+else bad "on any other branch, it makes and switches no branch" "rc=$rc on=$(on) $(out)"; fi
 
 # --- one runner at a time
 #
