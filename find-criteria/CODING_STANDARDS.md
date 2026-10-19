@@ -92,7 +92,7 @@ Does the software support the main workflows smoothly? Can every button be used 
 
 If the project keeps a `UBIQUITOUS_LANGUAGE.md`, it is the source of truth for the domain's names. If a concept already has a name there, use it before inventing your own.
 
-**Finding a name.** Use the glossary's term; otherwise a word the user already uses for it, in UI text, test names, criteria or commit messages; otherwise a plain description of what it does or holds, in existing words, never a coined term. A name not taken from the glossary is listed in the change's report for the developer to confirm, add to the glossary or replace. It is not asked mid-run, and a missing name is never a reason to leave a split out.
+**Finding a name** for a domain concept - a feature directory, an exported type or function. Use the glossary's term; otherwise a word the user already uses for it, in UI text, test names, criteria or commit messages, in English as _Language_ says; otherwise a plain description of what it does or holds, in existing words, never a coined term. A build does not stop to ask: it decides, and lists each name it did not take from the glossary among what it leaves standing, for the developer to confirm, add to the glossary or replace. A skill that stops for the user anyway, such as at the approval of criteria, asks there. A missing name is never a reason to leave a split out.
 
 This holds for the user interface and the code alike. Each concept has a single name in the codebase, at every level from UI to storage.
 
@@ -237,7 +237,7 @@ A change that touches commented code keeps the comment true, in the same change.
 
 ### Language
 
-Code is in English, whatever language the domain or `UBIQUITOUS_LANGUAGE.md` uses: identifiers, test names, comments, commit messages. Use the identifier the glossary entry gives, exactly - `Vertrag` in the user's mouth is `Contract` in the source, and an untranslatable term carries its own ASCII form there. If an entry has no identifier, use a plain English translation of the term and list it in the change's report, as _Ubiquitous Language_ says for names not taken from the glossary.
+Code is in English, whatever language the domain or `UBIQUITOUS_LANGUAGE.md` uses: identifiers, test names, comments, commit messages. Use the identifier the glossary entry gives, exactly - `Vertrag` in the user's mouth is `Contract` in the source, and an untranslatable term carries its own ASCII form there. If an entry has no identifier, use a plain English translation of the term, and list it as _Ubiquitous Language_ says for a name not taken from the glossary.
 
 ### Dependencies
 

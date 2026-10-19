@@ -43,7 +43,7 @@ The numbers are the contract with everything downstream: tickets quote them word
 - **<The alternative>** - <why it lost, in a line, so no later agent proposes it again.>
 
 ## Left standing
-<Written by `/implement` when it builds this file directly, with no tickets: review findings not fixed and why, checks not run, each AC no automated test proves and how it was checked instead, decisions taken that would be costly to reverse, and departures from a technical decision or a nudge with the reason. Nothing else. Read by the user before deleting the change's directory. Absent when the change is built from tickets, which carry their own.>
+<Written by `/implement` when it builds this file directly, with no tickets: review findings not fixed and why, checks not run, each AC no automated test proves and how it was checked instead, decisions taken that would be costly to reverse, departures from a technical decision or a nudge with the reason, and names for domain concepts not taken from the glossary. Nothing else. Read by the user before deleting the change's directory. Absent when the change is built from tickets, which carry their own.>
 ```
 
 ## What this format is not
