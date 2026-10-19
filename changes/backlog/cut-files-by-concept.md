@@ -5,11 +5,11 @@ utility: L
 
 # Cut files by concept, not by line count
 
-`CODING_STANDARDS.md` cuts files in two ways, and neither holds new code to
-the shape `untangle` produces. "Files Small Enough to Read Whole"
-(`implement/CODING_STANDARDS.md:165`) splits at about 500 lines, and the
-reason it gives does not hold. "What Changes Together, Stays Together"
-(`implement/CODING_STANDARDS.md:148`) is too vague to cause a split at all.
+`CODING_STANDARDS.md` has no rule that holds new code to the shape
+`untangle` produces. Its rule splitting files at about 500 lines was removed
+on 2026-10-19, since the reason it gave does not hold (below). "What Changes
+Together, Stays Together" (`implement/CODING_STANDARDS.md:148`) is too vague
+to cause a split at all.
 The untangle criteria ask for this item
 (`changes/2026-10-19-code-reads-like-its-description/CRITERIA.md`, under
 Nudges), roughly "a module opens with its concept, and its parts are the

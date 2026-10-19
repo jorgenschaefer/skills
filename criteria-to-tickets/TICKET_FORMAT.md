@@ -57,7 +57,7 @@ Not how to build it: no steps, no test lists, no file names per step, no line es
 
 ## What the frontmatter is for
 
-**A preparatory ticket closes and advances nothing** - one that writes the check command, moves or unifies code a search would miss, or splits a large file. Both fields are empty, it quotes no AC, and its `Done when` names what it leaves in place - the declared command, the new home, the files a split produces, source and test, one test file per source file - with the behaviour unchanged and the checks green. The tickets that need it come `after:` it.
+**A preparatory ticket closes and advances nothing** - one that writes the check command or moves or unifies code a search would miss. Both fields are empty, it quotes no AC, and its `Done when` names what it leaves in place - the declared command, the new home - with the behaviour unchanged and the checks green. The tickets that need it come `after:` it.
 
 **`closes` and `advances` have to agree with the quotation.** An AC claimed and not quoted is one the builder never sees; an AC quoted and not claimed is work no coverage check knows about. The runner checks both.
 

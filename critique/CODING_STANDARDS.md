@@ -162,19 +162,6 @@ Features nest. A feature made of more than one source file gets its own subdirec
 
 Put a test next to the file it tests, not in a separate `tests/` tree, unless the project's existing layout clearly says otherwise.
 
-### Files Small Enough to Read Whole
-
-An agent should be able to read a file whole. So **before adding code to a file of more than about 500 lines, split it.**
-
-- **Size** counts what has to be read together: the file plus any fixture or helper file that only it uses.
-- **Adding** is any change that does more than remove code.
-- **No side-stepping.** Putting new code in a fresh file to keep this one under the limit still counts as adding to it, if the new code changes together with code here. Split first, then add to the part it belongs to.
-- **Split** along what changes together, into files of roughly 150-300 lines that each hold one part. Splitting a source file always splits its test file the same way, and a test file is never split on its own: each part has exactly one test file.
-- **Combine** source files of under about 150 lines that change together into one file of at most about 300 lines. Their test files combine the same way, into the one test file of the combined file, and every case they held stays.
-- **If only the test file is over the limit,** shorten it first: shared setup, table-driven cases, helpers for repeated assertions. That is enough only if it gets the file to about 400 lines - a file squeezed to just under 500 has to be shortened again on every change - and only once: a test file that `git log` shows was shortened before and that has grown past about 400 lines again is not shortened a second time. If shortening is not enough, the source holds more than one part: split source and tests together, even though the source is under the limit.
-- **A split or a combine comes first,** changes no behaviour, and is not mixed into the change.
-- Generated files are exempt.
-
 ### Function and Method Names Follow Domain Actions
 
 If users talk about "publishing a blog post" or "archiving it", the functions are `publishPost` and `archivePost` - not `updatePost`, even though both end as a database `UPDATE`. If they talk about "setting an article's category", it is `setArticleCategory`; if they talk about "saving an article", it is `saveArticle`, taking a compound object of everything users mean by "the article" in this context - which could include the category.
