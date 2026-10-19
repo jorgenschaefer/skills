@@ -266,8 +266,8 @@ concept's details are not candidates.
 - **Cross-cutting behaviours.** Permissions, logging or units don't become
   a module each. The current direction is to leave them out of scope.
 - **Choosing the behaviour.** The developer naming one they can't explain
-  is the strongest signal. Should `restructure` also suggest candidates from
-  churn and bug-fix history?
+  is the strongest signal, but a late one. Finding candidates earlier is
+  `find-code-before-understanding-is-lost.md`.
 - **Coverage that isn't good after all.** What the skill does when the
   assumption fails: stop, or say what is unpinned?
 - **What the run may decide alone.** A test that won't translate must not
