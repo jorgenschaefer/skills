@@ -56,6 +56,9 @@ to cut, and a check, preferably one that runs.
    what the user names: a screen, a panel, a step in a workflow, so a
    usability report leads to one directory. Check: a fresh agent reading
    only the file describes it in one sentence of glossary terms.
+   `CODING_STANDARDS.md` now covers part of this: a file's exports are in
+   its first 60 lines, and exports that don't fit there even with the
+   helpers moved down mean the file holds more than one concept.
 2. **A rule is decided in one place.** The code that decides something the
    user sees (a verdict, a badge, whether a validation passes, a price) is
    one module of pure functions over domain objects. Loading, saving and
