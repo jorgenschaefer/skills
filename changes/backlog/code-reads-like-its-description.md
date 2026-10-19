@@ -55,6 +55,63 @@ The code being reworked is assumed to have good test coverage. Writing new
 tests is not part of this skill. The hard part is changing the existing
 tests for the new module surface without weakening them.
 
+## A typical run
+
+How a run would look to the developer, as far as the directions below go.
+
+You start the skill with a behaviour you can no longer explain: "when does
+a weight series show as gaining?" You don't name a file or a module. You
+don't need to know where the code is, and not knowing is part of why you're
+running it.
+
+The skill first finds the code. It starts where the "gaining" badge appears
+and traces back. It runs the existing tests with coverage and compares the
+tests that end in "gaining" with those that don't. The lines that differ
+are the code that decides, perhaps spread over seven files in three
+modules, mixed in with the trend chart and the "losing" logic. It notes
+which of that code neighbouring behaviours also run. You aren't involved.
+
+Then it writes the account. One agent describes what the code does, and a
+second, which never sees the code, rewrites that until it reads clearly.
+Every claim is checked against the existing tests, and every branch maps to
+a sentence, in the rule or in a concept's details. Where a test contradicts
+a claim, the account is corrected before you see it.
+
+Then comes the one stop where you're needed. You read an account of your
+rule, rule first and details below, each claim with a case taken from the
+tests. Where it's unclear you say so, it's revised, and the checks run
+again. Once you say you understand it, you predict the verdicts for a few
+cases you haven't seen. Anything that surprised you is noted for the cruft
+backlog, not acted on. At the same stop you see the proposed interface: the
+account's concepts, the module each becomes and what it offers, one call
+taken from a test, and the callers elsewhere that will move. You approve or
+correct it, and then you can walk away.
+
+The skill works on without you. It builds the new interface as a thin layer
+over the old code, moves the tests onto it while the code stays unchanged,
+and has a fresh reviewer check that no old test lost an input, an expected
+value or the strictness of an assertion. Then it replaces the code behind
+the interface while the tests stay unchanged, and removes the layer. The
+whole suite runs at every step, so a break in a neighbouring behaviour
+shows at once. Where the run cannot go on as approved, it decides the next
+step itself and records why.
+
+At the end you get the result with evidence:
+
+- coverage of the behaviour before and after, such as seven files becoming
+  one module and two shared ones;
+- the round trip: a fresh agent's description of the new code predicted
+  every example's verdict;
+- a sample change in the rule's terms, made on a throwaway branch, that
+  touched one module;
+- the reviewer's comparison of old and new tests;
+- every change to the approved interface and every decision the run made
+  without you, each with its reason;
+- the cases that surprised you, ready for `rule-cruft.md`.
+
+You accept the change, the account is deleted, and the code stands on its
+own.
+
 ## Discussed so far
 
 These are directions, not decisions.
@@ -121,6 +178,10 @@ These are directions, not decisions.
 - **A build that changes the interface records why**, without stopping.
   The developer sees the change at acceptance, the way the pipeline already
   handles a build that goes beyond a technical decision.
+- **The run does not halt for what the developer can't help with.** An old
+  test that won't translate to the new interface, or an approved interface
+  the code shows cannot work, is decided by the run itself and recorded
+  with its reason. The developer said they likely could not help there.
 
 ### Changing the code
 
@@ -209,5 +270,8 @@ concept's details are not candidates.
   churn and bug-fix history?
 - **Coverage that isn't good after all.** What the skill does when the
   assumption fails: stop, or say what is unpinned?
+- **What the run may decide alone.** A test that won't translate must not
+  simply be dropped or loosened, since that loses coverage. What it does
+  instead is still open.
 - **Mutation testing** as a later, executable check that the moved tests
   weren't weakened.
