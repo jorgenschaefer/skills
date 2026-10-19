@@ -51,9 +51,34 @@ named yet.
 
 These are directions, not decisions.
 
-- **The skill works on one named module.** An agent describes it, and a
-  second agent without code access rewrites the description for
-  readability.
+- **The unit is a behaviour, not a module.** In a complicated codebase the
+  modules may be heavily interconnected or cut so oddly that they can't
+  simply be untangled, so a module is no reliable boundary. The developer
+  names a behaviour they can no longer explain, such as "when does a series
+  show as gaining?". The code in scope is whatever decides it, wherever it
+  sits today: running the account's examples with coverage finds it across
+  modules, without untangling them first.
+- **Being a module is the result, not the start.** After the work, the
+  behaviour's own logic is one module or submodule, and it uses shared
+  modules it imports by name. Coverage of its examples shows it: scattered
+  across files before, concentrated in its module and its named shared
+  modules after. The account's sections decide granularity, for example
+  "gaining" as a submodule of "weight trends".
+- **Top-down leads, bottom-up is evidence.** The behaviour and its account
+  say what shape the code should have. Dependency graphs and co-change
+  history show the tangle an extraction will meet, but clustering the
+  current code tends to reproduce the current cuts.
+- **Overlapping behaviours show the real seams.** Coverage compared across
+  two or three behaviours in the same bundle sorts the code: code only one
+  runs belongs to it, code several run is a shared mechanism and a
+  candidate deep module, and code none runs is a missed case or a candidate
+  for `rule-cruft.md`.
+- **One behaviour at a time, no untangling phase first.** Untangling a
+  whole bundle before it is understood is a rewrite without a
+  specification. Each extraction is pinned by its examples and leaves the
+  rest smaller.
+- **An agent describes the behaviour**, and a second agent without code
+  access rewrites the description for readability.
 - **The developer judges only "do I understand this?"** They cannot judge
   whether the account is true of code they don't understand. The agent
   revises until they say it reads clearly.
@@ -106,8 +131,13 @@ account, and cases that surprised the developer while reading.
 - **Narrative versus deep modules.** Following prose tends to produce one
   thin function per sentence.
 - **Shared mechanisms.** Prose is linear and code is a graph. Where does a
-  part live when two accounts use it?
-- **Choosing the module.** The developer names it, `restructure` suggests
-  it, or both.
+  part live when two accounts use it? A mechanism every behaviour touches,
+  such as a large domain object, may get copied into each extraction or
+  become the new tangle.
+- **Cross-cutting behaviours.** Permissions, logging or units don't become
+  a module each. The current direction is to leave them out of scope.
+- **Choosing the behaviour.** The developer naming one they can't explain
+  is the strongest signal. Should `restructure` also suggest candidates from
+  churn and bug-fix history?
 - **Making the account nicer instead of clearer.** Are the examples and the
   branch mapping enough of a guard?
