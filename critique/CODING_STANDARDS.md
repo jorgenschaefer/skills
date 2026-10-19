@@ -186,6 +186,8 @@ Prefer a few layers that each hide real substance over many thin layers that onl
 
 A file, and every class and function in it, reads top to bottom: it starts with the abstract idea and grows concrete. Helpers sit below their callers, not above them.
 
+**A file's exports are in its first 60 lines.** An agent getting its bearings reads a file's opening, so every export, or at least its signature, sits there, imports included; helpers go below. Where they don't fit, move the helpers down first. If the exports still don't fit, the file holds more than one concept: split it before adding to it. Fixture and test-helper files are exempt.
+
 Reduce nesting. Prefer early returns as guards over nested if statements.
 
 Every function call is fully understandable from its name and parameters, without reading its source. If it is not, improve the name.
