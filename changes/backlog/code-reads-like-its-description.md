@@ -5,9 +5,7 @@ utility: L
 
 # Code that reads like its description
 
-An `/idea` session on 2026-10-19 settled the problem below. It is not ready
-for `/find-criteria` yet: the directions under "Discussed so far" need more
-discussion first.
+An `/idea` session on 2026-10-19 settled the problem below.
 
 ## The problem
 
