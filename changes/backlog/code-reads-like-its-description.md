@@ -1,5 +1,5 @@
 ---
-effort: L
+effort: M
 utility: L
 ---
 
@@ -243,6 +243,70 @@ A fresh-context review of this item on 2026-10-19 led to the layered
 account, the claims checked against tests, the predicted verdicts, the
 throwaway-branch check, the separate steps for tests and code, and
 comparing neighbours by coverage instead of accounts.
+
+## What the first build showed
+
+`/find-criteria` turned this item into
+`changes/2026-10-19-code-reads-like-its-description/CRITERIA.md`, and
+`run.sh` built it as the typed skill `untangle` on the branch
+`2026-10-19-code-reads-like-its-description`. `/accept-criteria` walked it on
+2026-10-19 with one real run on the weight tracker, started as
+`/untangle How does the verdict on "nimmt zu" show up in the weight
+tracker?`. The run was stopped at the stop, and the change was not accepted.
+The user's verdict: "untangle as created in this branch is completely
+overengineered". The build followed the criteria. The review found only
+small things, so what went wrong is in the criteria.
+
+- **The question was too narrow to extract.** The run took the verdict the
+  user asked about, „Nimmt zu“, together with the two other outcomes of the
+  Frühwarnung („Stagniert“, „Nimmt ab“), as the unit. In the user's words:
+  "How nimmt zu is calculated" is not a concept to be taken out of the
+  rest. It is one instance of how the three values the page shows are
+  calculated, and the programmer might not even know that there are three.
+  The user had to name what was missing themselves: the 4-week trend, which
+  can say the same thing, the name „Frühwarnung“, the daily badge, and what
+  number of days the trend is measured over. The criteria asked for this
+  narrowness: the run starts from "a behaviour in words" (AC-2), and that
+  behaviour goes into the generated problem (AC-13).
+- **The account was not readable, and the explanation in chat was.** The
+  account came from the writer that read the code and the rewriter that
+  never saw it, and both checks passed it. The user found it "super dense"
+  from the first paragraphs on. They said "I do not understand that page's
+  description". The session answered in chat with a short numbered
+  explanation: trend, 7-Tage-Tempo, Streuung and Schwelle, the three
+  verdicts, „seit N Tagen“ and the Warnstufe, when none of it shows. The
+  user called it "a very nice, concise explanation of what is happening.
+  It was just too narrow in scope." Nothing in the skill asks for that
+  explanation. It came only as a repair.
+- **Comparing coverage by verdict found nothing.** `deciding-code.sh` over
+  the run's lcov files exited 0 and printed 166 lines, every one `shared`,
+  with no `verdict` and no `own` line. The lines are spread over 13 files in
+  `src/measurement/`, `src/trend/` and `src/verdict/`. There are two causes:
+  - `trendVerdict` in `src/verdict/verdict.ts` works out the verdict for
+    every earlier day to count N, so each verdict's tests run all three
+    outcomes.
+  - The page's tests are in `other` and run the whole decision. Any
+    integration test does this, so in a real app hardly anything is `own`.
+
+  So the checks built on the classification passed whatever the code did:
+  every module holding only printed code, every deciding branch mapped to a
+  sentence, and the generated AC that the deciding code lies in the
+  approved modules. The script's own tests use fixtures whose verdicts
+  separate cleanly.
+- **The cases to predict began as bare dates.** "Today is 13.10." asked for
+  a prediction from a fixture the page did not show. The session restated
+  them as 7-Tage-Tempo against Schwelle on its own. Only two cases were
+  eligible, since the account's examples already showed every other test.
+- **The commands were reproducible only through a rewrite.** Each line of
+  `coverage/commands` rewrites every hit count to 1 with `sed` before `cmp`
+  can find two runs identical. Each line also leaves a `mktemp` directory
+  behind.
+- **The weight.** The skill grew to `untangle/SKILL.md` (188 lines),
+  `VERIFY.md`, `page.html`, `deciding-code.sh` with a 23-case suite, and
+  about fifteen fresh-context agents per run, counting the writers, the
+  checkers per revision, the sorting check and the interface check. It
+  also has a five-step rework handed to the pipeline. The part that helped
+  the user was the one plain explanation in chat.
 
 ## Parked
 
