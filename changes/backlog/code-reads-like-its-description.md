@@ -104,6 +104,24 @@ These are directions, not decisions.
   checked against the code, since smooth prose can feel understood without
   being so.
 
+### The new interface
+
+- **The developer approves it at the same stop as the account**, once they
+  understand the account and have predicted the verdicts. That is when they
+  can judge it best, and a second stop would gain nothing. It is approved
+  rather than only shown: a surface that doesn't match the account brings
+  back the mismatch the problem describes.
+- **It is shown in terms the developer can judge**: a table mapping each
+  concept in the account to its module and what that module offers, plus
+  one call taken from an existing test. A concept with no module, or a
+  module with no concept, shows at a glance.
+- **The callers that have to move are listed with it**, such as the code
+  in other features that calls the old surface. That is the part that is
+  harder to reverse.
+- **A build that changes the interface records why**, without stopping.
+  The developer sees the change at acceptance, the way the pipeline already
+  handles a build that goes beyond a technical decision.
+
 ### Changing the code
 
 Tests and code never change in the same step:
