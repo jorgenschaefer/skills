@@ -90,7 +90,9 @@ Does the software support the main workflows smoothly? Can every button be used 
 
 ### Ubiquitous Language
 
-If the project keeps a `UBIQUITOUS_LANGUAGE.md`, it is the source of truth for the domain's names. If a concept already has a name there, use it before inventing your own. If a concept is new, confirm with the user what the domain calls it, and add it there before using it.
+If the project keeps a `UBIQUITOUS_LANGUAGE.md`, it is the source of truth for the domain's names. If a concept already has a name there, use it before inventing your own.
+
+**Finding a name.** Use the glossary's term; otherwise a word the user already uses for it, in UI text, test names, criteria or commit messages; otherwise a plain description of what it does or holds, in existing words, never a coined term. A name not taken from the glossary is listed in the change's report for the developer to confirm, add to the glossary or replace. It is not asked mid-run, and a missing name is never a reason to leave a split out.
 
 This holds for the user interface and the code alike. Each concept has a single name in the codebase, at every level from UI to storage.
 
@@ -157,7 +159,7 @@ Features nest. A feature made of more than one source file gets its own subdirec
 
 - **Check** whenever a file is added to a directory: do the directory's files, the new one included, belong to features that change for different reasons?
 - **Move** a feature into its own subdirectory as soon as it has two source files, together with their tests. A feature of a single file stays where it is, and so does a directory that is all one feature.
-- **Name** the subdirectory after the feature. A domain concept takes its term from `UBIQUITOUS_LANGUAGE.md`; if the glossary has none, ask the user for it and add it there. A part of one feature that is not a domain concept - its form, its import - takes the plain word for that part and needs no entry. A missing name is never a reason to leave the split out. A grab-bag name (`utils`, `common`, `helpers`) or a type name (`models`, `controllers`) is not a split.
+- **Name** the subdirectory after the feature, found as _Ubiquitous Language_ says. A part of one feature that is not a domain concept - its form, its import - takes the plain word for that part. A grab-bag name (`utils`, `common`, `helpers`) or a type name (`models`, `controllers`) is not a split.
 - **The split comes first,** only moves files, and changes no behaviour.
 
 Put a test next to the file it tests, not in a separate `tests/` tree, unless the project's existing layout clearly says otherwise.
