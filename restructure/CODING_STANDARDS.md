@@ -94,7 +94,7 @@ If the project keeps a `UBIQUITOUS_LANGUAGE.md`, it is the source of truth for t
 
 **Finding a name** for a domain concept - a feature directory, an exported type or function. Use the glossary's term; otherwise a word the user already uses for it, in UI text, test names, criteria or commit messages, in English as _Language_ says; otherwise a plain description of what it does or holds, in existing words, never a coined term. A build does not stop to ask: it decides, and lists each name it did not take from the glossary among what it leaves standing, for the developer to confirm, add to the glossary or replace. A skill that stops for the user anyway, such as at the approval of criteria, asks there. A missing name is never a reason to leave a split out.
 
-This holds for the user interface and the code alike. Each concept has a single name in the codebase, at every level from UI to storage.
+This holds for the user interface and the code alike. Each concept has a single name in the codebase, at every level from UI to storage. A name already in a stored or wire format is not renamed for this alone; the boundary under _Business Logic Works with Domain Objects_ maps it to the domain name.
 
 ### Actionable Error Messages
 
@@ -120,7 +120,7 @@ Graceful failure is for the user, at the edge. Inside the code, a case that shou
 - **Catch only what you handle.** If a `catch` cannot do anything useful, let the error through.
 - **Check data where it enters, and trust it after.** Validation belongs at the boundary, as under _Business Logic Works with Domain Objects_, not repeated defensively in every function.
 - **Report such a case once, where it is handled,** with the values that caused it - ids, input, the unexpected state - and no PII or secrets, so the next agent can get from the symptom to the line without guessing.
-- **A log line is an event, not a sentence:** a fixed event name a search finds (`payment_failed`), with the values as fields rather than spliced into text. Every line carries the id of the request or run it belongs to. Set that id where the request or run starts, and pass it across every queue and call. If more than one entry point starts the same work, the line also says which one did.
+- **A log line is an event, not a sentence:** a fixed event name a search finds (`payment_failed`), with the values as fields rather than spliced into text. Every line carries the id of the request or run it belongs to. Set that id where the request or run starts, and pass it across every queue and process boundary. Inside a process it travels in the language's context mechanism (`AsyncLocalStorage`, `contextvars`, `context.Context`), not as a parameter of every function. If more than one entry point starts the same work, the line also says which one did.
 
 ## Maintainability
 
@@ -142,7 +142,7 @@ Each thing - an error style, an HTTP client, a test helper - is done one way in 
 
 - **Search before you write.** Before writing a function, type, constant or rule, search for one that already does it - by its domain word and by its shape.
 - **Follow the existing way,** even if you would have chosen another, and report it: "I wanted to do X, but the codebase does Y, so I did Y."
-- **A new way replaces the old one** everywhere, in its own change that keeps behaviour, or it is not introduced. Moving code over only as it is touched does not replace the old way.
+- **A new way replaces the old one** everywhere, in its own change that keeps behaviour, or it is not introduced. Moving code over only as it is touched does not replace the old way. A stored or wire format changing step by step under _Changing What Already Runs_ is the exception: both forms stand until its last step removes the old one, and a comment on the old form says what still needs it.
 - **If two ways already exist,** use the one most of the code uses.
 
 A review reports each of these: a change that strays from the existing way, a new way that leaves the old one standing, and every place where two ways already exist.
@@ -178,11 +178,11 @@ External seams - database interfaces, components and the like - validate externa
 
 ### Layers
 
-Prefer a few layers that each hide real substance over many thin layers that only relay calls.
+Prefer a few layers that each hide real substance over many thin layers that only relay calls. The adapter over an external dependency under _Test Coverage_ is exempt from this section: its thinness is the point, and its mock is its second case.
 
 - **A layer must spare its caller something.** It earns its place only if a caller can use it correctly without understanding what is behind it. A wrapper that passes on the same vocabulary and shape it received, a class that only delegates, a hop that adds a name but no meaning - none of them do. Thinness is not the defect; a layer that spares the caller nothing is.
-- **A variation point needs a second variant.** An interface or base class with one implementation, a factory or strategy with one variant, an option every caller sets the same way: collapse each to its one case. Two exceptions: the adapter over an external dependency under _Test Coverage_, whose mock is its second case, and a variation point exported for code outside this repo to fill.
-- **Inline the trivial.** A pass-through that only forwards its argument, or a 1:1 mapping between domain and storage, can stay inline. Do not create a layer for it. Pull one out when the responsibility grows past trivial - real translation, real rules, more than one caller.
+- **A variation point needs a second variant.** An interface or base class with one implementation, a factory or strategy with one variant, an option every caller sets the same way: collapse each to its one case, unless it is exported for code outside this repo to fill.
+- **Inline the trivial.** A pass-through that only forwards its argument stays inline. A 1:1 mapping between domain and storage is one function beside the domain object, not a layer; the domain object still exists, as _Business Logic Works with Domain Objects_ says. Pull out a layer when the responsibility grows past trivial - real translation, real rules, more than one caller.
 
 ### Files Read Top to Bottom
 
@@ -194,7 +194,7 @@ Reduce nesting. Prefer early returns as guards over nested if statements.
 
 Every function call is fully understandable from its name and parameters, without reading its source. If it is not, improve the name.
 
-**A function over 30 lines is a smell**, not counting JSX markup. A `describe` block is a scope, like a file, not a function; test bodies and hooks count like any other function. Split off a part when a name can say what it achieves, so the call reads without its body; a part that takes few inputs and returns one result usually can. Inline a helper when its name says no more than its body.
+**A function over 30 lines is a smell**, not counting markup such as JSX or data literals such as a test's table of cases. A `describe` block is a scope, like a file, not a function; test bodies and hooks count like any other function. Split off a part when a name can say what it achieves, so the call reads without its body; a part that takes few inputs and returns one result usually can. Inline a helper when its name says no more than its body.
 
 **Calls are named where they happen**, so a reader can find what runs by searching for it.
 
