@@ -88,25 +88,27 @@ claims each ticket, builds it, and either finishes it or sends it back. Started 
 main branch, it makes a branch named after the change's directory and runs there, and
 refuses where that branch already exists. It refuses to start on a dirty tree - the
 ticket files aside, which are its own bookkeeping - and before the first build it runs
-the project's checks itself - a run that starts red does not start, and every build is told the checks were green. The
-command is the `Check:` line in the project's `CLAUDE.md`, read again before every run of
-the checks, so a ticket that declares one is held to it from its own commit on; only
-where there is none does a session name it, once per run. It runs them again on every
-build's commit, rather than believing the session's account of them: a red one goes back
-to the session that made it, the first time without spending an attempt. It checks before every pass that the tickets still quote `CRITERIA.md`'s
-acceptance criteria, technical decisions and nudges word for word, that every ticket quotes every technical decision, that each ticket's `closes:` and `advances:`
-name exactly the criteria it quotes, and that every criterion is closed by exactly one ticket,
-built after every ticket that advances it - a criterion can take several slices, but one of
-them finishes it and writes its test. It enforces the attempt budget from a counter in the ticket file, and waits out a
-usage limit rather than spending the budget on it. A session that ends its turn with its
-work uncommitted is resumed once rather than started over, and what an abandoned attempt
-leaves behind goes to the stash, so the next one starts on the tree the checks were
-green on. Killed in the middle, it can simply be started again: the ticket it left
-claimed is carried on in the same session, on the same attempt, with its uncommitted
-work taken as that session's, and the checks wait until it is finished. It refuses to
-start beside a live run, or beside a session a killed run left running. Each build is
-pointed at what the tickets already done left standing, since that is where one build
-leaves something for the next.
+the project's checks itself - a run that starts red does not start, and every build is
+told the checks were green. The command is the `Check:` line in the project's
+`CLAUDE.md`, read again before every run of the checks, so a ticket that declares one is
+held to it from its own commit on; only where there is none does a session name it, once
+per run. It runs them again on every build's commit, rather than believing the session's
+account of them: a red one goes back to the session that made it, the first time without
+spending an attempt. It checks before every pass that the tickets still quote
+`CRITERIA.md`'s acceptance criteria, technical decisions and nudges word for word, that
+every ticket quotes every technical decision, that each ticket's `closes:` and
+`advances:` name exactly the criteria it quotes, and that every criterion is closed by
+exactly one ticket, built after every ticket that advances it - a criterion can take
+several slices, but one of them finishes it and writes its test. It enforces the attempt
+budget from a counter in the ticket file, and waits out a usage limit rather than
+spending the budget on it. A session that ends its turn with its work uncommitted is
+resumed once rather than started over, and what an abandoned attempt leaves behind goes
+to the stash, so the next one starts on the tree the checks were green on. Killed in the
+middle, it can simply be started again: the ticket it left claimed is carried on in the
+same session, on the same attempt, with its uncommitted work taken as that session's, and
+the checks wait until it is finished. It refuses to start beside a live run, or beside a
+session a killed run left running. Each build is pointed at what the tickets already done
+left standing, since that is where one build leaves something for the next.
 
 There is one session per ticket, and the build spawns its own reviewer in a subagent that
 did not write the code. That session commits the ticket with its build at `status: done`, and
