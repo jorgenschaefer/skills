@@ -3,7 +3,7 @@ criteria:  CRITERIA.md
 closes:    AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-10, AC-11, AC-12, AC-13, AC-14, AC-15
 advances:
 after:
-status:    ready
+status:    done
 attempts:  0
 ---
 
@@ -83,3 +83,8 @@ AC-14 and AC-15 are runs on `/home/jorgen/Projects/weight-tracker` that need the
 - An HTML page for the explanation.
 
 ## Left standing
+- **Review finding not fixed (should-fix, round 2):** the generated `test-map.md` covers every test in a file importing a scope file directly, as AC-12 words it. A test file that tests a caller and imports a scope file only for a fixture or type - in the weight tracker, `src/app/WeightGraph.test.tsx` importing `sixWeekSeries` - pulls all its tests into the map, each needing a home among the concept tests. Narrowing it to the scope files' own test files would change an approved AC, so it is left for the developer at acceptance.
+- **No automated test proves AC-1 to AC-13**: they are prose instructions, checked by reading and by two fresh `critique` rounds. `./test.sh` checks the `CRITERIA_FORMAT.md` copy is byte-identical and that no live instruction points at a missing file.
+- **AC-14 and AC-15 not checked**: they are runs on `/home/jorgen/Projects/weight-tracker` with the developer in the conversation, for acceptance.
+- **Departure from a nudge:** no new backlog item for the `CODING_STANDARDS.md` rule. `changes/backlog/cut-files-by-concept.md` already is that item, so its pointer was updated instead of writing a duplicate.
+- **Decisions the review led to, beyond the criteria's words:** the generated nudge makes a build halt where the approved shape cannot work, rather than change it, since an AC names each module; the generated diff AC also allows the glossary, `docs/adr/` and `CLAUDE.md`, which the pipeline itself may write; callers that move switch in step 1, so test files among them are not touched after step 3 starts; `explain-code` drops statements the checker still disputes after three rounds.

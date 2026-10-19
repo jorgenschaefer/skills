@@ -10,9 +10,8 @@ utility: L
 on 2026-10-19, since the reason it gave does not hold (below). "What Changes
 Together, Stays Together" (`implement/CODING_STANDARDS.md:148`) is too vague
 to cause a split at all.
-The untangle criteria ask for this item
-(`changes/2026-10-19-code-reads-like-its-description/CRITERIA.md`, under
-Nudges), roughly "a module opens with its concept, and its parts are the
+The untangle criteria of 2026-10-19 ask for this item, under Nudges,
+roughly "a module opens with its concept, and its parts are the
 concepts of its domain".
 
 ## The 500-line limit does not buy a whole read
