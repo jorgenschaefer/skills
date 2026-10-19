@@ -49,7 +49,7 @@ Keep the surviving scenario with the finding. A finding whose trigger you cannot
 
 **The bar is code health, not perfection.** Each finding has to answer whether the code is worse for what it does - not whether you can imagine something better. A choice you would have made differently is not a finding, and neither is a rewrite you would prefer to the working code in front of you.
 
-**Severity is what the defect does, never what it could become.** A **blocker** produces a wrong result, a crash, a loss or a breach. A **should-fix** costs the next reader or the next change real effort. Everything else is a nit, and between two levels you take the lower one.
+**Severity is what the defect does, never what it could become.** A **blocker** produces a wrong result, a crash, a loss or a breach. A **should-fix** costs the next reader or the next change real effort. Everything else is a nit, and between two levels you take the lower one. A smell `CODING_STANDARDS.md` names is a should-fix where the fix is obvious, and a nit where it has to be found first.
 
 Two arguments do not move severity. "This could become a problem later" describes a defect that is not there yet - either construct the trigger and file it, or drop it. "No user is exposed to this" is a claim about who happens to be looking, not about whether the defect is in the code; the trigger settles it, and whoever meets it need not be an end user.
 
