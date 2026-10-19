@@ -194,6 +194,8 @@ Reduce nesting. Prefer early returns as guards over nested if statements.
 
 Every function call is fully understandable from its name and parameters, without reading its source. If it is not, improve the name.
 
+**A function over 30 lines is a smell**, not counting JSX markup. A `describe` block is a scope, like a file, not a function; test bodies and hooks count like any other function. Split off a part when a name can say what it achieves, so the call reads without its body; a part that takes few inputs and returns one result usually can. Inline a helper when its name says no more than its body.
+
 **Calls are named where they happen**, so a reader can find what runs by searching for it.
 
 - **Not allowed:** dispatch through a computed name (`handlers["on_" + event]`, `getattr(self, name)`), reflection, monkey-patching, implicit registration, introspection. If the set of cases is known, name each one in a `switch` or `match`.
