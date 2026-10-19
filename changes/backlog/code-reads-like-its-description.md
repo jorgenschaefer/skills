@@ -11,23 +11,25 @@ discussion first.
 
 ## The problem
 
-Agreed with the user, after a fresh-context check:
+Agreed with the user, after a fresh-context check. "A part of the code"
+replaced "a module" later the same day, since the unit turned out to be a
+behaviour rather than a module.
 
-> In a module whose logic has grown complicated, such as the weight
-> tracker's rule for when a series shows as "gaining weight", the developer
-> no longer knows what the rule is. Reading the code doesn't tell them. An
-> agent that has read the code doesn't help either. When it proposed fixes
-> for a "missed gain", its explanations made no sense to the developer in
-> terms of the rule. A readable account of the rule can be produced, but it
-> doesn't match how the code works, so understanding the account still
-> doesn't tell the developer where or how a change would go. They approve
-> product changes they can't judge, and they lose control of software they
-> wrote. Instead, the developer can understand what such a module does, and
-> that understanding carries over to the code. A change they can put in
-> terms of the rule points to a place in the code, and an agent's
-> explanation of a code change makes sense in terms of the rule. What the
-> module does stays the same. Whether its cases are all still needed is a
-> separate problem.
+> In a part of the code whose logic has grown complicated, such as the
+> weight tracker's rule for when a series shows as "gaining weight", the
+> developer no longer knows what the rule is. Reading the code doesn't tell
+> them. An agent that has read the code doesn't help either. When it
+> proposed fixes for a "missed gain", its explanations made no sense to the
+> developer in terms of the rule. A readable account of the rule can be
+> produced, but it doesn't match how the code works, so understanding the
+> account still doesn't tell the developer where or how a change would go.
+> They approve product changes they can't judge, and they lose control of
+> software they wrote. Instead, the developer can understand what such a
+> part of the code does, and that understanding carries over to the code. A
+> change they can put in terms of the rule points to a place in the code,
+> and an agent's explanation of a code change makes sense in terms of the
+> rule. What the code does stays the same. Whether its cases are all still
+> needed is a separate problem.
 
 ## The instance
 
@@ -39,7 +41,7 @@ code's own terms, which made no sense to them.
 
 The user then tried this by hand. One agent described the code in prose.
 A second agent, without code access, rewrote the prose for readability.
-A third agent refactored the module to follow it. The rewritten prose gave
+A third agent refactored the code to follow it. The rewritten prose gave
 the user understanding and described the behaviour correctly, but before
 the refactor the user's ideas for changes did not map onto the code. After
 it, the result "looked really good".
@@ -47,63 +49,102 @@ it, the result "looked really good".
 The module's file and the commits of the "missed gain" fixes are not
 named yet.
 
+## Scope
+
+The code being reworked is assumed to have good test coverage. Writing new
+tests is not part of this skill. The hard part is changing the existing
+tests for the new module surface without weakening them.
+
 ## Discussed so far
 
 These are directions, not decisions.
 
+### Finding the code
+
 - **The unit is a behaviour, not a module.** In a complicated codebase the
-  modules may be heavily interconnected or cut so oddly that they can't
+  modules may be heavily interconnected, or cut so oddly that they can't
   simply be untangled, so a module is no reliable boundary. The developer
   names a behaviour they can no longer explain, such as "when does a series
-  show as gaining?". The code in scope is whatever decides it, wherever it
-  sits today: running the account's examples with coverage finds it across
-  modules, without untangling them first.
-- **Being a module is the result, not the start.** After the work, the
-  behaviour's own logic is one module or submodule, and it uses shared
-  modules it imports by name. Coverage of its examples shows it: scattered
-  across files before, concentrated in its module and its named shared
-  modules after. The account's sections decide granularity, for example
-  "gaining" as a submodule of "weight trends".
+  show as gaining?".
+- **Coverage finds the deciding code.** The description starts where the
+  verdict shows and traces back. Coverage of the existing tests then finds
+  the code across modules, without untangling them first. Coverage alone
+  also includes loading, persistence and rendering, so the deciding code is
+  what differs between tests with different verdicts.
 - **Top-down leads, bottom-up is evidence.** The behaviour and its account
   say what shape the code should have. Dependency graphs and co-change
   history show the tangle an extraction will meet, but clustering the
   current code tends to reproduce the current cuts.
-- **Overlapping behaviours show the real seams.** Coverage compared across
-  two or three behaviours in the same bundle sorts the code: code only one
-  runs belongs to it, code several run is a shared mechanism and a
-  candidate deep module, and code none runs is a missed case or a candidate
-  for `rule-cruft.md`.
+- **Neighbouring behaviours show the real seams**, compared by coverage
+  of their existing tests, not by writing accounts for them. Code only one
+  behaviour runs belongs to it, and code several run is a shared mechanism
+  and a candidate deep module. Only the behaviour the developer named goes
+  through the readability loop with them.
 - **One behaviour at a time, no untangling phase first.** Untangling a
   whole bundle before it is understood is a rewrite without a
-  specification. Each extraction is pinned by its examples and leaves the
-  rest smaller.
+  specification. The whole test suite runs at every step, so a neighbouring
+  behaviour that breaks shows up.
+
+### The account
+
 - **An agent describes the behaviour**, and a second agent without code
   access rewrites the description for readability.
+- **The account has layers**: the rule first, then the details of each
+  concept, such as empty series or missing weigh-ins. That keeps the rule
+  readable while every branch still has a sentence somewhere.
+- **Its examples come from the existing tests**, put in the rule's terms.
+- **Its claims are checked against the tests.** A claim is wrong where an
+  existing test's verdict contradicts it. A fresh agent maps every branch
+  in scope to a sentence in the rule or in a concept's details. Both checks
+  run again after every revision of the account.
 - **The developer judges only "do I understand this?"** They cannot judge
   whether the account is true of code they don't understand. The agent
-  revises until they say it reads clearly.
-- **Faithfulness is checked by running something.** Every claim in the
-  account comes with a concrete example, such as a series and its verdict,
-  and the example runs against the old code. A fresh agent maps every
-  branch in the code to a sentence in the account.
-- **Behaviour is pinned before the code moves.** The examples become tests,
-  and the old code's outputs are recorded over many generated inputs.
-- **The code is reshaped so its parts are the account's parts**, as deep
-  modules.
+  revises until they say it reads clearly. Then they predict the verdict
+  for a few test cases they haven't been shown, and the predictions are
+  checked against the code, since smooth prose can feel understood without
+  being so.
+
+### Changing the code
+
+Tests and code never change in the same step:
+
+1. Build the new surface, shaped by the account, as a thin adapter over the
+   old code.
+2. Move the tests to the new surface while the code stays unchanged, named
+   and grouped by the account's concepts.
+3. A fresh reviewer compares old and new tests one by one: every old test's
+   inputs and expected results appear in some new test, and no assertion
+   got looser.
+4. Replace the implementation behind the surface while the tests stay
+   unchanged.
+5. Remove the adapter.
+
+### The result
+
+- **Its parts are the account's parts**, as deep modules. The behaviour's
+  own logic is one module or submodule, and it uses shared modules it
+  imports by name. Coverage of its tests shows it: scattered across files
+  before, concentrated after. The account's sections decide granularity,
+  for example "gaining" as a submodule of "weight trends".
 - **A round trip checks that the code stands on its own.** A fresh agent
-  reads only the new code and writes down what it does, and that has to
-  match the approved account.
-- **A change in the rule's terms lands in one place.** A fresh agent gets
-  the account and a change request and says where the code would change.
+  reads only the new code and writes down what it does. That account has to
+  predict the verdicts of the examples.
+- **A change in the rule's terms lands in one place.** A fresh agent makes
+  a change request in the rule's terms on a throwaway branch, and the diff
+  touches one module per concept changed.
 - **The account is scaffolding**, deleted once the change is accepted, like
   `CRITERIA.md`. The user does not want the prose kept in the code.
+
+### Where it lives
+
 - **It is a separate skill, not part of `restructure`**, which sweeps the
   whole codebase and only applies changes it can prove keep behaviour
   (`restructure/SKILL.md`).
-- **One rule for `CODING_STANDARDS.md`** would hold new code to the shape,
-  roughly "a module's parts follow the account of what it does". The
-  standard already asks for abstract-first order within a file ("Files Read
-  Top to Bottom") but says nothing across files and modules.
+- **One rule for `CODING_STANDARDS.md`** would hold new code to the shape
+  without needing an account, roughly "a module opens with its concept, and
+  its parts are the concepts of its domain". The standard already asks for
+  abstract-first order within a file ("Files Read Top to Bottom") but says
+  nothing across files and modules.
 
 ## Dropped or changed
 
@@ -113,16 +154,25 @@ These are directions, not decisions.
 | The developer approving the account as correct | Changed to "I understand this" | Judging correctness needs the understanding the developer has lost. |
 | Restructuring and removing cruft in one run | Split | One diff mixing preserved and changed behaviour is the hardest to sign off on. |
 | Blaming the mismatch on the code's "order" | Removed from the problem | The user never said so; it smuggled in the proposed solution. |
+| A module as the unit of work | Changed to a behaviour | Tangled or oddly cut modules make no reliable boundary. |
+| Generating inputs and recording the old code's outputs | Dropped | Good test coverage is assumed; the existing tests are the pin. |
+| Mutation testing to prove moved tests aren't weaker | Left out for now | A fresh reviewer compares the tests instead. |
 
 "Code is written for an agent to read" stays. The instance shows why it
 serves the developer too: an agent explains changes in the concepts the
 code gives it.
 
+A fresh-context review of this item on 2026-10-19 led to the layered
+account, the claims checked against tests, the predicted verdicts, the
+throwaway-branch check, the separate steps for tests and code, and
+comparing neighbours by coverage instead of accounts.
+
 ## Parked
 
 Removing cruft from a rule's cases is `rule-cruft.md`. This skill would
-feed it with two kinds of candidates: branches with no sentence in the
-account, and cases that surprised the developer while reading.
+feed it with candidates: branches in the rule itself that no sentence
+covers, and cases that surprised the developer while reading. Branches in a
+concept's details are not candidates.
 
 ## Open
 
@@ -139,5 +189,7 @@ account, and cases that surprised the developer while reading.
 - **Choosing the behaviour.** The developer naming one they can't explain
   is the strongest signal. Should `restructure` also suggest candidates from
   churn and bug-fix history?
-- **Making the account nicer instead of clearer.** Are the examples and the
-  branch mapping enough of a guard?
+- **Coverage that isn't good after all.** What the skill does when the
+  assumption fails: stop, or say what is unpinned?
+- **Mutation testing** as a later, executable check that the moved tests
+  weren't weakened.
