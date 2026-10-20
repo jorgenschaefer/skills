@@ -53,6 +53,6 @@ Where a precondition you needed is not there, say what is missing and stop. It w
 
 Commit when the behaviour is green and the checks pass. `git-commit-message` is the shape. Stage only the files this change touched; never `git add -A`.
 
-**End your report with what you leave standing**, whoever called you: review findings not fixed, with the severity the reviewer gave each, and why; checks not run; each criterion no automated test proves and how it was checked instead; decisions that would be costly to reverse; each departure from a technical decision or a nudge with its reason; and each name for a domain concept not taken from the glossary. Nothing else. A user who ran you reads it there; a skill or runner that called you collects it into its own `## Left standing`.
+**End your report with what you leave standing**, whoever called you: review findings not fixed, with the severity the reviewer gave each, and why; fixes made after the last review, each with the finding it answers, since no reviewer saw them; checks not run; each criterion no automated test proves and how it was checked instead; decisions that would be costly to reverse; each departure from a technical decision or a nudge with its reason; and each name for a domain concept not taken from the glossary. Nothing else. A user who ran you reads it there; a skill or runner that called you collects it into its own `## Left standing`.
 
 Where you saw a better approach than the one you were asked for and it was not yours to take, say so now, once, rather than building it.

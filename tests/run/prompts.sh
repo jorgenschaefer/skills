@@ -57,6 +57,12 @@ else bad "the build is told its technical decisions, and to record under Left st
 if grep -q 'no automated test proves' <(head -1 "$STUB_CALLS") && ! grep -qi 'which test proves' <(head -1 "$STUB_CALLS"); then
   ok "the build lists under Left standing only the criteria no test proves"
 else bad "the build lists under Left standing only the criteria no test proves" "$(head -1 "$STUB_CALLS")"; fi
+# Reviews stop after two rounds, and what a build fixes after the last one no
+# reviewer sees. Three of 27 second rounds found a blocker; on weight-tracker
+# what the limit left was all real and fixed by hand at acceptance.
+if grep -q 'fixes you made after the last review' <(head -1 "$STUB_CALLS"); then
+  ok "the build lists under Left standing the fixes no reviewer saw"
+else bad "the build lists under Left standing the fixes no reviewer saw" "$(head -1 "$STUB_CALLS")"; fi
 
 # --- what the final review is told
 #
@@ -108,6 +114,13 @@ else bad "the review is handed what every build left standing" "$(tail -1 "$STUB
 if grep -q 'blocker and should-fix' <(tail -1 "$STUB_CALLS") && grep -q '## For you' <(tail -1 "$STUB_CALLS"); then
   ok "the review settles the blockers and should-fix the builds left, or leaves them for the person"
 else bad "the review settles the blockers and should-fix the builds left, or leaves them for the person" "$(tail -1 "$STUB_CALLS")"; fi
+# A fix a build made after its last review was seen by nobody; the final review
+# is the first that can check it. Its own fixes after its last round go to
+# acceptance the same way.
+if grep -q 'made after its last review' <(tail -1 "$STUB_CALLS") \
+   && grep -q 'fixes you made after the last review' <(tail -1 "$STUB_CALLS"); then
+  ok "the review checks the fixes no build's reviewer saw, and lists its own"
+else bad "the review checks the fixes no build's reviewer saw, and lists its own" "$(tail -1 "$STUB_CALLS")"; fi
 # The end of a run prints this section and nothing else of REVIEW.md, so it is
 # the only place the most important of what is still open can go.
 if grep -q 'most important first' <(tail -1 "$STUB_CALLS") && grep -q 'at most five' <(tail -1 "$STUB_CALLS"); then
