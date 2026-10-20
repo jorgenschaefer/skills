@@ -25,7 +25,7 @@ Note the files that code is in.
 Three subagents, each with a fresh context:
 
 1. **The writer reads the code.** Give it the question, where the answer shows and what else shows there, and the files. It describes what the code decides and how, in the words used where it shows.
-2. **The rewriter never sees the code.** Give it the writer's description, the question and the list of what shows where the answer shows, nothing else, and tell it to open no file. It writes for someone who knows the domain and not the code: a short numbered list, the concepts first, then how they combine. It may cut, merge and drop detail, but each thing on that list stays explained.
+2. **The rewriter never sees the code.** Give it the writer's description, the question and the list of what shows where the answer shows, nothing else, and tell it to open no file. It writes for someone who knows the domain and not the code, top-down, the way good code reads: a summary of a few sentences that answers the whole question in terms it does not yet explain, then a short section for each of those terms, under a title naming what it describes. A section may itself use terms explained further down, each with a titled section of its own, as deep as the subject needs; every term is explained once. It may cut, merge and drop detail, but each thing on that list stays explained.
 3. **The checker reads it against the code.** Give it the rewritten explanation and the files. It reports only statements the code contradicts, each with the line that contradicts it and what the code does there. A missing detail is never a finding.
 
 A finding goes to a fresh rewriter with the current explanation, and is fixed by correcting or dropping that statement - never by adding a qualifier or a case. Then a fresh checker checks the new version. Show only a version the last checker found nothing in; after three rounds that still leave findings, drop the statements still disputed and show that.
@@ -35,7 +35,7 @@ A finding goes to a fresh rewriter with the current explanation, and is fixed by
 In chat, in the developer's language:
 
 - **First, in a line or two,** everything shown where the answer shows that comes from this code, in the words used there - so a missing piece is noticed at a glance.
-- **Then the numbered explanation.**
+- **Then the explanation**: the summary, then its titled sections.
 - **Last, the files** that code is in.
 
 ## Until they understand

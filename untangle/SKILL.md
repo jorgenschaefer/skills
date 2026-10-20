@@ -20,7 +20,7 @@ This skill's `CRITERIA_FORMAT.md` settles the shape of the file it writes.
 
 Read the files the explanation names and search for every use of them. Then propose, in chat and in the explanation's terms:
 
-- **For each concept** of the explanation, the module it becomes - its path, named with `UBIQUITOUS_LANGUAGE.md`'s term where the project has one - and what it offers: its functions or types and their parameters. A new directory for a concept the glossary has no term for is named by the developer; once they approve the shape, the name goes into the glossary where the project has one, in the shape its entries have.
+- **For each concept** of the explanation, the module it becomes. A concept is a term with a titled section, and every one becomes a module. A term only one section uses sits inside the module of that section's concept. A term the summary uses, or several sections use, sits at the deepest level that holds all its users - wherever its section happens to stand in the text. Give each module its path, named with `UBIQUITOUS_LANGUAGE.md`'s term where the project has one, and what it offers: its functions or types and their parameters. A new directory for a concept the glossary has no term for is named by the developer; once they approve the shape, the name goes into the glossary where the project has one, in the shape its entries have.
 - **One call from an existing test**, rewritten against the new modules, so the shape shows in use.
 - **The callers outside those files that will move**, as `<file>:<line>`, each with the module it will call instead.
 - **A sample change** put in the explanation's terms - "measure the pace over ten days instead of seven" - which the rework will make on a throwaway branch to show it lands in one place.
@@ -56,7 +56,7 @@ The developer asked <their question, in their words>, and no longer knows what <
 - **AC-n** `test-map.md` holds a fresh agent's verdict on every row: that the new home holds the old test's inputs, expected values and assertions, or that the "no longer reachable" reason is borne out by the code.
 - **AC-n** Outside this directory, the glossary, `docs/adr/` and `CLAUDE.md`, the diff touches only the scope files, the new modules, the callers that move, test files, and the structural checks that hold the new modules.
 - **AC-n** Outside the new modules, no code, tests included, imports from a scope file that is not itself one of the new modules, and the project's check command is green.
-- **AC-n** `checks.md` in this directory holds a description a fresh agent wrote from the new modules alone, which names every numbered concept of `EXPLANATION.md` and contradicts none of its statements.
+- **AC-n** `checks.md` in this directory holds a description a fresh agent wrote from the new modules alone, which names every concept `EXPLANATION.md` gives a section and contradicts none of its statements.
 - **AC-n** `checks.md` holds the diff stat of the sample change - <the sample change> - made by a fresh agent on a throwaway branch, touching one module per concept it changes.
 
 ## Agreed design
