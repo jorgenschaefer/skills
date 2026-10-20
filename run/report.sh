@@ -5,10 +5,12 @@
 #
 # Nobody watches a run, so whatever needs a person is printed at the end of it,
 # however it ended - and only that, last, where the screen stops: a halt and the
-# whole of why, or what is still open once the review is done. What each build
-# left standing is in its ticket and what each cost in the token log; printed
-# here, they buried the one halt that stopped a run. Acceptance is pointed to
-# only when there is something to accept.
+# whole of why, or where to go on. What a finished run leaves open waits for
+# acceptance, which reads every ticket's Left standing and REVIEW.md whole and
+# puts each item to the person; printed here too, it was only a preview of that
+# list. Pages of Left standing printed here once buried the one halt that
+# stopped a run. Acceptance is pointed to only when there is something to
+# accept.
 #
 # Sourced by run.sh, never run.
 
@@ -16,7 +18,7 @@
 # halt nobody settled builds what does not wait on it, and one that ended named
 # the first halt it found named the old one, with another session's log.
 end_run() {  # exit status, what stopped the run: the ticket that halted it, or why in a line
-  local t left why="${2:-}" built=0
+  local t why="${2:-}" built=0
   for t in "${TICKET_FILES[@]}"; do
     [ "$(field "$t" status)" != "done" ] || built=$((built + 1))
   done
@@ -47,20 +49,6 @@ end_run() {  # exit status, what stopped the run: the ticket that halted it, or 
         || printf '  %s\n' "$(unfinished_line "$t")"
     done
   else
-    if [ -f "$REVIEW" ]; then
-      printf '\nstill open after the final review:\n\n'
-      if grep -qx '## For you' "$REVIEW"; then
-        section "$REVIEW" 'For you'
-      else
-        head -40 "$REVIEW"
-      fi
-      printf '\nfull review: %s\n' "$REVIEW"
-    else
-      for t in "${TICKET_FILES[@]}"; do
-        left="$(left_standing "$t")"
-        [ -z "$left" ] || printf '\n%s left standing:\n%s\n' "$(basename "$t")" "$left"
-      done
-    fi
     printf 'next: /accept-criteria %s\n' "$(dirname "$TICKETS")"
   fi
   exit "$1"

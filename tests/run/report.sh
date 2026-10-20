@@ -47,9 +47,6 @@ rc="$(run)"
 if [ "$rc" = 0 ] && [ "$(wc -l < "$STUB_CALLS")" = 1 ] && [ ! -e "$WORK/changes/x/REVIEW.md" ]; then
   ok "a single ticket gets no final review"
 else bad "a single ticket gets no final review" "rc=$rc $(calls) $(out)"; fi
-if grep -q 'left by 1-one.md' "$WORK/.out" && tail -1 "$WORK/.out" | grep -q '/accept-criteria'; then
-  ok "with no review, the one ticket's Left standing is what the run ends with"
-else bad "with no review, the one ticket's Left standing is what the run ends with" "$(out)"; fi
 
 workspace
 sed -i 's/^after: .*/after:/' "$WORK/changes/x/tickets/2-two.md"; commit
@@ -104,16 +101,17 @@ workspace
 plan build build review
 run > /dev/null
 rc="$(run)"
-if [ "$rc" = 0 ] && [ "$(wc -l < "$STUB_CALLS")" = 3 ] && grep -q 'the review left: a seam' "$WORK/.out"; then
-  ok "a run started again after its review reprints it rather than reviewing again"
-else bad "a run started again after its review reprints it rather than reviewing again" "rc=$rc $(calls) $(out)"; fi
+if [ "$rc" = 0 ] && [ "$(wc -l < "$STUB_CALLS")" = 3 ] && tail -1 "$WORK/.out" | grep -q '/accept-criteria'; then
+  ok "a run started again after its review points on to acceptance rather than reviewing again"
+else bad "a run started again after its review points on to acceptance rather than reviewing again" "rc=$rc $(calls) $(out)"; fi
 
 # --- the end of a run
 #
 # Nobody watches a run, so what needs a person is printed at the end of it,
 # however it ended - and only that, last, where the screen stops. One run that
 # halted ended in pages of what every build left standing, and nothing near
-# the end said a ticket had halted, or why.
+# the end said a ticket had halted, or why. What a finished run leaves open,
+# acceptance reads whole and puts to the person, so none of it is printed.
 
 # Everything from the line the end of the run starts at: what follows the last
 # line the loop printed, which all start with the time.
@@ -123,24 +121,12 @@ ending() { sed -n '/^[0-9][0-9]:[0-9][0-9]:[0-9][0-9] /=' "$WORK/.out" | tail -1
 workspace
 plan build build review
 rc="$(run)"
-if [ "$rc" = 0 ] && ending | grep -q 'the review left: a seam'; then
-  ok "a finished run ends with what REVIEW.md leaves for the person"
-else bad "a finished run ends with what REVIEW.md leaves for the person" "rc=$rc $(out)"; fi
-if ! grep -q "the review's detail" "$WORK/.out"; then ok "the rest of REVIEW.md is left for acceptance"
-else bad "the rest of REVIEW.md is left for acceptance" "$(out)"; fi
-if ! grep -q 'left by' "$WORK/.out"; then ok "what each build left standing is not printed - the review has it"
-else bad "what each build left standing is not printed - the review has it" "$(out)"; fi
+if [ "$rc" = 0 ] && ! grep -q 'the review left: a seam' "$WORK/.out" && ! grep -q 'left by' "$WORK/.out"; then
+  ok "a finished run prints neither REVIEW.md nor what the builds left standing - acceptance reads them"
+else bad "a finished run prints neither REVIEW.md nor what the builds left standing - acceptance reads them" "rc=$rc $(out)"; fi
 if tail -1 "$WORK/.out" | grep -q '/accept-criteria .*changes/x'; then
   ok "a finished run ends pointing on to /accept-criteria"
 else bad "a finished run ends pointing on to /accept-criteria" "$(out)"; fi
-
-# A REVIEW.md written before it had a section for the person is still shown,
-# from its top - as far as fits a page.
-seq -f 'line %g of an old review' 50 > "$WORK/changes/x/REVIEW.md"; commit
-rc="$(run)"
-if [ "$rc" = 0 ] && ending | grep -qx 'line 40 of an old review' && ! ending | grep -qx 'line 41 of an old review'; then
-  ok "a REVIEW.md with nothing marked for the person is printed from its top, 40 lines of it"
-else bad "a REVIEW.md with nothing marked for the person is printed from its top, 40 lines of it" "rc=$rc $(out)"; fi
 
 workspace
 sed -i 's/^after: .*/after:/' "$WORK/changes/x/tickets/2-two.md"; commit
@@ -236,16 +222,14 @@ if [ "$rc" != 0 ] && ending | grep -q 'RUN STOPPED: the final review did not fin
   ok "a run whose review did not finish ends saying so"
 else bad "a run whose review did not finish ends saying so" "rc=$rc $(out)"; fi
 
-# With no review, Left standing is printed whole, subheadings and all.
+# The review is handed Left standing whole, subheadings and all.
 workspace
-rm "$WORK/changes/x/tickets/2-two.md"
-sed -i '/^- \*\*AC-2\*\*/d' "$WORK/changes/x/CRITERIA.md"; commit
 printf '%s\n' '' '### Checks' '' '- the lint was not run' >> "$WORK/.left-extra"
-plan build
+plan build build review
 rc="$( STUB_LEFT_EXTRA="$WORK/.left-extra" run )"
-if [ "$rc" = 0 ] && grep -q 'left by 1-one.md' "$WORK/.out" && grep -q 'the lint was not run' "$WORK/.out"; then
-  ok "a Left standing with subheadings is printed to its end"
-else bad "a Left standing with subheadings is printed to its end" "rc=$rc $(out)"; fi
+if [ "$rc" = 0 ] && grep -q 'left by 1-one.md' <(tail -1 "$STUB_CALLS") && grep -q 'the lint was not run' <(tail -1 "$STUB_CALLS"); then
+  ok "the review is handed a Left standing with subheadings to its end"
+else bad "the review is handed a Left standing with subheadings to its end" "rc=$rc $(calls) $(out)"; fi
 
 # The review is handed every build's Left standing, and one run's 33 tickets
 # came to 148 KB of it - more than Linux takes in a single argument, so the

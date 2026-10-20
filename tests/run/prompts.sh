@@ -121,22 +121,17 @@ if grep -q 'made after its last review' <(tail -1 "$STUB_CALLS") \
    && grep -q 'fixes you made after the last review' <(tail -1 "$STUB_CALLS"); then
   ok "the review checks the fixes no build's reviewer saw, and lists its own"
 else bad "the review checks the fixes no build's reviewer saw, and lists its own" "$(tail -1 "$STUB_CALLS")"; fi
-# The end of a run prints this section and nothing else of REVIEW.md, so it is
-# the only place the most important of what is still open can go.
-if grep -q 'most important first' <(tail -1 "$STUB_CALLS") && grep -q 'at most five' <(tail -1 "$STUB_CALLS"); then
-  ok "the review opens REVIEW.md with the few most important things still open"
-else bad "the review opens REVIEW.md with the few most important things still open" "$(tail -1 "$STUB_CALLS")"; fi
-# Five lines cannot hold every decision a review leaves, and one that does not
-# fit has to go somewhere the end of the run still points at.
+# Acceptance puts what is open to the person in the order REVIEW.md gives it.
 # shellcheck disable=SC2016 # the backticks are Markdown's, matched literally
-if grep -q 'decision first' <(tail -1 "$STUB_CALLS") && grep -q 'how many more' <(tail -1 "$STUB_CALLS") \
+if grep -q 'decision first' <(tail -1 "$STUB_CALLS") && grep -q 'most important first' <(tail -1 "$STUB_CALLS") \
    && [ "$(grep -o 'under `## For you`' <(tail -1 "$STUB_CALLS") | wc -l)" -ge 2 ]; then
-  ok "the review puts what needs a decision first under For you, and counts what does not fit"
-else bad "the review puts what needs a decision first under For you, and counts what does not fit" "$(tail -1 "$STUB_CALLS")"; fi
-# A one-ticket run has no review, and prints what its build left standing.
-if grep -q 'only ticket' <(head -1 "$STUB_CALLS"); then
-  ok "a build is told where its Left standing goes in a run of one ticket and of several"
-else bad "a build is told where its Left standing goes in a run of one ticket and of several" "$(head -1 "$STUB_CALLS")"; fi
+  ok "the review opens REVIEW.md with what needs a decision, then the rest most important first"
+else bad "the review opens REVIEW.md with what needs a decision, then the rest most important first" "$(tail -1 "$STUB_CALLS")"; fi
+# Nobody reads a session's closing message; a build has to know who reads its
+# Left standing instead.
+if grep -q 'handed to the final review' <(head -1 "$STUB_CALLS") && grep -q 'read at acceptance' <(head -1 "$STUB_CALLS"); then
+  ok "a build is told who reads its Left standing"
+else bad "a build is told who reads its Left standing" "$(head -1 "$STUB_CALLS")"; fi
 if grep -q 'severity' <(head -1 "$STUB_CALLS"); then
   ok "a build leaves its unfixed findings standing with their severity"
 else bad "a build leaves its unfixed findings standing with their severity" "$(head -1 "$STUB_CALLS")"; fi
