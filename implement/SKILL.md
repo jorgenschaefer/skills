@@ -64,8 +64,8 @@ Commit when the behaviour is green and the checks pass. `git-commit-message` is 
 - each departure from a technical decision or a nudge: what it says, what you built instead, and why;
 - each name for a domain concept not taken from the glossary, for the developer to confirm;
 - tradeoffs: where you weighed one law of the standard against another, and which way you leaned;
-- each dependency you took on: what it gives, what it costs, and the checks you ran on it;
-- blast radius and revert: what a failure of this change would affect, and what a revert would not undo;
+- each dependency you took on: what it gives and what it costs;
+- blast radius and revert: what a failure of this change would affect beyond the code it changed, and what a revert would not undo;
 - other decisions that would be costly to reverse - a format other code will be written against, a name that spreads;
 - what was hard to change, and why - what surprised you, what you had to change in more than one place, what you could not find - each with a suggestion: a refactoring for a structural problem, a check for an invisible reason;
 - a better approach than the one you were asked for, or a fix that is a change of its own, where it was not yours to take - named here rather than built.
