@@ -22,3 +22,12 @@ put before the human what the manifesto says it should, whether a stage
 judged its own work, or whether an approved check was weakened.
 
 It is linked from this repository's `.claude/skills` and not synced.
+
+## The pipeline only
+
+There are two retros: one improves the pipeline - this repository's skills
+and runner - and one improves the process in the codebase the pipeline runs
+in. This item is the first. Today's `retro` does both, sorting each finding
+under "Pipeline or project" and only giving the wording for project fixes.
+The project side goes to the periodic refactor phase (`refactor-phase`);
+here a project finding is handed on, not fixed.
