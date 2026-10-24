@@ -25,6 +25,26 @@ thought.
   was hard to change across sessions), `rule-cruft` (cases in a rule nothing
   needs any more), `cut-files-by-concept` (what shape new code is held to).
 
+## The project's process, too
+
+The user also wants a retro for the codebase the pipeline runs in: how to
+improve the process there, as opposed to the pipeline itself (that one is
+`retro-for-the-manifesto`). It belongs in this phase. `MANIFESTO.md` gives
+two answers to what was hard to change: "a refactoring for a structural
+problem, a check for an invisible reason". Refactoring is the first; the
+project retro is the second - the project's checks, its `run` skill, its
+structural rules, its glossary. Both read the same input, the friction
+collected across runs (`find-code-before-understanding-is-lost`), at the
+same periodic stop.
+
+Today `retro` finds project-side failures but, living only in this
+repository, cannot fix them: a fix "is fixed in the project, and changed
+only when the user asks for it there; otherwise give the wording"
+(`.claude/skills/retro/SKILL.md`, "Pipeline or project"). Its moments - a
+person stepping in, defects caught late, searching, interference - and its
+mechanism ladder (something that executes, then a check without a stake,
+then an instruction) are what the project side would reuse.
+
 ## Where the three depart from MANIFESTO.md
 
 - **explain-code smooths over differences.** The manifesto: an agent
