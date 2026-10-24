@@ -27,6 +27,8 @@ Build it in the order the standard says the work happens. While you build, run t
 
 **Keep your own context for the build.** Side work whose result is a conclusion - surveying code you do not know, chasing a failure you cannot yet explain - goes to a subagent with the question, and only the answer comes back. The red-green cycles stay here.
 
+**Leave the files you touch better than you found them.** A small fix in passing - a misleading name, a duplicate, dead code, a test for behaviour nothing pins - goes in where it lies in a file this change already touches, follows the idioms already there, and keeps behaviour, proved as the standard proves a refactor, in a commit of its own before the change. Anything larger, anything in another file, and anything a user or another program would notice is a change of its own.
+
 ## Review it in a session that did not write it
 
 **Spawn `critique` as a subagent with a fresh context.** Hand it the diff, the result of the checks, and what was asked for - the criteria and what is out of scope, as the request states them, and the problem they serve where it states one. Do not hand it the reasoning that produced the code: not the plan, and not how you tested it. A reviewer that has accepted every step of the reasoning reads its own intentions into the code; the subagent starts cold, which is the only reason its findings are worth anything.
@@ -47,7 +49,7 @@ The fresh-context review runs on every change this skill builds, down to the thr
 
 ## Stop rather than improvise
 
-Where a precondition you needed is not there, say what is missing and stop. It will look like five minutes of work, and then the change holds something nobody asked for, in a commit that claims to do something else. The same goes for a decision the request does not settle and that is not yours to settle: a tradeoff nobody accepted is not a detail.
+Where a precondition you needed is not there, say what is missing and stop. It will look like five minutes of work, and then the change builds a precondition nobody approved, in a commit that claims to do something else. The same goes for a decision the request does not settle and that is not yours to settle: a tradeoff nobody accepted is not a detail.
 
 ## Finish
 
@@ -55,4 +57,4 @@ Commit when the behaviour is green and the checks pass. `git-commit-message` is 
 
 **End your report with what you leave standing**, whoever called you: review findings not fixed, with the severity the reviewer gave each, and why; fixes made after the last review, each with the finding it answers, since no reviewer saw them; checks not run; each criterion no automated test proves and how it was checked instead; decisions that would be costly to reverse; each departure from a technical decision or a nudge with its reason; and each name for a domain concept not taken from the glossary. Nothing else. A user who ran you reads it there; a skill or runner that called you collects it into its own `## Left standing`.
 
-Where you saw a better approach than the one you were asked for and it was not yours to take, say so now, once, rather than building it.
+Where you saw a better approach than the one you were asked for, or a fix that is a change of its own, and it was not yours to take, say so now, once, rather than building it.

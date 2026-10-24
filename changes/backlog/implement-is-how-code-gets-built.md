@@ -22,7 +22,7 @@ user's review, and for each such discovery they decide: ask now, or add it to
 - `implement/SKILL.md:18` is a paragraph on `CRITERIA.md`: its ACs, its
   technical decisions as limits, departures, nudges, writing `## Left
   standing` into the file and committing it with the change.
-- `:56`, what the report leaves standing, is cut for the pipeline: departures
+- `:58`, what the report leaves standing, is cut for the pipeline: departures
   from a technical decision or a nudge, names not taken from the glossary,
   and "a skill or runner that called you collects it into its own `## Left
   standing`".
@@ -37,9 +37,9 @@ What a build does with something its input does not settle:
 
 - `implement/SKILL.md:16`: ask, "before or during the build - and do not
   build past it".
-- `:50`: stop, on "a decision the request does not settle and that is not
+- `:52`: stop, on "a decision the request does not settle and that is not
   yours to settle".
-- `:56`: report "decisions that would be costly to reverse".
+- `:58`: report "decisions that would be costly to reverse".
 - `run/prompts.sh:23`: "every implementation question on the way: decide it,
   and record".
 

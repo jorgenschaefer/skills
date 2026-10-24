@@ -23,7 +23,7 @@ Evidence:
 
 - Left standing lists its contents and ends "Nothing else"
   (`criteria-to-tickets/TICKET_FORMAT.md:52`, both `CRITERIA_FORMAT.md:46`,
-  `implement/SKILL.md:56`, and the brief in `run/prompts.sh`). None of the
+  `implement/SKILL.md:58`, and the brief in `run/prompts.sh`). None of the
   four is on the list, so a build is told not to report them.
 - `REVIEW.md`'s `## For you` (`run/prompts.sh`, `review_brief`) and the
   report of `/accept-criteria` (`accept-criteria/SKILL.md:63`) have none of
@@ -31,6 +31,11 @@ Evidence:
   external thing is down", which is part of a blast radius.
 - Only `explain-diff` says what a revert would not undo (section 4), and it
   is not part of the pipeline.
+- `implement/SKILL.md:60` has a build say "now, once" where it saw a better
+  approach or a fix that is a change of its own - a suggestion of the kind
+  "What was hard to change" carries. Left standing has no room for it
+  ("Nothing else", `:58`), so it goes only into the closing message, and in
+  a run "Nobody reads your closing message" (`run/prompts.sh`).
 
 "What was hard to change" is also the input that
 `find-code-before-understanding-is-lost` collects across sessions.
@@ -41,5 +46,5 @@ Tradeoffs would stay empty while the standard decides by strict order: "If
 two pull against each other, the earlier one wins"
 (`implement/CODING_STANDARDS.md:14`, in all five copies). The manifesto:
 "The laws are weighed against each other, and the order says which way to
-lean." And `implement/SKILL.md:50` says "a tradeoff nobody accepted is not a
+lean." And `implement/SKILL.md:52` says "a tradeoff nobody accepted is not a
 detail", though under a strict order there is no tradeoff.
