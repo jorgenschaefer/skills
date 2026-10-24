@@ -26,8 +26,6 @@ Answer each yourself; the user decides where a question says so.
 
 **One problem at a time.** Where the item holds more than one change, pick one and say what goes back on the backlog.
 
-**Where the manifesto itself looks wrong**, say so; changing it is the user's decision, never a side effect of the plan.
-
 A decision to delete the item or leave it is a one-line plan. Otherwise the plan is written once the user has picked an approach.
 
 ## The plan
@@ -65,3 +63,5 @@ Where the report holds a decision the plan didn't cover, or a finding you left s
 ## Throughout
 
 **Push back once.** A decision reaffirmed after hearing the objection is theirs.
+
+**The manifesto is open to debate**, all but its premise: agents write and read the code, and the way software is built is tailored to that. Where a sentence looks wrong, or reads two ways - a reviewer reads it differently from you, you had to invent a rule it should have given, following it would make the software worse - quote it, say what it led to, and draft a rewording or a deletion to discuss with the user: with the plan where it shows before, in the report where it shows after. Changing it is the user's decision, never a side effect of the plan.
