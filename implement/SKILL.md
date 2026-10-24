@@ -49,12 +49,25 @@ The fresh-context review runs on every change this skill builds, down to the thr
 
 ## Stop rather than improvise
 
-Where a precondition you needed is not there, say what is missing and stop. It will look like five minutes of work, and then the change builds a precondition nobody approved, in a commit that claims to do something else. The same goes for a decision the request does not settle and that is not yours to settle: a tradeoff nobody accepted is not a detail.
+Where a precondition you needed is not there, say what is missing and stop. It will look like five minutes of work, and then the change builds a precondition nobody approved, in a commit that claims to do something else. The same goes for a decision the request does not settle and that is not yours to settle: a tradeoff that changes what was approved, or that the request leaves to the person, is not a detail. Any other tradeoff you weigh yourself, and report.
 
 ## Finish
 
 Commit when the behaviour is green and the checks pass. `git-commit-message` is the shape. Stage only the files this change touched; never `git add -A`.
 
-**End your report with what you leave standing**, whoever called you: review findings not fixed, with the severity the reviewer gave each, and why; fixes made after the last review, each with the finding it answers, since no reviewer saw them; checks not run; each criterion no automated test proves and how it was checked instead; decisions that would be costly to reverse; each departure from a technical decision or a nudge with its reason; and each name for a domain concept not taken from the glossary. Nothing else. A user who ran you reads it there; a skill or runner that called you collects it into its own `## Left standing`.
+**End your report with what you leave standing**, whoever called you, leaving out what is empty:
 
-Where you saw a better approach than the one you were asked for, or a fix that is a change of its own, and it was not yours to take, say so now, once, rather than building it.
+- review findings not fixed, with the severity the reviewer gave each, and why;
+- fixes made after the last review, each with the finding it answers, since no reviewer saw them;
+- checks not run;
+- each criterion no automated test proves, and how it was checked instead;
+- each departure from a technical decision or a nudge: what it says, what you built instead, and why;
+- each name for a domain concept not taken from the glossary, for the developer to confirm;
+- tradeoffs: where you weighed one property of the standard against another, and which way you leaned;
+- each dependency you took on: what it gives, what it costs, and the checks you ran on it;
+- blast radius and revert: what a failure of this change would affect, and what a revert would not undo;
+- other decisions that would be costly to reverse - a format other code will be written against, a name that spreads;
+- what was hard to change, and why - what surprised you, what you had to change in more than one place, what you could not find - each with a suggestion: a refactoring for a structural problem, a check for an invisible reason;
+- a better approach than the one you were asked for, or a fix that is a change of its own, where it was not yours to take - named here rather than built.
+
+Nothing else. A user who ran you reads it there; a skill or runner that called you collects it into its own `## Left standing`.
