@@ -64,4 +64,4 @@ A reviewer that didn't write the change adds to each section what the author mis
 - A check that executes beats a check that judges. Utility and Security can mostly be executed, Usability and Maintainability mostly judged. Where a criterion is judged, the review is adversarial.
 - Reviewers use different framings, which reduces the blind spots they share with the author but does not remove them.
 - A test for anything the human approved counts only if it fails when the code breaks it, and that is checked on every change. Weakening or deleting the check for a constraint is a decision about that constraint, and is reported as one.
-- Reports of what was hard to change are collected across sessions and checked before anyone acts on them. Repeated friction in the same place calls for a refactoring, as a change of its own, not as part of the change that found it.
+- No report of what was hard to change is acted on in the change that wrote it. Each comes to the human as a proposed follow-up with what skipping it would cost, from the evidence: how often that code changes, earlier reports on the same place, the law at risk. The human decides.
