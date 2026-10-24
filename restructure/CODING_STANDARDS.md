@@ -11,7 +11,7 @@ Two principles apply to every property below:
 
 They never justify code that is less than correct or secure.
 
-Code is held to four properties. Check them in this order. If two pull against each other, the earlier one wins.
+Code is held to four properties. Check them in this order. Where two pull against each other, weigh them; the order says which way to lean.
 
 - Correctness
 - Security
