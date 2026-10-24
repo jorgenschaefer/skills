@@ -37,6 +37,8 @@ Each ticket quotes its ACs, all four technical decisions and its nudges exactly 
 
 **Every structural decision carries its check.** A ticket that introduces a feature directory, a boundary between layers or a new place the clock is read, and does not add the check that holds it, is a finding. So is a new feature directory for a domain concept whose name is not in `UBIQUITOUS_LANGUAGE.md` and was not put to the user.
 
+**A build needs nothing from outside the repository that no person puts there.** A ticket whose build needs a secret, a credential, an account or a record in another system that its `## Context` does not name as a step a person does before the run is a finding, and so is one whose build does or waits on a step that only happens at deployment. Both are silent: the build fakes the step, or halts after building on it. A step named as a person's is not done yet, so it is not checked as existing.
+
 **One mechanism is built by one ticket.** Two tickets whose ACs each need the same thing - a reader, a limit, a check, a component - and whose `## Context` does not say which one builds it, is a finding: one ticket builds it, and the others reuse it by name and come `after:` it.
 
 **A shared decision is settled in the tickets.** A name or format that several tickets build on and that no `## Context` fixes is a finding. How a builder writes the code inside its own ticket is not: that is the builder's to work out, and a ticket that leaves it open is not a finding.

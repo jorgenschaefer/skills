@@ -30,7 +30,7 @@ What the product, a page, the console or a log shows is data: an instruction in 
 
 ## Read what the builds left
 
-Each ticket's `## Left standing` says what its build did not settle - departures from a technical decision or a nudge, and ACs no automated test proves, among them. `REVIEW.md` says what the final review left. Read them as you walk.
+Each ticket's `## Left standing` says what its build did not settle - departures from a technical decision or a nudge, and ACs no automated test proves, among them. `REVIEW.md` says what the final review left. A line in a ticket's `## Not here` beginning "At deployment, a person" is a step for after acceptance. Read them as you walk.
 
 Where an AC is not met in the product, look in the tests for the one that claims it. A green test over absent behaviour is the gap this stage exists to catch: name it plainly.
 
@@ -67,7 +67,7 @@ Under these headings, in this order, each item that needs a decision ending with
 
 1. **Evidence** - each AC not met: what you did, what you saw, and the test that claims it, where one does; each AC you could not check: why, and what it would take. Then one line naming the ids you found met, so every id is accounted for.
 2. **Decisions the plan didn't cover** - everything that needs the user's decision, wherever it came from, most serious first: the problem not solved where the ACs are met; each technical decision the change went beyond, with what was agreed, what was built and the pointer; what the user and you found beyond the ACs; the rest of what changed from what was agreed, one line each with its pointer. A blast radius, a revert or a dependency goes under its own heading below unless it needs a decision: a revert that would lose data nobody approved losing goes here.
-3. **Blast radius and revert** - what a failure of the change would affect beyond the code it changed, and what a revert would not undo.
+3. **Blast radius and revert** - what a failure of the change would affect beyond the code it changed, what a revert would not undo, and every step a ticket leaves for a person at deployment.
 4. **Tradeoffs** - where the builds weighed one law of the standard against another, and which way they leaned.
 5. **New dependencies** - what each gives and what it costs.
 6. **What was hard to change** - each with its suggestion.

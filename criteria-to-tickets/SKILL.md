@@ -49,11 +49,13 @@ Where a slice introduces a concept the codebase has no name for, or moves a boun
 
 ## What slicing turns up
 
-Read the code each slice will touch before you cut: what exists already, what it is called, which files it adds to. Then walk each slice against that code as its builder would, looking for what only the user can decide: behaviour the user sees that the ACs leave open, ACs that conflict, a nudge the code contradicts, a technical decision the code shows to be short - a table it does not name, a caller it does not mention. The walk is thinking, not a document: its answers go into `CRITERIA.md` or `## Context`, and its steps go nowhere. It turns up two kinds of question.
+Read the code each slice will touch before you cut: what exists already, what it is called, which files it adds to. Then walk each slice against that code as its builder would, looking for what only the user can decide: behaviour the user sees that the ACs leave open, ACs that conflict, a nudge the code contradicts, a technical decision the code shows to be short - a table it does not name, a caller it does not mention - and for what only a person can do. The walk is thinking, not a document: what it finds goes into `CRITERIA.md` or the tickets, and the walk itself goes nowhere. It turns up three kinds of thing.
 
 **Product questions are the user's.** An AC that could mean two things, an edge case nobody owns, a behaviour nobody specified. So is a technical decision that falls short: it was approved, and widening it is the user's call. Answering one yourself is inventing a requirement. Put it to the user at the approval, and write the answer into `CRITERIA.md` before any ticket quotes it - as a new or amended AC, or for a technical decision as the amended decision, never as an AC. Where the answer changes the cut, stop and hand back to `/find-criteria`: the slicing in your hands was made against criteria that no longer say what they said.
 
 **Implementation decisions between tickets are yours.** Which ticket builds what several need, a name or format other tickets build on. Decide them, write them into the tickets' `## Context`, and show them at the approval so the user can object. They are not written back into `CRITERIA.md`. Decisions inside one ticket are its builder's.
+
+**Steps only a person can do never go into a build.** A secret to put in place, a credential or account to create, access to grant: a build runs with nobody there, and a session must not write a secret, so it halts on the step or fakes it. A step the change needs before it is complete goes to the user at the approval with a shell command that shows it is done and prints no secret, and the ticket that needs it says in `## Context` that a person puts it in place before the run, and which command shows it. A step that can only happen at deployment - DNS, a related service, data in production - is shown at the approval as one for after acceptance, and goes into the `## Not here` of the ticket a builder would otherwise wander into, as a line beginning "At deployment, a person".
 
 ## Write, check, approve
 
@@ -63,7 +65,7 @@ Read the code each slice will touch before you cut: what exists already, what it
 
    A ticket added, or whose `closes`, `advances`, `after:` or `## Context` changed to fix a silent finding, goes through the check again first: hand the subagent the whole directory again, naming those tickets, so it holds the rest against them. A check that saw tickets 01 to 20 said nothing about the 21 a rework added after it, and that one built a second copy of something another ticket built. A fix to a loud finding alone does not go back: the stop it fixes was already the check, and another round costs more than that stop would have. Name what changed when you hand it back, not what to look for - a reviewer told where to look finds something there.
 
-   Show the slicing - each slice with its estimated footprint, and the reason for any between 1000 and 2000 lines or 15 and 25 files - the implementation decisions, and the product questions as one list. A no means editing the tickets and asking again.
+   Show the slicing - each slice with its estimated footprint, and the reason for any between 1000 and 2000 lines or 15 and 25 files - the implementation decisions, the steps only a person can do, each as one before the run with its command or one at deployment, and the product questions as one list. A no means editing the tickets and asking again.
 
 ## Copy, never summarise
 
@@ -84,11 +86,11 @@ Drift, or acceptance routing an unmet AC back, lands here against a directory th
 - **Delete a ticket with nothing left to build; add tickets for new work.** Fix every `after:` that named a deleted ticket - the runner halts on one that names nothing.
 - **Delete `REVIEW.md`**, where there is one: it reviewed what is about to change, and the runner does not review again while it is there.
 - **It goes through the same write, check, approve**, because the tickets are what is being changed.
-- **Commit the re-slice before the runner starts again** - the runner refuses a dirty tree, and its own halts are uncommitted too.
+- **Run the commands of the steps a person does, as at the hand-off, then commit the re-slice before the runner starts again** - the runner refuses a dirty tree, and its own halts are uncommitted too.
 
 ## Hand off
 
-Commit the change's directory - `CRITERIA.md`, specimens, tickets - and any ADRs before handing off; the runner refuses a dirty tree.
+Run the command of each step a person does before the run. Where one fails, name the step and stop with the tickets uncommitted; asked again once it is done, run the commands again and hand off without slicing again. Then commit the change's directory - `CRITERIA.md`, specimens, tickets - and any ADRs before handing off; the runner refuses a dirty tree.
 
 **One ticket:** `/implement` on it, telling it what the runner tells every build: its technical decisions were agreed, and where the code calls for more than one says, or departs from a nudge, it builds what the code calls for and records under `## Left standing` what was agreed, what it built and why. Then `/accept-criteria`.
 
