@@ -1,6 +1,6 @@
 ---
 effort: M
-utility: M
+utility: L
 ---
 
 # Find behaviours before the developer stops understanding them
@@ -43,6 +43,20 @@ These are directions, not decisions:
   (`restructure/SKILL.md`). The addition is a ranked list of behaviours
   with evidence, and the one the developer picks goes to `/explain-code`
   and `/untangle`.
+
+## What was hard to change, collected across sessions
+
+`MANIFESTO.md` names a signal this item does not have yet: "Reports of what
+was hard to change are collected across sessions and checked before anyone
+acts on them. Repeated friction in the same place calls for a refactoring,
+as a change of its own, not as part of the change that found it." Nothing
+in the repo writes or keeps such reports. Left standing has no slot for them
+and is deleted with the change's directory; `retro` fixes the pipeline and
+the project's environment, not the code; `restructure` reads co-changing
+files from git history and refactors where it can name a future change
+(`restructure/SKILL.md`, "Find what changes together"). Writing the report
+in each build is `report-has-the-manifesto-sections`; collecting it, and
+`restructure` reading it, would be this item.
 
 Open:
 
