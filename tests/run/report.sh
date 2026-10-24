@@ -237,12 +237,15 @@ else bad "a review handed more than 128 KiB of Left standing still starts" "rc=$
 
 # --- nothing selectable is not the same as everything finished
 
+# Two tickets that each wait on the other pass the drift pre-flight, and leave
+# the loop nothing it can pick.
 workspace
-sed -i 's/^after: .*/after:     9-ghost/' "$WORK/changes/x/tickets/2-two.md"; commit
+sed -i 's/^after: .*/after:     2-two/' "$WORK/changes/x/tickets/1-one.md"; commit
 plan build
 rc="$(run)"
-if [ "$rc" != 0 ] && ending | grep -q 'RUN STOPPED' && ending | grep -q '9-ghost'; then
-  ok "a dependency nobody can satisfy is named"
-else bad "a dependency nobody can satisfy is named" "rc=$rc $(out)"; fi
+if [ "$rc" != 0 ] && [ ! -s "$STUB_CALLS" ] && ending | grep -q 'RUN STOPPED: no ticket left is ready' \
+   && ending | grep -q '1-one.md: ready, after: 2-two' && ending | grep -q '2-two.md: ready, after: 1-one'; then
+  ok "tickets that wait on each other are named, with what each waits on"
+else bad "tickets that wait on each other are named, with what each waits on" "rc=$rc $(out)"; fi
 
 finish
