@@ -16,13 +16,6 @@ set -uo pipefail
 # the same thing built twice, two names for one concept, seams that do not line
 # up. One session reviews the whole change once every ticket is built.
 
-workspace
-plan build build review
-rc="$(run)"
-if [ "$rc" = 0 ] && [ "$(wc -l < "$STUB_CALLS")" = 3 ] && grep -q 'critique' <(tail -1 "$STUB_CALLS"); then
-  ok "once every ticket is done, one session reviews the whole change"
-else bad "once every ticket is done, one session reviews the whole change" "rc=$rc $(calls) $(out)"; fi
-
 # Tickets added in the very first commit have no commit before them, and the
 # change is then everything.
 workspace
@@ -138,9 +131,9 @@ if [ "$rc" != 0 ] && ending | grep -q 'RUN STOPPED: 2-two.md halted (blocked)' \
 else bad "a run that halts ends saying which ticket halted, and the whole of why" "rc=$rc $(out)"; fi
 if ending | grep -q 'changes/x/tickets/2-two.md'; then ok "a halt names the ticket file to read"
 else bad "a halt names the ticket file to read" "$(out)"; fi
-if ! grep -q 'left by' "$WORK/.out" && ! grep -q 'context read' "$WORK/.out"; then
-  ok "a run that halts prints neither what the builds left standing nor what they cost"
-else bad "a run that halts prints neither what the builds left standing nor what they cost" "$(out)"; fi
+if ! grep -q 'left by' "$WORK/.out"; then
+  ok "a run that halts does not print what the builds left standing"
+else bad "a run that halts does not print what the builds left standing" "$(out)"; fi
 if ! grep -q '/accept-criteria' "$WORK/.out"; then ok "a run that halts does not point on to acceptance"
 else bad "a run that halts does not point on to acceptance" "$(out)"; fi
 

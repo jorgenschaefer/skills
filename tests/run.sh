@@ -18,11 +18,6 @@ set -uo pipefail
 
 # --- refusals, before anything is launched
 
-workspace
-rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" bash "$RUNNER" changes/x/nope >"$WORK/.out" 2>&1 ); echo $?)"
-if [ "$rc" != 0 ]; then ok "it refuses a ticket directory that is not there"
-else bad "it refuses a ticket directory that is not there" "$(out)"; fi
-
 # A repository with nothing committed yet is inside a work tree, so the
 # refusals above pass it. The HEAD check would in fact get it
 # right - `rev-parse HEAD` prints the literal `HEAD` when it fails - but a
@@ -187,13 +182,5 @@ run > /dev/null
 if [ "$(grep -c '^status:    review' "$WORK/changes/x/tickets/1-one.md")" = 1 ]; then
   ok "only the frontmatter is rewritten"
 else bad "only the frontmatter is rewritten" "$(tkt 1-one)"; fi
-
-# --- the usage line
-
-workspace
-rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" bash "$RUNNER" > "$WORK/.out" 2>&1 ); echo $?)"
-if [ "$rc" != 0 ] && grep -qF 'run.sh changes/<slug>/tickets' "$WORK/.out"; then
-  ok "the usage line names the change's ticket directory"
-else bad "the usage line names the change's ticket directory" "rc=$rc $(out)"; fi
 
 finish

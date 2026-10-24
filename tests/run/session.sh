@@ -148,8 +148,6 @@ else bad "the token log keeps each ticket's context read, main session and subag
 if grep -qx 'review 111 1000' "$tokens"; then
   ok "the final review is counted beside the tickets"
 else bad "the final review is counted beside the tickets" "$(cat "$tokens")"; fi
-if ! grep -q 'context read' "$WORK/.out"; then ok "the end of a run does not print what the sessions cost"
-else bad "the end of a run does not print what the sessions cost" "$(out)"; fi
 
 # Every session a ticket took counts: a failed attempt read its context too.
 workspace

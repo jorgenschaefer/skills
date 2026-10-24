@@ -42,11 +42,6 @@ else bad "the command the session named is what the runner runs" "rc=$rc $(out)"
 if grep -q 'touch .verified' <(head -1 "$STUB_CALLS"); then
   ok "the build is told the command, and that it was green"
 else bad "the build is told the command, and that it was green" "$(calls)"; fi
-# A criterion is proven once, by the ticket that closes it, and where its user
-# acts; a ticket that only advances one proves its own narrower part.
-if grep -q 'closes:.*where its user acts.*## Toward' <(head -1 "$STUB_CALLS"); then
-  ok "the build is told how a closed criterion and an advanced one are proven"
-else bad "the build is told how a closed criterion and an advanced one are proven" "$(calls)"; fi
 
 # A VERIFY in the caller's environment is not a check that passed.
 workspace

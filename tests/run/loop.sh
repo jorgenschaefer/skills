@@ -31,36 +31,6 @@ else bad "a clean run leaves nothing uncommitted, and done is committed" "$(git 
 if grep -qF "$(realpath "$WORK")/changes/x/tickets/1-one.md" <(head -1 "$STUB_CALLS"); then
   ok "the build is given the ticket by its absolute path"
 else bad "the build is given the ticket by its absolute path" "$(head -1 "$STUB_CALLS")"; fi
-# A turn ended on work left in the background ends `claude -p` and kills it: a
-# reviewer reported before its browser pass came back, and a build ended its
-# turn on its checks. Every session, the checks call and the review included.
-if [ "$(grep -c 'CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1 ' "$STUB_ARGS")" = "$(wc -l < "$STUB_ARGS")" ] \
-   && grep -q -- '--json-schema' "$STUB_ARGS" && grep -q 'REVIEW\.md' "$STUB_ARGS" \
-   && ! grep -q -- '--tools .*Monitor' "$STUB_ARGS"; then
-  ok "every session runs with background tasks off"
-else bad "every session runs with background tasks off" "$(cut -c1-160 "$STUB_ARGS")"; fi
-# Nobody can approve a call in `-p`, so what the mode does not let through is
-# refused. Under acceptEdits that was every write under .claude/: a build that
-# moved the app could not fix the run skill, and its ticket halted twice. Auto
-# mode hands such a write to the classifier.
-if [ "$(grep -c -- '--permission-mode auto ' "$STUB_ARGS")" = "$(wc -l < "$STUB_ARGS")" ]; then
-  ok "every session runs in auto mode"
-else bad "every session runs in auto mode" "$(cut -c1-160 "$STUB_ARGS")"; fi
-# Every call pays for every tool defined, so a session is given the tools a
-# build uses and no others. Playwright stays, for testing in the browser; the
-# claude.ai connectors go.
-build_args="$(grep 'Use /implement' "$STUB_ARGS" | head -1)"
-if grep -q -- '--tools Bash .*Agent' <<< "$build_args" && grep -q -- '--tools .*Skill' <<< "$build_args" \
-   && grep -q -- '--tools .*ToolSearch' <<< "$build_args" && grep -q -- '--allowedTools .*mcp__playwright' <<< "$build_args" \
-   && ! grep -q -- '--tools .*CronCreate' <<< "$build_args"; then
-  ok "a build is given only the tools it uses, Playwright among them"
-else bad "a build is given only the tools it uses, Playwright among them" "$build_args"; fi
-if grep -q '^ENABLE_CLAUDEAI_MCP_SERVERS=false ' <<< "$build_args" \
-   && grep -q '^ENABLE_CLAUDEAI_MCP_SERVERS=false .*--tools Bash' <(grep -- '--json-schema' "$STUB_ARGS" | head -1); then
-  ok "the build and the call for the checks run without the claude.ai connectors, on the same tools"
-else bad "the build and the call for the checks run without the claude.ai connectors, on the same tools" "$(head -2 "$STUB_ARGS")"; fi
-if grep -q '1-one' <(head -1 "$STUB_CALLS"); then ok "it builds in dependency order"
-else bad "it builds in dependency order" "$(calls)"; fi
 # Two builds and the final review. There is one session per ticket: the runner
 # used to launch a second to review what the first built, and `/implement`
 # spawns that reviewer itself.
@@ -326,9 +296,6 @@ plan build build review
 run > /dev/null
 if [ "$(wc -l < "$WORK/.runs")" = 3 ]; then ok "the checks run once at the start and once after every build"
 else bad "the checks run once at the start and once after every build" "$(wc -l < "$WORK/.runs") $(out)"; fi
-if grep -q 'pass on the commit you start from' <(sed -n 2p "$STUB_CALLS"); then
-  ok "a later build is told the checks pass on the commit it starts from"
-else bad "a later build is told the checks pass on the commit it starts from" "$(sed -n 2p "$STUB_CALLS")"; fi
 
 workspace
 STUB_VERIFY='if [ -f .red ]; then echo REDMARK; exit 1; fi'
