@@ -46,19 +46,17 @@ These are directions, not decisions:
 
 ## What was hard to change, collected across sessions
 
-`MANIFESTO.md` names a signal this item does not have yet: "Reports of what
-was hard to change are collected across sessions and checked before anyone
-acts on them. Repeated friction in the same place calls for a refactoring,
-as a change of its own, not as part of the change that found it." Each
-build now reports what was hard to change in its Left standing
-(`implement/SKILL.md`, "Finish"), and `/accept-criteria` never fixes one
-in the change that found it: each becomes a follow-up or is skipped. But
-Left standing is deleted with the change's directory, and nothing checks
-for friction repeating in one place; `retro` fixes the pipeline and the project's environment, not
-the code; `restructure` reads co-changing files from git history and
-refactors where it can name a future change (`restructure/SKILL.md`, "Find
-what changes together"). Collecting the reports, and `restructure` reading
-them, would be this item.
+`MANIFESTO.md`: "No report of what was hard to change is acted on in the
+change that wrote it. Each comes to the human as a proposed follow-up with
+what skipping it would cost, from the evidence: how often that code
+changes, earlier reports on the same place, the law at risk. The human
+decides." Each build reports it in its Left standing (`implement/SKILL.md`,
+"Finish"), `/accept-criteria` proposes each as a follow-up with that cost,
+and `/backlog` folds a finding into an item that overlaps, so friction in
+one place gathers on one item. What this item adds: `restructure` reading
+those items as a signal, beside the checks above, rather than only
+refactoring where it can name a future change (`restructure/SKILL.md`,
+"Find what changes together").
 
 Open:
 

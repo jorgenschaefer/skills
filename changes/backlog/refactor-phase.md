@@ -60,9 +60,9 @@ then an instruction) are what the project side would reuse.
   green suite proves behaviour, but whether the code got easier to change is
   judged only by the session that changed it. The manifesto: "Nothing judges
   its own work."
-- **restructure refactors where it can name a future change; the manifesto
-  refactors where friction repeats**: "Repeated friction in the same place
-  calls for a refactoring, as a change of its own."
+- **restructure refactors where it can name a future change, without
+  asking; the manifesto has friction come to the human**, "as a proposed
+  follow-up with what skipping it would cost", and "The human decides."
 - **untangle shows the developer code.** Each module comes with "its
   functions or types and their parameters", plus "one call from an existing
   test, rewritten against the new modules" (`untangle/SKILL.md:23-24`). The
