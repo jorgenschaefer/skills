@@ -35,7 +35,7 @@ Treat every first-pass finding as a hypothesis and try to refute it before it re
 
 What refutes it is the attempt to construct its **trigger**: the concrete situation in which the defect costs somebody, named rather than described.
 
-- **Correctness and security:** the input or state that drives the code to a wrong result, a crash, or a breach, and the wrong result it produces. Most candidates fail here.
+- **Utility and security:** the input or state that drives the code to a wrong result, a crash, or a breach, and the wrong result it produces. Most candidates fail here.
 - **Everything else:** the change that will break on it, the reader who will take it the wrong way, the second caller that will have to repeat it. Confirm it against the actual code rather than a misread of it, and that it is a real problem rather than a stylistic preference or something the surrounding code already justifies.
 - **An absent safety net** - coverage missing or gone, a check nothing performs: the change that would go undetected, or the input nothing would catch. Naming that change is constructing a trigger, not speculating about one, and a finding of this kind is not weaker for it.
 
@@ -63,7 +63,7 @@ This bounds what you _report_, not what you look for - a defect is a defect howe
 1. **<the change, as an imperative - specific enough to act on>** — `path/to/file.ts:88`
    What is wrong: <the defect, one sentence>
    Why it matters: <the cost, concretely>
-   Trigger: <the scenario that survived refutation - for correctness and
+   Trigger: <the scenario that survived refutation - for utility and
              security, the input or state and the wrong result it produces>
 
 ### Should-fix

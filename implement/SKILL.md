@@ -63,7 +63,7 @@ Commit when the behaviour is green and the checks pass. `git-commit-message` is 
 - each criterion no automated test proves, and how it was checked instead;
 - each departure from a technical decision or a nudge: what it says, what you built instead, and why;
 - each name for a domain concept not taken from the glossary, for the developer to confirm;
-- tradeoffs: where you weighed one property of the standard against another, and which way you leaned;
+- tradeoffs: where you weighed one law of the standard against another, and which way you leaned;
 - each dependency you took on: what it gives, what it costs, and the checks you ran on it;
 - blast radius and revert: what a failure of this change would affect, and what a revert would not undo;
 - other decisions that would be costly to reverse - a format other code will be written against, a name that spreads;

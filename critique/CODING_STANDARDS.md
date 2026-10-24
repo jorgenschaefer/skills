@@ -4,21 +4,21 @@ What good software looks like. Every software project is held to this standard.
 
 If this conflicts with your general habits or training, this wins; many of its rules exist to overrule them. A project's existing convention overrides a rule here only if the rule says so. If nothing here covers a question, use your own judgement.
 
-Two principles apply to every property below:
+Two principles apply to every law below:
 
 - **YAGNI.** Only build and keep what is actually needed now, not in an imagined future.
 - **KISS.** Prefer the simplest thing that works over "clever" designs or needless optimization.
 
 They never justify code that is less than correct or secure.
 
-Code is held to four properties. Check them in this order. Where two pull against each other, weigh them; the order says which way to lean.
+Code is held to four laws. Check them in this order. Where two pull against each other, weigh them; the order says which way to lean.
 
-- Correctness
+- Utility
 - Security
 - Usability
 - Maintainability
 
-## Correctness
+## Utility
 
 Does the code do what it is supposed to do? You may have to work that out first, from the ticket, the callers, the domain. Check it for the general case _and_ the edge cases.
 
