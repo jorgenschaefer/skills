@@ -23,8 +23,8 @@ Evidence:
 - The runner reruns the checks itself (`run/checks.sh`), but as one
   pass/fail for the whole suite; nothing turns that into evidence per AC.
 - Whether an AC is executed or judged is decided by the builder after the
-  fact: Left standing lists "each AC no automated test proves and how it was
-  checked instead" (`TICKET_FORMAT.md:52`). `CRITERIA_FORMAT.md` has no
+  fact: Left standing lists "each criterion no automated test proves, and
+  how it was checked instead" (`implement/SKILL.md`, "Finish"). `CRITERIA_FORMAT.md` has no
   place to mark an AC as judged, or a check as only approximating it, at
   approval time.
 - Nothing hands the judged ACs to a reviewer whose job is to show they are

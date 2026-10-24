@@ -38,5 +38,5 @@ Where it departs from the manifesto:
   change from its `CRITERIA.md`, even after acceptance deleted it, but the
   page explains only what the diff changed.
 
-Related: `report-has-the-manifesto-sections` (the report the pipeline's
-builds and acceptance write) and `acceptance-evidence-from-a-script`.
+Related: the report `/accept-criteria` writes, in the manifesto's sections
+(`accept-criteria/SKILL.md`, "Report"), and `acceptance-evidence-from-a-script`.

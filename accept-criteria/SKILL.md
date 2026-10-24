@@ -48,7 +48,8 @@ The user signs off on code they will not read, in a repository agents read and r
 - **A departure from the agreed design or a nudge.**
 - **An ADR worked around or a `CLAUDE.md` rule broken.**
 - **A declared boundary changed** - a structural check or its exception list edited, an import across a boundary the declared structure says is not there, a new boundary declared. Undeclared structure is not a boundary.
-- **The operational shape** - a new process, scheduled job, queue or piece of infrastructure, and what the change does when a new external thing is down.
+- **The operational shape, blast radius and revert** - a new process, scheduled job, queue or piece of infrastructure; what a failure of the change would affect, a new external thing being down among it; and what a revert would not undo - a migration run, data written or deleted, a message sent, state in another system.
+- **A new dependency**, named in the technical decisions or not - what it gives, what it costs and the checks run on it, from what the builds reported. A dependency in `signals.sh`'s files that no build reported is a finding.
 - **A precedent** - the first way this repository does something: the first HTTP client, the first background job, a new way errors reach the caller. Not a defect, and no review flags it, but every later session copies it.
 - **An assumption about a fact outside the repository** - who calls an endpoint, what the deployment provides, a limit or rule the code takes as given.
 
@@ -62,21 +63,20 @@ Beyond the ACs, the user can use the change however they like, and you follow al
 
 ## Report
 
-Only what needs the user, most serious first, each item ending with the step that would settle it:
+Under these headings, in this order, each item that needs a decision ending with the step that would settle it:
 
-- An AC not met: what you did, and what you saw. Where a test claims it, name the test.
-- An AC you could not check: why, and what it would take to check it.
-- The problem not solved, where the ACs are met.
-- Each technical decision the change went beyond: what was agreed, what was built, and the pointer.
-- What the user and you found beyond the ACs.
-- The rest of what changed from what was agreed, one line each with its pointer, and the line saying how many of `signals.sh`'s files carried nothing.
-- The run skill, if you wrote one.
+1. **Evidence** - each AC not met: what you did, what you saw, and the test that claims it, where one does; each AC you could not check: why, and what it would take. Then one line naming the ids you found met, so every id is accounted for.
+2. **Decisions the plan didn't cover** - everything that needs the user's decision, wherever it came from, most serious first: the problem not solved where the ACs are met; each technical decision the change went beyond, with what was agreed, what was built and the pointer; what the user and you found beyond the ACs; the rest of what changed from what was agreed, one line each with its pointer. A blast radius, a revert or a dependency goes under its own heading below unless it needs a decision: a revert that would lose data nobody approved losing goes here.
+3. **Blast radius and revert** - what a failure of the change would affect, and what a revert would not undo.
+4. **Tradeoffs** - where the builds weighed one property against another, and which way they leaned.
+5. **New dependencies** - what each gives, what it costs, and the checks run on it.
+6. **What was hard to change** - each with its suggestion.
 
-Then one line naming the ids you found met, so every id is accounted for.
+Blast radius and revert, and new dependencies, you checked yourself: where you found nothing, say "none found" rather than leaving the heading out. Leave out the other headings where they are empty. Last, the line saying how many of `signals.sh`'s files carried nothing, and the run skill, if you wrote one.
 
 ## Settle what was left open
 
-Every item in `REVIEW.md`, in each ticket's `## Left standing`, and in what changed from what was agreed needs an outcome before the change can be accepted - with a single ticket there is no final review, and the ticket is the only record. Drop, after checking, what the walk settled or the code no longer shows.
+Every item in `REVIEW.md`, in each ticket's `## Left standing`, and in what changed from what was agreed needs an outcome before the change can be accepted - with a single ticket there is no final review, and the ticket is the only record. A tradeoff, a blast radius or a dependency that stays within what was approved is shown, not settled. Drop, after checking, what the walk settled or the code no longer shows.
 
 Show the rest as one list, each item with where it came from, a proposed outcome - for a fix, the fix itself - and a one-line reason:
 
@@ -84,7 +84,7 @@ Show the rest as one list, each item with where it came from, a proposed outcome
 - **Fix now** - small enough for this session: `/implement` it, then walk again the ACs it touches.
 - **Re-slice** - too big for this session: back to `/criteria-to-tickets`, and the change is not accepted yet.
 - **Skip** - not worth doing, with the reason. Where the reason is a decision this skill's `ADR_FORMAT.md` says earns an ADR, recommend one, and on a yes write it to `docs/adr/` in that file's shape.
-- **Follow-up** - worth doing, but not in this change: hand it to the `backlog` skill.
+- **Follow-up** - worth doing, but not in this change: hand it to the `backlog` skill. What was hard to change is never fixed now: a refactoring is a change of its own, not part of the change that found it, so it is a follow-up or a skip.
 
 The user agrees to the list or names items to discuss. Take those one at a time - and, even where the user agrees to the list, every item that goes beyond a technical decision, departs from a nudge or needs a decision the criteria leave open: present it, suggest a concrete fix or decision, and wait for the user's view before the next.
 

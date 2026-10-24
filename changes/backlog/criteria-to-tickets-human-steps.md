@@ -18,5 +18,5 @@ tickets instead.
 
 Nothing in the pipeline deals with either today: `criteria-to-tickets/SKILL.md`,
 `TICKET_FORMAT.md` and `VERIFY.md` never mention steps only a person can do or
-deployment, and the only mention of deployment is `accept-criteria/SKILL.md:53`,
+deployment, and the only mention of deployment is `accept-criteria/SKILL.md:54`,
 which flags "what the deployment provides" as an assumption.

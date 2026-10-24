@@ -39,9 +39,9 @@ What a build does with something its input does not settle:
   build past it".
 - `:52`: stop, on "a decision the request does not settle and that is not
   yours to settle".
-- `:58`: report "decisions that would be costly to reverse".
+- `:69`: report "other decisions that would be costly to reverse".
 - `run/prompts.sh:23`: "every implementation question on the way: decide it,
-  and record".
+  and report it".
 
 Nothing says when which one applies. `MANIFESTO.md`: "Something found during
 implementation that may change what the user wants is a decision the plan

@@ -41,7 +41,7 @@ the code, and some of what they answer for is never asked.
   framing it as a directory does not.
 - `/accept-criteria` takes every departure from a nudge one at a time with
   the user, and shows precedents and declared boundaries
-  (`accept-criteria/SKILL.md:50-52`). A weakened structural check does belong
+  (`accept-criteria/SKILL.md:48-53`). A weakened structural check does belong
   in front of the human: the manifesto calls weakening a check a decision.
 
 ## Failure cases are not part of the consultation

@@ -49,14 +49,16 @@ These are directions, not decisions:
 `MANIFESTO.md` names a signal this item does not have yet: "Reports of what
 was hard to change are collected across sessions and checked before anyone
 acts on them. Repeated friction in the same place calls for a refactoring,
-as a change of its own, not as part of the change that found it." Nothing
-in the repo writes or keeps such reports. Left standing has no slot for them
-and is deleted with the change's directory; `retro` fixes the pipeline and
-the project's environment, not the code; `restructure` reads co-changing
-files from git history and refactors where it can name a future change
-(`restructure/SKILL.md`, "Find what changes together"). Writing the report
-in each build is `report-has-the-manifesto-sections`; collecting it, and
-`restructure` reading it, would be this item.
+as a change of its own, not as part of the change that found it." Each
+build now reports what was hard to change in its Left standing
+(`implement/SKILL.md`, "Finish"), and `/accept-criteria` never fixes one
+in the change that found it: each becomes a follow-up or is skipped. But
+Left standing is deleted with the change's directory, and nothing checks
+for friction repeating in one place; `retro` fixes the pipeline and the project's environment, not
+the code; `restructure` reads co-changing files from git history and
+refactors where it can name a future change (`restructure/SKILL.md`, "Find
+what changes together"). Collecting the reports, and `restructure` reading
+them, would be this item.
 
 Open:
 
