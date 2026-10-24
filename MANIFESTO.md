@@ -34,7 +34,7 @@ Humans no longer read the code. Agents write it, review it and change it. A huma
     - Wrong code is hard to write. Types and interfaces leave no room for invalid states, and a mistake fails where it is made, not where it shows up.
     - What changes together lives together. Names can be searched for. One idiom throughout.
 
-The laws are weighed against each other, and the order says which way to lean. Changing anything the human approved is the human's decision.
+The laws are weighed against each other, and the order says which way to lean. An agent weighs only within what the human approved; a tradeoff that would change it is a decision the plan didn't cover. Changing anything the human approved is the human's decision.
 
 ## What a human approves, and what the report shows
 
@@ -49,11 +49,13 @@ The laws are weighed against each other, and the order says which way to lean. C
 **After implementation, the report shows:**
 
 - **Evidence that the approved plan holds:** the checks that prove it, rerun by a script rather than reported by the agent. Example runs, requests and responses where the human needs to see the behaviour itself. Tests are presented as a list of what they prove.
-- **Decisions the plan didn't cover:** these wait for the human; the change isn't accepted until they are decided. A reviewer that didn't write the change adds what the author missed.
-- **Blast radius and revert:** what a failure of this change would affect, and what a revert would not undo.
-- **Tradeoffs:** where the agent weighed one law against another.
-- **New dependencies:** what they give, what they cost and the results of the checks on them.
+- **Decisions the plan didn't cover:** these wait for the human; the change isn't accepted until they are decided.
+- **Blast radius and revert:** what a failure of this change would affect beyond the code it changed, and what a revert would not undo.
+- **Tradeoffs:** where the agent weighed one law against another within what was approved.
+- **New dependencies:** what they give and what they cost.
 - **What was hard to change, and why:** what surprised the agent, what it had to change in more than one place, what it couldn't find. Each comes with a suggestion: a refactoring for a structural problem, a check for an invisible reason.
+
+A reviewer that didn't write the change adds to each section what the author missed.
 
 ## How agents check agents
 
