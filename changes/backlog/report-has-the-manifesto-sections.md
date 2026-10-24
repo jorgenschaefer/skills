@@ -34,3 +34,12 @@ Evidence:
 
 "What was hard to change" is also the input that
 `find-code-before-understanding-is-lost` collects across sessions.
+
+## Nothing gets weighed
+
+Tradeoffs would stay empty while the standard decides by strict order: "If
+two pull against each other, the earlier one wins"
+(`implement/CODING_STANDARDS.md:14`, in all five copies). The manifesto:
+"The laws are weighed against each other, and the order says which way to
+lean." And `implement/SKILL.md:50` says "a tradeoff nobody accepted is not a
+detail", though under a strict order there is no tradeoff.
