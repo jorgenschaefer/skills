@@ -5,7 +5,7 @@ utility: L
 
 # The standard's security section covers what the manifesto asks
 
-`CODING_STANDARDS.md`'s Security section (`implement/CODING_STANDARDS.md:77`)
+`CODING_STANDARDS.md`'s Security section (`implement/CODING_STANDARDS.md:75`)
 covers object-level authorization, input never becoming code, never turning
 a check off, and secrets in the environment. Several things the manifesto's
 Security law requires are not there, so no build is held to them and no
