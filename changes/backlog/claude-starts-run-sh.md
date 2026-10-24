@@ -35,6 +35,12 @@ Touched by the move: `test.sh:68` (shellcheck over `run.sh` and `run/*.sh`),
 README's runner section and pipeline diagram, and the hand-off lines in
 `criteria-to-tickets` and `accept-criteria`.
 
+`criteria-to-tickets` commits in two places, "Hand off" and "Re-slicing",
+each with its own instruction, so a step that must come before the commit
+is written twice. Adding the checks of a person's steps (bbc1939), the
+first draft put them only into "Hand off", and a review caught re-slicing
+skipping them. Re-slicing could end by pointing at "Hand off" instead.
+
 ## What happens to a background run (from the Claude Code docs)
 
 - In an interactive session a background command has no time limit. The
