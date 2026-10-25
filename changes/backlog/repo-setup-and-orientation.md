@@ -34,3 +34,7 @@ uses, possibly two skills:
   `accept-criteria` when missing; structural rules as checks; and the
   glossary. `run-sh-without-a-check` is the failure this causes in a repo
   with no code yet.
+
+Depends on `critical-user-journeys`, whose first journeys `repo-overview`'s
+"Main workflows" would draft, on `run-sh-without-a-check`, and on
+`layered-manifesto`, which lists what the pipeline expects of a project.

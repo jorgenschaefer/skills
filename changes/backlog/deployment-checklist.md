@@ -35,3 +35,7 @@ Open:
 - `MANIFESTO.md`'s "After implementation, the report shows" has no place for
   these steps. A draft to discuss: "- **Steps outside the repository:** what
   a person must do at deployment for the change to work, in order."
+
+Depends on `approved-criteria-outlive-the-change`, which settles what survives
+once acceptance deletes the change's directory, and on `layered-manifesto`,
+which places the report's sections.

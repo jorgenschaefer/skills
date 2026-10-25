@@ -54,9 +54,12 @@ wait for the pipeline's fixed stops rather than interrupting a run";
 
 ## Related
 
-- `approval-follows-the-manifesto` settles what the human approves, which is
-  what makes a discovery one that needs them.
 - `docs-only-what-the-code-cannot-show` already notes README.md:36's
   "`/implement` builds `CRITERIA.md` itself".
 - Both `CRITERIA_FORMAT.md` copies say Left standing is "Written by
   `/implement` when it builds this file directly".
+
+Depends on `approval-follows-the-manifesto`, which settles what the human
+approves, the thing that makes a discovery one that needs them, and on
+`standard-follows-the-manifesto`, whose Utility section has the same
+question of a decision the plan didn't cover.

@@ -68,3 +68,6 @@ Evidence:
 - `approved-criteria-outlive-the-change`: journeys give accepted ACs a place
   to live on - their tests grouped under the journey they serve.
 - `cut-files-by-concept`, `explain-diff-as-the-report` mention workflows.
+
+Depends on `approval-follows-the-manifesto`, which settles what the human
+approves; a journey is one more approval on top of it.

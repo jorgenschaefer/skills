@@ -31,3 +31,5 @@ The standard is what the code is held to, so the review cannot drop it.
 
 No run has yet shown a defect that the builder and both reviews missed
 because they shared this lens.
+
+Depends on `standard-follows-the-manifesto`, since the standard is the lens.

@@ -50,3 +50,7 @@ changes together, file shape), `approved-criteria-outlive-the-change`
 `reviewer-shares-the-authors-lens` (the standard as the only lens of
 builder and reviewer), and `approval-follows-the-manifesto` (approving a
 dependency).
+
+Depends on `layered-manifesto`, whose method layer the standard becomes half
+of, and on `approval-follows-the-manifesto`, which settles approving a
+dependency.

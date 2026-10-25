@@ -83,3 +83,8 @@ skipping them. Re-slicing could end by pointing at "Hand off" instead.
   `run/loop.sh:15`) both exit 2.
 - The halt excerpt cut at 20 lines can stay, since Claude can open the
   ticket.
+
+Depends on `implement-is-how-code-gets-built`, which moves the ticket protocol
+out of `implement` and touches the same `run/prompts.sh` and hand-off lines,
+and on `run-sh-ticket-path-as-typed` and `run-sh-without-a-check`, which are
+smaller fixed before the files move.

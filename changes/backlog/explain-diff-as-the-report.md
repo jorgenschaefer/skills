@@ -40,3 +40,6 @@ Where it departs from the manifesto:
 
 Related: the report `/accept-criteria` writes, in the manifesto's sections
 (`accept-criteria/SKILL.md`, "Report"), and `acceptance-evidence-from-a-script`.
+
+Depends on `acceptance-evidence-from-a-script`, which settles the evidence the
+report shows.

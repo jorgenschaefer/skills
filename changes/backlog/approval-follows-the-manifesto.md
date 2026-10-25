@@ -63,3 +63,6 @@ Touches: both `CRITERIA_FORMAT.md` copies, `find-criteria` and its
 (it checks that nudges and technical decisions are quoted word for word),
 `run/prompts.sh`, `accept-criteria` and `signals.sh`, README, and the
 tests over the runner.
+
+Depends on `layered-manifesto`, whose roles per goal produce the list of what
+the human approves.

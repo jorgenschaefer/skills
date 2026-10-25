@@ -77,3 +77,7 @@ then an instruction) are what the project side would reuse.
 - **untangle's proofs do not stay.** `checks.md` and `test-map.md` are
   deleted with the change's directory; the manifesto wants a check that
   "executes and stays".
+
+Depends on `cut-files-by-concept`, `find-code-before-understanding-is-lost`
+and `rule-cruft`, the parts it combines, and on
+`approved-criteria-outlive-the-change`, which makes untangle's proofs stay.

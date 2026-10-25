@@ -31,3 +31,6 @@ Evidence:
   clause that does a named job.
 - The README says "`/implement` builds `CRITERIA.md` itself" (README.md:36),
   but `implement/SKILL.md:18` only takes one it is given.
+
+Depends on `layered-manifesto`, which decides where the process is described
+once the README's account of the runner goes.

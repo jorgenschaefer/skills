@@ -42,3 +42,6 @@ stays written down.
 
 `acceptance-evidence-from-a-script` builds on this: its per-criterion
 evidence needs tests that say which approved criterion they prove.
+
+Depends on `critical-user-journeys`, which gives accepted criteria a place to
+live on.
