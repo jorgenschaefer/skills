@@ -11,12 +11,28 @@ it. A second layer describes how to implement that. The third is the skills.
 The manifesto stays small and gives sound, understandable reasons; the skills
 make clear which part of it each step applies.
 
-Today `MANIFESTO.md` mixes three things: goals (the laws), roles (implicit),
-and method ("How agents check agents", the report sections). The method has
-no home of its own: it is spread over the README's pipeline,
-`CODING_STANDARDS.md` and the skills, and each skill derived its own reading
-of the manifesto. Several backlog items exist because those readings drifted
-(see Related).
+Agreed with `/idea` on 2026-10-25:
+
+The pipeline grew ad hoc: which stages it has, where it stops for the
+developer, what the developer approves and is shown there, and what agents do
+and check in between. The manifesto is meant to be the foundation the
+pipeline is rebuilt on, but in its first version it can't carry that. Much of
+what the pipeline rests on isn't in it: who does what and why, and what good
+software is, which grew up in `CODING_STANDARDS.md` instead. What is in it is
+often stated without the reason behind it, so it doesn't extend to cases it
+doesn't list. What should be true instead: the manifesto and its reasons mark
+out what a pipeline may be, with room for different designs, of which this
+pipeline is one. For a choice in a skill, someone reading it can tell whether
+the manifesto speaks to it at all; if not, the choice is the pipeline's own;
+if it does, whether the choice fits, and if not, what would.
+
+Instance: `/find-criteria` shows the developer how the code will be built,
+"with the chance to object" (`find-criteria/SKILL.md:37`). Nothing in the
+manifesto says whether that belongs in front of them: it is not on the
+approval list, and the list gives no reason that would decide it.
+
+Parked: which parts of `CODING_STANDARDS.md` are really coding standards
+(`standard-follows-the-manifesto`).
 
 ## What came up in discussion
 
