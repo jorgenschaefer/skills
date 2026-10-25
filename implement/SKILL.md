@@ -17,7 +17,7 @@ Read this skill's `CODING_STANDARDS.md` whole and apply all of it - no part of i
 
 **Given a `CRITERIA.md` rather than a ticket**, its ACs are what has to be true, and a test that pins one names its id. Its technical decisions are limits: a table, field, endpoint, permission, outgoing call or dependency they do not name, and anything at all behind a "none", is a departure. So is building against a nudge. Make one only where the code calls for it. Write what you leave standing, as _Finish_ lists it, into a `## Left standing` section at the end of `CRITERIA.md` as well as your report. Hand `critique` the ACs, the technical decisions and `Out of scope`. Commit `CRITERIA.md` with the change, so what it was for survives the directory's deletion.
 
-**Find the project's way of running the app**, where the change needs seeing - a `run` skill, `CLAUDE.md`, the README. The review drives the app that way. Where there is none, build one, write it up as the project's run skill, `.claude/skills/run/SKILL.md`, with the scripts it drives beside it, and commit it with the change.
+**Find the project's way of running the product** - a `run` skill, `CLAUDE.md`, the README - where the change reaches its user through an app, a command or an API. The review starts it that way. Where there is none, build one, write it up as the project's run skill, `.claude/skills/run/SKILL.md`, with the scripts it drives beside it, and commit it with the change.
 
 **Find the project's check command** - the `Check:` line in `CLAUDE.md`. Where there is none, run what exists and say so; creating it is a ticket of its own.
 
@@ -33,13 +33,13 @@ Build it in the order the standard says the work happens. While you build, run t
 
 **Spawn `critique` as a subagent with a fresh context.** Hand it the diff, the result of the checks, and what was asked for - the criteria and what is out of scope, as the request states them, and the problem they serve where it states one. Do not hand it the reasoning that produced the code: not the plan, and not how you tested it. A reviewer that has accepted every step of the reasoning reads its own intentions into the code; the subagent starts cold, which is the only reason its findings are worth anything.
 
-**The review is where the running app is checked.** Do not check the screens yourself before it: in one run the build and its reviewer drove the app at the same time, fought over the dev server, and paid for the same check twice.
+**The review is where the running product is checked.** Do not drive it yourself before it: in one run the build and its reviewer drove the app at the same time, fought over the dev server, and paid for the same check twice.
 
 ## Fix what comes back
 
-Work the blockers and the should-fix, test-first. Then review again the same way, with a fresh reviewer - except that in the second round critique drives only the screens your fixes touched, and you name them in the hand-off.
+Work the blockers and the should-fix, test-first. Then review again the same way, with a fresh reviewer - except that in the second round critique's driver does only the tasks, or visits only the screens, your fixes touched, and you name them in the hand-off.
 
-**A first round of only nits gets no second** - nits by the reviewer's rating, not yours. Fix the ones worth fixing and stop there, unless one of those fixes changes what a screen shows or where an action leads: then the second round drives that screen.
+**A first round of only nits gets no second** - nits by the reviewer's rating, not yours. Fix the ones worth fixing and stop there, unless one of those fixes changes what the user sees or gets back, or where an action leads: then the second round does the tasks or visits the screens it touched.
 
 **Two rounds at most.** Stop when a review comes back clean or with only nits, or when the second round is done, and report what is still standing: the nits, anything you disagreed with and why, anything you chose not to fix and why. The pull is to quietly drop a finding, and one that goes unmentioned looks exactly like one that was fixed.
 
