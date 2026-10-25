@@ -30,6 +30,13 @@ Evidence:
 - Nothing hands the judged ACs to a reviewer whose job is to show they are
   not met. `critique` refutes its own findings, which is a different thing.
 
+- critique's output now opens with a Tasks section: one line per AC its
+  driver was handed, completed, given up or skipped and why
+  (`critique/SKILL.md`, "Output"). It is a per-AC record of the judged
+  usability check, but it reaches the developer only where a caller passes
+  it on - `implement`'s Left standing and `REVIEW.md` carry findings, not
+  tasks - and a hesitation the build fixed reaches them not at all.
+
 From the review: the walk stays, for usability and for the problem as a
 whole; the script-made table comes before it.
 
