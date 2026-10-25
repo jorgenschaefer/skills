@@ -13,7 +13,7 @@ The result is a problem statement, agreed and left in the conversation for `/fin
 
 Look at the project before you ask anything.
 
-The solution they arrived with is evidence about the problem, not the brief.
+The solution they arrived with is evidence about the problem, not the brief. So is a backlog item, however finished it reads - what it says is wrong and how much that matters included. Where it records a problem agreed with `/idea` before, state that back and ask whether it still holds; dig only where it does not.
 
 **Get one instance** - the last time this happened, what went wrong, what it cost.
 
@@ -27,12 +27,15 @@ The solution they arrived with is evidence about the problem, not the brief.
 
 ### The no is a finding
 
-Reached after the problem statement is agreed, and only on one of two grounds:
+Reached after the problem statement is agreed, and only on one of three grounds:
 
 - **Already solved.** Name the thing that does it.
 - **A symptom of something else.** Name the thing underneath. This restarts the session on that problem rather than ending it - say so.
+- **Not worth the work.** The problem is real, but it costs less than solving it would take. Show both sides: the cost, from the instance, and the work - the item's effort size, or your own guess, said to be one. The user decides.
 
 This is the one place you may look at solution space, and only far enough to dismiss.
+
+Where the idea came from a backlog item and the user agrees with a no that is not a symptom, propose deleting the item. On a yes, delete it and commit that alone, the reason in the message.
 
 ## Check it before you hand it on
 

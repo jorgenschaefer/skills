@@ -40,6 +40,6 @@ Where `changes/backlog/` holds items in another shape - numbered files, a direct
 1. **Rank** by utility minus effort, counting XS as 1 to XL as 5; on a tie the smaller effort goes first.
 2. **Check the top three against the current code.** Where the problem no longer shows, show the evidence and propose deleting the item. Where a size no longer holds, propose a new one. Apply what the user agrees to and commit it, then rank again.
 3. **Recommend one item and a runner-up**, each with why.
-4. **Hand on the item the user picks.** Where it states a problem a reader who was not here could restate, tell the user to type `/find-criteria changes/backlog/<slug>.md`. Otherwise run `/idea` with the item.
+4. **Run `/idea` with the item the user picks**, however settled it reads: an item is a quick note, and what it is meant to improve, and whether that is worth the work, are worked out there.
 
-Do not delete a picked item; `/accept-criteria` deletes it once the change is accepted.
+Do not delete a picked item; `/accept-criteria` deletes it once the change is accepted, and `/idea` where the user agrees it is already solved or not worth the work.
