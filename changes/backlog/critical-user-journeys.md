@@ -67,6 +67,4 @@ Evidence:
 
 - `approved-criteria-outlive-the-change`: journeys give accepted ACs a place
   to live on - their tests grouped under the journey they serve.
-- `usability-check-completes-tasks`: how the driver judges; this item is what
-  it walks.
 - `cut-files-by-concept`, `explain-diff-as-the-report` mention workflows.
