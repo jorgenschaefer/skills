@@ -74,6 +74,16 @@ if [ "$rc" = 0 ] && [ "$(on)" = x ] && [ "$(tip master)" = "$started" ]; then
   ok "started on master, it runs on a branch of its own as on main"
 else bad "started on master, it runs on a branch of its own as on main" "rc=$rc on=$(on) $(out)"; fi
 
+# Every path the run builds starts from the ticket directory's parent, so
+# `tickets/.` once named the branch `tickets` and halted every ticket as drift.
+from_main
+plan build build review
+rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=0 LIMIT_MARGIN=0 MAX_ATTEMPTS=2 \
+           bash "$RUNNER" changes/x/tickets/. >"$WORK/.out" 2>&1 ); echo $?)"
+if [ "$rc" = 0 ] && [ "$(on)" = x ] && [ "$(field 2-two status)" = "done" ]; then
+  ok "the ticket directory named as tickets/. runs as tickets does"
+else bad "the ticket directory named as tickets/. runs as tickets does" "rc=$rc on=$(on) $(out)"; fi
+
 # A branch of that name is some earlier run's, and may need more than resuming.
 from_main; git -C "$WORK" branch x topic
 plan build

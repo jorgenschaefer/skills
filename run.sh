@@ -63,6 +63,9 @@ LIB="$(dirname "${BASH_SOURCE[0]}")/run"
 
 [ -n "$TICKETS" ] || die "usage: run.sh changes/<slug>/tickets"
 [ -d "$TICKETS" ] || die "no ticket directory: $TICKETS"
+# Every path the run builds starts from `dirname "$TICKETS"`, which for
+# `tickets/.` is the ticket directory itself, not the change's.
+TICKETS="$(realpath -s --relative-to=. "$TICKETS")"
 git rev-parse --is-inside-work-tree >/dev/null 2>&1 || die "not a git repository"
 # A repository with no commits has a branch with nothing on it yet. The HEAD
 # check below would survive there - `rev-parse HEAD` prints the literal `HEAD`
