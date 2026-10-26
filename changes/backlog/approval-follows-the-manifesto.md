@@ -55,6 +55,14 @@ The manifesto's Utility goal: the developer approves the behaviour
 not about what the user experiences when something fails; neither does
 `find-criteria/VERIFY.md`.
 
+## What production must show is never asked
+
+The manifesto's Utility goal: the developer decides "what production must
+show: what someone has to hear about, and how fast. That means errors, but
+also a sudden drop in users or a flood of login attempts"
+(`MANIFESTO.md:32`). Neither `find-criteria` nor `CRITERIA_FORMAT.md` asks
+about it.
+
 ## Departures built on by later tickets
 
 Building past an agreed decision and approving the departure at acceptance
