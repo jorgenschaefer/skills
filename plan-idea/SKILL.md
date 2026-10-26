@@ -16,7 +16,7 @@ Work out with the user what needs to happen to solve the problem `/idea` agreed,
 
 **Propose at least three genuinely different alternatives**, or say why the space holds fewer. Two that differ only in how much of the same thing they do are one. Once the approach is chosen, put its scope as the next choice: the smallest version that solves the problem, a staged one, the full one.
 
-**Name what the choice rests on.** Each assumption in one line, marked checked, with its evidence, or assumed.
+**Name what the choice rests on, and check it.** Each assumption in one line, with its evidence. Only one that no check can settle before execution is marked assumed, and it never becomes a task.
 
 **Build a specimen where the difference is visual.** Publish it as a Claude Artifact, and keep a copy in `specimens/` in the change's directory - `changes/YYYY-MM-DD-<slug>/specimens/`, made now if it is not there. Once the choice is made, `specimens/` holds the agreed specimen and nothing else.
 
