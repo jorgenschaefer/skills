@@ -14,13 +14,17 @@ Work out with the user what needs to happen to solve the problem `/idea` agreed,
 
 **Read the repository first**: what is already there, what the project calls things, what it decided before.
 
-**Propose at least three genuinely different alternatives**, or say why the space holds fewer. Two that differ only in how much of the same thing they do are one.
+**Propose at least three genuinely different alternatives**, or say why the space holds fewer. Two that differ only in how much of the same thing they do are one. Once the approach is chosen, put its scope as the next choice: the smallest version that solves the problem, a staged one, the full one.
+
+**Name what the choice rests on.** Each assumption in one line, marked checked, with its evidence, or assumed.
 
 **Build a specimen where the difference is visual.** Publish it as a Claude Artifact, and keep a copy in `specimens/` in the change's directory - `changes/YYYY-MM-DD-<slug>/specimens/`, made now if it is not there. Once the choice is made, `specimens/` holds the agreed specimen and nothing else.
 
 **Work out the tasks.** A task says what to do and where, not the exact diff.
 
-**Settle every open question.** Each one ends as a task or is ruled out.
+**Settle every open question.** Each one ends as a task or is ruled out. One with more than one sound answer is put to the user as alternatives.
+
+**Go back to `/idea`** where what you find shows the problem stated wrongly, already solved, or not worth the effort the alternatives turn out to need. Say which, with the evidence, and stop.
 
 **The loop is done when every task can be done without asking anything.**
 
@@ -39,15 +43,17 @@ Work out with the user what needs to happen to solve the problem `/idea` agreed,
    Do each task in order. After each, a subagent with a fresh context reviews it against the task; work in what it finds.
 
    1. <what to do, and where>
+
+   <N>. Check that the problem is solved: what the problem statement says would be true instead is true. Report what shows it.
    ```
 
-3. **Check it.** Spawn a subagent with a fresh context and give it the problem statement and the path to `CHANGE.md`, with this prompt: "Does doing these tasks solve this problem? Which task could not be done without asking something? Report each finding with the task it concerns." Nothing else - an adversary holding the conversation will read your intentions into the words.
+3. **Check it.** Spawn a subagent with a fresh context and give it the problem statement and the path to `CHANGE.md`, with this prompt: "Does doing these tasks solve this problem? Which task could not be done without asking something? Is there a simpler way to solve it? Which task is not needed? Report each finding with the task it concerns." Nothing else - an adversary holding the conversation will read your intentions into the words.
 4. **Work its findings into the file, then show only what changed and ask again.** Judge its findings first; reject what is not sound. Where it found nothing, say so and ask for the final yes.
 5. **Delete the backlog item** the problem came from, and commit its deletion with `CHANGE.md`.
 
 ## Throughout
 
-**Every time you put alternatives for what the change does or how it is built to the user, give each its effort and the complexity it adds, next to what it gives.** Effort is a size from XS to XL. Complexity is a few words naming what it adds - "a migration for entries and versions" - not a size. A yes/no question is not such a choice.
+**Every time you put alternatives for what the change does or how it is built to the user, give each its effort, the complexity it adds, what it gives, what is still wrong after it and what might stop it working, then recommend one and say why.** Effort is a size from XS to XL. Complexity is a few words naming what it adds - "a migration for entries and versions" - not a size. What is still wrong is held against what the problem statement says would be true instead; "nothing" is an answer. A yes/no question is not such a choice.
 
 **End your turn at the first question mark.** One turn, one open question.
 
