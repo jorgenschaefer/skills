@@ -44,10 +44,10 @@ Work out with the user what needs to happen to solve the problem `/idea` agreed,
 
    1. <what to do, and where>
 
-   <N>. Check that the problem is solved: what the problem statement says would be true instead is true. Report what shows it.
+   <N>. Spawn a subagent with a fresh context and give it only the problem statement above and the changes these tasks made, with this prompt: "Do these changes solve this problem? Report first what concerns the changes as a whole, then each finding with the change it concerns." Work in what it finds.
    ```
 
-3. **Check it.** Spawn a subagent with a fresh context and give it the problem statement and the path to `CHANGE.md`, with this prompt: "Does doing these tasks solve this problem? Which task could not be done without asking something? Is there a simpler way to solve it? Which task is not needed? Report each finding with the task it concerns." Nothing else - an adversary holding the conversation will read your intentions into the words.
+3. **Check it.** Spawn a subagent with a fresh context and give it the problem statement and the path to `CHANGE.md`, with this prompt: "Does doing these tasks solve this problem? Which task could not be done without asking something? Is there a simpler way to solve it? Which task is not needed? Report first what concerns the plan as a whole, then each finding with the task it concerns." Nothing else - an adversary holding the conversation will read your intentions into the words.
 4. **Work its findings into the file, then show only what changed and ask again.** Judge its findings first; reject what is not sound. Where it found nothing, say so and ask for the final yes.
 5. **Delete the backlog item** the problem came from, and commit its deletion with `CHANGE.md`.
 
