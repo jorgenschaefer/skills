@@ -10,13 +10,12 @@ account of each criterion: "for each one say what you did and what you saw"
 (`accept-criteria/SKILL.md:25`). Tests come in only where an AC is not met
 (`:35`). The developer cannot tell an executed proof from a judgement.
 
-`MANIFESTO.md`, under what the report shows: "the checks that prove it,
-rerun by a script rather than reported by the agent. Example runs, requests
-and responses where the human needs to see the behaviour itself. Tests are
-presented as a list of what they prove." And under Utility: "Where no check
-can show it, it is marked as judged, and a check that only approximates it
-says so." Under checking: "Where a criterion is judged, the review is
-adversarial."
+`MANIFESTO.md`, under Utility: "The report shows the evidence, rerun by a
+script rather than reported by the writer", and "Where no check can show it,
+it is marked as judged." For every goal: "Where a criterion can only be
+judged, the review is adversarial." Showing example runs, listing tests by
+what they prove, and marking a check that only approximates a criterion left
+the manifesto for `method-layer`.
 
 Evidence:
 

@@ -31,8 +31,8 @@ Evidence:
 
 ## How it was discussed to fit
 
-- **Manifesto:** the developer owns the journeys - the top of "a human
-  decides what the software does", and the one approval that outlives every
+- **Manifesto:** the developer owns the journeys - the top of what the
+  developer decides, "what the software does", and the one approval that outlives every
   change. Changing one is a decision the plan didn't cover. The usability
   agent completes the journeys through the real interface, not only the
   change's ACs. Each journey is held by an end-to-end check; its written
@@ -60,7 +60,8 @@ Evidence:
 ## Open
 
 - When the journey checks run: end-to-end checks are slow and flaky, but the
-  manifesto runs a check for anything approved on every change.
+  manifesto: "A check for anything the developer approved counts only if it
+  fails when the code breaks it, and that is confirmed on every change".
 - Whether `find-criteria` writes the first journeys, or something else does.
 
 ## Related

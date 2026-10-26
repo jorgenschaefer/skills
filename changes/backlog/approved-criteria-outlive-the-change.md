@@ -10,12 +10,12 @@ approved, or which test is the check for it. A later change can undo an
 approved behaviour, policy or data rule, delete or weaken its test, and
 nobody notices that this was a decision for the human.
 
-`MANIFESTO.md` asks for the opposite: "Changing anything the human approved
-is the human's decision"; each acceptance criterion "is shown by a check that
-executes and stays, so a later change cannot undo it unnoticed"; "A test for
-anything the human approved counts only if it fails when the code breaks it,
-and that is checked on every change"; "Weakening or deleting the check for a
-constraint is a decision about that constraint, and is reported as one."
+`MANIFESTO.md` asks for the opposite: "Changing anything they approved is
+theirs to decide"; the checkers "show each criterion with a check that
+executes and stays, since the next agent will not remember it"; "A check for
+anything the developer approved counts only if it fails when the code breaks
+it, and that is confirmed on every change"; "Weakening or deleting one is a
+decision about what it checks, and reported as one."
 
 Evidence:
 

@@ -5,9 +5,10 @@ utility: S
 
 # The code review looks through the same lens as the builder
 
-`MANIFESTO.md`: "Reviewers use different framings, which reduces the blind
-spots they share with the author but does not remove them." And: "Where a
-criterion is judged, the review is adversarial."
+`MANIFESTO.md`, premise 3: "Whoever made a mistake shares the blind spot
+that made it." And: "Where a criterion can only be judged, the review is
+adversarial." The rule on reviewers' framings left the manifesto and waits
+to go into the process document (`method-layer`).
 
 The builder and its reviewer read the same document as their lens.
 `implement/SKILL.md:10`: "Read this skill's `CODING_STANDARDS.md` whole and

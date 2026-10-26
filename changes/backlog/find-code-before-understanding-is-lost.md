@@ -46,17 +46,17 @@ These are directions, not decisions:
 
 ## What was hard to change, collected across sessions
 
-`MANIFESTO.md`: "No report of what was hard to change is acted on in the
-change that wrote it. Each comes to the human as a proposed follow-up with
-what skipping it would cost, from the evidence: how often that code
-changes, earlier reports on the same place, the law at risk. The human
-decides." Each build reports it in its Left standing (`implement/SKILL.md`,
-"Finish"), `/accept-criteria` proposes each as a follow-up with that cost,
-and `/backlog` folds a finding into an item that overlaps, so friction in
-one place gathers on one item. What this item adds: `restructure` reading
-those items as a signal, beside the checks above, rather than only
-refactoring where it can name a future change (`restructure/SKILL.md`,
-"Find what changes together").
+The manifesto does not speak to what was hard to change; it is the
+pipeline's own. Each build reports it in its Left standing, "each with a
+suggestion: a refactoring for a structural problem, a check for an invisible
+reason" (`implement/SKILL.md:70`). `/accept-criteria` proposes each as a
+follow-up: "What was hard to change is never fixed now, but proposed as a
+follow-up, and its reason is what skipping it would cost"
+(`accept-criteria/SKILL.md:87`). `/backlog` folds a finding into an item
+that overlaps, so friction in one place gathers on one item. What this item
+adds: `restructure` reading those items as a signal, beside the checks
+above, rather than only refactoring where it can name a future change
+(`restructure/SKILL.md`, "Find what changes together").
 
 Open:
 

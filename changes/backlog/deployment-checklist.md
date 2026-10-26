@@ -28,14 +28,11 @@ Instances:
 - `dom` 2446618: the passwords in `secrets.prod.env`, which only
   `bin/deploy-prod` decrypts.
 
-Open:
+What the report shows is now the bold items in `MANIFESTO.md`, and the
+steps fall under blast radius and revert: "what a revert would not undo".
 
-- Where the checklist lives once acceptance deletes the change's directory,
-  who hands it over, and when.
-- `MANIFESTO.md`'s "After implementation, the report shows" has no place for
-  these steps. A draft to discuss: "- **Steps outside the repository:** what
-  a person must do at deployment for the change to work, in order."
+Open: where the checklist lives once acceptance deletes the change's
+directory, who hands it over, and when.
 
 Depends on `approved-criteria-outlive-the-change`, which settles what survives
-once acceptance deletes the change's directory, and on `layered-manifesto`,
-which places the report's sections.
+once acceptance deletes the change's directory.

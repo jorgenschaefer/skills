@@ -31,5 +31,3 @@ in. This item is the first. Today's `retro` does both, sorting each finding
 under "Pipeline or project" and only giving the wording for project fixes.
 The project side goes to the periodic refactor phase (`refactor-phase`);
 here a project finding is handed on, not fixed.
-
-Depends on `layered-manifesto`, which is what a run is judged against.

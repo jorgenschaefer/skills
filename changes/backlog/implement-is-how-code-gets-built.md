@@ -43,14 +43,15 @@ What a build does with something its input does not settle:
 - `run/prompts.sh:23`: "every implementation question on the way: decide it,
   and report it".
 
-Nothing says when which one applies. `MANIFESTO.md`: "Something found during
-implementation that may change what the user wants is a decision the plan
-didn't cover", and the report shows those under "Decisions the plan didn't
-cover".
+Nothing says when which one applies. `MANIFESTO.md`: "Something found while
+building that may change what the user wants is a decision the plan didn't
+cover, and waits for the developer." And: "Decisions that are the
+developer's wait for them. The change is not accepted until they are
+decided."
 
-Open: what decides between asking now and recording. `CLAUDE.md`: "Decisions
-wait for the pipeline's fixed stops rather than interrupting a run";
-`implement/SKILL.md:16`: "do not build past it".
+Open: what decides between asking now and recording. `CLAUDE.md`: "A skill
+does not stop to ask the developer. It saves its questions for the
+pipeline's fixed stops." `implement/SKILL.md:16`: "do not build past it".
 
 ## Related
 

@@ -9,8 +9,10 @@ The README restates in prose what `run.sh` and its tests do, and comments
 and skills carry the history of their rules. Both go stale and both are
 read by agents as true.
 
-`MANIFESTO.md`: "What a fresh agent finds with one search or in one file
-needs no documentation", and "Only what remains is written down."
+`MANIFESTO.md`, premise 2: an agent "takes all of it as true". "What a
+fresh agent finds with one search or in one file needs no documentation" and
+"Only what remains is written down" left the manifesto; they are listed for
+the standard in `standard-follows-the-manifesto`.
 `CODING_STANDARDS.md`, _Comments_: a comment "never names ... what the code
 used to do".
 
@@ -32,5 +34,5 @@ Evidence:
 - The README says "`/implement` builds `CRITERIA.md` itself" (README.md:36),
   but `implement/SKILL.md:18` only takes one it is given.
 
-Depends on `layered-manifesto`, which decides where the process is described
+Depends on `method-layer`, which decides where the process is described
 once the README's account of the runner goes.

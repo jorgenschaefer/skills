@@ -29,8 +29,8 @@ thought.
 
 The user also wants a retro for the codebase the pipeline runs in: how to
 improve the process there, as opposed to the pipeline itself (that one is
-`retro-for-the-manifesto`). It belongs in this phase. `MANIFESTO.md` gives
-two answers to what was hard to change: "a refactoring for a structural
+`retro-for-the-manifesto`). It belongs in this phase. `implement/SKILL.md:70`
+gives two answers to what was hard to change: "a refactoring for a structural
 problem, a check for an invisible reason". Refactoring is the first; the
 project retro is the second - the project's checks, its `run` skill, its
 structural rules, its glossary. Both read the same input, the friction
@@ -47,9 +47,9 @@ then an instruction) are what the project side would reuse.
 
 ## Where the three depart from MANIFESTO.md
 
-- **explain-code smooths over differences.** The manifesto: an agent
-  explains "in the user's language, showing where the code's concepts differ
-  from the user's rather than smoothing that over." The rewriter never sees
+- **explain-code smooths over differences.** The manifesto: "On request, an
+  agent explains any part of the program in those words, and says where the
+  code thinks of things differently." The rewriter never sees
   the code and "may cut, merge and drop detail"
   (`explain-code/SKILL.md:28`); the checker reports only contradictions, and
   "a missing detail is never a finding" (`:29`). Nothing reports where the
@@ -58,11 +58,8 @@ then an instruction) are what the project side would reuse.
 - **restructure judges its own result.** It applies what it can prove
   preserves behaviour (`restructure/SKILL.md:55`) and commits (`:70`); the
   green suite proves behaviour, but whether the code got easier to change is
-  judged only by the session that changed it. The manifesto: "Nothing judges
-  its own work."
-- **restructure refactors where it can name a future change, without
-  asking; the manifesto has friction come to the human**, "as a proposed
-  follow-up with what skipping it would cost", and "The human decides."
+  judged only by the session that changed it. The manifesto: "Nothing
+  reliably judges its own work."
 - **untangle shows the developer code.** Each module comes with "its
   functions or types and their parameters", plus "one call from an existing
   test, rewritten against the new modules" (`untangle/SKILL.md:23-24`). The
@@ -70,13 +67,22 @@ then an instruction) are what the project side would reuse.
   (`:27`) are what the developer can judge.
 - **untangle's CRITERIA.md is not checked** by a fresh adversary, unlike
   `find-criteria`'s; it is handed straight on (`:102`).
-- **untangle's ACs test the decision** ("<Concept> is the module `<path>`")
-  rather than the constraint - a change in the explanation's terms lands in
-  one place. The manifesto: "Test the constraint, not the decision it led
-  to."
 - **untangle's proofs do not stay.** `checks.md` and `test-map.md` are
   deleted with the change's directory; the manifesto wants a check that
   "executes and stays".
+
+## Where they depart from the rest of the pipeline
+
+- **restructure refactors where it can name a future change, without
+  asking.** `accept-criteria/SKILL.md:87` has what was hard to change come
+  to the user instead: "What was hard to change is never fixed now, but
+  proposed as a follow-up, and its reason is what skipping it would cost",
+  and "The user may skip it."
+- **untangle's ACs test the decision** ("<Concept> is the module `<path>`")
+  rather than the constraint - a change in the explanation's terms lands in
+  one place. The rule "Test the constraint, not the decision it led to" left
+  the manifesto and waits to go into the standard
+  (`standard-follows-the-manifesto`).
 
 Depends on `cut-files-by-concept`, `find-code-before-understanding-is-lost`
 and `rule-cruft`, the parts it combines, and on
