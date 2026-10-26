@@ -26,7 +26,7 @@ Read the files the explanation names and search for every use of them. Then prop
 - **A sample change** put in the explanation's terms - "measure the pace over ten days instead of seven" - which the rework will make on a throwaway branch to show it lands in one place.
 - **The four technical decisions** for the rework, held against the files and the callers that move, "none" included: a scope file that defines a route or a stored type puts that format in scope. Stored formats always include `EXPLANATION.md`, `test-map.md` and `checks.md` in the change's directory, deleted with it, and the backlog item below where there is one.
 
-They correct it or approve it. Push back once on a correction you think is wrong; a decision reaffirmed after hearing the objection is theirs. Keep each shape they rejected, with why, for `## Ruled out`. Write nothing before they approve.
+They correct it or approve it. Weigh each correction before following it: look for what would make it better - a gap, a simpler form, a consequence it misses - and propose it, or object where you think it is wrong. Once: a decision reaffirmed after hearing the objection is theirs. Keep each shape they rejected, with why, for `## Ruled out`. Write nothing before they approve.
 
 ## Surprising cases
 

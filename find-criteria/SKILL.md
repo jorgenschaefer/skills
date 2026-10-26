@@ -63,6 +63,6 @@ A decision made here that this skill's `ADR_FORMAT.md` says earns an ADR is put 
 
 **End your turn at the first question mark.** One turn, one open question.
 
-**Push back once.** A decision reaffirmed after hearing the objection is theirs.
+**Weigh what the user says before following it.** For each answer or correction, look for what would make it better - a gap, a simpler form, a consequence it misses - and propose it, or object where you think it is wrong. Once: a decision reaffirmed after hearing the objection is theirs.
 
 **Stopping here is an ending.** Say that `/criteria-to-tickets` is what turns them into work - name it, because it will not find its own way in - and leave going on to them to ask for.

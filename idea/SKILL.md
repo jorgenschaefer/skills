@@ -47,6 +47,6 @@ Work in what it finds, and where that changes the statement, get their agreement
 
 **End your turn at the first question mark.** One turn, one open question.
 
-**Push back once.** A decision reaffirmed after hearing the objection is theirs.
+**Weigh what the user says before following it.** For each answer or correction, look for what would make it better - a gap, a simpler form, a consequence it misses - and propose it, or object where you think it is wrong. Once: a decision reaffirmed after hearing the objection is theirs.
 
 **Stopping here is an ending.** `/find-criteria` is what works out what the answer has to do - name it, because it will not find its own way in - and leave going on to them to ask for.

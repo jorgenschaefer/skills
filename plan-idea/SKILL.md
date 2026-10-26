@@ -51,6 +51,6 @@ Work out with the user what needs to happen to solve the problem `/idea` agreed,
 
 **End your turn at the first question mark.** One turn, one open question.
 
-**Push back once.** A decision reaffirmed after hearing the objection is theirs.
+**Weigh what the user says before following it.** For each answer or correction, look for what would make it better - a gap, a simpler form, a consequence it misses - and propose it, or object where you think it is wrong. Once: a decision reaffirmed after hearing the objection is theirs.
 
 **Stopping here is an ending.** The tasks are executed by an agent told "execute the tasks in CHANGE.md" - name it, and leave going on to the user to ask for.
