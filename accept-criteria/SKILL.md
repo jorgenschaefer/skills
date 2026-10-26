@@ -84,7 +84,7 @@ Show the rest as one list, each item with where it came from, a proposed outcome
 - **Fix now** - small enough for this session: `/implement` it, then walk again the ACs it touches.
 - **Re-slice** - too big for this session: back to `/criteria-to-tickets`, and the change is not accepted yet.
 - **Skip** - not worth doing, with the reason. Where the reason is a decision this skill's `ADR_FORMAT.md` says earns an ADR, recommend one, and on a yes write it to `docs/adr/` in that file's shape.
-- **Follow-up** - worth doing, but not in this change: hand it to the `backlog` skill. What was hard to change is never fixed now, but proposed as a follow-up, and its reason is what skipping it would cost, from the evidence: how often that code changed in the git history, an item in `changes/backlog/` or an earlier report naming the same place, the law at risk. The user may skip it.
+- **Follow-up** - worth doing, but not in this change: hand it to the `backlog` skill. What was hard to change is never fixed now, but proposed as a follow-up, and its reason is what skipping it would cost, from the evidence: how often that code changed in the git history, an item in `changes/backlog/` or an earlier report naming the same place, the goal at risk. The user may skip it.
 
 The user agrees to the list or names items to discuss. Take those one at a time - and, even where the user agrees to the list, every item that goes beyond a technical decision, departs from a nudge or needs a decision the criteria leave open: present it, suggest a concrete fix or decision, and wait for the user's view before the next.
 

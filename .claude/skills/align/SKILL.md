@@ -19,9 +19,9 @@ The argument is `changes/backlog/<slug>.md`; without one, ask which item. The it
 Answer each yourself; the user decides where a question says so.
 
 1. **Does the gap still show?** Check the item's evidence against the code as it is now, by reading. Where it no longer shows, say what closed it; the user decides whether the item goes.
-2. **Is it alignment?** It is where a skill or script makes an agent do something, or shows the developer something, that a manifesto sentence contradicts or lacks. Quote the sentence and point at the file and line. A defect in this repository's own code is maintenance, even where a law would condemn it. Where it is not alignment, give its effort and utility and recommend leaving it on the backlog for after this branch or deleting it; the user decides.
+2. **Is it alignment?** It is where a skill or script makes an agent do something, or shows the developer something, that a manifesto sentence contradicts or lacks. Quote the sentence and point at the file and line. A defect in this repository's own code is maintenance, even where a goal would condemn it. Where it is not alignment, give its effort and utility and recommend leaving it on the backlog for after this branch or deleting it; the user decides.
 3. **Is it the gap itself, or a symptom?** Where another item, or a gap no item names, sits underneath, say so; the user decides which goes first.
-4. **What does the item's solution give, and what does it miss?** Against the sentences from 2, and against the rest of the manifesto: a fix that serves one law and costs another is a tradeoff the user sees.
+4. **What does the item's solution give, and what does it miss?** Against the sentences from 2, and against the rest of the manifesto: a fix that serves one goal and costs another is a tradeoff the user sees.
 5. **What would align the repository more?** Put the item's solution beside at least two genuinely different ones, or say why the space holds fewer, each with its effort (XS-XL), the complexity it adds in a few words, and which sentences it serves. Prefer, in order, something that executes - `run.sh`, a test in `tests/`, a check in `test.sh` - then a check by something without a stake - a `VERIFY.md`, `critique` - then an instruction. Never make a proxy the gate: a check on a word in a file gets the word written and the behaviour missed. Deleting or moving a rule beats adding one. Recommend one; the user picks.
 
 **One problem at a time.** Where the item holds more than one change, pick one and say what goes back on the backlog.
@@ -56,7 +56,7 @@ Something found while building that changes what was approved is a decision the 
 
 ## Report
 
-Follow `MANIFESTO.md`'s "After implementation" list, leaving out what is empty, and add the reviewers' findings and what you did with each.
+Report the items the manifesto puts in the report - evidence, decisions the plan didn't cover, blast radius and revert, tradeoffs, new dependencies - and what was hard to change, which is the pipeline's own. Leave out what is empty, and add the reviewers' findings and what you did with each.
 
 Where the report holds a decision the plan didn't cover, or a finding you left standing, end your turn on it and commit after the answer. Otherwise commit as the plan split it, with `/git-commit-message`, and name the commits in the report. The item is deleted in the commit that closes it, and updated where part of it stays.
 
@@ -64,4 +64,4 @@ Where the report holds a decision the plan didn't cover, or a finding you left s
 
 **Weigh what the user says before following it.** For each answer or correction, look for what would make it better - a gap, a simpler form, a consequence it misses - and propose it, or object where you think it is wrong. Once: a decision reaffirmed after hearing the objection is theirs.
 
-**The manifesto is open to debate**, all but its premise: agents write and read the code, and the way software is built is tailored to that. Where a sentence looks wrong, or reads two ways - a reviewer reads it differently from you, you had to invent a rule it should have given, following it would make the software worse - quote it, say what it led to, and draft a rewording or a deletion to discuss with the user: with the plan where it shows before, in the report where it shows after. Changing it is the user's decision, never a side effect of the plan.
+**The manifesto is open to debate**, all but its first premise: humans do not read the code, and the way software is built is tailored to that. Where a sentence looks wrong, or reads two ways - a reviewer reads it differently from you, you had to invent a rule it should have given, following it would make the software worse - quote it, say what it led to, and draft a rewording or a deletion to discuss with the user: with the plan where it shows before, in the report where it shows after. Changing it is the user's decision, never a side effect of the plan.
