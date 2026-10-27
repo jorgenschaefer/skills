@@ -112,7 +112,7 @@ if [ "$rc" = 0 ] && ! grep -q 'drift' "$WORK/.out"; then
   ok "a sentence after a quoted criterion is not part of it"
 else bad "a sentence after a quoted criterion is not part of it" "rc=$rc $(out) $(tkt 1-one)"; fi
 
-# A line of only spaces looks blank and is blank, as it is between nudges.
+# A line of only spaces looks blank and is blank, as it is between quotes.
 workspace
 perl -0pi -e 's/^(> \*\*AC-1\*\* the first thing happens\.\n)/$1  \nThe first part of it, without filters.\n/m' \
   "$WORK/changes/x/tickets/1-one.md"
@@ -123,10 +123,28 @@ if [ "$rc" = 0 ] && ! grep -q 'drift' "$WORK/.out"; then
   ok "a line of only spaces after a quoted criterion ends it"
 else bad "a line of only spaces after a quoted criterion ends it" "rc=$rc $(out) $(tkt 1-one)"; fi
 
-# A nudge is quoted word for word too. Nothing checks the build against it, so
-# the quote is the only thing that carries it to the builder - and a quote that
-# no longer matches carries something nobody agreed to.
-workspace
+# A change sliced before the technical decisions were three: four of them,
+# and a nudge in CRITERIA.md that the first ticket quotes.
+old_shape() {
+  local decisions='- **Stored formats** none.\n- **Wire formats** none.\n- **Trust boundaries** none.\n- **Dependencies** none.\n\n## Nudges\n- reuse the list that is already there.\n'
+  perl -0pi -e "s/^## Technical decisions\n.*?(?=^## )/## Technical decisions\n$decisions\n/ms" "$WORK/changes/x/CRITERIA.md"
+  local f quotes
+  for f in "$WORK"/changes/x/tickets/*.md; do
+    quotes='> **Stored formats** none.\n\n> **Wire formats** none.\n\n> **Trust boundaries** none.\n\n> **Dependencies** none.\n\n## Nudges\n'
+    case "$f" in */1-one.md) quotes+='\n> reuse the list that is already there.\n' ;; esac
+    perl -0pi -e "s/^## Technical decisions\n.*?(?=^## )/## Technical decisions\n\n$quotes\n/ms" "$f"
+  done
+  commit
+}
+
+workspace; old_shape
+plan build build review
+rc="$(run)"
+if [ "$rc" = 0 ] && ! grep -q 'drift' "$WORK/.out"; then
+  ok "a change sliced in the old shape, four technical decisions and a nudge, runs"
+else bad "a change sliced in the old shape, four technical decisions and a nudge, runs" "rc=$rc $(out)"; fi
+
+workspace; old_shape
 sed -i 's/reuse the list that is already there./reuse the list./' "$WORK/changes/x/tickets/1-one.md"; commit
 plan build
 rc="$(run)"
@@ -135,68 +153,11 @@ if [ "$rc" != 0 ] && grep -q '1-one.md: a nudge it quotes is not in' "$WORK/.out
   ok "a ticket whose nudge is not in CRITERIA.md word for word stops the run"
 else bad "a ticket whose nudge is not in CRITERIA.md word for word stops the run" "rc=$rc $(out)"; fi
 
-workspace
-sed -i 's/^- reuse the list that is already there./- reuse the list that is\n  already there./' "$WORK/changes/x/CRITERIA.md"; commit
-plan build build review
-rc="$(run)"
-if [ "$rc" = 0 ] && ! grep -q 'drift' "$WORK/.out"; then
-  ok "a nudge broken over two lines still matches its quote"
-else bad "a nudge broken over two lines still matches its quote" "rc=$rc $(out)"; fi
-
-# A nudge can be a list item of several paragraphs as a criterion can, quoted
-# the same way, with the blank line as a bare `>`.
-multi_paragraph_nudge() {  # the closing sentence in CRITERIA.md
-  perl -0pi -e "s/^- reuse the list that is already there\.\n/- reuse the list that is already there:\n  - its rows;\n  - its filters.\n\n  $1\n/m" \
-    "$WORK/changes/x/CRITERIA.md"
-  perl -0pi -e 's/^> reuse the list that is already there\.\n/> reuse the list that is already there:\n> - its rows;\n> - its filters.\n>\n> Not a second one.\n/m' \
-    "$WORK/changes/x/tickets/1-one.md"
-  commit
-}
-workspace
-multi_paragraph_nudge "Not a second one."
-plan build build review
-rc="$(run)"
-if [ "$rc" = 0 ] && ! grep -q 'drift' "$WORK/.out"; then
-  ok "a nudge of several paragraphs, quoted as it stands, is no drift"
-else bad "a nudge of several paragraphs, quoted as it stands, is no drift" "rc=$rc $(out)"; fi
-
-workspace
-multi_paragraph_nudge "Not a second one, ever."
-plan build
-rc="$(run)"
-if [ "$rc" != 0 ] && grep -q 'a nudge it quotes is not in' "$WORK/.out"; then
-  ok "a nudge's second paragraph reworded is drift"
-else bad "a nudge's second paragraph reworded is drift" "rc=$rc $(out)"; fi
-
-# A nudge nobody quotes is not drift: it is guidance, and only the tickets it
-# bears on carry it.
-workspace
-sed -i '/^- reuse the list/a - do not touch the other view.' "$WORK/changes/x/CRITERIA.md"; commit
-plan build build review
-rc="$(run)"
-if [ "$rc" = 0 ] && ! grep -q 'drift' "$WORK/.out"; then
-  ok "a nudge no ticket quotes is no drift"
-else bad "a nudge no ticket quotes is no drift" "rc=$rc $(out)"; fi
-
-# A quoted nudge found early in a long list is found, not lost: under pipefail
-# a `grep -q` that stops reading at the match fails the pipe it ends, and the
-# runner read that as drift - on whichever nudges the race picked that time.
-workspace
-for i in $(seq 1 2000); do
-  printf -- '- an unquoted nudge number %s, long enough to fill the pipe before the match is read.\n' "$i"
-done > "$WORK/.more"
-sed -i "/^- reuse the list/r $WORK/.more" "$WORK/changes/x/CRITERIA.md"; commit
-plan build build review
-rc="$(run)"
-if [ "$rc" = 0 ] && ! grep -q 'drift' "$WORK/.out"; then
-  ok "a nudge followed by many others still matches its quote"
-else bad "a nudge followed by many others still matches its quote" "rc=$rc $(out)"; fi
-
 # The technical decisions were approved, and every ticket carries all of them
-# word for word: a builder that never saw "none" cannot know that the table it
-# adds is a departure.
+# word for word: a builder that never saw "none" cannot know that the concept
+# it adds is a departure.
 workspace
-sed -i 's/^> \*\*Stored formats\*\* none\./> **Stored formats** none yet./' "$WORK/changes/x/tickets/1-one.md"; commit
+sed -i 's/^> \*\*Concepts\*\* none\./> **Concepts** none yet./' "$WORK/changes/x/tickets/1-one.md"; commit
 plan build
 rc="$(run)"
 if [ "$rc" != 0 ] && grep -q '1-one.md: a technical decision it quotes is not in' "$WORK/.out" \
@@ -205,13 +166,69 @@ if [ "$rc" != 0 ] && grep -q '1-one.md: a technical decision it quotes is not in
 else bad "a ticket whose technical decision is not in CRITERIA.md word for word stops the run" "rc=$rc $(out)"; fi
 
 workspace
-sed -i 's/^- \*\*Dependencies\*\* none\./- **Dependencies** none, beyond the parser./' "$WORK/changes/x/CRITERIA.md"; commit
+sed -i 's/^- \*\*Hard to reverse\*\* none\./- **Hard to reverse** none, beyond the parser./' "$WORK/changes/x/CRITERIA.md"; commit
 plan build
 rc="$(run)"
 if [ "$rc" != 0 ] && grep -q '1-one.md: does not quote a technical decision in' "$WORK/.out" \
    && grep -q '2-two.md: does not quote a technical decision in' "$WORK/.out"; then
   ok "a technical decision a ticket does not quote stops the run"
 else bad "a technical decision a ticket does not quote stops the run" "rc=$rc $(out)"; fi
+
+workspace
+sed -i 's/^- \*\*Hard to reverse\*\* none\./- **Hard to reverse**\n  none./' "$WORK/changes/x/CRITERIA.md"; commit
+plan build build review
+rc="$(run)"
+if [ "$rc" = 0 ] && ! grep -q 'drift' "$WORK/.out"; then
+  ok "a technical decision broken over two lines still matches its quote"
+else bad "a technical decision broken over two lines still matches its quote" "rc=$rc $(out)"; fi
+
+# A technical decision can be a list item of several paragraphs as a criterion
+# can, quoted the same way, with the blank line as a bare `>`.
+multi_paragraph_decision() {  # the closing sentence in CRITERIA.md
+  perl -0pi -e "s/^- \*\*Hard to reverse\*\* none\.\n/- **Hard to reverse** none:\n  - no data deleted;\n  - no field dropped.\n\n  $1\n/m" \
+    "$WORK/changes/x/CRITERIA.md"
+  local f
+  for f in "$WORK"/changes/x/tickets/*.md; do
+    perl -0pi -e 's/^> \*\*Hard to reverse\*\* none\.\n/> **Hard to reverse** none:\n> - no data deleted;\n> - no field dropped.\n>\n> Not a dependency either.\n/m' "$f"
+  done
+  commit
+}
+workspace
+multi_paragraph_decision "Not a dependency either."
+plan build build review
+rc="$(run)"
+if [ "$rc" = 0 ] && ! grep -q 'drift' "$WORK/.out"; then
+  ok "a technical decision of several paragraphs, quoted as it stands, is no drift"
+else bad "a technical decision of several paragraphs, quoted as it stands, is no drift" "rc=$rc $(out)"; fi
+
+workspace
+multi_paragraph_decision "Not a dependency either, ever."
+plan build
+rc="$(run)"
+if [ "$rc" != 0 ] && grep -q 'a technical decision it quotes is not in' "$WORK/.out"; then
+  ok "a technical decision's second paragraph reworded is drift"
+else bad "a technical decision's second paragraph reworded is drift" "rc=$rc $(out)"; fi
+
+# A quoted decision found early in a long list is found, not lost: under
+# pipefail a `grep -q` that stops reading at the match fails the pipe it ends,
+# and the runner read that as drift - on whichever items the race picked.
+workspace
+for i in $(seq 1 2000); do
+  printf -- '- **Decision %s** long enough to fill the pipe before the match is read.\n' "$i"
+done > "$WORK/.more"
+sed -i "/^- \*\*Hard to reverse/r $WORK/.more" "$WORK/changes/x/CRITERIA.md"
+for i in $(seq 1 2000); do
+  printf -- '\n> **Decision %s** long enough to fill the pipe before the match is read.\n' "$i"
+done > "$WORK/.quotes"
+for f in "$WORK"/changes/x/tickets/*.md; do
+  sed -i "/^> \*\*Hard to reverse/r $WORK/.quotes" "$f"
+done
+commit
+plan build build review
+rc="$(run)"
+if [ "$rc" = 0 ] && ! grep -q 'drift' "$WORK/.out"; then
+  ok "a technical decision followed by many others still matches its quote"
+else bad "a technical decision followed by many others still matches its quote" "rc=$rc $(out)"; fi
 
 # A change sliced before technical decisions existed has none on either side.
 workspace
@@ -279,7 +296,7 @@ if [ "$rc" != 0 ] && grep -q '1-one.md: claims AC-2 and does not quote it' "$WOR
 else bad "a ticket claiming a criterion it does not quote stops the run" "rc=$rc $(out)"; fi
 
 workspace
-sed -i 's/^## Nudges$/> **AC-2** the second thing happens.\n\n## Nudges/' "$WORK/changes/x/tickets/1-one.md"; commit
+sed -i 's/^## Technical decisions$/> **AC-2** the second thing happens.\n\n## Technical decisions/' "$WORK/changes/x/tickets/1-one.md"; commit
 plan build
 rc="$(run)"
 if [ "$rc" != 0 ] && grep -q '1-one.md: quotes AC-2 and neither closes nor advances it' "$WORK/.out" && [ ! -s "$STUB_CALLS" ]; then
@@ -355,13 +372,11 @@ It is split, the behaviour is unchanged, and the checks pass.
 
 ## Technical decisions
 
-> **Stored formats** none.
+> **Concepts** none.
 
 > **Wire formats** none.
 
-> **Trust boundaries** none.
-
-> **Dependencies** none.
+> **Hard to reverse** none.
 EOF2
 sed -i 's/^after: *$/after:     3-split/' "$WORK/changes/x/tickets/1-one.md"; commit
 plan build build build review

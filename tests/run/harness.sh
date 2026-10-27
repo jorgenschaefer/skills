@@ -22,8 +22,8 @@ cleanup() {
 trap cleanup EXIT
 
 # One change: two criteria and a ticket for each, the second after the first,
-# the technical decisions both quote, and a nudge the first one quotes. On a branch whose history starts before the
-# change's paper, as a real one does.
+# and the technical decisions both quote. On a branch whose history starts
+# before the change's paper, as a real one does.
 workspace() {
   WORK="$(mktemp -d)"; WORKSPACES+=("$WORK")
   git -C "$WORK" init -q -b main
@@ -37,22 +37,28 @@ workspace() {
 x
 
 ## Acceptance criteria
+### Behaviour
 - **AC-1** the first thing happens.
 - **AC-2** the second thing happens.
 
-## Technical decisions
-- **Stored formats** none.
-- **Wire formats** none.
-- **Trust boundaries** none.
-- **Dependencies** none.
+### What production must show
+None.
 
-## Nudges
-- reuse the list that is already there.
+### Security policy
+None.
+
+### Information model
+None.
+
+## Technical decisions
+- **Concepts** none.
+- **Wire formats** none.
+- **Hard to reverse** none.
 
 ## Ruled out
 - x
 EOF
-  ticket 1-one AC-1 "the first thing happens." "" "reuse the list that is already there."
+  ticket 1-one AC-1 "the first thing happens." ""
   ticket 2-two AC-2 "the second thing happens." "1-one"
   git -C "$WORK" add -A >/dev/null; git -C "$WORK" commit -qm paper
   git -C "$WORK" checkout -q -b topic
@@ -82,7 +88,7 @@ STUB
   chmod +x "$WORK/.bin/sleep" "$WORK/.bin/date"
 }
 
-ticket() {  # slug, id, text, after, nudge
+ticket() {  # slug, id, text, after
   cat > "$WORK/changes/x/tickets/$1.md" <<EOF
 ---
 criteria:  CRITERIA.md
@@ -102,18 +108,12 @@ x
 
 ## Technical decisions
 
-> **Stored formats** none.
+> **Concepts** none.
 
 > **Wire formats** none.
 
-> **Trust boundaries** none.
+> **Hard to reverse** none.
 
-> **Dependencies** none.
-
-## Nudges
-${5:+
-> $5
-}
 ## Context
 x
 
@@ -146,15 +146,11 @@ part of it happens.
 
 ## Technical decisions
 
-> **Stored formats** none.
+> **Concepts** none.
 
 > **Wire formats** none.
 
-> **Trust boundaries** none.
-
-> **Dependencies** none.
-
-## Nudges
+> **Hard to reverse** none.
 
 ## Context
 x
