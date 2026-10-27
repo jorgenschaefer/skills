@@ -1,6 +1,6 @@
 # Criteria format
 
-`changes/YYYY-MM-DD-<slug>/CRITERIA.md`. The runner reads the criteria, technical decisions and nudges mechanically, so their shape below is not decoration: an AC is a list item starting `- **AC-n**`, a technical decision a list item under `## Technical decisions`, a nudge a plain list item under `## Nudges`.
+`changes/YYYY-MM-DD-<slug>/CRITERIA.md`. The runner reads the criteria and technical decisions mechanically, so their shape below is not decoration: an AC is a list item starting `- **AC-n**`, and a technical decision a list item under `## Technical decisions`.
 
 ```markdown
 # Criteria: <the change, in a few words>
@@ -11,10 +11,27 @@
 Written before the approach was chosen, and what acceptance judges the finished thing against.>
 
 ## Acceptance criteria
+### Behaviour
 - **AC-1** <One observable behaviour, checkable true or false by someone holding it against the finished thing months from now.>
-- **AC-2** <...>
+- **AC-2** <What the user experiences when that behaviour fails: "when the other member has declined, the first sees 'declined' and the shift stays theirs".>
 
-<Hard: acceptance checks every one. What must stay as it is ("the phone layout is unchanged") is an AC too, and so is an edge case that matters.
+### What production must show
+- **AC-3** <What someone has to hear about, and how fast: "ten failed logins in a minute alert the admin within five minutes".>
+
+### Security policy
+- **AC-4** <Who may see and do what: "a member never sees another member's contact details".>
+
+### Information model
+None.
+
+<All four groups, in this order, in every file. Each holds ACs or the plain line `None.`, and "None." is an answer: if a group says "None." and the build adds a permission, an alert or something kept there, the build has departed from what was approved. These are the decisions the developer answers for, put in words they can judge without the code. A detail of the code - a table, a column, a file, a module - is never an AC.
+
+- **Behaviour** - what the user can do and sees, failure cases included: each behaviour has an AC for what the user experiences when it fails.
+- **What production must show** - errors, but also a sudden drop in users or a flood of login attempts: who hears about it, and how fast.
+- **Security policy** - who may see and do what.
+- **Information model** - what the system keeps, logs and traces included, for how long, and what it never keeps.
+
+Hard: acceptance checks every one. What must stay as it is ("the phone layout is unchanged") is an AC too, and so is an edge case that matters.
 
 The numbers are the contract with everything downstream: tickets quote them word for word, and acceptance walks them by id. They are never renumbered and never reused. An AC that no longer holds is deleted, and its number goes with it.>
 
@@ -24,17 +41,11 @@ The numbers are the contract with everything downstream: tickets quote them word
 **Agreed; build to this, do not redesign.**>
 
 ## Technical decisions
-- **Stored formats** <The tables, columns, files and keys the change adds or changes, and how data already stored gets into the new shape - or "none".>
+- **Concepts** <The things the change adds to or changes in what the system keeps, and how they relate, in the glossary's words: "a swap request belongs to one shift and to two members". A new concept gets its term here, agreed with the developer. Not tables, columns or files - or "none".>
 - **Wire formats** <The endpoints, payloads, events, flags, config keys, environment variables and exit codes something outside this change depends on, and what an old caller sees - or "none".>
-- **Trust boundaries** <New input from outside, who may do what, secrets, personal data stored, new outgoing calls - or "none".>
-- **Dependencies** <Libraries and services taken on, upgraded across a major or dropped - or "none".>
+- **Hard to reverse** <A change that discards information - data deleted, a field dropped, history merged - and a dependency the codebase will be built around, each with what it gives and what it costs - or "none".>
 
-<Approved like the ACs: these are what the person answers for outside the repository, where no agent can undo a mistake. All four are always present, and "none" is an answer - it is what makes a table the build adds a departure rather than a detail. A build may go beyond one where the code calls for it - another table, another field - and records the departure; acceptance shows it for approval. Tickets quote them word for word.>
-
-## Nudges
-- <One piece of implementation guidance: "reuse the phone components in the sidebar", "do not touch DeviceView".>
-
-<Soft: nothing checks the build against them, but a build that departs from one records the departure and why. Tickets quote them word for word. Omit the section when there are none.>
+<Approved like the ACs: these are the developer's decisions that are not behaviour, and a mistake in one costs more than a rebuild. All three are always present, and "none" is an answer - if a decision says "none" and the build adds a concept or an endpoint, or deletes data, the build has departed from what was approved. A build may go beyond one where the code calls for it and records the departure; acceptance shows it for approval. How the code holds a concept - its tables, columns, files and modules - is the builder's. Tickets quote them word for word.>
 
 ## Out of scope
 - <One thing this change deliberately does not do, so a builder does not wander into it and a reviewer does not file its absence as a defect. Omit the section when there is nothing.>

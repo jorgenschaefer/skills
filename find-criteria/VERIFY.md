@@ -10,6 +10,10 @@ You are reading one `CRITERIA.md` and reporting what is wrong with it. You did n
 
 **None unasked for.** An AC that serves no part of the problem is work nobody asked for.
 
+**Each behaviour has its failure cases.** For each thing the user can do, list the ways it can fail, and find for each the AC that says what the user experiences.
+
+**No AC is a detail of the code.** An AC that only a reader of the code could judge - a table, a column, a file, a module - is a finding.
+
 ## Each AC can be tested
 
 Someone months from now must be able to hold it against the finished thing and say true or false without asking what it meant. "Fast enough" is a judgement. "A cold start answers in under a second" is a criterion.
@@ -27,11 +31,11 @@ A finding here is an AC that should exist, or one that should say something else
 
 ## It can be sliced without asking
 
-Walk the file as `/criteria-to-tickets` will, and name what you would have to ask. Where an AC, a technical decision or a nudge admits two readings that would build different things, report both readings - that is the finding, not your preference between them.
+Walk the file as `/criteria-to-tickets` will, and name what you would have to ask. Where an AC or a technical decision admits two readings that would build different things, report both readings - that is the finding, not your preference between them.
 
-**Check the shape by reading**, and say in your report that you read it: the sections `CRITERIA_FORMAT.md` requires are present; every AC is numbered `AC-n` with no number used twice - a gap is an AC that was deleted, not a defect; the agreed design says how it is to be built and, where there is a specimen, links both copies; all four technical decisions are there.
+**Check the shape by reading**, and say in your report that you read it: the sections `CRITERIA_FORMAT.md` requires are present; all four AC groups are there, in order, each with ACs or "None."; every AC is numbered `AC-n` with no number used twice - a gap is an AC that was deleted, not a defect; the agreed design says how it is to be built and, where there is a specimen, links both copies; all three technical decisions are there.
 
-**Hold each technical decision against the code**, and report what it leaves out for the user to decide: a migration the approach needs and `Stored formats` does not name, an endpoint whose old callers `Wire formats` does not mention, a library the code would have to take on.
+**Hold each technical decision against the code**, and report what it leaves out for the user to decide: a concept the approach adds that `Concepts` does not name, an endpoint whose old callers `Wire formats` does not mention, data the approach deletes that `Hard to reverse` does not name.
 
 ## Reporting
 

@@ -3,7 +3,7 @@ criteria:  CRITERIA.md
 closes:    AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-15
 advances:
 after:     
-status:    ready
+status:    done
 attempts:  0
 ---
 
@@ -53,4 +53,7 @@ AC-15 is met by naming both follow-ups under this ticket's `## Left standing` as
 - What the developer is shown beyond what they decide.
 
 ## Left standing
-
+- Follow-ups for `/backlog` (AC-15): `untangle`'s code-level ACs as an item of their own - module paths, `test-map.md`, imports, diff stats - and with them `untangle/SKILL.md:23`, which still has the developer name a new directory for a concept the glossary has no term for (review, should-fix). And "Give every new domain rule one home" (was `find-criteria/SKILL.md:39`) as a finding for `changes/backlog/cut-files-by-concept.md`.
+- Fixes after the last review, which no reviewer saw: `find-criteria/VERIFY.md`'s failure-case check now asks for each way a thing can fail, not one AC (second-round nit); the two "None."/"none" sentences in `CRITERIA_FORMAT.md` now name what departs instead of using pronouns (second-round nit).
+- No automated test proves AC-1 to AC-7 or AC-12: the skills are Markdown. Each was checked by reading, by both review rounds.
+- Until ticket 02 is built, `/criteria-to-tickets` and `TICKET_FORMAT.md` still ask for all four technical decisions and nudges, so a `CRITERIA.md` in the new shape should not be sliced before then.
