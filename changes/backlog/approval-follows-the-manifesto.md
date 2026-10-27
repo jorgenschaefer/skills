@@ -11,6 +11,29 @@ Some of what they must judge is out of reach for someone who does not read
 the code, and some of what they answer for is never asked.
 `CLAUDE.md`: the developer sees "what the manifesto puts in bold".
 
+Agreed with `/idea` on 2026-10-27:
+
+Before a change is built, the developer approves its behaviour and its
+technical decisions. But four decisions the manifesto gives them are never
+put to them: what the user experiences when something fails, what
+production must show and how fast, what the system keeps and for how long
+and what it never keeps, and whether to make a change that discards
+information. An agent settles these alone, or they come up only after the
+build. Instead, each of these is put to the developer before the build, in
+words they can judge without reading the code. The developer decides it,
+or decides that it doesn't apply.
+
+Instance: no failure. The manifesto rewrite (23c6504) gave the developer
+these decisions, and `find-criteria` was not updated with it.
+`find-criteria/CRITERIA_FORMAT.md:26-29` and `find-criteria/SKILL.md:33`
+ask none of them, and retention appears nowhere in the repo.
+
+Parked: what isn't the developer's is put to them, and the security policy
+is mixed with implementation in Trust boundaries (the sections below on
+the four technical decisions and on implementation). Since 62b33a0, showing
+the developer more than the manifesto requires is allowed, so what is left
+is asking them to decide things that are not theirs.
+
 ## The four technical decisions are the wrong four
 
 - **Stored formats** asks for "the tables, columns, files and keys"
