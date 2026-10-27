@@ -44,4 +44,4 @@ Ask whether it is clear. Where they say a part is unclear, or ask about one, a f
 
 Where they call a case surprising - something the rule does that they would not have expected - say back which case it is, so it stays in the conversation.
 
-It ends when they say they understand it. It writes no file. Reworking the code to follow the explanation is `/untangle`, typed next in this conversation - say so, and leave going on to them.
+It ends when they say they understand it. It writes no file.

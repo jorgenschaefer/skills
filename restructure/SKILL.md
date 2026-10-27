@@ -20,7 +20,7 @@ Before proposing or moving anything, make the structure something the checks hol
 
 - **The check command.** Where `CLAUDE.md` declares no single command on a `Check:` line, write one - build, type check, lint, tests and the structural checks - and declare it. A check line in any other form than `CODING_STANDARDS.md` gives, rewrite in that form. Where the pre-commit hook or CI runs something else, make them run it.
 - **Every structural rule `CLAUDE.md` states becomes a check** the command runs, with the places that break it today in a list the check reads, which only shrinks. This changes no behaviour, so apply it.
-- **A rule the code follows only by habit** - a layout, a boundary nobody wrote down - goes to the user as a proposal, with the check that would hold it.
+- **A rule the code follows only by habit** - a layout, a boundary nobody wrote down - is yours to decide: make it a check where the code is easier to change with it held, and leave it otherwise.
 
 ## Find what changes together
 
@@ -33,7 +33,7 @@ Before restructuring anything, look for what the user would never have asked you
 - **Near-duplicate concepts.** Two screens, commands, settings or flows that do almost the same thing for the user. One concept, in the UI and in the code.
 - **Features that cost more than they give.** A feature spread across many places, whose special cases turn up in code that has nothing to do with it, whose code is large next to what it gives the user, or whose code stays hard to follow however it is restructured.
 
-Leave the code a proposal would remove alone, and say so under that proposal.
+Leave the code a proposal would remove alone.
 
 ## Restructure
 
@@ -57,7 +57,7 @@ Before each change, name the concrete future change that will touch fewer places
 - **A restructuring** is proved by tests that pin the code it touches and pass before and after. Where coverage is missing, write the test that pins the current behavior first, and break the code to watch it fail - a pinning test passes from the start, so that is the only proof it pins anything.
 - **A deletion** is proved by showing the code dead or inert. The tests that must pass are the ones on the code that remains.
 
-**Everything you cannot prove preserves behavior goes to the user as a proposal** - feature cuts, merged concepts, and restructurings you could not pin. For each one: what the user loses, which parts of the code stop being entangled with it, and which future changes get easier. Order them by what they free against what they cost the user.
+**Leave everything you cannot prove preserves behavior as it is.** Feature cuts, merged concepts and renaming a name in stored data or on the wire go to the user as proposals. For each one, in the user's words and naming no part of the code: what the user loses, and which future changes get easier. Order them by the changes they make easier against what the user loses. Any other restructuring you could not prove is not a proposal: name it in the report in one line, in the user's words, with what would get easier.
 
 ## Docs last
 
@@ -67,6 +67,6 @@ Before each change, name the concrete future change that will touch fewer places
 
 ## Finish
 
-One commit per restructuring, so each can be read and reverted on its own. Move a file in a commit of its own with its content unchanged, so `git log --follow` and the next run's history still see through it. Then report what you changed, and the proposals.
+One commit per restructuring, so each can be read and reverted on its own. Move a file in a commit of its own with its content unchanged, so `git log --follow` and the next run's history still see through it. Then report what you changed, each check you added in one line, each restructuring you could not prove in one line, and the proposals.
 
 Count, for each step above - the checks, each kind of restructuring, the docs - how many things you found and how many you fixed. Put the counts in the report and in the message of the run's last commit, and compare them with the counts the previous run's last commit left.

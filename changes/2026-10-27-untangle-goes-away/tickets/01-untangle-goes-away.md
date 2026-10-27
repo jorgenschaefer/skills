@@ -3,7 +3,7 @@ criteria:  CRITERIA.md
 closes:    AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7
 advances:
 after:
-status:    ready
+status:    done
 attempts:  0
 ---
 
@@ -48,3 +48,5 @@ What production must show, Security policy and Information model all say "None."
 - Backlog items under `changes/backlog/` that mention `untangle`: acceptance updates them.
 
 ## Left standing
+- AC-1: a new session typing `/untangle` was not tried. `./sync.sh` against a scratch target holding an `untangle` link removed it. The real `~/.claude/skills/untangle` link stays until a person runs `./sync.sh`.
+- Fixed after the last review, a nit: `restructure` ordered proposals "by what they free", which pointed at the removed code clause. It now orders them by the changes they make easier against what the user loses.
