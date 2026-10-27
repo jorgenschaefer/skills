@@ -61,7 +61,8 @@ Evidence:
 
 - When the journey checks run: end-to-end checks are slow and flaky, but the
   manifesto: "A check for anything the developer approved counts only if it
-  fails when the code breaks it, and that is confirmed on every change".
+  fails when the code breaks it, and that is confirmed for every change before it
+  is accepted".
 - Whether `find-criteria` writes the first journeys, or something else does.
 
 ## Related

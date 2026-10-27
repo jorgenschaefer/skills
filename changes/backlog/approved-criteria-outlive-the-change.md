@@ -14,8 +14,8 @@ nobody notices that this was a decision for the human.
 theirs to decide"; the checkers "show each criterion with a check that
 executes and stays, since the next agent will not remember it"; "A check for
 anything the developer approved counts only if it fails when the code breaks
-it, and that is confirmed on every change"; "Weakening or deleting one is a
-decision about what it checks, and reported as one."
+it, and that is confirmed for every change before it is accepted"; "Weakening
+or deleting one is a decision about what it checks, and reported as one."
 
 Evidence:
 
