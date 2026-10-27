@@ -57,7 +57,7 @@ Before each change, name the concrete future change that will touch fewer places
 - **A restructuring** is proved by tests that pin the code it touches and pass before and after. Where coverage is missing, write the test that pins the current behavior first, and break the code to watch it fail - a pinning test passes from the start, so that is the only proof it pins anything.
 - **A deletion** is proved by showing the code dead or inert. The tests that must pass are the ones on the code that remains.
 
-**Leave everything you cannot prove preserves behavior as it is.** Feature cuts, merged concepts and renaming a name in stored data or on the wire go to the user as proposals. For each one, in the user's words and naming no part of the code: what the user loses, and which future changes get easier. Order them by the changes they make easier against what the user loses. Any other restructuring you could not prove is not a proposal: name it in the report in one line, in the user's words, with what would get easier.
+**Leave everything you cannot prove preserves behavior as it is.** Feature cuts, merged concepts and renaming a name in stored data or on the wire go to the user as proposals. For each one, in the user's words and naming no part of the code except a name in stored data or on the wire that the proposal changes: what the user loses, and which future changes get easier. Order them by the changes they make easier against what the user loses. Any other restructuring you could not prove is not a proposal: name it in the report in one line, in the user's words, with what would get easier.
 
 ## Docs last
 
