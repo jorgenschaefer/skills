@@ -3,7 +3,7 @@ criteria:  CRITERIA.md
 closes:    AC-8, AC-9, AC-10, AC-11, AC-13, AC-14
 advances:
 after:     01-approval-before-the-build
-status:    ready
+status:    done
 attempts:  0
 ---
 
@@ -49,4 +49,9 @@ Places that name nudges or the four technical decisions today: `criteria-to-tick
 - Departures that later tickets build on (`departures-built-on-by-later-tickets`).
 
 ## Left standing
-
+- Review finding not fixed (first round, should-fix): `/criteria-to-tickets` still puts details of the code to the developer at its approval - a feature directory's name as a product question (`criteria-to-tickets/SKILL.md`, "A feature directory that is a domain concept"), and implementation decisions between tickets shown "so the user can object". The criteria's AC-5 covers only `/find-criteria`, so changing it was not this change's to make. Suggested follow-up for `/backlog`, with the same problem as this change.
+- Fixes after the last review, which no reviewer saw: `accept-criteria`'s opening now says it shows where the build went beyond or against what was agreed, and what costs something outside the repository, and drops tests from what stays out (second-round should-fix); the README's "What is approved." paragraph now ends on acceptance showing departures and weakened checks (same finding); the "behind a none" sentences dropped from `accept-criteria` and `implement`, `implement`'s "Make one only" now "Depart only", the `TICKET_FORMAT.md` Context sentence untangled, and the README's "what the manifesto puts in bold" (second-round nits).
+- Beyond the ticket's ACs, from the first review: every ticket's `## Context` now names the AC groups beyond Behaviour that say "None." (`criteria-to-tickets/SKILL.md`, `TICKET_FORMAT.md`). Without it a builder could not know that adding a permission, an alert or kept data is a departure, since a ticket quotes only the ACs it closes. Nothing checks that line the way `run/drift.sh` checks the quoted decisions.
+- No automated test proves AC-8, AC-9 or AC-13: they are skill text, checked by reading in both review rounds. AC-10 and AC-11 are pinned by `tests/run/drift.sh`; the first reviewer also drove both through `run.sh` by hand.
+- What was hard to change: the four technical decisions and nudges were named in eleven files, each in its own words, and every reviewer round found another place or another wording that disagreed (the README took three). Suggestion: one sentence of what a departure is, kept in `CRITERIA_FORMAT.md` and referred to elsewhere rather than restated.
+- Blast radius and revert: a change in flight in another project keeps its old shape and still runs (AC-11). A revert undoes nothing outside this repository.

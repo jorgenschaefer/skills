@@ -15,7 +15,7 @@ Read this skill's `CODING_STANDARDS.md` whole and apply all of it - no part of i
 
 **Know what has to be true when you are finished**, specifically enough that you could hand it to someone else as the test of whether it worked. Where the request does not settle something that changes what gets built, ask - before or during the build - and do not build past it. Where it settles it badly, say so once and build it.
 
-**Given a `CRITERIA.md` rather than a ticket**, its ACs are what has to be true, and a test that pins one names its id. Its technical decisions are limits: a table, field, endpoint, permission, outgoing call or dependency they do not name, and anything at all behind a "none", is a departure. So is building against a nudge. Make one only where the code calls for it. Write what you leave standing, as _Finish_ lists it, into a `## Left standing` section at the end of `CRITERIA.md` as well as your report. Hand `critique` the ACs, the technical decisions and `Out of scope`. Commit `CRITERIA.md` with the change, so what it was for survives the directory's deletion.
+**Given a `CRITERIA.md` rather than a ticket**, its ACs are what has to be true, and a test that pins one names its id. Its technical decisions and its AC groups are limits: anything you add that they do not name is a departure. For the technical decisions, that is a concept, a wire format, deleted data, or a dependency the code gets built around. For the AC groups, it is a permission, an alert, or data the system keeps. Depart only where the code calls for it. Write what you leave standing, as _Finish_ lists it, into a `## Left standing` section at the end of `CRITERIA.md` as well as your report. Hand `critique` the ACs, the technical decisions and `Out of scope`. Commit `CRITERIA.md` with the change, so what it was for survives the directory's deletion.
 
 **Find the project's way of running the product** - a `run` skill, `CLAUDE.md`, the README - where the change reaches its user through an app, a command or an API. The review starts it that way. Where there is none, build one, write it up as the project's run skill, `.claude/skills/run/SKILL.md`, with the scripts it drives beside it, and commit it with the change.
 
@@ -61,7 +61,7 @@ Commit when the behaviour is green and the checks pass. `git-commit-message` is 
 - fixes made after the last review, each with the finding it answers, since no reviewer saw them;
 - checks not run;
 - each criterion no automated test proves, and how it was checked instead;
-- each departure from a technical decision or a nudge: what it says, what you built instead, and why;
+- each departure from a technical decision or an AC group: what it says, what you built instead, and why;
 - each name for a domain concept not taken from the glossary, for the developer to confirm;
 - tradeoffs: where you weighed one law of the standard against another, and which way you leaned;
 - each dependency you took on: what it gives and what it costs;

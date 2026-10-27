@@ -123,10 +123,12 @@ if [ "$rc" = 0 ] && ! grep -q 'drift' "$WORK/.out"; then
   ok "a line of only spaces after a quoted criterion ends it"
 else bad "a line of only spaces after a quoted criterion ends it" "rc=$rc $(out) $(tkt 1-one)"; fi
 
-# A change sliced before the technical decisions were three: four of them,
-# and a nudge in CRITERIA.md that the first ticket quotes. Nudges are no
-# longer part of what was approved, so nothing compares them.
+# A change sliced before the technical decisions were three: its ACs not in
+# groups, four technical decisions, and a nudge in CRITERIA.md that the first
+# ticket quotes. Nudges are no longer part of what was approved, so nothing
+# compares them.
 old_shape() {
+  perl -0pi -e 's/^### .*\n//mg; s/^None\.\n\n?//mg' "$WORK/changes/x/CRITERIA.md"
   local decisions='- **Stored formats** none.\n- **Wire formats** none.\n- **Trust boundaries** none.\n- **Dependencies** none.\n\n## Nudges\n- reuse the list that is already there.\n'
   perl -0pi -e "s/^## Technical decisions\n.*?(?=^## )/## Technical decisions\n$decisions\n/ms" "$WORK/changes/x/CRITERIA.md"
   local f quotes

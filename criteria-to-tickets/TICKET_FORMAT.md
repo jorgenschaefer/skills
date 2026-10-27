@@ -28,21 +28,14 @@ Then, for each AC under `## Toward`, the part of it this slice makes true, in pl
 <The ACs named in `advances`, quoted verbatim the same way, so the builder sees the whole of what its part is for. Omit the section when `advances` is empty.>
 
 ## Technical decisions
-<All four technical decisions, quoted verbatim from `CRITERIA.md`, one quote each with a blank line between:
+<All three technical decisions, quoted verbatim from `CRITERIA.md`, one quote each with a blank line between:
 
-> **Stored formats** <exactly as `CRITERIA.md` writes it>
+> **Concepts** <exactly as `CRITERIA.md` writes it>
 
-All four, in every ticket, "none" included: a table, an endpoint or a library the build adds is a departure the user approves at acceptance, and a builder that never saw "none" cannot know it departed. Agreed with the user, unlike a nudge: build to them, and where the code calls for more - another table, another field - build it and record the departure under `## Left standing`.>
-
-## Nudges
-<The nudges this slice bears on, quoted verbatim from `CRITERIA.md`, one quote each with a blank line between:
-
-> <exactly as `CRITERIA.md` writes it>
-
-Soft: nothing checks the build against them, but a departure from one is recorded under `## Left standing`, with the reason. Empty when none bears on this slice.>
+All three, in every ticket, "none" included: a concept or a wire format the build adds, or data it deletes, is a departure the user approves at acceptance, and a builder that never saw "none" cannot know it departed. Agreed with the user: build to them, and where the code calls for more - another concept, another endpoint - build it and record the departure under `## Left standing`.>
 
 ## Context
-<Enough to build this without reading `CRITERIA.md` - what exists already, the agreed design and its specimen where it bears on this slice, where the seam is, and what this ticket shares with others: which ticket builds what several need, and a name or format other tickets build on. A session gets this file and the code, nothing else.
+<Enough to build this without reading `CRITERIA.md` - what exists already, the agreed design and its specimen where it bears on this slice, where the seam is, and what this ticket shares with others: which ticket builds what several need, and a name or format other tickets build on. Which of the AC groups What production must show, Security policy and Information model say "None.", so a builder knows that adding a permission, an alert or kept data there is a departure. A session gets this file and the code, nothing else.
 
 Not how to build it: no steps, no test lists, no file names per step, no line estimates. The builder works that out from the code.>
 ## Not here
