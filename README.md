@@ -75,7 +75,8 @@ rule allows and on any way in it did not try. From then on a change works from t
 writes the approved ones in, and acceptance shows the policy before and after.
 
 **Stops for a person.** Agree the problem, pick an approach and approve the criteria, approve the
-tickets, walk the finished change. Everything else is conditional and named - a halt, a ceiling
+tickets, walk the finished change. Where you run `/init-security-policy` on a project, approve its
+first security policy. Everything else is conditional and named - a halt, a ceiling
 raised, a problem declared already solved or not worth the work, a re-slice approved.
 
 **Stopping anywhere is an ending.** A problem agreed and not designed against, criteria
