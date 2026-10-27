@@ -96,3 +96,13 @@ then an instruction) are what the project side would reuse.
 
 Depends on `cut-files-by-concept`, `find-code-before-understanding-is-lost`
 and `rule-cruft`, the parts it combines.
+
+## A change of access model (2026-10-27)
+
+One refactoring this phase should notice: the auth layer collects special
+cases until a more general model would be simpler, for example from roles
+alone (RBAC) to roles plus conditions on the record and the request (ABAC).
+Nothing is broken when that is due, so only this phase finds it. The change
+is an ordinary refactoring as long as the access matrix stays the same
+(`security-in-the-standard`). Where the matrix has to change, how the
+security goal is checked changes, and the developer decides.
