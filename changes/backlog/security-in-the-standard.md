@@ -33,7 +33,5 @@ Inside_).
 
 The standard has five copies (`implement`, `critique`, `find-criteria`,
 `criteria-to-tickets`, `restructure`), edited together. The security policy
-the human approves is part of `approval-follows-the-manifesto`.
-
-Depends on `approval-follows-the-manifesto`, which settles the security policy
-the standard enforces.
+the human approves is an AC group in every `CRITERIA.md` since 2026-10-27
+(`find-criteria/CRITERIA_FORMAT.md`).

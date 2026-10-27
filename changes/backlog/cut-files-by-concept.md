@@ -5,14 +5,11 @@ utility: L
 
 # Cut files by concept, not by line count
 
-`CODING_STANDARDS.md` has no rule that holds new code to the shape
-`untangle` produces. Its rule splitting files at about 500 lines was removed
+`CODING_STANDARDS.md` has no rule that holds new code to a shape cut by
+concept. Its rule splitting files at about 500 lines was removed
 on 2026-10-19, since the reason it gave does not hold (below). "What Changes
 Together, Stays Together" (`implement/CODING_STANDARDS.md:148`) is too vague
 to cause a split at all.
-The untangle criteria of 2026-10-19 ask for this item, under Nudges,
-roughly "a module opens with its concept, and its parts are the
-concepts of its domain".
 
 ## The 500-line limit does not buy a whole read
 
@@ -50,8 +47,7 @@ to cut, and a check, preferably one that runs.
    describing the file takes two concepts joined by "and", or its exports
    belong to different glossary terms. Code that is not a concept gets no
    file of its own, and "Layers" already rejects pass-through modules,
-   which keeps away the one-thin-function-per-sentence shape
-   `untangle`'s backlog discussion warned about. For UI code the concept is
+   which keeps away a shape of one thin function per sentence. For UI code the concept is
    what the user names: a screen, a panel, a step in a workflow, so a
    usability report leads to one directory. Check: a fresh agent reading
    only the file describes it in one sentence of glossary terms.
@@ -64,8 +60,13 @@ to cut, and a check, preferably one that runs.
    rendering call it and hold no branches of the rule. Cut when such
    branches turn up in a component, route handler or query. Check, which
    runs: coverage compared between tests that expect different verdicts
-   lands in one module (`untangle`'s `deciding-code.sh`), and a change put
+   lands in one module, and a change put
    in the rule's terms touches one module per concept it changes.
+   `find-criteria` had a rule for this until 2026-10-27: "Give every new
+   domain rule one home. Where the criteria introduce a rule - a sign, a
+   status, a classification - a nudge names the one place it lives, named
+   after the rule" (`find-criteria/SKILL.md:39` at cff52cc). It went with
+   nudges, and nothing now gives a new rule one named place.
 3. **A trust boundary is a file boundary.** Structure does not make code
    secure, but it decides whether a reviewer can check that it is. Access
    (one place per entity whose queries all carry the owner filter) and
@@ -91,8 +92,6 @@ lines, to be looked at against rules 1 and 2. It is no reason to split.
 
 ## Open
 
-- **Wording waits for `untangle`.** Its criteria leave this rule out of
-  scope so it can be worded once `untangle` has produced a result.
 - **Coverage per verdict for new code.** Rule 2's check needs it, and
   `implement` does not produce it today.
 - **Thresholds** for rule 4, and whether its script lives in `restructure`,

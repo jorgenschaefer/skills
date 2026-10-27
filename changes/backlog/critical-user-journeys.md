@@ -70,5 +70,5 @@ Evidence:
   to live on - their tests grouped under the journey they serve.
 - `cut-files-by-concept`, `explain-diff-as-the-report` mention workflows.
 
-Depends on `approval-follows-the-manifesto`, which settles what the human
-approves; a journey is one more approval on top of it.
+A journey is one more approval on top of what `find-criteria` puts to the
+human since 2026-10-27: the four AC groups and three technical decisions.

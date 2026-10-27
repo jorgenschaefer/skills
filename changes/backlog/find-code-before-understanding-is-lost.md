@@ -8,13 +8,13 @@ utility: L
 "I don't understand this anymore" is a very late signal for refactoring.
 In the weight tracker, the "gaining weight" rule only got attention once
 the developer had lost track of it and could no longer judge an agent's
-fixes. `explain-code` and `untangle` now handle a behaviour once it
-is lost. The user plans to set
+fixes. `explain-code` now explains a behaviour once it is
+lost. The user plans to set
 aside regular time for refactoring, such as one day a week or one sprint in
 four, and wants an agent to point out the code to look at before it gets
 that far.
 
-Discussed on 2026-10-19, alongside what became `explain-code` and `untangle`.
+Discussed on 2026-10-19, alongside what became `explain-code`.
 These are directions, not decisions:
 
 - **Checks of this kind work as early warnings.** From cheap to
@@ -41,8 +41,7 @@ These are directions, not decisions:
   already runs every one to two weeks over the whole codebase, reads the
   history, compares with its previous run and ends with proposals
   (`restructure/SKILL.md`). The addition is a ranked list of behaviours
-  with evidence, and the one the developer picks goes to `/explain-code`
-  and `/untangle`.
+  with evidence, and the one the developer picks goes to `/explain-code`.
 
 ## What was hard to change, collected across sessions
 

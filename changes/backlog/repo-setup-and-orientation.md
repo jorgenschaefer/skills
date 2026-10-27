@@ -25,7 +25,7 @@ uses, possibly two skills:
 - `ubiquitous-language` writes or refreshes `UBIQUITOUS_LANGUAGE.md` from
   the code's vocabulary and reports drift. The pipeline relies on it: the
   standard's naming rules, `find-criteria` and `criteria-to-tickets` asking
-  for terms, `untangle` and `critique` reading it. This fits the manifesto:
+  for terms, `critique` reading it. This fits the manifesto:
   the developer "agrees with the user on the concepts: what the user calls
   things and how they fit together."
 - Nothing sets a repo up for the pipeline. What the pipeline expects of a

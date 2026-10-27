@@ -71,10 +71,9 @@ Separate items cover other parts of the standard:
 `security-in-the-standard` (Security), `cut-files-by-concept` (what
 changes together, file shape), `approved-criteria-outlive-the-change`
 (tests for approved behaviour that stay and are checked on every change),
-`reviewer-shares-the-authors-lens` (the standard as the only lens of
-builder and reviewer), and `approval-follows-the-manifesto` (approving a
-dependency).
+and `reviewer-shares-the-authors-lens` (the standard as the only lens of
+builder and reviewer).
 
 Depends on `method-layer`, the process document that sits beside the
-standard in the second layer, and on `approval-follows-the-manifesto`, which settles approving a
-dependency.
+standard in the second layer. Approving a dependency is settled since
+2026-10-27: "Hard to reverse" names one the codebase will be built around.
