@@ -35,3 +35,30 @@ The standard has five copies (`implement`, `critique`, `find-criteria`,
 `criteria-to-tickets`, `restructure`), edited together. The security policy
 the human approves is an AC group in every `CRITERIA.md` since 2026-10-27
 (`find-criteria/CRITERIA_FORMAT.md`).
+
+## Agreed while comparing tech stacks (2026-10-27)
+
+- **Security code comes from a standard library.** The user: "use a good,
+  standard library for security-related code, and write it yourself only
+  with good reason approved by the developer." For authentication in Next.js
+  there is no such library, and the usual advice is to write a small one.
+  einsatz did: sessions, password hashing and a rate limiter in
+  `einsatz/src/server/auth/`. Code written in-house gets the strongest tests
+  that attempt what is forbidden: a wrong password, an expired session,
+  brute force, a token for another record.
+- **The access matrix is written against behaviour, not mechanism.** One
+  test per who × action, in the user's words ("a Führungskraft may not
+  delete an open Einsatz"), not "has role X". Then a change of access model,
+  such as RBAC → ABAC, keeps the same tests. Only a change to the matrix
+  itself changes how the security goal is checked, and that is the
+  developer's decision.
+- **The first iteration uses the simplest model.** The user: "Use the
+  simplest solution for the first iteration. We expand and improve later."
+  It still has the matrix and the check that every way in passes through the
+  guard, since these make expanding it later safe.
+- What happens without the check on ways in: einsatz has one gate for
+  changes by logged-in users (`operationAction`, tested in
+  `einsatz/src/app/operations/[id]/operation-action.test.ts`). Link access is
+  checked separately in each route under `einsatz/src/app/view/` and
+  `einsatz/src/app/device/` (`resolveViewAccess`, `resolveDeviceAccess`), and
+  nothing fails when a new route leaves it out.
