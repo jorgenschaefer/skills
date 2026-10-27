@@ -35,7 +35,7 @@ Each ticket quotes its ACs and all three technical decisions exactly as `CRITERI
 
 **Every rule has one home.** A ticket that adds to a concept the code does two ways, or keeps under a name a search would miss, without a preparatory ticket before it, is a finding.
 
-**Every structural decision carries its check.** A ticket that introduces a feature directory, a boundary between layers or a new place the clock is read, and does not add the check that holds it, is a finding. So is a new feature directory for a domain concept whose name is not in `UBIQUITOUS_LANGUAGE.md` and was not put to the user.
+**Every structural decision carries its check.** A ticket that introduces a feature directory, a boundary between layers or a new place the clock is read, and does not add the check that holds it, is a finding.
 
 **A build needs nothing from outside the repository that no person puts there.** A ticket whose build needs a secret, a credential, an account or a record in another system that its `## Context` does not name as a step a person does before the run is a finding, and so is one whose build does or waits on a step that only happens at deployment. Both are silent: the build fakes the step, or halts after building on it. A step named as a person's is not done yet, so it is not checked as existing.
 

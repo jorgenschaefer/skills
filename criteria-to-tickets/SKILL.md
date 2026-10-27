@@ -43,8 +43,6 @@ This skill's `TICKET_FORMAT.md` settles the shape of a ticket. This file is what
 
 **A slice that introduces a structure adds its check.** A new feature directory, a boundary between layers, where the clock is read: the ticket that introduces it also adds the check that holds it, to the check command.
 
-**A feature directory that is a domain concept gets its name from the glossary.** Where a slice needs one whose term `UBIQUITOUS_LANGUAGE.md` does not have, that is a product question for the approval; the answer goes into the glossary before a ticket names the directory. A missing name is never a reason to leave the directory out.
-
 Where a slice introduces a concept the codebase has no name for, or moves a boundary between the ones it does, this skill's `CODING_STANDARDS.md` binds the names the ticket will write.
 
 ## What slicing turns up
@@ -53,7 +51,7 @@ Read the code each slice will touch before you cut: what exists already, what it
 
 **Product questions are the user's.** An AC that could mean two things, an edge case nobody owns, a behaviour nobody specified. So is a technical decision that falls short: it was approved, and widening it is the user's call. Answering one yourself is inventing a requirement. Put it to the user at the approval, and write the answer into `CRITERIA.md` before any ticket quotes it - as a new or amended AC, or for a technical decision as the amended decision, never as an AC. Where the answer changes the cut, stop and hand back to `/find-criteria`: the slicing in your hands was made against criteria that no longer say what they said.
 
-**Implementation decisions between tickets are yours.** Which ticket builds what several need, a name or format other tickets build on. Decide them, write them into the tickets' `## Context`, and show them at the approval so the user can object. They are not written back into `CRITERIA.md`. Decisions inside one ticket are its builder's.
+**Implementation decisions between tickets are yours.** Which ticket builds what several need, a name or format other tickets build on. Decide them and write them into the tickets' `## Context`. They are not written back into `CRITERIA.md`. Decisions inside one ticket are its builder's.
 
 **Steps only a person can do never go into a build.** A secret to put in place, a credential or account to create, access to grant: a build runs with nobody there, and a session must not write a secret, so it halts on the step or fakes it. A step the change needs before it is complete goes to the user at the approval with a shell command that shows it is done and prints no secret, and the ticket that needs it says in `## Context` that a person puts it in place before the run, and which command shows it. A step that can only happen at deployment - DNS, a related service, data in production - is shown at the approval as one for after acceptance, and goes into the `## Not here` of the ticket a builder would otherwise wander into, as a line beginning "At deployment, a person".
 
@@ -65,7 +63,7 @@ Read the code each slice will touch before you cut: what exists already, what it
 
    A ticket added, or whose `closes`, `advances`, `after:` or `## Context` changed to fix a silent finding, goes through the check again first: hand the subagent the whole directory again, naming those tickets, so it holds the rest against them. A check that saw tickets 01 to 20 said nothing about the 21 a rework added after it, and that one built a second copy of something another ticket built. A fix to a loud finding alone does not go back: the stop it fixes was already the check, and another round costs more than that stop would have. Name what changed when you hand it back, not what to look for - a reviewer told where to look finds something there.
 
-   Show the slicing - each slice with its estimated footprint, and the reason for any between 1000 and 2000 lines or 15 and 25 files - the implementation decisions, the steps only a person can do, each as one before the run with its command or one at deployment, and the product questions as one list. A no means editing the tickets and asking again.
+   Show, as one list: each slice with its estimated footprint, and the reason for any between 1000 and 2000 lines or 15 and 25 files; the steps only a person can do, each as one before the run with its command or one at deployment; and the product questions. A no means editing the tickets and asking again.
 
 ## Copy, never summarise
 
