@@ -3,7 +3,7 @@ criteria:  CRITERIA.md
 closes:    AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-10, AC-11, AC-12, AC-13, AC-14, AC-15, AC-16, AC-17, AC-18
 advances:
 after:
-status:    ready
+status:    done
 attempts:  0
 ---
 
@@ -82,3 +82,9 @@ The AC group What production must show says "None.".
 - The information model as a lasting file.
 
 ## Left standing
+- Review findings not fixed: a disputed rule keeps naming its backlog item after `/idea` deletes that item, and no skill may clear the mark short of a change whose AC rewords the rule (should-fix). A rule the developer approves in a direct `/implement` with no criteria is not among the ways `SECURITY_POLICY_FORMAT.md` lets the policy change (nit). A "removes" AC whose rule and access must go in one ticket is not spelled out in `/criteria-to-tickets` (nit).
+- Fixes after the last review, which no reviewer saw: `/init-security-policy` writes a disputed rule's backlog item itself instead of through `/backlog`, which would commit it on its own (should-fix 1). The format says bookkeeping such as sessions and timestamps is not an action needing a rule (should-fix 2). Acceptance no longer reports a check that stopped trying a way in the change deleted (should-fix 3). Access a build widened through the check, not only a rule it added, is kept only on a keep, with its rule reworded (should-fix 4). The wording on slices that open access, and on the check finding a change's new ways in (nits 1 and 2).
+- No AC is proven by an automated test: the skills are prose, and `./test.sh` checks only that the four copies of `SECURITY_POLICY_FORMAT.md` match and that `/init-security-policy` resolves. Each AC was checked by two fresh agents walking the skills as a session would. AC-2's dom instance is for acceptance.
+- Beyond the files the ticket names: `criteria-to-tickets/SKILL.md` gained one line, so a ticket that opens access comes after the rule that allows it; otherwise a run's policy check fails partway.
+- Costly to reverse: rule ids `R-n`, numbered from the file's git history and never reused, and Security policy ACs shaped "adds:", "changes R-n to:", "removes R-n:". Every project's policy and later criteria are written against both.
+- Blast radius: every later `/find-criteria`, `/implement` and `/accept-criteria` run in a project with a policy. `./sync.sh` has to run once to link the new skill into `~/.claude/skills`.

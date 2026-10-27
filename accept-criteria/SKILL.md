@@ -47,10 +47,12 @@ The user signs off on code they will not read, in a repository agents read and r
 - **What was agreed gone beyond** - anything the build added that the technical decisions or the AC groups do not name. For the technical decisions, that is a concept, a wire format, deleted data, or a dependency the code gets built around. For the AC groups, it is a permission, an alert, or data the system keeps. These need the user's approval.
 - **A departure from the agreed design.**
 - **An ADR worked around or a `CLAUDE.md` rule broken.**
-- **A weakened check** - a structural check or its exception list loosened, a test for an approved AC weakened or deleted. Say what it no longer protects, in the user's words - "domain code may now reach the database directly" - not which file or rule changed.
+- **A weakened check** - a structural check or its exception list loosened, a test for an approved AC weakened or deleted, a rule's test weakened or deleted where no AC changed or removed that rule, or the policy check no longer trying a way in, a kind of who or a marker it tried before that still exists. Say what it no longer protects, in the user's words - "domain code may now reach the database directly" - not which file or rule changed.
 - **The operational shape, blast radius and revert** - a new process, scheduled job, queue or piece of infrastructure; what a failure of the change would affect beyond the code it changed, a new external thing being down among it; and what a revert would not undo - a migration run, data written or deleted, a message sent, state in another system.
 - **A new dependency**, named in the technical decisions or not - what it gives and what it costs, from what the builds reported. A dependency in `signals.sh`'s files that no build reported is a finding.
 - **An assumption about a fact outside the repository** - who calls an endpoint, what the deployment provides, a limit or rule the code takes as given.
+
+**Show the security policy before and after**, where the project has `SECURITY_POLICY.md`: each rule the change added, changed or removed, as it read at the base and as it reads now, in the developer's words, and one line naming the ids the change left as they were. Read it with this skill's `SECURITY_POLICY_FORMAT.md`. A rule no Security policy AC asked for went beyond what was agreed, whatever a build says about it. So does anything the policy check allows now that it did not allow at the base and no Security policy AC asked for, even under a rule that did not change.
 
 **Each item points at its evidence** - the file and lines, the migration, the lockfile entry. An item with no pointer is a claim, and is not shown.
 
@@ -65,11 +67,12 @@ Beyond the ACs, the user can use the change however they like, and you follow al
 Under these headings, in this order, each item that needs a decision ending with the step that would settle it:
 
 1. **Evidence** - each AC not met: what you did, what you saw, and the test that claims it, where one does; each AC you could not check: why, and what it would take. Then one line naming the ids you found met, so every id is accounted for.
-2. **Decisions the plan didn't cover** - everything that needs the user's decision, wherever it came from, most serious first: the problem not solved where the ACs are met; each technical decision or AC group the change went beyond, with what was agreed, what was built and the pointer; what the user and you found beyond the ACs; the rest of what changed from what was agreed, one line each with its pointer. A blast radius, a revert or a dependency goes under its own heading below unless it needs a decision: a revert that would lose data nobody approved losing goes here.
-3. **Blast radius and revert** - what a failure of the change would affect beyond the code it changed, what a revert would not undo, and every step a ticket leaves for a person at deployment.
-4. **Tradeoffs** - where the builds weighed one law of the standard against another, and which way they leaned.
-5. **New dependencies** - what each gives and what it costs.
-6. **What was hard to change** - each with its suggestion.
+2. **Security policy** - the rules before and after, where the project has a policy, or that it has none.
+3. **Decisions the plan didn't cover** - everything that needs the user's decision, wherever it came from, most serious first: the problem not solved where the ACs are met; each technical decision or AC group the change went beyond, with what was agreed, what was built and the pointer; what the user and you found beyond the ACs; the rest of what changed from what was agreed, one line each with its pointer. A blast radius, a revert or a dependency goes under its own heading below unless it needs a decision: a revert that would lose data nobody approved losing goes here.
+4. **Blast radius and revert** - what a failure of the change would affect beyond the code it changed, what a revert would not undo, and every step a ticket leaves for a person at deployment.
+5. **Tradeoffs** - where the builds weighed one law of the standard against another, and which way they leaned.
+6. **New dependencies** - what each gives and what it costs.
+7. **What was hard to change** - each with its suggestion.
 
 Blast radius and revert, and new dependencies, you checked yourself: where you found nothing, say "none found" rather than leaving the heading out. Leave out the other headings where they are empty. Last, the line saying how many of `signals.sh`'s files carried nothing, and the run skill, if you wrote one.
 
@@ -79,7 +82,7 @@ Every item in `REVIEW.md`, in each ticket's `## Left standing`, and in what chan
 
 Show the rest as one list, each item with where it came from, a proposed outcome - for a fix, the fix itself - and a one-line reason:
 
-- **Keep** - a departure the user approves as built. Where it earns an ADR by `ADR_FORMAT.md`, recommend one, and on a yes write it.
+- **Keep** - a departure the user approves as built. Access a build added to the security policy, as a rule or through the check, stays only on a keep, and its rule is then worded to say what the system now does, as a fix now; any other outcome takes the access out of the code. Where it earns an ADR by `ADR_FORMAT.md`, recommend one, and on a yes write it.
 - **Fix now** - small enough for this session: `/implement` it, then walk again the ACs it touches.
 - **Re-slice** - too big for this session: back to `/criteria-to-tickets`, and the change is not accepted yet.
 - **Skip** - not worth doing, with the reason. Where the reason is a decision this skill's `ADR_FORMAT.md` says earns an ADR, recommend one, and on a yes write it to `docs/adr/` in that file's shape.

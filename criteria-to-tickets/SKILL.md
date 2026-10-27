@@ -36,6 +36,8 @@ This skill's `TICKET_FORMAT.md` settles the shape of a ticket. This file is what
 
 **Every AC is closed by some ticket, and every ticket closes or advances some AC** - except a preparatory ticket, below. Every ticket quotes all three technical decisions, so a builder knows a concept it adds, or data it deletes, is a departure even where the change agreed none. For the same reason every ticket's `## Context` names the AC groups beyond Behaviour that say "None.".
 
+**A slice that opens access closes the Security policy AC whose rule allows it, or comes after the ticket that does**, since the policy check fails on access no rule allows yet.
+
 **Preparatory tickets come first.** Every ticket that needs one comes `after:` it.
 
 - **No check command:** where `CLAUDE.md` has no `Check:` line in the form `CODING_STANDARDS.md` gives, the first ticket writes the single check command - including a structural check with no rules in it yet - and declares it there in that form. Every other ticket comes after it.

@@ -22,7 +22,7 @@ This skill's `CRITERIA_FORMAT.md` settles the shape of the file.
 
 ## The loop
 
-**Read the codebase first**: what is already there, what the project calls things, what it decided before.
+**Read the codebase first**: what is already there, what the project calls things, what it decided before, and who may see and do what in `SECURITY_POLICY.md`.
 
 **Propose at least three genuinely different alternatives**, or say why the space holds fewer. Two that differ only in how much of the same thing they do are one.
 
@@ -33,6 +33,8 @@ This skill's `CRITERIA_FORMAT.md` settles the shape of the file.
 **For every behaviour, ask what the user experiences when it fails**, and write the answer as an AC beside it.
 
 **Ask about the other three groups** `CRITERIA_FORMAT.md` names: what production must show and how fast, who may see and do what, and what the system keeps, for how long, and never keeps. Each ends as ACs, or as "None." where the developer decides nothing there applies.
+
+**Before asking who may see and do what, show the rules the change touches** - those for the things it adds to or changes, and for what a new way in would expose - as they stand in `SECURITY_POLICY.md`. Each Security policy AC is then a rule worded as it will stand in the policy, or a rule as it stands today that the change removes, as this skill's `SECURITY_POLICY_FORMAT.md` says. Where the project has no `SECURITY_POLICY.md`, say in one line that it has none and that `/init-security-policy` creates one, and ask as before.
 
 **For anything a user sees, ask about**: the feedback after every action, actions that cannot be undone, the layout at the narrowest and widest supported screen, and how prominent rarely used actions are.
 

@@ -19,7 +19,7 @@ Written before the approach was chosen, and what acceptance judges the finished 
 - **AC-3** <What someone has to hear about, and how fast: "ten failed logins in a minute alert the admin within five minutes".>
 
 ### Security policy
-- **AC-4** <Who may see and do what: "a member never sees another member's contact details".>
+- **AC-4** <One rule of the security policy the change adds, changes or removes: "adds: a member sees their own contact details; the admin sees every member's", "changes R-3 to: ...", "removes R-7: nobody logged in sees a shift's start time".>
 
 ### Information model
 None.
@@ -28,7 +28,7 @@ None.
 
 - **Behaviour** - what the user can do and sees, failure cases included: each behaviour has an AC for what the user experiences when it fails.
 - **What production must show** - errors, but also a sudden drop in users or a flood of login attempts: who hears about it, and how fast.
-- **Security policy** - who may see and do what.
+- **Security policy** - who may see and do what, as rules added to the project's `SECURITY_POLICY.md`, changed in it or removed from it, in `SECURITY_POLICY_FORMAT.md`'s shape. Only allowing rules: an exception goes inside the rule, never as a "never" rule of its own.
 - **Information model** - what the system keeps, logs and traces included, for how long, and what it never keeps.
 
 Hard: acceptance checks every one. What must stay as it is ("the phone layout is unchanged") is an AC too, and so is an edge case that matters.
