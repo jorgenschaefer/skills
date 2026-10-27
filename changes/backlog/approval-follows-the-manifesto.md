@@ -28,11 +28,28 @@ these decisions, and `find-criteria` was not updated with it.
 `find-criteria/CRITERIA_FORMAT.md:26-29` and `find-criteria/SKILL.md:33`
 ask none of them, and retention appears nowhere in the repo.
 
-Parked: what isn't the developer's is put to them, and the security policy
-is mixed with implementation in Trust boundaries (the sections below on
-the four technical decisions and on implementation). Since 62b33a0, showing
-the developer more than the manifesto requires is allowed, so what is left
-is asking them to decide things that are not theirs.
+Also agreed with `/idea` on 2026-10-27, as a second problem:
+
+Before and after a build, the developer is asked to decide how the code is
+built. That means table and column names, feature directory names, a new
+repository's layout, ideas for how the build should go, and departures from
+these at acceptance. They can't usefully judge any of this, so they wave it
+through or ignore it. Asking them costs their attention and adds no check.
+In one build, a useful directory was not created because the glossary had
+no name for it. Meanwhile, what they can judge comes mixed in with all
+this rather than in its own terms. Whether the stored data maps to the
+domain - which things exist and how they relate - comes as column names.
+Who may see and do what comes mixed with new input and outgoing calls.
+Instead, the developer is asked to decide only what they can judge, in the
+glossary's words: the shape of the data as concepts, the security policy,
+and a weakened check as what it no longer protects.
+
+Instance: the developer was asked to approve table and column names and
+waved them through because they fit the glossary. In drk-barmbek.de, which
+merged a Prisma and a Drizzle project, the table names are a mix, and
+nobody cares. What matters is that the schema maps to the domain, which is
+closer to an ER diagram. The developer ignores nudges, and did not care
+about the feature directory names they were asked for.
 
 ## The four technical decisions are the wrong four
 
