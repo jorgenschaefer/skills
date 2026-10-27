@@ -36,6 +36,19 @@ uses, possibly two skills:
   `accept-criteria` when missing; structural rules as checks; and the
   glossary. `run-sh-without-a-check` is the failure this causes in a repo
   with no code yet.
+- Nothing creates the security policy in a repo with no code yet.
+  `/init-security-policy` needs a `Check:` line and a system it can run, so
+  it only fits once code exists, and then the rules say what the code does
+  rather than what the developer decided. Until then, `find-criteria` says
+  there is no policy and asks as before (`find-criteria/SKILL.md:37`), and
+  `implement` touches the policy only where `SECURITY_POLICY.md` exists
+  (`implement/SKILL.md:20`). So the first change's Security policy ACs are
+  approved, but nothing writes them into a policy or checks them. One way:
+  the first change with Security policy ACs creates `SECURITY_POLICY.md`
+  from them, with the policy check and the rules' tests, and the
+  preparatory ticket that writes the `Check:` line adds the policy check.
+  The developer already approves the rules with the criteria, so this needs
+  no new stop.
 
 Depends on `critical-user-journeys`, whose first journeys `repo-overview`'s
 "Main workflows" would draft, on `run-sh-without-a-check`, and on
