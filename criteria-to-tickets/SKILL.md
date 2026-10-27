@@ -23,7 +23,7 @@ This skill's `TICKET_FORMAT.md` settles the shape of a ticket. This file is what
 **Sized by its footprint.** Among provable cuts, this is the main constraint. Estimate each slice's footprint from the code you open while slicing: the lines it changes and the files it touches, counting a moved block twice and a deletion like any other change. ACs do not count.
 
 - **At 2000 lines or 25 files, split** along a real seam, even where that seam runs through an AC.
-- **Between 1000 and 2000 lines, or 15 and 25 files,** split along a seam the slice has, or have a reason not to.
+- **Between 1000 and 2000 lines, or 15 and 25 files,** split along a real seam where the slice has one.
 - **Under 500 lines and 10 files,** merge the slice into a neighbour that reads the same files, as long as the two together stay under 1000 lines and 15 files.
 
 **Split where the context divides, not where the work does.** Two slices that read the same files are one, within the bounds above. So is a slice whose visible result a later slice deletes or rewrites. A separation wanted only for history - a mechanical move kept apart from a behaviour change - is two commits in one ticket.
@@ -63,7 +63,7 @@ Read the code each slice will touch before you cut: what exists already, what it
 
    A ticket added, or whose `closes`, `advances`, `after:` or `## Context` changed to fix a silent finding, goes through the check again first: hand the subagent the whole directory again, naming those tickets, so it holds the rest against them. A check that saw tickets 01 to 20 said nothing about the 21 a rework added after it, and that one built a second copy of something another ticket built. A fix to a loud finding alone does not go back: the stop it fixes was already the check, and another round costs more than that stop would have. Name what changed when you hand it back, not what to look for - a reviewer told where to look finds something there.
 
-   Show, as one list: each slice with its estimated footprint, and the reason for any between 1000 and 2000 lines or 15 and 25 files; the steps only a person can do, each as one before the run with its command or one at deployment; and the product questions. A no means editing the tickets and asking again.
+   Show the user one list: the product questions, and the steps only a person can do - each before the run with its command, or at deployment. A no means editing the tickets and asking again.
 
 ## Copy, never summarise
 
