@@ -86,13 +86,6 @@ also a sudden drop in users or a flood of login attempts"
 (`MANIFESTO.md:32`). Neither `find-criteria` nor `CRITERIA_FORMAT.md` asks
 about it.
 
-## Departures built on by later tickets
-
-Building past an agreed decision and approving the departure at acceptance
-(README.md:60, the final review in `run/prompts.sh`) is sound: nothing
-merges without acceptance. But a "no" gets expensive once later tickets
-build on the departure. The review suggested that such a departure halts.
-
 Touches: both `CRITERIA_FORMAT.md` copies, `find-criteria` and its
 `VERIFY.md`, `TICKET_FORMAT.md` and `criteria-to-tickets`, `run/drift.sh`
 (it checks that nudges and technical decisions are quoted word for word),
