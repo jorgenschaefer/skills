@@ -9,7 +9,7 @@
 # Sourced by run.sh, never run.
 
 preflight() {
-  local t criteria id dep nudge decision problems="" culprit="" all_criteria=() closers=()
+  local t criteria id dep decision problems="" culprit="" all_criteria=() closers=()
   for t in "${TICKET_FILES[@]}"; do
     # Resolved beside the tickets/ directory, not from the working directory:
     # the frontmatter says `CRITERIA.md` and means the one this slicing came
@@ -57,15 +57,9 @@ preflight() {
         [ -n "$culprit" ] || culprit="$t"
       fi
     done
-    while IFS= read -r nudge; do
-      if ! items_of "$criteria" - Nudges | grep -xF -- "$nudge" >/dev/null; then
-        problems+="$(basename "$t"): a nudge it quotes is not in $criteria word for word: $nudge"$'\n'
-        [ -n "$culprit" ] || culprit="$t"
-      fi
-    done < <(items_of "$t" '>' Nudges)
-    # Unlike a nudge, every ticket carries every technical decision: "none" is
-    # what makes a table the build adds a departure, and a builder only knows
-    # it departed from what it was shown.
+    # Every ticket carries every technical decision: "none" is what makes a
+    # concept the build adds a departure, and a builder only knows it departed
+    # from what it was shown.
     while IFS= read -r decision; do
       if ! items_of "$criteria" - "Technical decisions" | grep -xF -- "$decision" >/dev/null; then
         problems+="$(basename "$t"): a technical decision it quotes is not in $criteria word for word: $decision"$'\n'
@@ -130,7 +124,7 @@ text_of()  { # file, id -> the criterion as written, marker stripped
   # A blank line ends a criterion unless an indented line follows it: that is
   # a further paragraph of the same list item, as Markdown reads it. A ticket
   # quotes the blank line as a bare `>`, which is no blank line at all. A line of
-  # only whitespace is blank, as it is between nudges.
+  # only whitespace is blank, as it is between quotes.
   awk -v id="$2" '
     index($0, "- **" id "**") == 1 || index($0, "> **" id "**") == 1 { found = 1; print; next }
     found && (/^[->] \*\*AC-/ || /^#/) { exit }
@@ -152,7 +146,7 @@ comes_after() {  # ticket, slug of the other
   done
   return 1
 }
-# A nudge or a technical decision is found by its words: one per line,
+# A technical decision is found by its words: one per line,
 # whitespace flattened, as a `- ` item in CRITERIA.md and as a `> ` quote in a
 # ticket, under the section's heading in both. A blank line ends one unless an
 # indented line follows, as for a criterion, and a bare `>` adds nothing.

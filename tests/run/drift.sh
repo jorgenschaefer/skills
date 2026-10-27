@@ -124,7 +124,8 @@ if [ "$rc" = 0 ] && ! grep -q 'drift' "$WORK/.out"; then
 else bad "a line of only spaces after a quoted criterion ends it" "rc=$rc $(out) $(tkt 1-one)"; fi
 
 # A change sliced before the technical decisions were three: four of them,
-# and a nudge in CRITERIA.md that the first ticket quotes.
+# and a nudge in CRITERIA.md that the first ticket quotes. Nudges are no
+# longer part of what was approved, so nothing compares them.
 old_shape() {
   local decisions='- **Stored formats** none.\n- **Wire formats** none.\n- **Trust boundaries** none.\n- **Dependencies** none.\n\n## Nudges\n- reuse the list that is already there.\n'
   perl -0pi -e "s/^## Technical decisions\n.*?(?=^## )/## Technical decisions\n$decisions\n/ms" "$WORK/changes/x/CRITERIA.md"
@@ -146,12 +147,11 @@ else bad "a change sliced in the old shape, four technical decisions and a nudge
 
 workspace; old_shape
 sed -i 's/reuse the list that is already there./reuse the list./' "$WORK/changes/x/tickets/1-one.md"; commit
-plan build
+plan build build review
 rc="$(run)"
-if [ "$rc" != 0 ] && grep -q '1-one.md: a nudge it quotes is not in' "$WORK/.out" \
-   && [ "$(field 1-one status)" = halted ] && [ ! -s "$STUB_CALLS" ]; then
-  ok "a ticket whose nudge is not in CRITERIA.md word for word stops the run"
-else bad "a ticket whose nudge is not in CRITERIA.md word for word stops the run" "rc=$rc $(out)"; fi
+if [ "$rc" = 0 ] && ! grep -q 'drift' "$WORK/.out"; then
+  ok "a nudge an old ticket quotes differently from CRITERIA.md is no drift"
+else bad "a nudge an old ticket quotes differently from CRITERIA.md is no drift" "rc=$rc $(out)"; fi
 
 # The technical decisions were approved, and every ticket carries all of them
 # word for word: a builder that never saw "none" cannot know that the concept
@@ -212,13 +212,16 @@ else bad "a technical decision's second paragraph reworded is drift" "rc=$rc $(o
 # A quoted decision found early in a long list is found, not lost: under
 # pipefail a `grep -q` that stops reading at the match fails the pipe it ends,
 # and the runner read that as drift - on whichever items the race picked.
+# A hundred lines of a kilobyte each fill the pipe; every ticket quotes them
+# all, and each quote is looked up in the whole list, so more lines cost minutes.
 workspace
-for i in $(seq 1 2000); do
-  printf -- '- **Decision %s** long enough to fill the pipe before the match is read.\n' "$i"
+pad="$(printf '%01000d' 0)"
+for i in $(seq 1 100); do
+  printf -- '- **Decision %s** %s\n' "$i" "$pad"
 done > "$WORK/.more"
 sed -i "/^- \*\*Hard to reverse/r $WORK/.more" "$WORK/changes/x/CRITERIA.md"
-for i in $(seq 1 2000); do
-  printf -- '\n> **Decision %s** long enough to fill the pipe before the match is read.\n' "$i"
+for i in $(seq 1 100); do
+  printf -- '\n> **Decision %s** %s\n' "$i" "$pad"
 done > "$WORK/.quotes"
 for f in "$WORK"/changes/x/tickets/*.md; do
   sed -i "/^> \*\*Hard to reverse/r $WORK/.quotes" "$f"
