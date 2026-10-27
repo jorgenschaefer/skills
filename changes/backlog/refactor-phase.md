@@ -67,5 +67,32 @@ then an instruction) are what the project side would reuse.
   proposed as a follow-up, and its reason is what skipping it would cost",
   and "The user may skip it."
 
+## Found while removing untangle (2026-10-27)
+
+- The user: `untangle` "was one idea and attempt to achieve something
+  restructure should do - using explain-code as the basis".
+- **Restructurings nobody picks up.** Since 201edfe, `restructure` leaves a
+  restructuring it cannot prove safe undone and names it in one line of its
+  report (`restructure/SKILL.md:60`). Nothing picks it up later. The
+  refactorings a build suggests for what was hard to change
+  (`implement/SKILL.md:70`) reach the developer as follow-ups at acceptance
+  (`accept-criteria/SKILL.md:87`). That is a decision about the code, put in
+  front of them. The user: "someone (restructure) noticed a useful
+  refactoring that it could not do. Maybe we extend restructure to the full
+  refactor step, or we write a new refactor-stage skill that uses
+  restructure".
+- **Step 9 contradicts the standard.** "A name in stored data or on the
+  wire is a proposal" (`restructure/SKILL.md:50`). But `CODING_STANDARDS.md`,
+  under Ubiquitous Language, says such a name "is not renamed for this
+  alone" and is mapped to the domain name at the boundary.
+- **Where an agent following `restructure` was unsure**, in an acceptance
+  walk on made-up findings:
+  - A file moved "with its content unchanged" whose imports then break.
+  - Whether a habit rule made into a check also gets a list of today's
+    breaks and a line in `CLAUDE.md`.
+  - What to count on a first run, with no previous counts.
+  - Where the report goes.
+  - "The user" meaning both the developer and the app's user.
+
 Depends on `cut-files-by-concept`, `find-code-before-understanding-is-lost`
 and `rule-cruft`, the parts it combines.
