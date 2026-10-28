@@ -24,7 +24,9 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 # core each, the longest one decides how long this takes. On fewer cores it
 # takes longer. A suite that grows past the others is split along its sections.
 logs="$(mktemp -d)"
-trap 'rm -rf "$logs"' EXIT
+# A suite still running when this ends early - killed by a timeout or a parent -
+# is stopped with it rather than left running behind it.
+trap 'kill $(jobs -p) 2>/dev/null; rm -rf "$logs"' EXIT
 # The suites of run.sh's library, each named after the file it tests - with a
 # suffix where one file has several - beside the harness they all stand on.
 library=()
