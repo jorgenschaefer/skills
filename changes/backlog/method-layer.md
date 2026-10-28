@@ -40,6 +40,10 @@ so they belong in the process document:
   reason. It is never acted on in the change that found it. It comes to the
   developer as a follow-up, with what skipping it would cost.
   `implement/SKILL.md:70` and `accept-criteria/SKILL.md:87` already do this.
+  It is also the last section of `/accept-criteria`'s report
+  (`accept-criteria/SKILL.md:75`), added on 2026-10-24 when the old
+  manifesto still listed it (7f81793). Nothing the report follows holds the
+  rule until this layer does.
 - "Reviewers use different framings, which reduces the blind spots they
   share with the author but does not remove them." See
   `reviewer-shares-the-authors-lens`.
