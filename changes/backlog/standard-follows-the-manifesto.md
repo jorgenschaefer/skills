@@ -10,7 +10,12 @@ several places it says something `MANIFESTO.md` contradicts or lacks.
 Since 2026-10-24 it names its laws as the manifesto names its goals -
 Utility first - but the sections under those names were written before the
 manifesto. It still calls them laws (`:7`, `:14`), where the manifesto now
-says goals.
+says goals. Two skills use the word too: a build reports "where you weighed
+one law of the standard against another" (`implement/SKILL.md:69`), and
+`/accept-criteria` reports it under Tradeoffs (`accept-criteria/SKILL.md:73`).
+The manifesto adds what those lines lack: "An agent weighs only within what
+the developer approved; a tradeoff that would change it is a decision the
+plan didn't cover."
 
 Evidence, from `implement/CODING_STANDARDS.md` (five identical copies):
 
@@ -53,7 +58,9 @@ belong in the standard, which does not state them yet:
 
 - The boy scout rule: small fixes in passing leave the code better than they
   found it. They change nothing the developer approved and follow the idioms
-  already there. Anything larger is a change of its own.
+  already there. Anything larger is a change of its own. `implement` states
+  it already, in its own words (`implement/SKILL.md:32`, from cc778c3 on
+  2026-10-24). Once the standard has it, that paragraph says it twice.
 - "What a fresh agent finds with one search or in one file needs no
   documentation."
 - Test the constraint, not the decision it led to.
@@ -67,8 +74,11 @@ belong in the standard, which does not state them yet:
 YAGNI, KISS, colocation, searchable names, invalid states and one way to do
 each thing left the manifesto too, but the standard already has them.
 
-Separate items cover other parts of the standard:
-`security-in-the-standard` (Security), `cut-files-by-concept` (what
+The Security section (`:77`) is checked against the manifesto by no other
+item. `security-in-the-standard` was meant to, but became the security
+policy (e9e746b) and left the section as it was.
+
+Separate items cover other parts of the standard: `cut-files-by-concept` (what
 changes together, file shape), `approved-criteria-outlive-the-change`
 (tests for approved behaviour that stay and are checked on every change),
 and `reviewer-shares-the-authors-lens` (the standard as the only lens of
