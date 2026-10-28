@@ -62,7 +62,10 @@ Evidence:
 - When the journey checks run: end-to-end checks are slow and flaky, but the
   manifesto: "A check for anything the developer approved counts only if it
   fails when the code breaks it, and that is confirmed for every change before it
-  is accepted".
+  is accepted". Part of this is settled now: end-to-end tests belong in the
+  project's slow check (`CODING_STANDARDS.md`, _Test Coverage_), and `run.sh`
+  runs the slow check before the first build, after every ticket and after
+  the final review.
 - Whether `find-criteria` writes the first journeys, or something else does.
 
 ## Related

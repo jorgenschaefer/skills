@@ -7,13 +7,13 @@ utility: S
 
 In a repo with no code yet (`portfolio`), `run.sh` stops before the first
 ticket with "the session found no verification command, and CLAUDE.md
-declares none on a Check: line". This happens in `run/checks.sh:43`:
-`checks_command` finds no `Check:` line in `HEAD:CLAUDE.md` and asks a session
-to name the checks. The session finds none, because there are none, so
-`find_checks` stops the run.
+names no fast check on a Fast check: or Check: line". This happens in
+`run/checks.sh:77`: `read_checks` finds no `Fast check:` or `Check:` line in
+`HEAD:CLAUDE.md` and asks a session to name the fast check. The session finds
+none, because there are none, so `find_checks` stops the run.
 
-The build prompts in `run/prompts.sh:21` and `:78` state the checks as
-`$VERIFY`, so a run without checks must not tell a build "the project's checks
-are ``".
+The build and review briefs name the checks with `checks_named`
+(`run/prompts.sh:76`), from `$FAST_CHECK`, so a run without checks must not
+tell a build "the project's fast check is ``".
 
 The workaround was to commit a `CLAUDE.md` with ``Check: `true` ``.
