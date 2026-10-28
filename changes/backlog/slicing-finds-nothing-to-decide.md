@@ -21,8 +21,8 @@ Evidence:
 - `find-criteria/SKILL.md:9` and `:49` set the bar: the loop is done when
   "`/criteria-to-tickets` would not have to ask anything". Nothing in the
   skill gets there.
-- In the pipeline's intended shape (`changes/2026-10-28-pipeline`),
-  IMPLEMENT runs without interruption and slicing decides nothing new; a
+- In the pipeline's intended shape (`PIPELINE.md`, "A question found
+  during IMPLEMENT"), IMPLEMENT runs without interruption and slicing decides nothing new; a
   question it still finds is decided within what was approved, recorded,
   and shown at acceptance.
 

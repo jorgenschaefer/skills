@@ -20,14 +20,14 @@ or deleting one is a decision about what it checks, and reported as one."
 Evidence:
 
 - `/accept-criteria` deletes the change's directory, `CRITERIA.md` included
-  (`accept-criteria/SKILL.md`, "Once the user accepts"; README.md:28). What
+  (`accept-criteria/SKILL.md`, "Once the user accepts"; `PIPELINE.md`, "What outlives a change"). What
   it was for "survives in git history", which a fresh agent does not search.
 - Tests name the ACs they pin by id (`implement/SKILL.md:18`), and every
   change numbers its ACs from `AC-1`, so after deletion `AC-3` in a test
   name points at nothing and is ambiguous across changes.
-- README.md:185 says a criterion "is pinned by breaking the behaviour and
-  watching its named test fail - deleted, and its edges moved". No skill or
-  script does this. The only failure ever watched is TDD's RED run, once,
+- `PIPELINE.md` (ACCEPT, "Before acceptance") says every check for
+  something the developer approved "is shown to fail when the code breaks
+  it". No skill or script does this. The only failure ever watched is TDD's RED run, once,
   at build time (`CODING_STANDARDS.md`, "Use TDD").
 - `critique` reports lost tests as a finding for the builder to fix
   ("Tests that left", `critique/SKILL.md`), not as a decision for the human,

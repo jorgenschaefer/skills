@@ -32,7 +32,7 @@ The script still enforces everything. The skill only starts it.
 Touched by the move: `test.sh:68` (shellcheck over `run.sh` and `run/*.sh`),
 `tests/run.sh` and the suites beside it, the demo skill
 `.claude/skills/run`, whose name would clash with a skill named `run`, the
-README's runner section and pipeline diagram, and the hand-off lines in
+README's runner section, `PIPELINE.md`'s diagram, and the hand-off lines in
 `criteria-to-tickets` and `accept-criteria`.
 
 `criteria-to-tickets` commits in two places, "Hand off" and "Re-slicing",

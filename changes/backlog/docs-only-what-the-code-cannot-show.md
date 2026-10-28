@@ -20,8 +20,7 @@ Evidence:
 
 - README "The runner" and "The tests" sections describe `run.sh`'s
   behaviour step by step - refusals, branch, checks, drift, budget, resume,
-  lock, review, token log. `CLAUDE.md` points at the README for "what a
-  skill is for", which those sections do not say.
+  lock, review, token log.
 - History in comments: `run/checks.sh:13` "Every build used to meet the same
   failures"; `run.sh` "A second one started beside a live run took over its
   claim"; `run/prompts.sh` "one run's build left a blocker there".
@@ -31,8 +30,6 @@ Evidence:
   saw tickets 01 to 20 ..."; `.claude/skills/retro/SKILL.md` "One analysis
   that ran the tests ...". `improve-skill` keeps such a story only as one
   clause that does a named job.
-- The README says "`/implement` builds `CRITERIA.md` itself" (README.md:36),
-  but `implement/SKILL.md:18` only takes one it is given.
 
 Depends on `method-layer`, which decides where the process is described
 once the README's account of the runner goes.

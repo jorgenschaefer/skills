@@ -68,14 +68,14 @@ cover, and waits for the developer." And: "Decisions that are the
 developer's wait for them. The change is not accepted until they are
 decided."
 
-Open: what decides between asking now and recording. `CLAUDE.md`: "A skill
-does not stop to ask the developer. It saves its questions for the
-pipeline's fixed stops." `implement/SKILL.md:16`: "do not build past it".
+`PIPELINE.md` ("A question found during IMPLEMENT") settles it for the
+pipeline: within what was approved the agent decides; where the answer
+would change it, the agent builds its best guess, records it as a
+departure, and ACCEPT puts it to the developer. `implement` outside the
+pipeline, asked by someone in the session, is still open.
 
 ## Related
 
-- `docs-only-what-the-code-cannot-show` already notes README.md:36's
-  "`/implement` builds `CRITERIA.md` itself".
 - Both `CRITERIA_FORMAT.md` copies say Left standing is "Written by
   `/implement` when it builds this file directly".
 
