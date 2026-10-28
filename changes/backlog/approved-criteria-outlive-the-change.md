@@ -52,6 +52,15 @@ time." This item carries one part of that: where a later change quietly
 alters behaviour the developer approved earlier, that reaches them without
 their having to notice or ask.
 
+The user, on 2026-10-28, writing down what the pipeline is meant to be: "The
+main thing I'm unsure right now is the artifacts that create confidence. We
+already have SECURITY_POLICY.md. In my mind, there's also the domain model
+(ER-style) and domain actions, but this is all very vague and not settled at
+all." So which approved artifacts outlive a change - beside
+`SECURITY_POLICY.md` perhaps a domain model, domain actions, the journeys of
+`critical-user-journeys`, the approved criteria - is open, and `PIPELINE.md`
+names only the security policy until this item settles the rest.
+
 `acceptance-evidence-from-a-script` builds on this: its per-criterion
 evidence needs tests that say which approved criterion they prove.
 `refactor-phase` also builds on it: the approved criteria are the list of
