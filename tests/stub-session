@@ -74,8 +74,10 @@
 #
 # Every call's session is written to $STUB_SESSIONS as `start <id> <ticket>` or
 # `resume <id>` - the final review's start naming its REVIEW.md where a build's
-# names its ticket. A resumed call names neither in its prompt - the real session
-# remembers what it was doing - so the stub looks it up by the id.
+# names its ticket. A started call is told apart by how its brief opens, and
+# one that opens neither way is an error. A resumed call names neither in its
+# prompt - the real session remembers what it was doing - so the stub looks it
+# up by the id.
 #
 # There is one role now where there were two. The runner used to launch a second
 # session to review what the first built; `/implement` spawns that reviewer
@@ -100,13 +102,36 @@ if [[ " $* " == *" --json-schema "* ]]; then
   exit 0
 fi
 
-ticket="$(printf '%s' "$prompt" | grep -o '[^ ]*tickets/[^ ]*\.md' | head -1)"
-review="$(printf '%s' "$prompt" | grep -o '[^ `]*REVIEW\.md' | head -1)"
+build_opening="Use /implement on the work described in "
+review_opening="Review the whole change this run built"
+review_named_by="write what you left standing to "
 
+# Reads the ticket or the review's file from where the brief names it on
+# purpose: its opening, or the one sentence that names the review's file. The
+# rest of the brief may name REVIEW.md too - in a sentence, or in a test's
+# check command - and must not change which file the stub writes.
+brief_names() {
+  local first="${prompt%%$'\n'*}"
+  case "$prompt" in
+    "$build_opening"*)
+      ticket="${first#"$build_opening"}"
+      ticket="${ticket%.}" ;;
+    "$review_opening"*)
+      [[ "$prompt" == *"$review_named_by"* ]] \
+        || { echo "stub: the review's brief no longer says \"$review_named_by<path>\": $prompt" >&2; exit 96; }
+      review="${prompt#*"$review_named_by"}"
+      review="${review%%[[:space:]]*}" ;;
+    *) echo "stub: a brief that is neither a build's nor the review's: $prompt" >&2; exit 96 ;;
+  esac
+}
+
+ticket=""
+review=""
 args=("$@")
 for i in "${!args[@]}"; do
   case "${args[$i]}" in
-    --session-id) printf 'start %s %s\n' "${args[$((i + 1))]}" "${ticket:-$review}" >> "$STUB_SESSIONS" ;;
+    --session-id) brief_names
+                  printf 'start %s %s\n' "${args[$((i + 1))]}" "${ticket:-$review}" >> "$STUB_SESSIONS" ;;
     --resume)     id="${args[$((i + 1))]}"
                   printf 'resume %s\n' "$id" >> "$STUB_SESSIONS"
                   ticket="$(awk -v id="$id" '$1 == "start" && $2 == id { print $3 }' "$STUB_SESSIONS")"
