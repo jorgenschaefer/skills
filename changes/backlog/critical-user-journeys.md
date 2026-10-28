@@ -73,3 +73,8 @@ Evidence:
 
 A journey is one more approval on top of what `find-criteria` puts to the
 human since 2026-10-27: the four AC groups and three technical decisions.
+
+Depends on `confidence-to-answer-for-the-software`. A journey's end-to-end
+check is the most direct evidence that the software as a whole works, which
+the manifesto's acceptance of one change at a time leaves out. The journeys
+are designed as an answer to that item.

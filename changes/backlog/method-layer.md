@@ -57,3 +57,8 @@ so they belong in the process document:
 
 - `standard-follows-the-manifesto`: the code standard, the other half of the
   second layer.
+
+Depends on `confidence-to-answer-for-the-software`. The method layer decides
+which steps to cut by what they cite. A step that serves only the
+developer's confidence in the whole software has nothing to cite until the
+manifesto says what the evidence is for.

@@ -101,3 +101,7 @@ lines, to be looked at against rules 1 and 2. It is no reason to split.
   thresholds in `criteria-to-tickets/SKILL.md:27` and
   `criteria-to-tickets/VERIFY.md:27` are a separate rule and need looking
   at on their own.
+
+Depends on `standard-follows-the-manifesto`. These rules go into the
+standard, which that item rewrites; written before it, they are written
+twice.
