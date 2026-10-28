@@ -19,10 +19,55 @@ thought.
   name (`restructure/SKILL.md`).
 - `explain-code` explains a part of the code once the developer can no
   longer follow it.
-- Related items: `find-code-before-understanding-is-lost` (pointing at code
-  before it is lost, as an extension of `restructure`, and collecting what
-  was hard to change across sessions), `rule-cruft` (cases in a rule nothing
-  needs any more), `cut-files-by-concept` (what shape new code is held to).
+- Related items: `rule-cruft` (cases in a rule nothing needs any more),
+  `cut-files-by-concept` (what shape new code is held to).
+
+## Finding where to work
+
+This came from an item about pointing at code before the developer stops
+understanding it. Under `MANIFESTO.md` the developer never understands the
+code, so that signal is gone. The checks below are for the Maintainability
+goal instead, where the checkers "judge whether a new agent would find what
+it needs and make its next change correctly". The origin was the weight
+tracker: its "gaining weight" rule only got attention once nobody could
+judge an agent's fixes to it any more.
+
+These are directions, not decisions:
+
+- **Checks that warn early.** From cheap to expensive:
+  1. coverage scatter: how many files and modules a behaviour's deciding
+     code spans, from the test suite alone (the same measure as rule 2's
+     check in `cut-files-by-concept`);
+  2. history: churn, the share of bug fixes, and special cases piling up
+     with each fix;
+  3. the change test: a fresh agent makes a plausible change in the
+     domain's terms on a throwaway branch, and the diff's spread is
+     measured;
+  4. the round trip: a fresh agent explains the behaviour from the code,
+     and its explanation has to predict the existing tests' verdicts.
+
+  Run 1 and 2 on every behaviour, and 3 and 4 only on the top few.
+- **The trend matters more than the level.** Some rules really are
+  complicated. A behaviour getting worse since the last check is the
+  warning, so each check is compared with the previous one.
+- **The behaviours to rank** are the approved criteria, once
+  `approved-criteria-outlive-the-change` keeps them. The code does not list
+  them, and a list derived from routes or test groups would make the ranking
+  bad too.
+
+## What was hard to change, collected across sessions
+
+The manifesto does not speak to what was hard to change; it is the
+pipeline's own. Each build reports it in its Left standing, "each with a
+suggestion: a refactoring for a structural problem, a check for an invisible
+reason" (`implement/SKILL.md:73`). `/accept-criteria` proposes each as a
+follow-up: "What was hard to change is never fixed now, but proposed as a
+follow-up, and its reason is what skipping it would cost"
+(`accept-criteria/SKILL.md:89`). `/backlog` folds a finding into an item
+that overlaps, so friction in one place gathers on one item. This phase
+reads those items as a signal, beside the checks above, rather than only
+refactoring where it can name a future change (`restructure/SKILL.md`,
+"Find what changes together").
 
 ## The project's process, too
 
@@ -33,8 +78,7 @@ gives two answers to what was hard to change: "a refactoring for a structural
 problem, a check for an invisible reason". Refactoring is the first; the
 project retro is the second - the project's checks, its `run` skill, its
 structural rules, its glossary. Both read the same input, the friction
-collected across runs (`find-code-before-understanding-is-lost`), at the
-same periodic stop.
+collected across runs (above), at the same periodic stop.
 
 Today `retro` finds project-side failures but, living only in this
 repository, cannot fix them: a fix "is fixed in the project, and changed
@@ -94,8 +138,8 @@ then an instruction) are what the project side would reuse.
   - Where the report goes.
   - "The user" meaning both the developer and the app's user.
 
-Depends on `cut-files-by-concept`, `find-code-before-understanding-is-lost`
-and `rule-cruft`, the parts it combines.
+Depends on `cut-files-by-concept` and `rule-cruft`, the parts it combines,
+and on `approved-criteria-outlive-the-change` for the list of behaviours.
 
 ## A change of access model (2026-10-27)
 
