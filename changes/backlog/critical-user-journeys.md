@@ -79,7 +79,7 @@ human since 2026-10-27: the four AC groups and three technical decisions.
 
 The manifesto says, in the first line under "For every goal": "The
 developer answers for the software as a whole, not for one change at a
-time." Journeys carry the part of that which no recent change touched. A
-journey's end-to-end check is the most direct evidence that the software as
-a whole works, and a journey that breaks reaches the developer without their
-having to notice or ask.
+time." Journeys carry the parts of the software that no recent change
+touched. A journey's end-to-end check is the most direct evidence that the
+software as a whole works. When a journey breaks, the developer hears of it
+without having to notice or ask.

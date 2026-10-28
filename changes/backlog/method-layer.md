@@ -57,18 +57,17 @@ so they belong in the process document:
 
 The manifesto now says, in the first line under "For every goal": "The
 developer answers for the software as a whole, not for one change at a
-time." The method layer carries the part of that about one change: the
+time." The method layer carries what that line asks of each change: the
 developer sees **the whole it changes**, and a whole that stops hanging
 together is put to them unasked.
 
-- No skill yet shows the developer the whole it changes - the rule or
-  workflow as it will stand afterwards - or raises a whole that stops
-  hanging together, such as a rule gathering special cases.
+- No skill yet shows the developer, for a change, the whole that change
+  changes - the rule or workflow as it will stand afterwards - or raises a
+  whole that stops hanging together, such as a rule gathering special cases.
 - `/accept-criteria`'s "Show them what the change decided that they answer
   for" (`accept-criteria/SKILL.md:39`) cites nothing yet, so it could be cut
   under the rule that a step citing nothing is a candidate to cut. It serves
-  this goal, though it is about one change, so it should cite that line
-  instead.
+  this goal, so it should cite that line rather than be cut.
 - A record of who decided what and why was left out on purpose. The
   developer who agreed the item saw it as blame, "the wrong part of
   accountability". What the developer needs is confidence that the software
