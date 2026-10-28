@@ -64,6 +64,9 @@ together is put to them unasked.
 - No skill yet shows the developer, for a change, the whole that change
   changes - the rule or workflow as it will stand afterwards - or raises a
   whole that stops hanging together, such as a rule gathering special cases.
+  The weight tracker in `approved-criteria-outlive-the-change` is the
+  example: the developer approved each fix to a rule, and nobody saw the
+  fixes add up to a pile of special cases.
 - `/accept-criteria`'s "Show them what the change decided that they answer
   for" (`accept-criteria/SKILL.md:39`) cites nothing yet, so it could be cut
   under the rule that a step citing nothing is a candidate to cut. It serves
