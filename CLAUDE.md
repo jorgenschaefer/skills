@@ -8,4 +8,4 @@ A skill only sees files in its own directory, so a file two skills need is copie
 
 README.md describes the pipeline and how the skills relate. Read it before changing what a skill is for.
 
-Check: `./test.sh`
+Fast check: `./test.sh`

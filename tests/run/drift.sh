@@ -214,15 +214,15 @@ else bad "a technical decision's second paragraph reworded is drift" "rc=$rc $(o
 # A quoted decision found early in a long list is found, not lost: under
 # pipefail a `grep -q` that stops reading at the match fails the pipe it ends,
 # and the runner read that as drift - on whichever items the race picked.
-# A hundred lines of a kilobyte each fill the pipe; every ticket quotes them
-# all, and each quote is looked up in the whole list, so more lines cost minutes.
+# Ten lines of ten kilobytes each fill the pipe. Every ticket quotes them all,
+# and each quote is looked up in the whole list, so more lines cost seconds.
 workspace
-pad="$(printf '%01000d' 0)"
-for i in $(seq 1 100); do
+pad="$(printf '%010000d' 0)"
+for i in $(seq 1 10); do
   printf -- '- **Decision %s** %s\n' "$i" "$pad"
 done > "$WORK/.more"
 sed -i "/^- \*\*Hard to reverse/r $WORK/.more" "$WORK/changes/x/CRITERIA.md"
-for i in $(seq 1 100); do
+for i in $(seq 1 10); do
   printf -- '\n> **Decision %s** %s\n' "$i" "$pad"
 done > "$WORK/.quotes"
 for f in "$WORK"/changes/x/tickets/*.md; do

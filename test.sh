@@ -15,6 +15,31 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck source=tests/lib.sh
 . "$HERE/tests/lib.sh"
 
+# --- the suites ----------------------------------------------------------------
+#
+# Started first and run side by side, each into a file of its own, and printed
+# in order at the end. No case is slow, but each is a run of the real runner and
+# there are well over a hundred, so one after another they take minutes. The
+# suites share nothing - every case has a repository of its own - so the
+# longest one decides how long this takes. A suite that grows past the others
+# is split along its sections.
+logs="$(mktemp -d)"
+trap 'rm -rf "$logs"' EXIT
+# The suites of run.sh's library, named after its files, beside the harness
+# they all stand on.
+library=()
+for suite in "$HERE"/tests/run/*.sh; do
+  [ "$(basename "$suite")" != harness.sh ] || continue
+  library+=("$suite")
+done
+suites=("$HERE/tests/run.sh" ${library[@]+"${library[@]}"} "$HERE/tests/no-dangling.sh" \
+        "$HERE/tests/sync.sh" "$HERE/tests/signals.sh" "$HERE/tests/explain-diff.sh")
+pids=()
+for i in "${!suites[@]}"; do
+  "${suites[$i]}" > "$logs/$i" 2>&1 &
+  pids+=($!)
+done
+
 # --- the skills' shared files -------------------------------------------------
 #
 # A skill installs on its own and cannot reach into a sibling's directory, so a
@@ -71,27 +96,14 @@ else
   bad "every script passes shellcheck" "$lint"
 fi
 
-# --- the suites ----------------------------------------------------------------
+# --- what the suites printed ---------------------------------------------------
 
-printf '\n'
-"$HERE/tests/run.sh"        || failed=$((failed + 1))
-# One suite per file of run.sh's library, beside the harness they all stand on.
-suites=0
-for suite in "$HERE"/tests/run/*.sh; do
-  [ "$(basename "$suite")" != harness.sh ] || continue
-  suites=$((suites + 1))
+for i in "${!suites[@]}"; do
+  wait "${pids[$i]}" || failed=$((failed + 1))
   printf '\n'
-  "$suite" || failed=$((failed + 1))
+  cat "$logs/$i"
 done
-expect_counted "$suites" "suites of the runner's library"
-printf '\n'
-"$HERE/tests/no-dangling.sh" || failed=$((failed + 1))
-printf '\n'
-"$HERE/tests/sync.sh"        || failed=$((failed + 1))
-printf '\n'
-"$HERE/tests/signals.sh"     || failed=$((failed + 1))
-printf '\n'
-"$HERE/tests/explain-diff.sh" || failed=$((failed + 1))
+expect_counted "${#library[@]}" "suites of the runner's library"
 
 printf '\n%d passed, %d failed, of the cases in this file\n' "$passed" "$failed"
 [ "$failed" -eq 0 ]

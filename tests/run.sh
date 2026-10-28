@@ -8,7 +8,7 @@
 # Everything `run.sh` holds is something that has to be true when a session is
 # dead or lying, which is why it is a script and not a skill. This file holds
 # what run.sh does itself - its refusals, the lock, the frontmatter - and each
-# file of its library under run/ has its suite under tests/run/. What every
+# file of its library under run/ has its suites under tests/run/. What every
 # case stands on is in run/harness.sh.
 
 set -uo pipefail
