@@ -36,10 +36,8 @@ verify() {
 
 run_checks() {  # -> 0 where every check is green; else RED says which is not, and RED_LOGS holds their output
   RED="" RED_LOGS=()
-  if ! read_checks; then
-    RED="CLAUDE.md at $(git rev-parse --short HEAD) has both a \`Check:\` and a \`Fast check:\` line, and only one may say what every build runs - remove \`Check:\`"
-    return 1
-  fi
+  two_fast_checks && return 1
+  read_checks
   run_check fast "$FAST_CHECK"
   [ -z "$SLOW_CHECK" ] || run_check slow "$SLOW_CHECK"
   [ -z "$RED" ]
@@ -47,15 +45,19 @@ run_checks() {  # -> 0 where every check is green; else RED says which is not, a
 
 # Two lines that both name what every build runs would leave it to chance which
 # one does, so a CLAUDE.md with both is refused rather than read.
-read_checks() {  # -> FAST_CHECK and SLOW_CHECK as HEAD declares them, else the session's fast check; fails on both Check: and Fast check:
+two_fast_checks() {  # -> 0 where CLAUDE.md at HEAD has both a Check: and a Fast check: line, and RED then says so
+  local claude
+  claude="$(git show HEAD:CLAUDE.md 2>/dev/null)"
+  [ -n "$(check_line 'Fast check' <<< "$claude")" ] && [ -n "$(check_line Check <<< "$claude")" ] || return 1
+  RED="CLAUDE.md at $(git rev-parse --short HEAD) has both a \`Check:\` and a \`Fast check:\` line, and only one may say what every build runs - remove \`Check:\`"
+}
+
+read_checks() {  # -> FAST_CHECK and SLOW_CHECK as HEAD declares them, else the session's fast check
   local claude
   claude="$(git show HEAD:CLAUDE.md 2>/dev/null)"
   SLOW_CHECK="$(check_line 'Slow check' <<< "$claude")"
   FAST_CHECK="$(check_line 'Fast check' <<< "$claude")"
-  if [ -n "$FAST_CHECK" ]; then
-    [ -z "$(check_line Check <<< "$claude")" ]
-    return
-  fi
+  [ -n "$FAST_CHECK" ] && return 0
   FAST_CHECK="$(check_line Check <<< "$claude")"
   [ -n "$FAST_CHECK" ] && return 0
   [ -n "$ASKED_FAST_CHECK" ] || find_checks
