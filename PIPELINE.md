@@ -152,7 +152,7 @@ This is the least specified phase. Its own change settles what it produces in de
 
 ### When the developer is needed
 
-- In PLAN: to agree the problem and to approve the criteria.
+- In PLAN: to agree the problem, to pick the approach, and to approve the criteria.
 - In ACCEPT: to walk the finished change and accept it.
 - At setup: to approve the first security policy.
 - In the backlog: to confirm an item's sizes.
@@ -185,7 +185,7 @@ A departure is anything a build does that changes what the developer approved. F
 
 ### Nothing reaches production before ACCEPT
 
-A build's work stays on the change's branch. Nothing it does reaches production, real data, users or other programs until the developer accepts the change. That is what makes a best guess safe to build.
+A build's work stays on the change's branch. Nothing it does reaches production, real data, users or other programs until the developer accepts the change. So nothing deploys from a change's branch, and nothing on it runs against production or real data. That is what makes a best guess safe to build.
 
 *Serves:* "They also decide which mistakes that can't be undone are worth the risk".
 

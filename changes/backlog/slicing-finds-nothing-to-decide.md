@@ -25,6 +25,3 @@ Evidence:
   during IMPLEMENT"), IMPLEMENT runs without interruption and slicing decides nothing new; a
   question it still finds is decided within what was approved, recorded,
   and shown at acceptance.
-
-Related: `adrs-at-the-slicing-approval`, about the ADRs put to the
-developer at the same stop.
