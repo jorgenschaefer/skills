@@ -12,7 +12,7 @@ The argument is `changes/backlog/<slug>.md`; without one, ask which item. The it
 
 ## Read
 
-`MANIFESTO.md`, `README.md`, the item, and every file it names. Then the items it names, and any other item in `changes/backlog/` touching the same files or manifesto sentences: one change may serve several, and one may depend on another.
+`MANIFESTO.md`, `PIPELINE.md` for what the pipeline is meant to be, `README.md`, the item, and every file it names. Then the items it names, and any other item in `changes/backlog/` touching the same files or manifesto sentences: one change may serve several, and one may depend on another.
 
 ## The questions, in order
 
@@ -38,7 +38,7 @@ What the user approves, read for this repository, each with its content or "none
 - **Information model:** what the pipeline keeps - change directories, `.git/run-logs/`, what outlives acceptance - and what it deletes.
 - **Hard-to-reverse decisions:** renaming or moving a skill other projects have installed, a change to a format those projects already hold.
 
-Then the plan names the files to change, every copy of a shared one and the `README.md` passages that describe the changed behaviour; any test weakened or deleted; how each change will be shown to hold; what happens to the item and the items it touches; and how the work splits into commits. It carries the steps below, Build to Report, so they survive a cleared context.
+Then the plan names the files to change, every copy of a shared one, the `PIPELINE.md` passages whose intent the change alters, and the `README.md` passages that describe how a changed script works; any test weakened or deleted; how each change will be shown to hold; what happens to the item and the items it touches; and how the work splits into commits. It carries the steps below, Build to Report, so they survive a cleared context.
 
 **Showing a skill change holds.** `./test.sh` says nothing about what an agent does. A subagent with a fresh context follows the skill on a real case - the item's own instance where it has one - before and after the change, and the report shows both runs. Where no run can show it, the result is marked as judged.
 

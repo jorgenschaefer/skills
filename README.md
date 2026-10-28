@@ -14,73 +14,21 @@ npx skills add jorgenschaefer/skills
 npx skills add jorgenschaefer/skills@<skill-name>
 ```
 
-## The pipeline
+## How it works
 
-```
-backlog ──→ /idea ──(context)──→ /find-criteria ──→ CRITERIA.md ──→ /criteria-to-tickets ─┬─ 1 ticket  → /implement <ticket>
-   ↑          ↑                        │                                                    └─ n tickets → ./run.sh changes/<slug>/tickets
-   │          └── no problem visible ──┘                                                              then: /accept-criteria
-   └────────────────────────────────────────────────── follow-ups ──────────────────────────────────────────────────┘
-```
+What the pipeline is meant to be - its phases, the stages in each, the developer's stops and the
+rules across them - is in `PIPELINE.md`, beneath `MANIFESTO.md`. This README says how to
+install the skills and what the scripts do.
 
 Everything one change produces lives in `changes/YYYY-MM-DD-<slug>/`: `CRITERIA.md`, the
 agreed specimen in `specimens/`, the tickets in `tickets/`, and `REVIEW.md` where the runner's
-final review ran. The directory is scaffolding for one change, and `/accept-criteria` deletes it
-once the change is accepted - what it was for survives in git history and in the commits that
-built it. ADRs outlive the change, so they always go to `docs/adr/`.
+final review ran. ADRs go to `docs/adr/`.
 
 `idea` fires by description; `find-criteria`, `criteria-to-tickets` and `accept-criteria` are
-typed. A trivial change can still go through `find-criteria`, which states the problem in a
-sentence, gets a yes and moves on, and a single ticket is built by `/implement` directly.
-A change small enough for one session can skip the tickets too: `/implement` builds
-`CRITERIA.md` itself and commits it with the change, and deleting the change's directory is
-the acceptance - the user walks it, not `/accept-criteria`.
+typed.
 
-`run.sh` is a script rather than a skill, and that is the whole distinction:
-everything that has to hold when a session is dead or lying is a script, and
-everything that is judgement is a skill. A session cannot enforce a budget it is
-spending, reset a claim it is holding when it dies, or wait out a limit that has
-already stopped it. Its library is under `run/` - a directory with no `SKILL.md`,
-so not a skill, and `sync.sh` leaves it out.
-
-**Every stage is checked by something that did not produce it.** The first three carry
-their adversary as a `VERIFY.md` beside their `SKILL.md` and hand it to a subagent with
-a fresh context: the problem statement's, which re-derives the problem cold from the instance
-and the solution the user arrived with; the criteria's, which checks they serve the problem,
-can be tested, make sense for the person who will use the thing, and can be sliced without
-asking; the tickets', which checks the quotes, the coverage, the slices, the code the tickets
-rest on, that every step only a person can do is named as theirs and none is left to a build, that no two tickets build the same thing, and the ACs that pull against each other. Then `critique`, which each build spawns against its own diff, and which has an agent that never
-saw the code complete the criteria's tasks in the running product - screens, a command line, an API - and say where a person would hesitate. Only the last two judge against the problem - the run's final review, whose critique
-drives the product through the user's situation, and acceptance: every check before them
-compares an artifact to the one before it, and a chain of sound links
-still proves nothing about what started it.
-
-**What is approved.** The user approves what the manifesto puts in bold for them, in words
-they can judge without the code. The acceptance criteria come in four groups: behaviour with
-its failure cases, what production must show, the security policy, and the information model,
-each "None." where nothing applies. Three technical decisions are approved with them: the
-concepts the system keeps, wire formats, and what is hard to reverse, each settled up front,
-"none" included. How the code is built is the builder's, held to the standard. A build may
-go beyond what was agreed where the code calls for it, and records that it did; acceptance
-shows it for approval, and shows a check the build weakened as what it no longer protects.
-
-**The security policy outlives every change.** `SECURITY_POLICY.md` at a project's root says
-who may see and do what across the whole system, in the developer's words: only what is
-allowed, grouped by thing, each rule with a test. `/init-security-policy` writes it once, into an
-existing project, from what a policy check finds the system allowing, and adds that check to the
-project's fast check, or to its slow check only where it can't be made fast. The check tries every way in as every role, as nobody logged in and
-as every external system, with marker values planted in the test data, and fails on anything no
-rule allows and on any way in it did not try. From then on a change works from the policy:
-`/find-criteria` shows the rules it touches and its Security policy ACs are rules, the build
-writes the approved ones in, and acceptance shows the policy before and after.
-
-**Stops for a person.** Agree the problem, pick an approach and approve the criteria, approve the
-tickets, walk the finished change. Where you run `/init-security-policy` on a project, approve its
-first security policy. Everything else is conditional and named - a halt, a ceiling
-raised, a problem declared already solved or not worth the work, a re-slice approved.
-
-**Stopping anywhere is an ending.** A problem agreed and not designed against, criteria
-agreed and not built, are whole uses of the thing. Going on is always something you ask for.
+`run.sh` is a script rather than a skill. Its library is under `run/` - a directory with no
+`SKILL.md`, so not a skill, and `sync.sh` leaves it out.
 
 ### The standard
 
@@ -157,9 +105,7 @@ call does not stop one.
 
 However it ends, it ends with what needs a person, and only that, last on the screen. A halt
 stops the run, which ends saying which ticket halted and printing its whole `## Halt`. A
-finished run points on to `/accept-criteria`, which reads what each build left standing and
-`REVIEW.md` whole and puts what is open to the user. It walks nothing itself: acceptance needs
-the user in it.
+finished run points on to `/accept-criteria`.
 
 Every unattended stop is a named halt written into the ticket: `blocked`, `undecided`
 and `mystery` from a session; `exhausted`, `drift` and `unbuilt` from the runner,
@@ -178,8 +124,7 @@ it is left out, and a session in this repository finds it there.
 
 ### The tests
 
-`./test.sh`. Everything the runner does is something that has to be true when a session
-is dead or lying, so every case builds a throwaway repository - a change's `CRITERIA.md`
+`./test.sh`. Every case of the runner's suites builds a throwaway repository - a change's `CRITERIA.md`
 with a ticket directory under it - puts a stub where `claude` goes, and runs the real
 script against it: the refusals, the drift pre-flight in both directions, the claim a
 crashed session leaves behind, both budgets, the halt each one writes, the final review,
@@ -188,31 +133,9 @@ its own, over the same kind of throwaway repository. Alongside them, the two che
 need: that the copies of a shared file are identical, and that no live instruction points at
 something that is not there.
 
-### What holds it together
-
-**Ids, end to end.** Acceptance criteria are numbered in `CRITERIA.md`, tickets quote the ones
-they cover verbatim, tests name the ones they pin, and acceptance walks them back by id.
-Absences become mechanical: a criterion no ticket quotes, a ticket claiming what it does not
-quote, a quote that no longer matches.
-
-**Nothing approves its own work.** The reviewer gets the diff and not the reasoning that
-produced it, because a reviewer that has already accepted every step is not a reviewer;
-the runner writes the statuses a session must not; and acceptance judges against a problem
-statement written before the approach was chosen.
-
-**Checks that execute rather than judge.** A criterion is pinned by breaking the
-behaviour and watching its named test fail - deleted, and its edges moved - because
-deciding by eye whether a test would notice a change is prediction. `critique` and
-`/accept-criteria` drive the running product rather than reading the diff and concluding.
-A build does not drive its own product: its reviewer hands the criteria to a subagent that has
-not read the code, which completes them as tasks and reports in text where it hesitated, guessed
-or gave up - and keeps the screenshots out of the reviewer's every later turn.
-
 ## Available skills
 
-The pipeline is most of them. `explain-code`, `explain-diff`, `repo-overview`, `improve-skill`, `restructure`,
-`retro` and `upgrade-dependencies` stand outside it - they are things you run on a codebase,
-on a change, on a skill or on a finished run, rather than steps in building a change.
+What each skill does today. What the pipeline is meant to be is in `PIPELINE.md`.
 
 - **backlog** - the ideas not started yet, one file per item in `changes/backlog/` with its effort and utility from XS to XL, proposed from the code and confirmed by the user. Adding reads the code for evidence and extends an item that overlaps rather than writing a second; picking ranks by utility against effort, checks the top three against the current code, proposes deleting what is already solved, recommends one and hands it to `idea`. `accept-criteria` hands it each follow-up and deletes the items a change finished. Converts an older backlog's items to its shape on first use
 - **idea** - the door in for an idea, fired without being typed: the problem underneath the idea the user arrived with, dug at around one real instance until a reader who was not there could restate it, stated back and agreed - or a reasoned no. Proposes nothing but deleting a backlog item it said no to, and writes no file: the statement stays in the conversation for `find-criteria`
