@@ -53,12 +53,26 @@ so they belong in the process document:
 - A check that only approximates a criterion says so
   (`acceptance-evidence-from-a-script`).
 
+## Answering for the whole
+
+The manifesto now says, in the first line under "For every goal": "The
+developer answers for the software as a whole, not for one change at a
+time." A step that serves the developer's confidence in the whole software
+cites that line.
+
+- No skill yet shows the developer the whole a change touches - the rule or
+  workflow as it will stand afterwards - or raises a whole that stops
+  hanging together, such as a rule gathering special cases.
+- `/accept-criteria`'s "Show them what the change decided that they answer
+  for" (`accept-criteria/SKILL.md:39`) could be cut under the rule that a
+  step citing nothing is a candidate to cut. It serves this goal, though it
+  is about one change.
+- A record of who decided what and why was left out on purpose. The
+  developer who agreed the item saw it as blame, "the wrong part of
+  accountability". What the developer needs is confidence that the software
+  works.
+
 ## Related
 
 - `standard-follows-the-manifesto`: the code standard, the other half of the
   second layer.
-
-Depends on `confidence-to-answer-for-the-software`. The method layer decides
-which steps to cut by what they cite. A step that serves only the
-developer's confidence in the whole software has nothing to cite until the
-manifesto says what the evidence is for.

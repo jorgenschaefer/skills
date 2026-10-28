@@ -3,8 +3,8 @@ criteria:  CRITERIA.md
 closes:    AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7
 advances:
 after:     01-fast-check
-status:    ready
-attempts:  0
+status:    done
+attempts:  1
 ---
 
 ## Build
@@ -58,3 +58,12 @@ reading.
 - Deleting `changes/backlog/confidence-to-answer-for-the-software.md`: `/accept-criteria` does that once the change is accepted.
 
 ## Left standing
+- **No automated test proves AC-1 to AC-7.** They are text. The reviewer
+  checked each by reading the diff: AC-1 and AC-2 match the required wording
+  word for word, and the diff of `MANIFESTO.md` has only those two hunks
+  (AC-3).
+- **Fixes after the last review, both nits:** in `method-layer`, the blame
+  note said "The user", which reads as the software's end user; it now says
+  "the developer who agreed the item". In `method-layer` and
+  `critical-user-journeys`, "first under 'For every goal'" now reads "in the
+  first line under 'For every goal'". No reviewer saw these.

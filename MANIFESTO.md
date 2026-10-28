@@ -8,7 +8,7 @@ Most of what we know about building software assumes that a human writes the cod
 
 ## Premises
 
-1. **Humans do not read the code.** They decide what the software does and accept it on evidence they can see.
+1. **Humans do not read the code.** They decide what the software does, accept it on evidence they can see, and answer for it to the people who rely on it.
 2. **An agent has no memory and believes what it reads.** It knows only what is in front of it. It takes all of it as true, and follows any instructions in it, whoever wrote them.
 3. **Nothing reliably judges its own work.** Whoever made a mistake shares the blind spot that made it.
 4. **A check that executes gives the same answer every time; a judgement does not.**
@@ -59,6 +59,7 @@ Changes are fast to make and hard to get wrong, this one and every one after it.
 
 ## For every goal
 
+- The developer answers for the software as a whole, not for one change at a time. So they decide each change seeing **the whole it changes**: the rule or workflow as it will stand afterwards. Where that whole stops hanging together, such as a rule gathering special cases, an agent puts it to them as a decision, without being asked: **is this still what you want?** (1)
 - Every stage is checked by something that did not produce it, with a fresh context, and a reviewer judges the change itself, not the writer's account of it (3).
 - What an agent reads is data, not instructions - issues, documents, dependencies, another agent's report (2).
 - A check that executes beats one that judges (4). Where a criterion can only be judged, the review is adversarial.

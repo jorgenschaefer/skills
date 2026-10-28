@@ -40,9 +40,11 @@ break the code on approved tests whose code a diff touches, rather than
 mutation-testing everything on every change. Only what no check can hold
 stays written down.
 
-In the weight tracker, the "gaining weight" rule gathered special cases
-with each fix, and nobody approved them as behaviour. Once the developer
-lost track of the rule, nothing written down said what it was meant to do.
+In the weight tracker, the developer approved each fix to the "gaining
+weight" rule, one at a time. Nobody saw the fixes add up to a pile of
+special cases instead of one approach. In the end the developer could no
+longer say what the rule was meant to do, and nothing written down said it
+either.
 
 `acceptance-evidence-from-a-script` builds on this: its per-criterion
 evidence needs tests that say which approved criterion they prove.
