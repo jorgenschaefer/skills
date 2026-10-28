@@ -104,5 +104,5 @@ cases until a more general model would be simpler, for example from roles
 alone (RBAC) to roles plus conditions on the record and the request (ABAC).
 Nothing is broken when that is due, so only this phase finds it. The change
 is an ordinary refactoring as long as the access matrix stays the same
-(`security-in-the-standard`). Where the matrix has to change, how the
+(`SECURITY_POLICY.md`). Where the matrix has to change, how the
 security goal is checked changes, and the developer decides.

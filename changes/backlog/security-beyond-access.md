@@ -11,7 +11,8 @@ text it read." And for the writer: "The secure path is the easy one, since
 security that is hard to use gets worked around."
 
 Parked on 2026-10-27 from `/idea` on `security-in-the-standard`, whose
-agreed problem is the developer vouching for who may see and do what. These
+agreed problem was the developer vouching for who may see and do what. That
+item became the security policy (e9e746b). These
 three parts are not about that policy:
 
 - **The outside attacker.** The standard's attacker "holds a valid session
