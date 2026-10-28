@@ -51,5 +51,5 @@ uses, possibly two skills:
   no new stop.
 
 Depends on `critical-user-journeys`, whose first journeys `repo-overview`'s
-"Main workflows" would draft, on `run-sh-without-a-check`, and on
-`method-layer`, which lists what the pipeline expects of a project.
+"Main workflows" would draft, and on `run-sh-without-a-check`. `PIPELINE.md`'s Setup says
+what the pipeline expects of a project.

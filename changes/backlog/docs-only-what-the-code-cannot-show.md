@@ -31,5 +31,5 @@ Evidence:
   that ran the tests ...". `improve-skill` keeps such a story only as one
   clause that does a named job.
 
-Depends on `method-layer`, which decides where the process is described
-once the README's account of the runner goes.
+`PIPELINE.md` now holds the pipeline's intent, and the README says what
+the scripts do.

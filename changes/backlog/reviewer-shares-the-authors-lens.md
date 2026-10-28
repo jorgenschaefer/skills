@@ -8,7 +8,7 @@ utility: S
 `MANIFESTO.md`, premise 3: "Whoever made a mistake shares the blind spot
 that made it." And: "Where a criterion can only be judged, the review is
 adversarial." The rule on reviewers' framings left the manifesto and waits
-to go into the process document (`method-layer`).
+to go into `PIPELINE.md`.
 
 The builder and its reviewer read the same document as their lens.
 `implement/SKILL.md:10`: "Read this skill's `CODING_STANDARDS.md` whole and

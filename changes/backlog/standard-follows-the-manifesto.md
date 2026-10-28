@@ -84,6 +84,6 @@ changes together, file shape), `approved-criteria-outlive-the-change`
 and `reviewer-shares-the-authors-lens` (the standard as the only lens of
 builder and reviewer).
 
-Depends on `method-layer`, the process document that sits beside the
-standard in the second layer. Approving a dependency is settled since
+The process document beside the standard is `PIPELINE.md`, written on
+2026-10-29. Approving a dependency is settled since
 2026-10-27: "Hard to reverse" names one the codebase will be built around.

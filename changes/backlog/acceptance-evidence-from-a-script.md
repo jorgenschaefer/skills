@@ -15,7 +15,7 @@ script rather than reported by the writer", and "Where no check can show it,
 it is marked as judged." For every goal: "Where a criterion can only be
 judged, the review is adversarial." Showing example runs, listing tests by
 what they prove, and marking a check that only approximates a criterion left
-the manifesto for `method-layer`.
+the manifesto and are not yet in `PIPELINE.md`.
 
 Evidence:
 
