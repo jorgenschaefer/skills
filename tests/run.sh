@@ -182,7 +182,7 @@ else bad "once that session has ended, a run carries on with its claim" "rc=$rc 
 # What the checks start in the background is not a session: it must not hold the
 # lock after the run, or every later start is refused.
 workspace
-STUB_VERIFY='(/bin/sleep 3 >/dev/null 2>&1 &)'
+STUB_VERIFY='(/bin/sleep 30 >/dev/null 2>&1 &)'
 plan build build review
 run > /dev/null
 rc="$(run)"
