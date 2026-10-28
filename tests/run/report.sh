@@ -89,14 +89,20 @@ if [ "$rc" != 0 ] && [ "$(wc -l < "$STUB_CALLS")" = 4 ] && grep -q 'the final re
   ok "a final review is resumed once, and a second stop fails the run"
 else bad "a final review is resumed once, and a second stop fails the run" "rc=$rc $(calls) $(out)"; fi
 
-# And where it did finish, it does not run again.
+# And where it did finish, it does not run again - but the checks do, since
+# nothing else stands between a commit nobody checked and acceptance.
 workspace
+STUB_VERIFY='echo x >> .runs'
 plan build build review
 run > /dev/null
+runs="$(wc -l < "$WORK/.runs")"
 rc="$(run)"
 if [ "$rc" = 0 ] && [ "$(wc -l < "$STUB_CALLS")" = 3 ] && tail -1 "$WORK/.out" | grep -q '/accept-criteria'; then
   ok "a run started again after its review points on to acceptance rather than reviewing again"
 else bad "a run started again after its review points on to acceptance rather than reviewing again" "rc=$rc $(calls) $(out)"; fi
+if [ "$(wc -l < "$WORK/.runs")" = $((runs + 1)) ]; then
+  ok "a run started again after its review runs the checks before pointing on"
+else bad "a run started again after its review runs the checks before pointing on" "before=$runs after=$(wc -l < "$WORK/.runs") $(out)"; fi
 
 # --- the end of a run
 #
@@ -247,5 +253,72 @@ if [ "$rc" != 0 ] && [ ! -s "$STUB_CALLS" ] && ending | grep -q 'RUN STOPPED: no
    && ending | grep -q '1-one.md: ready, after: 2-two' && ending | grep -q '2-two.md: ready, after: 1-one'; then
   ok "tickets that wait on each other are named, with what each waits on"
 else bad "tickets that wait on each other are named, with what each waits on" "rc=$rc $(out)"; fi
+
+# --- the checks after the final review
+#
+# The final review fixes what it finds and commits, and nothing ran the checks
+# on those commits: a run could point on to acceptance with them red. They are
+# run once more, and a red result goes back to the review session, as a build's
+# goes back to its own.
+
+workspace
+STUB_VERIFY='echo x >> .runs; if [ -f .red ]; then echo REDMARK; exit 1; fi'
+plan build build review-red fix-red
+rc="$(run)"
+review_id="$(awk '$1 == "start" && $3 ~ /REVIEW\.md$/ { print $2 }' "$STUB_SESSIONS")"
+if [ "$rc" = 0 ] && [ "$(tail -1 "$STUB_SESSIONS")" = "resume $review_id" ] \
+   && grep -qF 'the fast check, `' <(tail -1 "$STUB_CALLS") && grep -q 'REDMARK' <(tail -1 "$STUB_CALLS") \
+   && grep -q 'after .*REVIEW.md was committed.*with the fix added to REVIEW.md among the fixes no reviewer saw' <(tail -1 "$STUB_CALLS") \
+   && grep -q "handing it back to its session, attempt 1 of 2" "$WORK/.out" \
+   && tail -1 "$WORK/.out" | grep -q '/accept-criteria'; then
+  ok "checks red after the final review commits go back to the review session, which fixes them"
+else bad "checks red after the final review commits go back to the review session, which fixes them" "rc=$rc $(cat "$STUB_SESSIONS") $(calls) $(out)"; fi
+if [ "$(wc -l < "$WORK/.runs")" = 5 ]; then
+  ok "the checks run after the final review's commit, and again after its fix"
+else bad "the checks run after the final review's commit, and again after its fix" "runs=$(wc -l < "$WORK/.runs") $(out)"; fi
+
+# The first red is free, and each one after it spends from a ticket's budget:
+# with two attempts, the review is handed back twice and then the run halts.
+workspace
+STUB_VERIFY='if [ -f .red ]; then echo REDMARK; exit 1; fi'
+plan build build review-red die die
+rc="$(run)"
+# shellcheck disable=SC2016 # the backticks are Markdown's, matched literally
+if [ "$rc" = 1 ] && [ "$(wc -l < "$STUB_CALLS")" = 5 ] \
+   && ending | grep -q 'RUN STOPPED:.*final review.*the fast check, `.*`, is red - its output is in [^ ]*fast-check' \
+   && ! grep -q '/accept-criteria' "$WORK/.out"; then
+  ok "checks that stay red after the final review halt the run, naming the red check and its output"
+else bad "checks that stay red after the final review halt the run, naming the red check and its output" "rc=$rc $(calls) $(out)"; fi
+
+rc="$(run)"
+# shellcheck disable=SC2016 # the backticks are Markdown's, matched literally
+if [ "$rc" = 1 ] && [ "$(wc -l < "$STUB_CALLS")" = 5 ] \
+   && ending | grep -q 'RUN STOPPED:.*the fast check, `.*`, is red' && ! grep -q '/accept-criteria' "$WORK/.out"; then
+  ok "a run started again over a committed review with red checks halts again, launching nothing"
+else bad "a run started again over a committed review with red checks halts again, launching nothing" "rc=$rc $(calls) $(out)"; fi
+
+
+# The checks judge the review's commits, not its tree: a session that fixed a
+# red check and stopped without committing left HEAD red, and the run pointed on
+# to acceptance. What it leaves uncommitted is put aside, as a build's is.
+workspace
+# Red once the review is committed, until a fix is in the tree - named without
+# its .md, which the stub would take for the review's own path.
+STUB_VERIFY='test -f fix || ! ls changes/x | grep -q ^REVIEW'
+plan build build review fix-uncommitted die
+rc="$(run)"
+if [ "$rc" = 1 ] && [ "$(wc -l < "$STUB_CALLS")" = 5 ] && ! grep -q '/accept-criteria' "$WORK/.out" \
+   && git -C "$WORK" stash list | grep -q 'REVIEW.md.*left uncommitted' && ending | grep -q 'RUN STOPPED:.*git stash list'; then
+  ok "a fix the final review left uncommitted is put aside, and does not turn its checks green"
+else bad "a fix the final review left uncommitted is put aside, and does not turn its checks green" "rc=$rc $(git -C "$WORK" stash list) $(calls) $(out)"; fi
+
+workspace
+STUB_VERIFY='if [ -f .red ]; then echo REDMARK; exit 1; fi'
+plan build build review-red limit limit limit
+rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=0 LIMIT_MARGIN=0 MAX_WAITS=2 MAX_ATTEMPTS=2 \
+           bash "$RUNNER" changes/x/tickets > "$WORK/.out" 2>&1 ); echo $?)"
+if [ "$rc" = 1 ] && ending | grep -q 'RUN STOPPED: a usage limit outlasted every wait while the final review fixed red checks'; then
+  ok "a usage limit that outlasts every wait while the final review fixes red checks ends the run, saying so"
+else bad "a usage limit that outlasts every wait while the final review fixes red checks ends the run, saying so" "rc=$rc $(out)"; fi
 
 finish

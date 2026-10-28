@@ -43,14 +43,14 @@ if grep -q 'touch .verified' <(head -1 "$STUB_CALLS"); then
   ok "the build is told the command, and that it was green"
 else bad "the build is told the command, and that it was green" "$(calls)"; fi
 
-# A VERIFY in the caller's environment is not a check that passed.
+# A FAST_CHECK in the caller's environment is not a check that passed.
 workspace
 STUB_VERIFY=false
 plan build build review
-rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" VERIFY=true bash "$RUNNER" changes/x/tickets > "$WORK/.out" 2>&1 ); echo $?)"
+rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" FAST_CHECK=true bash "$RUNNER" changes/x/tickets > "$WORK/.out" 2>&1 ); echo $?)"
 if [ "$rc" != 0 ] && [ ! -s "$STUB_CALLS" ]; then
-  ok "a VERIFY already in the environment does not skip the checks"
-else bad "a VERIFY already in the environment does not skip the checks" "rc=$rc $(out)"; fi
+  ok "a FAST_CHECK already in the environment does not skip the checks"
+else bad "a FAST_CHECK already in the environment does not skip the checks" "rc=$rc $(out)"; fi
 
 # --- the command the project declares
 #
@@ -89,5 +89,93 @@ else bad "a Check: line a build adds is run from its commit on, without asking a
 if grep -q 'touch .declared' <(sed -n 2p "$STUB_CALLS"); then
   ok "the next build is told the command the project declared"
 else bad "the next build is told the command the project declared" "$(calls)"; fi
+
+# --- the fast check and the slow check
+#
+# A project's checks are a fast check, which every build runs, and a slow check
+# for the tests that can't be made fast. The runner runs both, before any build
+# and on every build's commit, so no build has to run the slow one.
+
+# One line per run of the command, in the file it names.
+counts() { if [ -f "$WORK/$1" ]; then wc -l < "$WORK/$1"; else echo 0; fi; }
+
+workspace
+# shellcheck disable=SC2016 # the backticks are Markdown's, written literally
+printf '# x\n\nFast check: `echo x >> .fast`\nSlow check: `echo x >> .slow`\n' > "$WORK/CLAUDE.md"; commit
+STUB_VERIFY='touch .asked'
+plan build build review
+rc="$(run)"
+if [ "$rc" = 0 ] && [ "$(counts .fast)" -ge 3 ] && [ ! -f "$WORK/.asked" ] && [ "$(questions)" = 0 ]; then
+  ok "a Fast check: line is run before any build and on every build, and no session is asked"
+else bad "a Fast check: line is run before any build and on every build, and no session is asked" "rc=$rc fast=$(counts .fast) questions=$(questions) $(out)"; fi
+if [ "$(counts .slow)" -ge 3 ] && [ "$(counts .slow)" = "$(counts .fast)" ]; then
+  ok "the slow check runs wherever the runner runs the fast check"
+else bad "the slow check runs wherever the runner runs the fast check" "fast=$(counts .fast) slow=$(counts .slow) $(out)"; fi
+
+workspace
+# shellcheck disable=SC2016 # the backticks are Markdown's, written literally
+printf '# x\n\nSlow check: `echo x >> .slow`\n' > "$WORK/CLAUDE.md"; commit
+STUB_VERIFY='echo x >> .fast'
+plan build build review
+rc="$(run)"
+if [ "$rc" = 0 ] && [ "$(questions)" = 1 ] && [ "$(counts .fast)" -ge 3 ] && [ "$(counts .slow)" = "$(counts .fast)" ]; then
+  ok "with a Slow check: line and no fast one, a session names the fast check once, and both run"
+else bad "with a Slow check: line and no fast one, a session names the fast check once, and both run" "rc=$rc questions=$(questions) fast=$(counts .fast) slow=$(counts .slow) $(out)"; fi
+
+workspace
+STUB_VERIFY=true
+export STUB_DECLARE='echo x >> .slow' STUB_DECLARE_AS='Slow check'
+plan build-declare build review
+rc="$(run)"
+if [ "$rc" = 0 ] && [ "$(counts .slow)" -ge 2 ]; then
+  ok "a Slow check: line a build adds is run from its commit on"
+else bad "a Slow check: line a build adds is run from its commit on" "rc=$rc slow=$(counts .slow) $(out)"; fi
+unset STUB_DECLARE_AS
+
+workspace
+# shellcheck disable=SC2016 # the backticks are Markdown's, written literally
+printf '# x\n\nFast check: `true`\nSlow check: `echo SLOWRED; false`\n' > "$WORK/CLAUDE.md"; commit
+plan build build review
+rc="$(run)"
+# shellcheck disable=SC2016 # the backticks are Markdown's, matched literally
+if [ "$rc" != 0 ] && grep -qF 'the slow check, `echo SLOWRED; false`, is red' "$WORK/.out" && ! grep -qF 'the fast check, `' "$WORK/.out" \
+   && grep -q 'SLOWRED' "$WORK/.out" && [ ! -s "$STUB_CALLS" ]; then
+  ok "a slow check red before any build stops the run, saying it is the slow check"
+else bad "a slow check red before any build stops the run, saying it is the slow check" "rc=$rc $(out) $(calls)"; fi
+
+workspace
+STUB_VERIFY=false
+plan build build review
+run > /dev/null
+# shellcheck disable=SC2016 # the backticks are Markdown's, matched literally
+if grep -qF 'the fast check, `false`, is red' "$WORK/.out"; then
+  ok "a fast check red before any build stops the run, saying it is the fast check"
+else bad "a fast check red before any build stops the run, saying it is the fast check" "$(out)"; fi
+
+# Two lines that both say what every build runs leave it to chance which one
+# does.
+workspace
+# shellcheck disable=SC2016 # the backticks are Markdown's, written literally
+printf '# x\n\nCheck: `true`\nFast check: `true`\n' > "$WORK/CLAUDE.md"; commit
+plan build build review
+rc="$(run)"
+# shellcheck disable=SC2016 # the backticks are Markdown's, matched literally
+if [ "$rc" != 0 ] && grep -q 'remove `Check:`' "$WORK/.out" && [ ! -s "$STUB_CALLS" ]; then
+  ok "a CLAUDE.md with both Check: and Fast check: is refused, saying to remove Check:"
+else bad "a CLAUDE.md with both Check: and Fast check: is refused, saying to remove Check:" "rc=$rc $(out) $(calls)"; fi
+
+workspace
+# shellcheck disable=SC2016 # the backticks are Markdown's, written literally
+printf '# x\n\nCheck: `true`\n' > "$WORK/CLAUDE.md"; commit
+export STUB_DECLARE='true' STUB_DECLARE_AS='Fast check'
+plan build-declare halt:blocked
+rc="$(run)"
+first="$(awk 'NR == 1 && $1 == "start" { print $2 }' "$STUB_SESSIONS")"
+# shellcheck disable=SC2016 # the backticks are Markdown's, matched literally
+if [ -n "$first" ] && [ "$(sed -n 2p "$STUB_SESSIONS")" = "resume $first" ] && grep -q 'remove `Check:`' <(sed -n 2p "$STUB_CALLS") \
+   && ! grep -q 'printed are below' <(sed -n 2p "$STUB_CALLS"); then
+  ok "a build that leaves both Check: and Fast check: is handed back, told to remove Check:"
+else bad "a build that leaves both Check: and Fast check: is handed back, told to remove Check:" "rc=$rc $(cat "$STUB_SESSIONS") $(calls) $(out)"; fi
+unset STUB_DECLARE_AS
 
 finish

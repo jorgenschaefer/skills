@@ -8,8 +8,10 @@
 #   build        set status: done, write a Left standing that names something -
 #                with $STUB_LEFT_EXTRA's contents after it, where it names a
 #                file - and commit it with the code
-#   build-declare  build, and declare $STUB_DECLARE as the project's check
-#                command on a Check: line in CLAUDE.md, in the same commit
+#   build-declare  build, and declare $STUB_DECLARE as one of the project's
+#                checks in CLAUDE.md, in the same commit, on a line named
+#                $STUB_DECLARE_AS - `Slow check`, without its colon - and on a
+#                Check: line where that is not set
 #   build-refused  build, ending in a result whose permission_denials name an
 #                Edit under .claude/ and a Bash command, as the CLI reports a
 #                call it would not run - the Bash one preceded by the event
@@ -21,7 +23,11 @@
 #   build-red-killed  build-red, then kill the runner with -9 before it can
 #                check the build
 #   fix-red      remove .red, commit a fix, and set status: done again - the
-#                resumed session a red check was handed back to
+#                resumed session a red check was handed back to, a build's or
+#                the final review's
+#   fix-uncommitted  write a file named fix and leave it uncommitted, then exit
+#                0 - a resumed session that fixed a red check and stopped short of
+#                committing the fix
 #   claim-only   set status: done having committed nothing
 #   claim-dirty  the same, with code written and left uncommitted
 #   claim-killed set status: done, commit nothing, and kill the runner with -9
@@ -48,6 +54,7 @@
 #                tidy up, as with a power cut or a closed laptop
 #   review       the final review - write and commit the REVIEW.md its prompt
 #                names, and end in a successful result, as the CLI does
+#   review-red   the final review, and leave .red at the root besides
 #   review-dies  the final review, dying with no REVIEW.md and no result
 #   review-stop-early  the final review, ending in a successful result with no
 #                REVIEW.md - a review that ended its turn waiting on a subagent
@@ -129,7 +136,7 @@ rejected_event() {
 set_status() { sed -i "2,/^---$/s/^status: .*/status:    $1/" "$ticket"; }
 
 case "$line" in
-  review|review-dies|review-stop-early)
+  review|review-red|review-dies|review-stop-early)
     # The final review names no ticket, which is how the stub tells it apart.
     [ -n "$ticket" ] && { echo "stub: expected the review, got a ticket: $prompt" >&2; exit 97; }
     [ "$line" = review-dies ] && exit 1
@@ -140,6 +147,7 @@ case "$line" in
     printf '## For you\n\n1. the review left: a seam\n\n## Findings\n\nthe review'"'"'s detail\n' > "$review"
     git add "$review" >/dev/null 2>&1
     git commit -qm "review" >/dev/null 2>&1
+    [ "$line" != review-red ] || : > "$(git rev-parse --show-toplevel)/.red"
     echo '{"type":"result","subtype":"success","is_error":false,"result":"reviewed"}'
     ;;
   build|build-declare|limit-passed|build-limit|build-refused|build-dirty|build-killed|build-red|build-red-killed)
@@ -151,7 +159,7 @@ case "$line" in
     printf '\n## Left standing\n\n- left by %s\n' "$(basename "$ticket")" >> "$ticket"
     [ -z "${STUB_LEFT_EXTRA:-}" ] || cat "$STUB_LEFT_EXTRA" >> "$ticket"
     # shellcheck disable=SC2016 # the backticks are Markdown's, written literally
-    [ "$line" != build-declare ] || printf 'Check: `%s`\n' "$STUB_DECLARE" >> "$(git rev-parse --show-toplevel)/CLAUDE.md"
+    [ "$line" != build-declare ] || printf '%s: `%s`\n' "${STUB_DECLARE_AS:-Check}" "$STUB_DECLARE" >> "$(git rev-parse --show-toplevel)/CLAUDE.md"
     set_status "done"
     git add -A >/dev/null 2>&1
     git commit -qm "build $(basename "$ticket")" >/dev/null 2>&1
@@ -171,10 +179,11 @@ case "$line" in
   fix-red)
     rm -f "$(git rev-parse --show-toplevel)/.red"
     printf 'fixed\n' >> "$(git rev-parse --show-toplevel)/fix"
-    set_status "done"
+    [ -z "$ticket" ] || set_status "done"
     git add -A >/dev/null 2>&1
     git commit -qm "fix $(basename "$ticket")" >/dev/null 2>&1
     ;;
+  fix-uncommitted) printf 'fixed\n' > "$(git rev-parse --show-toplevel)/fix" ;;
   claim-only|claim-dirty|claim-killed)
     [ "$line" != claim-dirty ] || printf 'half\n' > "$(git rev-parse --show-toplevel)/code"
     printf 'built\n' >> "$ticket"

@@ -18,7 +18,7 @@ brief() {  # ticket -> the prompt a fresh session on it starts from
   # one in a subdirectory looked for a relative path at the repository root.
   prompt="Use /implement on the work described in $(realpath "$1").
 
-The project's checks are \`$VERIFY\`, and they pass on the commit you start from. A check that fails now failed because of this build.
+$(checks_named). The checks pass on the commit you start from, and a check that fails now failed because of this build. The runner runs every check on your commit itself, so run only the fast check.
 
 That file is the whole brief. Its \`## Done when\` is the definition of done - not the diff, not what you would have built, not what CRITERIA.md probably meant. Its \`## Technical decisions\` were agreed with the person: build to them, and where the code calls for more than one says - another concept, another endpoint, data deleted - build it and record the departure. Where its \`## Context\` says Security policy, What production must show or Information model is \"None.\", a permission, an alert or kept data you add there is a departure too, recorded the same way. Its \`## Not here\` names what a neighbouring ticket owns, and building it is two tickets building the same code. How to build it is yours to work out from the code, and so is every implementation question on the way: decide it, and record under \`## Left standing\` the ones /implement says to leave standing.
 
@@ -26,7 +26,7 @@ A criterion the frontmatter's \`closes:\` names is true once this ticket is buil
 
 Do not open the CRITERIA.md the frontmatter names. The ticket quotes what it needs, and going upstream is how a ticket quietly becomes a different one.
 
-When the criteria are green and the project's checks pass, write into the ticket's \`## Left standing\` what /implement says to leave standing, where it names a criterion only the ones this ticket closes or advances. Only that - any other finding you fixed and a criterion a test proves are what \`done\` already says. Nobody reads your closing message in an unattended run; Left standing is handed to the final review where there is more than one ticket, and read at acceptance. Set \`status: done\` in the frontmatter and commit the code and the ticket file together, in one commit.
+When the criteria are green and the fast check passes, write into the ticket's \`## Left standing\` what /implement says to leave standing, where it names a criterion only the ones this ticket closes or advances. Only that - any other finding you fixed and a criterion a test proves are what \`done\` already says. Nobody reads your closing message in an unattended run; Left standing is handed to the final review where there is more than one ticket, and read at acceptance. Set \`status: done\` in the frontmatter and commit the code and the ticket file together, in one commit.
 
 If you cannot proceed, append a \`## Halt\` section naming the kind and stop: \`blocked\` (a precondition the ticket assumed is not there), \`undecided\` (behaviour the user sees that the ticket's criteria do not settle), or \`mystery\` (a failure you cannot explain, which is different from one you cannot fix). Then set \`status: halted\`.
 
@@ -55,9 +55,30 @@ INTERRUPTED="The run was interrupted while you were working, and has been starte
 REVIEW_STOPPED_EARLY="Your turn ended before REVIEW.md was committed. Carry on from there - rerun a critique that did not report - and finish as the brief said."
 
 red_checks() {  # -> what a build's session is told when the checks fail on its commit
-  printf '%s' "The project's checks fail on your commit $(git rev-parse --short HEAD): \`$VERIFY\`. The runner ran them and set the ticket back to \`status: doing\`. Fix it test-first like any other failure, commit, and set \`status: done\` again. The last lines of what they printed are below; all of it is in $CHECKS_LOG.
+  printf '%s' "The project's checks fail on your commit $(git rev-parse --short HEAD): $RED. The runner set the ticket back to \`status: doing\`. Fix it, commit, and set \`status: done\` again.$(red_output)"
+}
 
-$(tail -40 "$CHECKS_LOG")"
+red_review_checks() {  # -> what the final review is told when the checks fail on its commit
+  printf '%s' "The project's checks fail on your commit $(git rev-parse --short HEAD), after $(realpath "$REVIEW") was committed: $RED. Fix it and commit, with the fix added to REVIEW.md among the fixes no reviewer saw.$(red_output)"
+}
+
+# Nothing where no check ran: a CLAUDE.md naming the fast check twice is red
+# before either runs, and has no failure to fix test-first.
+red_output() {  # -> what a session handed red checks is told about fixing and running them, and what they printed
+  local log
+  [ "${#RED_LOGS[@]}" -gt 0 ] || return 0
+  printf '%s' " Fix a red check test-first like any other failure, and run the fast check while you fix it. Where the slow check is red, you may run it too, to confirm your fix. The last lines of what each red check printed are below."
+  for log in "${RED_LOGS[@]}"; do
+    printf '\n\n%s:\n%s' "$log" "$(tail -40 "$log")"
+  done
+}
+
+checks_named() {  # -> the project's checks, named in a sentence without its full stop
+  if [ -n "$SLOW_CHECK" ]; then
+    printf '%s' "The project's fast check is \`$FAST_CHECK\`, and its slow check is \`$SLOW_CHECK\`"
+  else
+    printf '%s' "The project's fast check is \`$FAST_CHECK\`, and it has no slow check"
+  fi
 }
 
 checks_question() {  # -> what the session that finds the checks is asked
@@ -75,9 +96,9 @@ review_brief() {  # -> the prompt the final review starts from
 What the builds left standing is below. Among it are review findings a build did not fix, with the severity its reviewer gave each - one run's build left a blocker there, and its review found the same bug again. Every blocker and should-fix among them is yours to settle as you settle critique's: fix it test-first - unless the fix needs a decision the criteria do not settle, and then it goes under \`## For you\` for the person. A technical decision or an AC group's \"None.\" does not stop a fix: where the fix departs from one, make it and name the departure under \`## For you\`. A fix a build made after its last review was seen by no reviewer: check each against the finding it answers, and settle one that is wrong or incomplete like a should-fix. Leave the nits and everything else for acceptance, and hand none of it to critique.$standing"
   printf '%s' "Review the whole change this run built: \`git diff $(review_base)\`. The tickets in $(realpath "$TICKETS") built it, and each build was reviewed on its own - which cannot see what lies between them. Look for that: the same thing built twice, one concept under two names, seams between tickets that do not line up.
 
-The project's checks are \`$VERIFY\`, and they pass on the commit you start from.
+$(checks_named). The checks pass on the commit you start from. The runner runs every check again on your commits once your review is committed, so run only the fast check yourself.
 
-Spawn \`critique\` as a subagent with a fresh context. Hand it the diff, the result of the checks, and $(realpath "$(dirname "$TICKETS")/$(field "${TICKET_FILES[0]}" criteria)") as what was asked for, and its problem as what the change is for - not the tickets or what their builds left standing, which are the reasoning behind the code. Evaluate what comes back, fix what is worth fixing test-first, run the checks and commit. A technical decision or an AC group's \"None.\" does not stop a fix: where the fix departs from one, make it and name the departure under \`## For you\`, with the finding. A fix that needs a decision the criteria do not settle is not made: it goes under \`## For you\`. Then review again the same way, except that in the second round critique's driver does only the tasks, or visits only the screens, the fixes since the first round touched - name them to critique. Where the first round found only nits, fix the ones worth fixing, and review again only if one of those fixes changes what the user sees or gets back, or where an action leads. Two rounds at most: stop when the second round is done, or when a review comes back clean or with only nits and none of your fixes changed what the user sees or gets back.
+Spawn \`critique\` as a subagent with a fresh context. Hand it the diff, the result of the checks - the runner's last run of every check, green on the commit you start from, or, once you have changed the code, your own run of the fast check - saying which it is, and $(realpath "$(dirname "$TICKETS")/$(field "${TICKET_FILES[0]}" criteria)") as what was asked for, and its problem as what the change is for - not the tickets or what their builds left standing, which are the reasoning behind the code. Evaluate what comes back, fix what is worth fixing test-first, run the fast check and commit. A technical decision or an AC group's \"None.\" does not stop a fix: where the fix departs from one, make it and name the departure under \`## For you\`, with the finding. A fix that needs a decision the criteria do not settle is not made: it goes under \`## For you\`. Then review again the same way, except that in the second round critique's driver does only the tasks, or visits only the screens, the fixes since the first round touched - name them to critique. Where the first round found only nits, fix the ones worth fixing, and review again only if one of those fixes changes what the user sees or gets back, or where an action leads. Two rounds at most: stop when the second round is done, or when a review comes back clean or with only nits and none of your fixes changed what the user sees or gets back.
 
 Then write what you left standing to $(realpath "$REVIEW") and commit it. It opens with \`## For you\`: what is still open once this review is done, a line or two each, each naming the ticket it came from or the review. What needs the person's decision first - every fix you did not make because it needs a decision the criteria do not settle, and every fix that departs from a technical decision or an AC group's \"None.\" - then the rest of what is open, from what the builds left standing and from your own findings alike, most important first. Where nothing is open, it says \`Nothing.\` Below it, under headings of your own, the rest: findings you did not fix and why, the fixes you made after the last review, which no reviewer saw, checks you did not run, and for your own fixes what a build leaves standing about tradeoffs, dependencies, blast radius and revert, and what was hard to change - read /implement's _Finish_ for what goes under each. A tradeoff, a dependency or a blast radius goes under \`## For you\` only where it departs from what the criteria approved. Nobody reads your closing message in an unattended run: REVIEW.md is read at acceptance, and the run counts the review as finished only once that file is committed.$standing"
 }

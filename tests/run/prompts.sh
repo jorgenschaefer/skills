@@ -24,6 +24,37 @@ if ! grep -q 'already built' <(sed -n 1p "$STUB_CALLS") \
   ok "a later build is pointed at what the tickets already built left standing"
 else bad "a later build is pointed at what the tickets already built left standing" "$(calls)"; fi
 
+# --- what a build is told about the checks
+#
+# The runner runs the fast and the slow check on every build's commit, so a
+# build runs only the fast one, and has to be told so: told nothing, /implement
+# runs the slow check before its commit too.
+
+workspace
+# shellcheck disable=SC2016 # the backticks are Markdown's, written literally
+printf '# x\n\nFast check: `true # fast`\nSlow check: `true # slow`\n' > "$WORK/CLAUDE.md"; commit
+plan build build review
+run > /dev/null
+# shellcheck disable=SC2016 # the backticks are Markdown's, matched literally
+if grep -qF 'fast check is `true # fast`' <(head -1 "$STUB_CALLS") && grep -qF 'slow check is `true # slow`' <(head -1 "$STUB_CALLS") \
+   && grep -q 'runner runs every check on your commit itself, so run only the fast check' <(head -1 "$STUB_CALLS") \
+   && grep -q 'When the criteria are green and the fast check passes' <(head -1 "$STUB_CALLS"); then
+  ok "a build is told both checks, and to run only the fast one because the runner runs both"
+else bad "a build is told both checks, and to run only the fast one because the runner runs both" "$(head -1 "$STUB_CALLS")"; fi
+# shellcheck disable=SC2016 # the backticks are Markdown's, matched literally
+if grep -qF 'fast check is `true # fast`' <(tail -1 "$STUB_CALLS") && grep -qF 'slow check is `true # slow`' <(tail -1 "$STUB_CALLS") \
+   && grep -q 'run only the fast check yourself' <(tail -1 "$STUB_CALLS") && grep -q 'run the fast check and commit' <(tail -1 "$STUB_CALLS") \
+   && grep -q "the runner's last run of every check.*your own run of the fast check - saying which it is" <(tail -1 "$STUB_CALLS"); then
+  ok "the final review is told both checks, to run only the fast one, and to tell critique whose result it hands over"
+else bad "the final review is told both checks, to run only the fast one, and to tell critique whose result it hands over" "$(tail -1 "$STUB_CALLS")"; fi
+
+workspace
+plan build build review
+run > /dev/null
+if grep -q 'it has no slow check' <(head -1 "$STUB_CALLS"); then
+  ok "a build in a project with no slow check is told it has none"
+else bad "a build in a project with no slow check is told it has none" "$(head -1 "$STUB_CALLS")"; fi
+
 # --- what the final review is told
 #
 # One review of the whole change, run with nobody watching: what it reviews,

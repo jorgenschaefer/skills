@@ -3,8 +3,8 @@ criteria:  CRITERIA.md
 closes:    AC-1, AC-2, AC-3, AC-4, AC-5, AC-10
 advances:
 after:     01-skills-name-both-checks
-status:    ready
-attempts:  0
+status:    done
+attempts:  1
 ---
 
 ## Build
@@ -44,3 +44,21 @@ The groups What production must show, Security policy and Information model each
 - Making tests faster outside the preparatory ticket of AC-12 - this repository's own `./test.sh` included, slow as it is.
 
 ## Left standing
+
+- **Fixes made after the last review**, which no reviewer saw. Each answers a nit from round 2:
+  - `run/prompts.sh`: the build brief says "when the criteria are green and the fast check passes", and the review brief says "run the fast check and commit". Both said "the checks" before, which a session could read as both checks, against AC-2.
+  - `run/report.sh`: when the checks stay red after the final review, the run's last line also points at `git stash list`. That is where the review's uncommitted fixes go.
+  - `tests/run/report.sh`: assertions on the review's hand-back line ("attempt N of M") and on what the review session is told (add the fix to REVIEW.md).
+- **Review nits not fixed:**
+  - Started on main, a run makes its branch and only then refuses a `CLAUDE.md` with both `Check:` and `Fast check:`. Starting again on main is then refused because the branch exists. Red checks at the start already behaved this way before this change, so moving the refusal earlier is a change of its own.
+  - With `MAX_ATTEMPTS=1` the stop line reads "through 1 attempts". The ticket's halt already had this wording.
+- **Decided here, not settled by the criteria:**
+  - The runner runs the slow check even when the fast check is red. A session handed back red checks then learns about both at once, and does not spend an attempt finding the second. This costs the slow check's time on every red fast check.
+  - A run started again over a committed review halts on red checks. It does not hand them back to the review session. A usage limit while the review fixes red checks ends the run the same way, and names the red checks.
+  - The review session handed red checks is told to add its fix to REVIEW.md, among the fixes no reviewer saw.
+  - A session given a `CLAUDE.md` with both lines is told only to remove `Check:`, with no test-first instruction and no output, because no check ran.
+  - Check logs now have unique names (`fast-check-…-XXXX.log`, `slow-check-…`). Two runs in the same second used to share a log, and the green run overwrote the red log the session had been told to read.
+- **Changed assertion:** in `tests/run/loop.sh`, the count of check runs in a two-ticket run went from 3 to 4, because of the run after the final review (AC-5). Coverage is not weaker.
+- **Checks:** this repository has only `Check:` `./test.sh`, its fast check, and no slow check, so no slow check was run. No test moved between the checks.
+- **Blast radius:** every pipeline run. A project whose `CLAUDE.md` has both `Check:` and `Fast check:` no longer starts. A project with a `Slow check:` line now has it run before the first build, after every build and after the final review. A revert undoes all of it; it changes no stored format.
+- **Hard to change:** `tests/stub-session` takes the review's path from the first `REVIEW.md` in its prompt. A new sentence naming REVIEW.md, and one test's check command, both broke it. Suggestion: the stub could tell the review from a build by the brief's opening words instead.

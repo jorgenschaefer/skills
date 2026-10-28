@@ -37,7 +37,7 @@ drive() {
       ticket="$(ready_ticket)" || break
       # Run here rather than at startup: a run started again runs them only once
       # the ticket it was killed in is finished, never on its half-built work.
-      [ -n "$VERIFY" ] || verify
+      [ -n "$FAST_CHECK" ] || verify
 
       attempts=$(( $(field "$ticket" attempts) + 1 ))
       if [ "$attempts" -gt "$MAX_ATTEMPTS" ]; then
@@ -134,20 +134,19 @@ drive() {
     # still has the build in its context - so the claim stands until they are
     # green. The first red is free, as a session stopping early is; each one after
     # it spends an attempt, and the budget halts it as it halts any other. The
-    # command is read again from the commit, which may be the one declaring it.
-    checks_command
+    # commands are read again from the commit, which may be the one declaring them.
     if ! run_checks; then
       reds=$((reds + 1))
       if [ "$reds" -gt 1 ]; then
         attempts=$((attempts + 1))
         if [ "$attempts" -gt "$MAX_ATTEMPTS" ]; then
-          halt "$ticket" exhausted "the project's checks (\`$VERIFY\`) stayed red on its build through $MAX_ATTEMPTS attempts - the last output is in $CHECKS_LOG"
+          halt "$ticket" exhausted "the project's checks stayed red on its build through $MAX_ATTEMPTS attempts: $RED"
           release "$ticket"
           end_run 1 "$ticket"
         fi
         set_field "$ticket" attempts "$attempts"
       fi
-      say "the checks fail on $(basename "$ticket")'s build - handing it back to its session"
+      say "the checks fail on $(basename "$ticket")'s build - handing it back to its session: $RED"
       set_field "$ticket" status doing
       printf '%s %s\n' "$id" "$(git rev-parse HEAD)" > "$(claim_record "$ticket")"
       resume_with="$(red_checks)"

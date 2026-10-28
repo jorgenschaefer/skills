@@ -294,8 +294,8 @@ workspace
 STUB_VERIFY='echo x >> .runs'
 plan build build review
 run > /dev/null
-if [ "$(wc -l < "$WORK/.runs")" = 3 ]; then ok "the checks run once at the start and once after every build"
-else bad "the checks run once at the start and once after every build" "$(wc -l < "$WORK/.runs") $(out)"; fi
+if [ "$(wc -l < "$WORK/.runs")" = 4 ]; then ok "the checks run once at the start, once after every build and once after the final review"
+else bad "the checks run once at the start, once after every build and once after the final review" "$(wc -l < "$WORK/.runs") $(out)"; fi
 
 workspace
 STUB_VERIFY='if [ -f .red ]; then echo REDMARK; exit 1; fi'
@@ -332,6 +332,25 @@ if [ "$rc" != 0 ] && [ "$(field 1-one status)" = halted ] && grep -q 'exhausted'
    && grep -q 'checks' <(sed -n '/^## Halt/,$p' "$WORK/changes/x/tickets/1-one.md") && [ "$(wc -l < "$STUB_CALLS")" = 3 ]; then
   ok "checks still red once the budget is spent halt the ticket as exhausted, saying so"
 else bad "checks still red once the budget is spent halt the ticket as exhausted, saying so" "rc=$rc $(tkt 1-one) $(calls) $(out)"; fi
+
+# The slow check is run on every build's commit as the fast one is, and the
+# session it goes back to is told which of the two failed.
+workspace
+# shellcheck disable=SC2016 # the backticks are Markdown's, written literally
+printf '# x\n\nFast check: `true`\nSlow check: `if [ -f .red ]; then echo SLOWMARK; exit 1; fi`\n' > "$WORK/CLAUDE.md"; commit
+plan build-red fix-red build review
+rc="$(run)"
+first="$(awk 'NR == 1 && $1 == "start" { print $2 }' "$STUB_SESSIONS")"
+log="$(grep -o '[^ ]*slow-check-[^ ]*\.log' <(sed -n 2p "$STUB_CALLS") | head -1)"
+# shellcheck disable=SC2016 # the backticks are Markdown's, matched literally
+if [ "$rc" = 0 ] && [ "$(sed -n 2p "$STUB_SESSIONS")" = "resume $first" ] && [ "$(field 1-one attempts)" = 1 ] \
+   && grep -qF 'the slow check, `if [ -f .red ]; then echo SLOWMARK; exit 1; fi`, is red' <(sed -n 2p "$STUB_CALLS") && grep -q 'SLOWMARK' <(sed -n 2p "$STUB_CALLS") \
+   && [ -n "$log" ] && grep -q SLOWMARK "$log"; then
+  ok "a red slow check goes back to the build's session, told it is the slow check and where its output is"
+else bad "a red slow check goes back to the build's session, told it is the slow check and where its output is" "rc=$rc log=$log $(cat "$STUB_SESSIONS") $(calls) $(out)"; fi
+if ! grep -qF 'the fast check, `' <(sed -n 2p "$STUB_CALLS") && grep -q 'may run it too' <(sed -n 2p "$STUB_CALLS"); then
+  ok "a session handed a red slow check alone is told that one, and that it may run it to confirm its fix"
+else bad "a session handed a red slow check alone is told that one, and that it may run it to confirm its fix" "$(sed -n 2p "$STUB_CALLS")"; fi
 
 # Killed after the build committed and before the checks ran, a start again
 # checks the commit rather than believing it.

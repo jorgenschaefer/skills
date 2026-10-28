@@ -101,13 +101,17 @@ claims each ticket, builds it, and either finishes it or sends it back. Started 
 main branch, it makes a branch named after the change's directory and runs there, and
 refuses where that branch already exists. It refuses to start on a dirty tree - the
 ticket files aside, which are its own bookkeeping - and before the first build it runs
-the project's checks itself - a run that starts red does not start, and every build is
-told the checks were green. The command is the `Check:` line in the project's
-`CLAUDE.md`, read again before every run of the checks, so a ticket that declares one is
-held to it from its own commit on; only where there is none does a session name it, once
-per run. It runs them again on every build's commit, rather than believing the session's
-account of them: a red one goes back to the session that made it, the first time without
-spending an attempt. It checks before every pass that the tickets still quote
+the project's fast check and slow check itself - a run that starts red does not start,
+says which check is red, and every build is told the checks were green. The commands are
+the `Fast check:` and `Slow check:` lines in the project's `CLAUDE.md` - a `Check:` line
+with no `Fast check:` line is the fast check - read again before every run of the checks,
+so a ticket that declares one is held to it from its own commit on; only where no line
+names a fast check does a session name it, once per run. A `CLAUDE.md` with both `Check:`
+and `Fast check:` is refused, and on a build's commit it counts as a red check. It runs
+both checks again on every build's commit, rather than believing the session's account of
+them, so a session runs only the fast check: a red one goes back to the session that made
+it, told which check failed and where its output is, the first time without spending an
+attempt. It checks before every pass that the tickets still quote
 `CRITERIA.md`'s acceptance criteria and technical decisions word for word, that
 every ticket quotes every technical decision, that each ticket's `closes:` and
 `advances:` name exactly the criteria it quotes, and that every criterion is closed by
@@ -137,8 +141,12 @@ it left standing to `REVIEW.md`. It is handed what the builds left standing, tho
 not, and settles the blockers and should-fix a build left unfixed: fixed, or left for the
 person. `REVIEW.md` opens with `## For you`: what is still open once the review is done, what
 needs a decision first, then most important first. It goes through the same usage-limit handling as the builds,
-and a review that ends without committing `REVIEW.md` fails the run. A re-slice deletes
-`REVIEW.md`, so the rebuilt change is reviewed again.
+and a review that ends without committing `REVIEW.md` fails the run. Once it is committed,
+the runner runs both checks once more, and a red one goes back to the review session on a
+ticket's attempt budget. Still red, the run halts and names the red check and its output, for
+the developer to settle; a run started again over a committed review runs both checks and halts
+again while either is red, so a run never points on to acceptance with a red check. A re-slice
+deletes `REVIEW.md`, so the rebuilt change is reviewed again.
 
 **It records what each ticket cost**, in context tokens read - main session and subagents
 apart - since a long session re-reads its growing context on every turn. The counts are kept

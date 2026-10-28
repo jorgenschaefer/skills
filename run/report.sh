@@ -87,6 +87,10 @@ left_standing() {  # ticket -> its ## Left standing, blank lines dropped
 # Over one ticket there is nothing between. REVIEW.md committed is how the
 # review is known to have finished, so a run started again once it has does not
 # review again - a re-slice deletes it, because it reviewed what is changing.
+# It runs the checks again, though: whatever stopped the last run may have
+# stopped it before they were green on the review's commits, and nothing points
+# on to acceptance with a red check. With no review session left to hand them
+# to, a red one is the developer's to settle.
 #
 # A review that ends its turn while its critique still runs is ended by `-p`,
 # critique killed - one did, and its run stopped with nothing reviewed. It is
@@ -95,8 +99,12 @@ left_standing() {  # ticket -> its ## Left standing, blank lines dropped
 final_review() {
   local id rc
   [ "${#TICKET_FILES[@]}" -gt 1 ] || return 0
-  git cat-file -e "HEAD:./$REVIEW" 2>/dev/null && return 0
-  [ -n "$VERIFY" ] || verify
+  if git cat-file -e "HEAD:./$REVIEW" 2>/dev/null; then
+    run_checks || end_run 1 "the final review is committed and the checks are red on it: $RED - fix them by hand, then run again"
+    say "the checks pass"
+    return 0
+  fi
+  [ -n "$FAST_CHECK" ] || verify
   id="$(new_session_id)"
   claude_through_limits review "$(review_brief)" --session-id "$id"; rc=$?
   if [ "$rc" = 0 ] && ! git cat-file -e "HEAD:./$REVIEW" 2>/dev/null; then
@@ -106,6 +114,29 @@ final_review() {
   [ "$rc" = "$EX_LIMIT" ] && end_run 1 "a usage limit outlasted every wait in the final review - run again once it has lifted"
   git cat-file -e "HEAD:./$REVIEW" 2>/dev/null \
     || end_run 1 "the final review did not finish: it committed no $REVIEW - see $LOG"
+  review_checks "$id"
+}
+
+# The review fixes what it finds and commits, and its session's account of the
+# checks is an account, as a build's is. A red one goes back to it, on the
+# budget a ticket's red checks spend: the first free, each after it an attempt.
+# The review has no ticket to write a halt into, so the run's last lines name
+# the red check. What it leaves uncommitted is put aside first, as a build's
+# is: a fix it never committed turned the checks green on a red HEAD.
+review_checks() {  # the review's session id
+  local attempts=1 reds=0
+  until put_aside "$REVIEW" "$attempts"; run_checks; do
+    reds=$((reds + 1))
+    if [ "$reds" -gt 1 ]; then
+      attempts=$((attempts + 1))
+      [ "$attempts" -le "$MAX_ATTEMPTS" ] \
+        || end_run 1 "the checks stayed red on the final review's commits through $MAX_ATTEMPTS attempts: $RED - fix them by hand, then run again; \`git stash list\` holds what each attempt left uncommitted"
+    fi
+    say "the checks fail on the final review's commit - handing it back to its session, attempt $attempts of $MAX_ATTEMPTS: $RED"
+    claude_through_limits review "$(red_review_checks)" --resume "$1"
+    [ $? = "$EX_LIMIT" ] && end_run 1 "a usage limit outlasted every wait while the final review fixed red checks: $RED - fix them by hand, then run again"
+  done
+  say "the checks pass"
 }
 
 # The change starts where its tickets were first added: every build since is
