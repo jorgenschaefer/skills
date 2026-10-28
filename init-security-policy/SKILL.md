@@ -14,7 +14,7 @@ This skill's `SECURITY_POLICY_FORMAT.md` settles the shape of the file and what 
 
 **The project already has `SECURITY_POLICY.md`.** Change nothing. Say that the policy changes through the pipeline from now on: `/find-criteria` shows the rules a change touches, and the build writes the approved ones in.
 
-**`CLAUDE.md` has no `Check:` line.** The policy check needs a command every build runs. Say so, name `/restructure` as what creates one, and stop with nothing written.
+**`CLAUDE.md` names no fast check** - no `Fast check:` line, and no `Check:` line. The policy check needs a command every build runs. Say so, name `/restructure` as what creates one, and stop with nothing written.
 
 ## Find every way in, and every kind of who
 
@@ -22,7 +22,7 @@ Read the code for every way in: a page, an API route, a command, a message from 
 
 ## Write the policy check
 
-Write it in the project's own language and test tooling, as `SECURITY_POLICY_FORMAT.md` describes it, and add it to the command on the `Check:` line. Three things decide whether it can be trusted:
+Write it in the project's own language and test tooling, as `SECURITY_POLICY_FORMAT.md` describes it, and add it to the fast check - the command on the `Fast check:` line, or on a `Check:` line where there is none. Only where it can't be made fast does it go into the slow check, on the `Slow check:` line. Where there is none, declare one in `CLAUDE.md` and make CI run it. Three things decide whether it can be trusted:
 
 - **It finds the ways in from the code** - the router's table, the command registry, the queue subscriptions, the scheduler's jobs - or from a structural check where the framework keeps no list. A way in that a list kept by hand forgot is exactly what it must catch.
 - **Its markers are unmistakable and live only in its own test data.** Plant one in every field of every record, related records included, so a route that exposes data through a join shows the marker. Nothing outside the tests may hold a marker: the check fails where a migration, seed or source file does.
@@ -42,7 +42,7 @@ Then make the check allow exactly what the rules say, each thing it allows namin
 
 ## Ask the developer to look
 
-Run the project's checks whole. Then show the developer the path to `SECURITY_POLICY.md` and ask them to read it. Point out at most five rules most worth a closer look, each with a line saying why - possibly sensitive data reaching many people, nobody logged in or an external system, and actions an external system's answer causes. Free text that can hold anything, such as a name or a note, counts as possibly sensitive.
+Run both checks. Then show the developer the path to `SECURITY_POLICY.md` and ask them to read it. Where the policy check went into the slow check, say so, and why it couldn't be made fast: it then does not run while a build works, nor in the pre-commit hook. Point out at most five rules most worth a closer look, each with a line saying why - possibly sensitive data reaching many people, nobody logged in or an external system, and actions an external system's answer causes. Free text that can hold anything, such as a name or a note, counts as possibly sensitive.
 
 **Where the developer disagrees with a rule**, the rule still says what the system does today. Write the disagreement as a backlog item yourself, not through `/backlog`, which commits on its own: a file in `changes/backlog/` whose front matter holds `effort` and `utility`, each XS to XL as the developer confirms, under a `#` title, with the disagreement as its body. Mark the rule disputed with that file's path. The item goes into this skill's commit. Changing what the system allows is a change of its own, through the pipeline.
 
@@ -50,6 +50,6 @@ Run the project's checks whole. Then show the developer the path to `SECURITY_PO
 
 ## Commit
 
-Commit only once the developer has approved the policy and the project's checks pass, the policy check among them. Commit everything this skill wrote, in one commit: `SECURITY_POLICY.md`, the policy check and what it needs, the change that makes the `Check:` command run it, the rules' tests, and the backlog items for disputed rules. Stage only those files.
+Commit only once the developer has approved the policy and both checks pass, the policy check among them. Commit everything this skill wrote, in one commit: `SECURITY_POLICY.md`, the policy check and what it needs, the change that makes the fast check or the slow check run it, the rules' tests, and the backlog items for disputed rules. Stage only those files.
 
 Then say what changes from now on: the policy check runs in every build, `/find-criteria` shows a change the rules it touches, and the build writes the approved ones into the policy.

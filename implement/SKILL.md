@@ -21,11 +21,11 @@ Read this skill's `CODING_STANDARDS.md` whole and apply all of it - no part of i
 
 **Find the project's way of running the product** - a `run` skill, `CLAUDE.md`, the README - where the change reaches its user through an app, a command or an API. The review starts it that way. Where there is none, build one, write it up as the project's run skill, `.claude/skills/run/SKILL.md`, with the scripts it drives beside it, and commit it with the change.
 
-**Find the project's check command** - the `Check:` line in `CLAUDE.md`. Where there is none, run what exists and say so; creating it is a ticket of its own.
+**Find the project's checks** - the `Fast check:` and `Slow check:` lines in `CLAUDE.md`. A `Check:` line with no `Fast check:` line beside it is the fast check. Where no line names a fast check, run what exists and say so; creating it is a ticket of its own.
 
 ## Build it
 
-Build it in the order the standard says the work happens. While you build, run the tests the change touches. The project's checks run whole before each review and before the commit, and not again where nothing changed since. Report the real result; if you cannot run them, say so rather than assuming.
+Build it in the order the standard says the work happens. While you build, run the tests the change touches. The fast check runs whole before each review and before the commit, and not again where nothing changed since. The slow check runs once, after the last review and before the commit - unless your caller says it runs the slow check on your commit itself, and then you run only the fast check. A red slow check is fixed like any red check, and nothing is committed while it is red. Where you cannot make it green, stop, and name the red check in your report. Report the real result; if you cannot run them, say so rather than assuming.
 
 **Keep your own context for the build.** Side work whose result is a conclusion - surveying code you do not know, chasing a failure you cannot yet explain - goes to a subagent with the question, and only the answer comes back. The red-green cycles stay here.
 
@@ -33,7 +33,7 @@ Build it in the order the standard says the work happens. While you build, run t
 
 ## Review it in a session that did not write it
 
-**Spawn `critique` as a subagent with a fresh context.** Hand it the diff, the result of the checks, and what was asked for - the criteria and what is out of scope, as the request states them, and the problem they serve where it states one. Do not hand it the reasoning that produced the code: not the plan, and not how you tested it. A reviewer that has accepted every step of the reasoning reads its own intentions into the code; the subagent starts cold, which is the only reason its findings are worth anything.
+**Spawn `critique` as a subagent with a fresh context.** Hand it the diff, the result of the checks, saying which checks it is the result of, and what was asked for - the criteria and what is out of scope, as the request states them, and the problem they serve where it states one. Do not hand it the reasoning that produced the code: not the plan, and not how you tested it. A reviewer that has accepted every step of the reasoning reads its own intentions into the code; the subagent starts cold, which is the only reason its findings are worth anything.
 
 **The review is where the running product is checked.** Do not drive it yourself before it: in one run the build and its reviewer drove the app at the same time, fought over the dev server, and paid for the same check twice.
 
@@ -55,13 +55,14 @@ Where a precondition you needed is not there, say what is missing and stop. It w
 
 ## Finish
 
-Commit when the behaviour is green and the checks pass. `git-commit-message` is the shape. Stage only the files this change touched; never `git add -A`.
+Commit when the behaviour is green and both checks pass - the fast check alone where your caller runs the slow check on your commit. `git-commit-message` is the shape. Stage only the files this change touched; never `git add -A`.
 
 **End your report with what you leave standing**, whoever called you, leaving out what is empty:
 
 - review findings not fixed, with the severity the reviewer gave each, and why;
 - fixes made after the last review, each with the finding it answers, since no reviewer saw them;
 - checks not run;
+- each test moved from the fast check to the slow check: which test, why it couldn't be made fast, and what the fast check no longer catches - and, where the change set out to make the fast check faster, how long it took before and after;
 - each criterion no automated test proves, and how it was checked instead;
 - each departure from a technical decision or an AC group: what it says, what you built instead, and why;
 - each name for a domain concept not taken from the glossary, for the developer to confirm;

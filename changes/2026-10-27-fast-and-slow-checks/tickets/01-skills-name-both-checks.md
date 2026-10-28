@@ -3,8 +3,8 @@ criteria:  CRITERIA.md
 closes:    AC-6, AC-7, AC-8, AC-9, AC-11, AC-12
 advances:  AC-1, AC-2, AC-10
 after:
-status:    ready
-attempts:  0
+status:    done
+attempts:  1
 ---
 
 ## Build
@@ -58,3 +58,12 @@ The groups What production must show, Security policy and Information model each
 - This repository's own `Check:` line and `./test.sh`: no AC asks this change to rewrite or split them.
 
 ## Left standing
+- **No automated test proves any criterion this ticket closes or advances.** They are all wording in skills, and `./test.sh` checks only that the shared files' copies are identical. Two fresh `critique` reviews checked each AC by reading the text. No task was driven in a running product.
+- **Fixes made after the last review**, which no reviewer saw. Both answer findings from round 2:
+  - `init-security-policy/SKILL.md`: where the skill declares a new `Slow check:` line, it now also makes CI run it (should-fix: otherwise CI might never run a policy check that went into the slow check).
+  - `criteria-to-tickets/SKILL.md`: the "No fast check" bullet is split into short sentences, with the same meaning (nit: it was hard to read on the first pass).
+- **Review nit not fixed:** `criteria-to-tickets/SKILL.md` and `VERIFY.md` each have two preparatory tickets that come "first". Where a `Check:` line is malformed and also slow, both apply, and nothing says which comes first. This is rare, and fixing it means a rule for ordering preparatory tickets, which no AC asks for.
+- **Decided here, not settled by the criteria:**
+  - `critique` given a `CLAUDE.md` with both `Check:` and `Fast check:` runs the `Fast check:` command.
+  - `/criteria-to-tickets` shows the fast check's timed duration at every approval, not only when it is over 30 seconds. It also hands that duration to its verifier, so the verifier can check the preparatory ticket.
+- **Before ticket 02 lands,** the runner reads only `Check:`. A project that `restructure` or a preparatory ticket moves to `Fast check:` therefore falls back to a session naming the command once per run, until the runner reads the new lines.

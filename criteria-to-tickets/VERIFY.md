@@ -1,13 +1,13 @@
 # Verifying the tickets
 
-You are reading the tickets written for one change against the `CRITERIA.md` they cut up, and reporting what is wrong with them. You did not write them, and you were given the ticket files and `CRITERIA.md` and nothing else. You may read the codebase: that is where a ticket's claims about what exists are checked.
+You are reading the tickets written for one change against the `CRITERIA.md` they cut up, and reporting what is wrong with them. You did not write them, and you were given the ticket files, `CRITERIA.md` and how long the project's fast check took, and nothing else. You may read the codebase: that is where a ticket's claims about what exists are checked.
 
 **You do not reopen the criteria.** They were agreed with the user before the cutting started. If you think one is wrong, say so plainly as a standing disagreement and stop; it is not work to hand back to the cut.
 
 ## Coverage, both ways
 
-- **Every ticket closes or advances at least one AC**, except a preparatory one: it writes the check command, or moves or unifies code a search would miss, before the tickets that need it. Any other ticket tracing to none is work nobody asked for. A preparatory ticket that changes behaviour, or that no later ticket needs, is a finding.
-- **A project whose `CLAUDE.md` has no `Check:` line in the form `CODING_STANDARDS.md` gives gets the check command first**, and every other ticket comes after that ticket.
+- **Every ticket closes or advances at least one AC**, except a preparatory one: it writes the fast check, makes the fast check fast, or moves or unifies code a search would miss, before the tickets that need it. Any other ticket tracing to none is work nobody asked for. A preparatory ticket that changes behaviour, or that no later ticket needs, is a finding.
+- **A project whose `CLAUDE.md` names no fast check in the form `CODING_STANDARDS.md` gives gets one first**, and every other ticket comes after that ticket. Where the fast check took over 30 seconds, the ticket that makes it fast comes first in the same way.
 - **Every AC in `CRITERIA.md` is closed by exactly one ticket, which comes after every ticket advancing it.** One closed nowhere is the AC this change was for, going unfinished; one closed first is a test written before what it tests.
 - **A ticket's own part of an AC it advances is narrower than that AC, never beside it.** The `Done when` line an advancing ticket writes is the one place a slicer writes a criterion in its own words, and the easiest place for a new requirement to get in. Hold it against the AC it serves: behaviour the AC does not ask for is a finding.
 - **The parts add up.** Walk the advancing tickets and the closing one of each AC together: is anything the AC asks for built by none of them?

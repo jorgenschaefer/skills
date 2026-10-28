@@ -40,10 +40,11 @@ This skill's `TICKET_FORMAT.md` settles the shape of a ticket. This file is what
 
 **Preparatory tickets come first.** Every ticket that needs one comes `after:` it.
 
-- **No check command:** where `CLAUDE.md` has no `Check:` line in the form `CODING_STANDARDS.md` gives, the first ticket writes the single check command - including a structural check with no rules in it yet - and declares it there in that form. Every other ticket comes after it.
+- **No fast check:** a `Fast check:` line names the fast check, and so does a `Check:` line where there is no `Fast check:` line. Where `CLAUDE.md` has neither in the form `CODING_STANDARDS.md` gives, the first ticket writes the fast check, including a structural check with no rules in it yet, and declares it on a `Fast check:` line. Every other ticket comes after it.
+- **A fast check over 30 seconds:** time the fast check while you slice. Where it takes longer, the first ticket makes the slowest tests fast where it can and moves the rest to the slow check, each move reported as `/implement` reports a moved test, and reports how long the fast check took before and after. Every other ticket comes after it.
 - **Code a search would miss:** where a slice adds to a concept that lives under a name or in a place a search for it would not find, or that the code does two ways, a ticket moves, renames or unifies it first.
 
-**A slice that introduces a structure adds its check.** A new feature directory, a boundary between layers, where the clock is read: the ticket that introduces it also adds the check that holds it, to the check command.
+**A slice that introduces a structure adds its check.** A new feature directory, a boundary between layers, where the clock is read: the ticket that introduces it also adds the check that holds it, to the fast check.
 
 Where a slice introduces a concept the codebase has no name for, or moves a boundary between the ones it does, this skill's `CODING_STANDARDS.md` binds the names the ticket will write.
 
@@ -60,12 +61,12 @@ Read the code each slice will touch before you cut: what exists already, what it
 ## Write, check, approve
 
 1. **Write the tickets** to `tickets/NN-<slug>.md` in the change's directory.
-2. **Check them.** Spawn a subagent with a fresh context and give it `VERIFY.md` from this directory, the paths to the ticket files, and the path to `CRITERIA.md`. Nothing else - a reviewer that has your reasoning will read your intentions into the words.
+2. **Check them.** Spawn a subagent with a fresh context and give it `VERIFY.md` from this directory, the paths to the ticket files, the path to `CRITERIA.md`, and how long the fast check took when you timed it. Nothing else - a reviewer that has your reasoning will read your intentions into the words.
 3. **Fix what it finds, then ask for approval.** Fix a finding with the least text that settles it: name the ticket that owns a thing, not how it is built. Every sentence added to `## Context` is one the next check reads - in one run, an import rule written into a ticket to back up where a shared rule lived was the next check's main finding.
 
    A ticket added, or whose `closes`, `advances`, `after:` or `## Context` changed to fix a silent finding, goes through the check again first: hand the subagent the whole directory again, naming those tickets, so it holds the rest against them. A check that saw tickets 01 to 20 said nothing about the 21 a rework added after it, and that one built a second copy of something another ticket built. A fix to a loud finding alone does not go back: the stop it fixes was already the check, and another round costs more than that stop would have. Name what changed when you hand it back, not what to look for - a reviewer told where to look finds something there.
 
-   Show the user one list: the product questions, and the steps only a person can do - each before the run with its command, or at deployment. A no means editing the tickets and asking again.
+   Show the user one list: how long the fast check took when you timed it, the product questions, and the steps only a person can do - each before the run with its command, or at deployment. A no means editing the tickets and asking again.
 
 ## Copy, never summarise
 

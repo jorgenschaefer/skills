@@ -11,7 +11,10 @@ Upgrade this project's dependencies without breaking it.
 Before making any commits, create a dedicated branch (e.g. `upgrade-dependencies`) if you are on the
 default branch – never commit these upgrades straight to `main`.
 
-Find the project's check commands that run type-checks, lint and tests.
+Find the project's checks in `CLAUDE.md`: the fast check on the `Fast check:` line - or on a `Check:`
+line where there is none - and the slow check on the `Slow check:` line. Where `CLAUDE.md` names
+none, find the commands that run type-checks, lint and tests. Wherever this skill says to run the
+checks, run both.
 
 ## 1. Baseline
 
