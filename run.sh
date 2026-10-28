@@ -109,10 +109,14 @@ check_tree
 
 # A run belongs on a branch of its own. Started on main, it makes that branch
 # here, after the last refusal - so a refused run leaves none behind - and
-# before preflight, whose halts are commits.
+# before preflight, whose halts are commits. The checks themselves run later,
+# on the branch, so a run whose checks are red at the start leaves its branch.
 branch="$(git rev-parse --abbrev-ref HEAD)"
 case "$branch" in
   main|master)
+    # Off main the run may be one started again, whose build left both lines:
+    # that is a red check, handed back to its session, not a refusal.
+    ! two_fast_checks || die "the run does not start: $RED"
     RUN_BRANCH="$(basename "$(realpath "$(dirname "$TICKETS")")")"
     git show-ref -q --verify "refs/heads/$RUN_BRANCH" \
       && die "refusing to run on $branch: the run's branch $RUN_BRANCH is already there - switch to it to carry its run on, or remove it, then start again"

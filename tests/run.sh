@@ -108,6 +108,16 @@ if [ "$rc" = 2 ] && grep -q 'dirty tree' "$WORK/.out" && untouched; then
 else bad "on main, a dirty tree is refused before the branch is made" "rc=$rc on=$(on) $(out)"; fi
 
 from_main
+# shellcheck disable=SC2016 # the backticks are Markdown's, written literally
+printf '# x\n\nCheck: `true`\nFast check: `true`\n' > "$WORK/CLAUDE.md"; commit; started="$(tip main)"
+plan build
+rc="$(run)"
+# shellcheck disable=SC2016 # the backticks are Markdown's, matched literally
+if [ "$rc" = 2 ] && grep -q 'remove `Check:`' "$WORK/.out" && untouched; then
+  ok "on main, a CLAUDE.md with both Check: and Fast check: is refused before the branch is made"
+else bad "on main, a CLAUDE.md with both Check: and Fast check: is refused before the branch is made" "rc=$rc on=$(on) $(out)"; fi
+
+from_main
 git -C "$WORK" mv changes/x changes/x..y; git -C "$WORK" commit -qm rename; started="$(tip main)"
 plan build
 rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" bash "$RUNNER" changes/x..y/tickets >"$WORK/.out" 2>&1 ); echo $?)"
