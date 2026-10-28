@@ -46,6 +46,12 @@ special cases instead of one approach. In the end the developer could no
 longer say what the rule was meant to do, and nothing written down said it
 either.
 
+The manifesto says, in the first line under "For every goal": "The
+developer answers for the software as a whole, not for one change at a
+time." This item carries one part of that: where a later change quietly
+alters behaviour the developer approved earlier, that reaches them without
+their having to notice or ask.
+
 `acceptance-evidence-from-a-script` builds on this: its per-criterion
 evidence needs tests that say which approved criterion they prove.
 `refactor-phase` also builds on it: the approved criteria are the list of

@@ -77,7 +77,9 @@ Evidence:
 A journey is one more approval on top of what `find-criteria` puts to the
 human since 2026-10-27: the four AC groups and three technical decisions.
 
-A journey's end-to-end check is the most direct evidence that the software
-as a whole works. The manifesto asks for that in the first line under "For
-every goal": "The developer answers for the software as a whole, not for one
-change at a time."
+The manifesto says, in the first line under "For every goal": "The
+developer answers for the software as a whole, not for one change at a
+time." Journeys carry the part of that which no recent change touched. A
+journey's end-to-end check is the most direct evidence that the software as
+a whole works, and a journey that breaks reaches the developer without their
+having to notice or ask.

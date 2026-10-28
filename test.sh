@@ -20,13 +20,13 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 # Started first and run side by side, each into a file of its own, and printed
 # in order at the end. No case is slow, but each is a run of the real runner and
 # there are well over a hundred, so one after another they take minutes. The
-# suites share nothing - every case has a repository of its own - so the
-# longest one decides how long this takes. A suite that grows past the others
-# is split along its sections.
+# suites share nothing - every case has a repository of its own - so given a
+# core each, the longest one decides how long this takes. On fewer cores it
+# takes longer. A suite that grows past the others is split along its sections.
 logs="$(mktemp -d)"
 trap 'rm -rf "$logs"' EXIT
-# The suites of run.sh's library, named after its files, beside the harness
-# they all stand on.
+# The suites of run.sh's library, each named after the file it tests - with a
+# suffix where one file has several - beside the harness they all stand on.
 library=()
 for suite in "$HERE"/tests/run/*.sh; do
   [ "$(basename "$suite")" != harness.sh ] || continue
