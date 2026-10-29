@@ -115,7 +115,28 @@ that bound; the rules move. `init-security-policy` and the
 `SECURITY_POLICY_FORMAT.md` copies in `find-criteria`, `implement` and
 `accept-criteria` change with it.
 
-Open: the worst-case file's name and format; whether `MANIFESTO.md`'s
+**`WORST_CASES.md`**, named and tried on `drk-barmbek`, 2026-10-29. The
+developer named the worst cases: Datenverlust, a leak of the Angebote,
+wrong information in Dienste (Verträge rest on it), a breach or access to
+Slack, and, once asked, a leak of the PINs. Mapped onto the code and the 38
+policy rules, the policy covered who reaches the Angebote and who changes
+a Dienst. Nearly every gap was elsewhere:
+
+| Worst case | What bounds it | Gaps |
+|---|---|---|
+| Datenverlust | Daily `pg_dumpall`, kept 7 days | Dumps on the same host; no restore shown to work; nobody hears when the backup fails; deleting a Dienst takes its Angebot with it, for good |
+| Leak der Angebote | Only the Dienstverteilung sees one; Slack never gets one (policy check) | Unencrypted in the dumps on the host; nobody hears of a bulk download |
+| Falsche Informationen in Diensten | Only the Dienstverteilung changes Dienste (policy check) | No history: what a Dienst said when the Vertrag was made cannot be shown |
+| Einbruch, Zugang zu Slack | Secrets encrypted in the repository; Sitzungen end when someone leaves Slack | The bots' Slack scopes unchecked; nobody hears of failed sign-ins on the shared Übergangskonto password; rotating the tokens written down nowhere |
+
+The developer: the questions work, in the table too, and it would be good
+to talk about a change like this during design. So the format is each worst
+case with the four questions - what, how much, how long, undo - each
+answered with its bound and check, *Judged:*, or *Gap:*. `find-criteria`
+asks the same questions of a change that touches a worst case.
+
+Open: whether the members' personal data is a worst case (R-8, R-9, R-26,
+R-27, R-36 bound it, and nothing named it); whether `MANIFESTO.md`'s
 "written down where the next agent finds it" (0512059) still says the
 right thing.
 
