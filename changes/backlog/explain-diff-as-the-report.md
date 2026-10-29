@@ -40,7 +40,7 @@ Where it departs from the manifesto:
   page explains only what the diff changed.
 
 Related: the report `/accept-criteria` writes, in the manifesto's sections
-(`accept-criteria/SKILL.md`, "Report"), and `acceptance-evidence-from-a-script`.
+(`accept-criteria/SKILL.md`, "Report"), and `approved-criteria-outlive-the-change`.
 
-Depends on `acceptance-evidence-from-a-script`, which settles the evidence the
+Depends on `approved-criteria-outlive-the-change`, which settles the evidence the
 report shows.
