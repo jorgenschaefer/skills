@@ -158,6 +158,35 @@ it acts on and names the others by their terms. `SECURITY_POLICY.md`, the
 journeys and the glossary stay apart. Whether a large project splits it into
 a file per object waits for `drk-barmbek`.
 
+**The format of `DOMAIN.md`** follows `SECURITY_POLICY_FORMAT.md`, settled
+2026-10-29:
+
+- Written in the domain language and the glossary's terms; no tables,
+  columns or files, since the glossary maps the terms to the code.
+- Every rule and every action rule has an id `D-n`, one series for the whole
+  file, numbered in the order added and never reused: a rule moved to
+  another object keeps its id. Fields and relations have none; the diagram,
+  the glossary and the schema hold them. A glossary term is its own id;
+  journeys are `J-n`.
+- Every rule has a test that fails when the code breaks it and names its
+  id; where a schema constraint holds it, the test tries to break the
+  constraint. A check that executes: every `D-n` has a test naming it, and
+  every id a test names exists. A rule no test can show ends with *Judged:*
+  and why.
+- Ids in test names are wanted here. `haushaltsbuch`'s `CLAUDE.md` bans
+  `US-NN` in tests because the story dies with the change; a `D-n` lasts.
+- It changes only through approved ACs - "adds:", "changes D-n to:",
+  "removes D-n:" - and through an init skill for an existing project, which
+  drafts from the schema and the code for the developer to strike. Where
+  the code does what the developer disagrees with, the rule says what the
+  code does and ends with *Disputed:* and the backlog item that would change
+  it.
+
+**The mark of a lasting approval** is an AC that writes into a lasting file:
+`DOMAIN.md`, `SECURITY_POLICY.md`, the journeys, or a glossary term. There
+is no separate flag. `CRITERIA_FORMAT.md`'s *Concepts* decision becomes the
+change's Domain ACs.
+
 Open:
 
 - A check that every object and field in the model has a glossary entry:
