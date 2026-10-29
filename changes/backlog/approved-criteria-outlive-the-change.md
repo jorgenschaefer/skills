@@ -62,8 +62,8 @@ user journeys below, the approved criteria - is open, and `PIPELINE.md`
 names only the security policy until this item settles the rest.
 
 The evidence at acceptance below builds on this: it needs tests that say
-which approved criterion they prove. `refactor-phase` also builds on it: the approved criteria are the list of
-behaviours it ranks.
+which approved criterion they prove. `refactor-phase` also builds on it:
+the approved criteria are the list of behaviours it ranks.
 
 ## Critical user journeys
 

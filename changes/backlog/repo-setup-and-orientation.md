@@ -40,6 +40,9 @@ The user also wants the `ubiquitous-language` skill renamed to
   glossary. A repo with no code yet is `pipeline-in-an-empty-repo`.
 
 Depends on `approved-criteria-outlive-the-change`, whose critical user
-journeys `repo-overview`'s "Main workflows" would draft, and on
-`pipeline-in-an-empty-repo`. `PIPELINE.md`'s Setup says
-what the pipeline expects of a project.
+journeys `repo-overview`'s "Main workflows" would draft. `PIPELINE.md`'s
+Setup says what the pipeline expects of a project.
+
+`pipeline-in-an-empty-repo` creates the same files - the check lines, the
+glossary, the security policy - in a repo with no code. Whichever of the two
+is built first decides how they are created, and the other follows it.
