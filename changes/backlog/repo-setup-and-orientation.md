@@ -12,6 +12,9 @@ uses, possibly two skills:
 - **"I want to understand the repo"**: what it is about, how things
   interact, the data model, and so on.
 
+The user also wants the `ubiquitous-language` skill renamed to
+`init-ubiquitous-language`.
+
 ## What is there today
 
 - `repo-overview` writes `ARCHITECTURE.md` for "a developer who is new to
