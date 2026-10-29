@@ -95,10 +95,29 @@ The glossary and the domain model serve something else: the discussion
 with the user, and keeping it plain what the software models. They stay,
 without lists of rules: terms, objects, fields, relations, what is kept.
 
-Open: which files remain - fewer is the aim, less to keep in mind; whether
-the security policy and `OBSERVABILITY.md` fold into the worst-case list;
-where `CRITICAL_JOURNEYS.md` fits; and whether `MANIFESTO.md`'s "written down
-where the next agent finds it" (0512059) still says the right thing.
+**Two files**, settled with the developer:
+
+- the glossary with the domain model in it - an ER diagram at the top,
+  and fields and "kept until" on the model's terms - for transparency;
+- the worst cases with their bounds and checks, for trust.
+
+Everything else folds in. `SECURITY_POLICY.md` goes: who can reach what is
+one bound on "data reaches the wrong person". `OBSERVABILITY.md` and
+`CRITICAL_JOURNEYS.md` are not written: who hears and how fast is each
+worst case's "how long" bound, and a journey is critical because its
+failure is a worst case. "Never kept" is the strongest "what" bound.
+`DOMAIN.md` is not written; its rules are incidental unless they bound a
+worst case.
+
+The security policy is the one that exists. `drk-barmbek` has one (67
+lines, 38 rules, a policy check). The policy check stays the check for
+that bound; the rules move. `init-security-policy` and the
+`SECURITY_POLICY_FORMAT.md` copies in `find-criteria`, `implement` and
+`accept-criteria` change with it.
+
+Open: the worst-case file's name and format; whether `MANIFESTO.md`'s
+"written down where the next agent finds it" (0512059) still says the
+right thing.
 
 ## Lasting approvals (settled 2026-10-29)
 
