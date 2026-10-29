@@ -137,10 +137,10 @@ case with the four questions - what, how much, how long, undo - each
 answered with its bound and check, *Judged:*, or *Gap:*. `find-criteria`
 asks the same questions of a change that touches a worst case.
 
-Open: whether the members' personal data is a worst case (R-8, R-9, R-26,
-R-27, R-36 bound it, and nothing named it); whether `MANIFESTO.md`'s
-"written down where the next agent finds it" (0512059) still says the
-right thing.
+The members' personal data was not named. Asked, the developer called it
+bad but not the worst, until the GDPR came up: a leak has to be reported
+within 72 hours, and the cost is that duty and the standing, more than the
+data. It became the sixth worst case. Impact counts outside the app, too.
 
 ## Lasting approvals (settled 2026-10-29)
 
