@@ -120,13 +120,38 @@ a file helps an agent keep a rule before it is settled what the files are.
 | Domain actions | The same | Rules about the writes | Tests | A decision for the developer |
 | Critical user journeys | The developer only | The user's goals that matter | End-to-end tests that implement them | Discussed with the developer: the new way may fit the journey better |
 | `SECURITY_POLICY.md` | Exists | Who may see and do what | Rule tests and the policy check | Exists: ACs that add, change or remove R-n |
-| `UBIQUITOUS_LANGUAGE.md` | Exists | Terms | Nothing | Open |
+| `UBIQUITOUS_LANGUAGE.md` | Exists | Terms | `/ubiquitous-language`'s drift check, judged | A decision for the developer |
+
+**The glossary** is the project's agreed terminology. It maps the user's
+words to what the code calls them: data, but also what the UI shows, and
+everything else. Terms are lasting: a renamed or reused term silently
+changes what every rule and journey written in it says. The domain model is
+a subset of it: every object in the model has a glossary entry, but not
+every entry is in the model. The model adds the objects' fields, which
+usually have entries of their own, and the relations between objects; its
+rules are written in those terms. The database schema gives a first draft of
+both, but neither is complete from it. The `haushaltsbuch` drafts above held
+rules only, without the objects, fields and relations they rest on.
+
+The glossary's format already asks for one sentence per term, "Not how it
+is built, what a screen shows, or why it is so"
+(`UBIQUITOUS_LANGUAGE_FORMAT.md`). In `haushaltsbuch`, 34 of 100 entries
+run past 600 characters, because nothing else held rules or how a view
+works: changes wrote them there ("Glossar beschreibt Monatsansicht und
+Δ-Balken"), and `find-criteria/SKILL.md:43` adds a new term "in the shape
+its existing entries have", so long entries breed long ones. Such an entry
+splits three ways. `Kontenplan`, about 900 characters today, keeps "the
+Konten with their hierarchy across all four Kontoklassen" as its sentence.
+"At most one parent, and children inherit its Kontoklasse" goes to the
+model. "No page of its own" and how its toggles behave belong to the change
+that approved them, and are held by the code and its tests.
 
 Open:
 
-- The glossary: whether it shrinks back to terms once the model and the
-  actions have a home.
 - One file or several for the model and the actions.
+- A check that every object and field in the model has a glossary entry:
+  it executes, and it is not a proxy, since a missing entry is the gap
+  itself.
 - The format: ids, and tests that name them, as in
   `SECURITY_POLICY_FORMAT.md`.
 - What production must show still has no home.
