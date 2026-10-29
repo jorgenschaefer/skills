@@ -47,19 +47,28 @@ quote_problems() {  # pipeline manifesto
 
     function add_line() { start[lines++] = length(serves) + 1; serves = serves $0 " " }
 
-    function check_serves(   rest, offset, quote, quotes) {
-      rest = serves; offset = 0; quotes = 0
+    function check_serves(   rest, offset, quote, quotes, checked) {
+      rest = serves; offset = 0; quotes = 0; checked = 0
       while (match(rest, /"[^"]*"/)) {
         quote = squeezed(substr(rest, RSTART + 1, RLENGTH - 2))
-        if (!index(manifesto, quote))
-          printf "%s:%d: not in the manifesto: \"%s\"\n", name, line_at(offset + RSTART), quote
-        offset += RSTART + RLENGTH - 1; rest = substr(rest, RSTART + RLENGTH); quotes++
+        quotes++
+        # An empty quote would be found anywhere, so it checks nothing.
+        if (quote ~ /^ ?$/)
+          printf "%s:%d: an empty quote\n", name, line_at(offset + RSTART)
+        else {
+          checked++
+          if (!index(manifesto, quote))
+            printf "%s:%d: not in the manifesto: \"%s\"\n", name, line_at(offset + RSTART), quote
+        }
+        offset += RSTART + RLENGTH - 1; rest = substr(rest, RSTART + RLENGTH)
       }
       if (index(rest, "\""))
         printf "%s:%d: a double quote is never closed\n", name, first
       else if (!quotes && !index(serves, "no manifesto line"))
         printf "%s:%d: no quote in straight double quotes, and it does not say it serves no manifesto line\n", name, first
-      found += quotes; lines = 0; serves = ""
+      else if (index(serves, "“") || index(serves, "”"))
+        printf "%s:%d: a curly double quote, which the check does not read: use straight ones\n", name, first
+      found += checked; lines = 0; serves = ""
     }
 
     function line_at(position,   i) {
@@ -117,6 +126,10 @@ files $'x\n- **Serves:** that humans do not read the code.\n*Serves:* “do not 
 expect "a Serves line with a paraphrase or curly quotes is named with its line" \
   'PIPELINE.md:2: no quote' 'PIPELINE.md:3: no quote'
 
+files $'*Serves:* "do not read the code" and ”Nobody reads it”\n\n*Serves:* no manifesto line, but „Nobody reads it“' "Humans do not read the code."
+expect "a curly quote beside a straight one, or beside no manifesto line, is named with its line" \
+  'PIPELINE.md:1: a curly double quote' 'PIPELINE.md:3: a curly double quote'
+
 files $'*Serves:* "do not read the code"\n\n*Serves:* "do not read the code\n\n*Serves:* "the code" and "do' "Humans do not read the code."
 expect "a Serves line with a double quote that is never closed is named with its line" \
   'PIPELINE.md:3: a double quote is never closed' 'PIPELINE.md:5: a double quote is never closed'
@@ -125,6 +138,14 @@ files $'*Serves* "do not read the code"\n\nServes: "do not read the code"' "Huma
 expect "a pipeline with no Serves line in either form fails" \
   'PIPELINE.md:1: a Serves line in a form' 'PIPELINE.md:3: a Serves line in a form' \
   'PIPELINE.md: found no quote on a Serves line'
+
+files $'*Serves:* "do not read the code" and ""\n\n*Serves:* "  "' "Humans do not read the code."
+expect "an empty quote is named with its line" \
+  'PIPELINE.md:1: an empty quote' 'PIPELINE.md:3: an empty quote'
+
+files '*Serves:* ""' "Humans do not read the code."
+expect "a pipeline whose only quote is empty fails, since it checks nothing" \
+  'PIPELINE.md:1: an empty quote' 'PIPELINE.md: found no quote on a Serves line'
 
 files '*Serves:* no manifesto line.' "Humans do not read the code."
 expect "a pipeline whose Serves lines serve no manifesto line fails, since it checks nothing" \
