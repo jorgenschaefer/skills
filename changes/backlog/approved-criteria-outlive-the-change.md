@@ -62,6 +62,44 @@ all." So which approved artifacts outlive a change - beside
 user journeys below, the approved criteria - is open, and `PIPELINE.md`
 names only the security policy until this item settles the rest.
 
+## Trust is bounded impact (2026-10-29, later the same day)
+
+This reframes what follows; the sections below stay as the record of how
+we got here. Where they disagree, this section holds.
+
+The developer trusts `haushaltsbuch` without knowing why, through bugs and
+bad behaviour. Trust is not "nothing breaks": bugs happen. It is knowing
+that when something breaks, the damage is small. `haushaltsbuch` gets that
+for free: local, one user, nothing anyone else could see. That is why the
+security policy came first: a leak is the fastest way to lose trust. But a
+whitelist is not trust either: inside what a rule allows, a bug can still
+hand every member's address to the wrong person, and the policy check stays
+green.
+
+Files of approved rules do not give trust by themselves: they would hold
+too much, most of it incidental. What would: a short list of the project's
+worst cases, ranked by impact, each with what keeps it small and a check
+for each bound. Blast radius has four sides, each with its own bounds:
+
+- what can be hit: not keeping it, keeping less, keeping it apart;
+- how much: scoped to an owner, volume limits, partitions;
+- how long until someone hears: observability;
+- whether it can be undone: backups, nothing deleted for good, an audit
+  trail, and knowing what can never be taken back.
+
+The security policy, "never kept" and what production must show are bounds
+under this frame, not ends of their own. In `haushaltsbuch` the list may be
+one line, the PIN never stored.
+
+The glossary and the domain model serve something else: the discussion
+with the user, and keeping it plain what the software models. They stay,
+without lists of rules: terms, objects, fields, relations, what is kept.
+
+Open: which files remain - fewer is the aim, less to keep in mind; whether
+the security policy and `OBSERVABILITY.md` fold into the worst-case list;
+where `CRITICAL_JOURNEYS.md` fits; and whether `MANIFESTO.md`'s "written down
+where the next agent finds it" (0512059) still says the right thing.
+
 ## Lasting approvals (settled 2026-10-29)
 
 Not everything approved lasts. The developer marks what is lasting when they
