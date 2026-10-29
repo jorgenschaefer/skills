@@ -3,7 +3,7 @@ criteria:  CRITERIA.md
 closes:    AC-1, AC-2, AC-3, AC-4, AC-5, AC-6
 advances:
 after:
-status:    ready
+status:    done
 attempts:  0
 ---
 
@@ -44,3 +44,7 @@ The groups What production must show, Security policy and Information model all 
 - Whether a quote still fits the stage it is attached to. That stays a judgement.
 
 ## Left standing
+- Fixed after the last review, so no reviewer saw it: the second review's should-fix, that a Serves line with no colon (`*Serves*`), in lower case (`*serves:*`), as a heading (`### Serves:`) or as a numbered item (`1. **Serves:**`) went unchecked without a word. Each is now reported with its line, like the other unread forms.
+- Review nit not fixed: an empty `MANIFESTO.md` makes every quote fail as "not in the manifesto", with no line saying the manifesto is empty. The check fails, and an emptied manifesto is unlikely.
+- Beyond the ACs, the check also fails on a *Serves* line in a form it does not read, naming the line and the two forms it reads, and on a missing `MANIFESTO.md`. Without that, one *Serves* line in a third form would have its stale quote skipped, which is the failure the change is for.
+- Blast radius and revert: the check runs only inside `./test.sh`, so a fault in it fails or passes the test run and touches nothing else. A revert undoes all of it.

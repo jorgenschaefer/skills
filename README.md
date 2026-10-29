@@ -129,9 +129,10 @@ with a ticket directory under it - puts a stub where `claude` goes, and runs the
 script against it: the refusals, the drift pre-flight in both directions, the claim a
 crashed session leaves behind, both budgets, the halt each one writes, the final review,
 the token log and the report a run ends with. `accept-criteria/signals.sh` gets a suite of
-its own, over the same kind of throwaway repository. Alongside them, the two checks the documents
-need: that the copies of a shared file are identical, and that no live instruction points at
-something that is not there.
+its own, over the same kind of throwaway repository. Alongside them, the three checks the documents
+need: that the copies of a shared file are identical, that no live instruction points at
+something that is not there, and that every quote on a *Serves* line of `PIPELINE.md` is in
+`MANIFESTO.md` word for word.
 
 ## Available skills
 

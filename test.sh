@@ -35,7 +35,8 @@ for suite in "$HERE"/tests/run/*.sh; do
   library+=("$suite")
 done
 suites=("$HERE/tests/run.sh" ${library[@]+"${library[@]}"} "$HERE/tests/no-dangling.sh" \
-        "$HERE/tests/sync.sh" "$HERE/tests/signals.sh" "$HERE/tests/explain-diff.sh")
+        "$HERE/tests/sync.sh" "$HERE/tests/signals.sh" "$HERE/tests/explain-diff.sh" \
+        "$HERE/tests/manifesto-quotes.sh")
 pids=()
 for i in "${!suites[@]}"; do
   "${suites[$i]}" > "$logs/$i" 2>&1 &
