@@ -88,15 +88,8 @@ person stepping in, defects caught late, searching, interference - and its
 mechanism ladder (something that executes, then a check without a stake,
 then an instruction) are what the project side would reuse.
 
-## Where the two depart from MANIFESTO.md
+## Where restructure departs from MANIFESTO.md
 
-- **explain-code smooths over differences.** The manifesto: "On request, an
-  agent explains any part of the program in those words, and says where the
-  code thinks of things differently." The rewriter never sees
-  the code and "may cut, merge and drop detail"
-  (`explain-code/SKILL.md:28`); the checker reports only contradictions, and
-  "a missing detail is never a finding" (`:29`). Nothing reports where the
-  code's concepts do not match the words used where the answer shows.
 - **restructure judges its own result.** It applies what it can prove
   preserves behaviour (`restructure/SKILL.md:55`) and commits (`:70`); the
   green suite proves behaviour, but whether the code got easier to change is
@@ -160,7 +153,8 @@ could surface candidates without acting on them.
 more than they give, but not cases inside a rule.
 
 Depends on `standard-follows-the-manifesto`, whose "Cut files by concept" is
-one of the parts it combines, and on
+one of the parts it combines, on `ask-how-and-why-in-the-users-concepts`,
+which settles what `explain-code` is for, and on
 `approved-criteria-outlive-the-change` for the list of behaviours.
 
 ## A change of access model (2026-10-27)
