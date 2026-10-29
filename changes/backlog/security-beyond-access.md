@@ -26,5 +26,10 @@ three parts are not about that policy:
     dependencies and web pages, and commit.
 - **The secure path is the easy one.** No skill asks for it.
 
+The standard's Security section (`implement/CODING_STANDARDS.md:77`) is
+checked against the manifesto by no other item. `security-in-the-standard`
+was meant to, but became the security policy (e9e746b) and left the section
+as it was.
+
 Nothing has gone wrong so far. dom handles names that can hold patient
 information.

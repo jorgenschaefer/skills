@@ -74,18 +74,48 @@ belong in the standard, which does not state them yet:
 YAGNI, KISS, colocation, searchable names, invalid states and one way to do
 each thing left the manifesto too, but the standard already has them.
 
-The Security section (`:77`) is checked against the manifesto by no other
-item. `security-in-the-standard` was meant to, but became the security
-policy (e9e746b) and left the section as it was.
-
 Separate items cover other parts of the standard:
 `approved-criteria-outlive-the-change` (tests for approved behaviour that
-stay and are checked on every change), and `reviewer-shares-the-authors-lens`
-(the standard as the only lens of builder and reviewer).
+stay and are checked on every change), and `security-beyond-access` (the
+Security section).
 
 The process document beside the standard is `PIPELINE.md`, written on
 2026-10-29. Approving a dependency is settled since
 2026-10-27: "Hard to reverse" names one the codebase will be built around.
+
+## The code review looks through the same lens as the builder
+
+Merged from `reviewer-shares-the-authors-lens` on 2026-10-29: the standard
+is the lens, so what the reviewer looks through is decided while the
+standard is rewritten.
+
+`MANIFESTO.md`, premise 3: "Whoever made a mistake shares the blind spot
+that made it." And: "Where a criterion can only be judged, the review is
+adversarial." The rule on reviewers' framings left the manifesto and waits
+to go into `PIPELINE.md`.
+
+The builder and its reviewer read the same document as their lens.
+`implement/SKILL.md:10`: "Read this skill's `CODING_STANDARDS.md` whole and
+apply all of it". `critique/SKILL.md:8`: "Read this skill's
+`CODING_STANDARDS.md` first ... Review against them". A fresh context keeps
+the author's reasoning out of the review, but not the author's lens: what the
+standard does not make the builder look for, it does not make the reviewer
+look for either.
+
+Some of the framing already differs: critique drives the running app, hunts
+down callers, compares the tests before and after (`critique/SKILL.md:18-30`),
+and the final review looks between tickets (`run/prompts.sh:76`). But the
+first pass is framed as judging against the standard, the same task the
+author had, and the adversarial part is the refutation of its own findings
+(`critique/SKILL.md:34`), which filters for precision instead of hunting for
+what breaks. The spec stages are different: each has its own `VERIFY.md`
+(`idea`, `find-criteria`, `criteria-to-tickets`), written for that stage's
+adversary rather than for its author.
+
+The standard is what the code is held to, so the review cannot drop it.
+
+No run has yet shown a defect that the builder and both reviews missed
+because they shared this lens.
 
 ## Docs say only what the code cannot show
 
