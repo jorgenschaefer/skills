@@ -181,13 +181,19 @@ workspace
 plan build-refused build review
 run > /dev/null
 refused="$WORK/.git/run-logs/changes_x.refused"
+long="$(printf 'true; %.0s' $(seq 30))rm -rf /tmp/testakte-*"
 if grep -qx "1-one Edit: $(realpath "$WORK")/.claude/skills/run/SKILL.md" "$refused" \
-   && grep -qxF '1-one Bash: rm -rf lager/.env ([Irreversible Local Destruction])' "$refused"; then
+   && grep -qxF '1-one Bash: rm -rf lager/.env ⏎ ls ([Irreversible Local Destruction]…)' "$refused"; then
   ok "each refused call is logged by the session it came from, one line each"
 else bad "each refused call is logged by the session it came from, one line each" "$(cat "$refused" 2>&1)"; fi
-if [ "$(cat "$refused" 2>/dev/null | wc -l)" = 2 ]; then ok "a session with nothing refused logs nothing"
+# Cut at 160 characters, a refused `rm -rf /tmp/testakte-*` once read as `rm -rf /`.
+if grep -qxF "1-one Bash: $long" "$refused"; then ok "the refused log keeps a refused command whole"
+else bad "the refused log keeps a refused command whole" "$(cat "$refused" 2>&1)"; fi
+if [ "$(cat "$refused" 2>/dev/null | wc -l)" = 3 ]; then ok "a session with nothing refused logs nothing"
 else bad "a session with nothing refused logs nothing" "$(cat "$refused" 2>&1)"; fi
-if grep -qF '! refused Bash: rm -rf lager/.env ([Irreversible Local Destruction])' "$WORK/.out"; then ok "a refused call is narrated as it happens"
+if grep -qF '! refused Bash: rm -rf lager/.env… ([Irreversible Local Destruction]…)' "$WORK/.out"; then ok "a refused call is narrated as it happens"
 else bad "a refused call is narrated as it happens" "$(out)"; fi
+if grep -qxF "    ! refused Bash: ${long:0:160}…" "$WORK/.out"; then ok "a narrated line says where it was cut"
+else bad "a narrated line says where it was cut" "$(out)"; fi
 
 finish

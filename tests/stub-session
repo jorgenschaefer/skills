@@ -13,9 +13,10 @@
 #                $STUB_DECLARE_AS - `Slow check`, without its colon - and on a
 #                Check: line where that is not set
 #   build-refused  build, ending in a result whose permission_denials name an
-#                Edit under .claude/ and a Bash command, as the CLI reports a
-#                call it would not run - the Bash one preceded by the event
-#                that gives the classifier's reason, the Edit one by none
+#                Edit under .claude/, a Bash command of two lines and one longer
+#                than a narrated line, as the CLI reports a call it would not
+#                run - the first Bash one preceded by the event that gives the
+#                classifier's reason, the others by none
 #   build-dirty  build, and leave an untracked file behind besides
 #   build-killed build, then kill the runner with -9 before it can check the build
 #   build-red    build, and leave .red at the root, which a test's check reads
@@ -195,7 +196,8 @@ case "$line" in
         '{type: "result", subtype: "success", is_error: false, result: "built",
           permission_denials: [
             {tool_name: "Edit", tool_use_id: "toolu_1", tool_input: {file_path: $f, old_string: "a", new_string: "b"}},
-            {tool_name: "Bash", tool_use_id: "toolu_2", tool_input: {command: "rm -rf lager/.env\nls", description: "Remove lager"}}]}'
+            {tool_name: "Bash", tool_use_id: "toolu_2", tool_input: {command: "rm -rf lager/.env\nls", description: "Remove lager"}},
+            {tool_name: "Bash", tool_use_id: "toolu_3", tool_input: {command: (("true; " * 30) + "rm -rf /tmp/testakte-*")}}]}'
     fi
     case "$line" in build-red*) : > "$(git rev-parse --show-toplevel)/.red" ;; esac
     if [ "$line" = build-killed ] || [ "$line" = build-red-killed ]; then kill -9 "$PPID"; fi

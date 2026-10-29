@@ -100,12 +100,15 @@ claude_run() {  # log, --session-id or --resume, session id, prompt, claude's ow
 # A call the session's permissions refused is narrated too, and kept in the
 # refused log: it does not stop the session - it carries on, works around it or
 # halts - and the CLI records it only in the result. The tool, the file or the
-# first line of the command, and the reason from the call's `permission_denied`
-# event, where there was one.
+# command, and the reason from the call's `permission_denied` event, where there
+# was one. The refused log keeps the command whole: cut at 160 characters, a
+# refused `rm -rf /tmp/testakte-*` once read as `rm -rf /`. A narrated line is
+# cut, and says where.
 # shellcheck disable=SC2016 # jq's variables, not the shell's
-DENIAL='def line(n): tostring | split("\n")[0] | .[0:n];
+DENIAL='def line(n): tostring | split("\n") as $l | $l[0] | if length > n or ($l | length) > 1 then .[0:n] + "…" else . end;
+  def whole: tostring | split("\n") | join(" ⏎ ");
   def why: if .type == "system" and .subtype == "permission_denied" then {(.tool_use_id): .decision_reason} else {} end;
-  def denial($why): "\(.tool_name): \(.tool_input | (.file_path // .command // .pattern // .url // tostring) | line(160))\(if $why[.tool_use_id] then " (\($why[.tool_use_id] | line(160)))" else "" end)";'
+  def denial($why; target): "\(.tool_name): \(.tool_input | (.file_path // .command // .pattern // .url // tostring) | target)\(if $why[.tool_use_id] then " (\($why[.tool_use_id] | line(160)))" else "" end)";'
 narrate() {
   jq -n -R --unbuffered -r "$DENIAL"'
     foreach (inputs | fromjson? // {type: "raw", line: .}) as $e ({}; . + ($e | why); [., $e])
@@ -123,14 +126,14 @@ narrate() {
         | "    ! usage limit, resets \(.rate_limit_info.resetsAt // 0 | strflocaltime("%a %H:%M"))"
       elif .type == "result" then
         "    = \(.subtype)\(if .is_error then " (error)" else "" end), \(.num_turns // "?") turns, $\(.total_cost_usd // 0 | . * 100 | round / 100)",
-        (.permission_denials[]? | "    ! refused \(denial($why))")
+        (.permission_denials[]? | "    ! refused \(denial($why; line(160)))")
       else empty end'
 }
 
 refused() {  # log -> "Tool: target (reason)", one line per call the session was refused
   jq -R -s -r "$DENIAL"'[split("\n")[] | fromjson?] | (map(why) | add // {}) as $why
     | .[] | select(.type == "result" and .parent_tool_use_id == null)
-    | .permission_denials[]? | denial($why)' "$1"
+    | .permission_denials[]? | denial($why; whole)' "$1"
 }
 
 # Read off the events the CLI writes, never its wording: the message changed
