@@ -25,6 +25,7 @@ The user also wants the `ubiquitous-language` skill renamed to
   standard (`standard-follows-the-manifesto`). Much of `ARCHITECTURE.md` is what an
   agent finds with one search, and it is re-derived only when someone runs it
   again; `restructure` reruns it ("Docs last").
+  The user wants it gone in its current form: `drop-architecture-md`.
 - `ubiquitous-language` writes or refreshes `UBIQUITOUS_LANGUAGE.md` from
   the code's vocabulary and reports drift. The pipeline relies on it: the
   standard's naming rules, `find-criteria` and `criteria-to-tickets` asking
