@@ -211,7 +211,43 @@ and attacks cut across them.
 
 **The information model goes into `DOMAIN.md`**, in each object's section
 beside its fields: what is kept, until when, and what is never kept.
-Settled 2026-10-29, pending a full example. So each of `find-criteria`'s
+Settled 2026-10-29. The developer confirmed a full example for
+`haushaltsbuch` (17 rules, 5 objects); an excerpt:
+
+````markdown
+```mermaid
+erDiagram
+    Konto |o--o{ Konto : "ist Parent von"
+    Konto ||--o{ Buchung : "steht im Soll"
+    Konto ||--o{ Buchung : "steht im Haben"
+    Konto ||--o{ Kontierungsregel : "ist Gegenkonto von"
+    Konto ||--o| Ruecklage-Konto : "fließt ein als"
+    Ruecklage ||--o{ Eintrag : "führt"
+```
+
+## Buchung
+
+Felder: **Soll**, **Haben**, Betrag, Datum, **Empfänger**, **Verwendungszweck**, **Bankreferenz**.
+
+- **D-10** Eine Buchung ist ein **Buchungssatz** mit genau zwei Beinen: Soll und Haben, beide gesetzt. Es gibt keinen Split.
+- **D-11** Der Betrag ist eine positive Zahl ganzer Cent; die Richtung steckt in Soll und Haben, nie im Vorzeichen.
+
+Aktionen:
+
+- **D-12** Erfassen und Ändern: Soll und Haben sind zwei verschiedene Konten.
+- **D-13** Kein Bein auf Eigenkapital, außer beim Anfangsbestand.
+- **D-14** Der Anfangsbestand ist eine Buchung je Aktiva-Konto: erneut setzen überschreibt ihn, 0 löscht ihn, ein negativer Betrag tauscht Soll und Haben.
+
+Gespeichert: bis der Nutzer sie löscht. Die Bankreferenz nur aus dem **Import**, und nur, wo die Bank eine liefert.
+
+## Bankdaten
+
+Felder: DKB-Anmeldename, was die Bank über den Zugang mitteilt.
+
+- **D-17** Die PIN wird nie gespeichert, auch nicht in einer Fehlermeldung.
+
+Gespeichert: je Anmeldename, bis ein Abruf scheitert, der mit ihnen begann – außer die DKB war nicht erreichbar oder die Freigabe ist abgelaufen oder abgelehnt.
+```` So each of `find-criteria`'s
 four AC groups has a lasting home: behaviour in the journeys and the action
 rules, production in `OBSERVABILITY.md`, the security policy in its file,
 the information model in `DOMAIN.md`.
