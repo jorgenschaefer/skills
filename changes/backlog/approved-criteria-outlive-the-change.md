@@ -3,21 +3,21 @@ effort: XL
 utility: XL
 ---
 
-# Lasting approvals outlive the change, and acceptance shows the evidence
+# Worst cases and concepts outlive the change, and acceptance shows the evidence
 
 Once a change is accepted, nothing a fresh agent can find says what a human
 approved, or which test is the check for it. A later change can undo an
 approved behaviour, policy or data rule, delete or weaken its test, and
 nobody notices that this was a decision for the human.
 
-`MANIFESTO.md` asks for the opposite, for what the developer marked as
-lasting: "Changing a lasting approval is theirs to decide"; "Each lasting
-approval is written down where the next agent finds it, and held by a
-check, or marked as judged where no check can show it"; "A check for a
-lasting approval counts only if it fails when the code breaks it, and that
-is confirmed for every change before it is accepted"; "Weakening or
-deleting a check for anything approved is reported; for a lasting approval,
-it is a decision about what it checks."
+`MANIFESTO.md` asks for the opposite, for what lasts beyond a change - the
+concepts and the worst cases: "Changing either is theirs to decide"; "The
+worst cases are written down where the next agent finds them, each with its
+bounds"; "Each bound is held by a check, marked as judged where no check can
+show it, or marked as a gap"; "A check for a bound counts only if it fails
+when the code breaks the bound, and that is confirmed for every change
+before it is accepted"; "for a bound, it is a decision about what it
+checks."
 
 Evidence:
 
@@ -28,7 +28,7 @@ Evidence:
   change numbers its ACs from `AC-1`, so after deletion `AC-3` in a test
   name points at nothing and is ambiguous across changes.
 - `PIPELINE.md` (ACCEPT, "Before acceptance") says every check for a
-  lasting approval "is shown to fail when the code breaks it". No skill or script does this. The only failure ever watched is TDD's RED run, once,
+  bound on a worst case "is shown to fail when the code breaks the bound". No skill or script does this. The only failure ever watched is TDD's RED run, once,
   at build time (`CODING_STANDARDS.md`, "Use TDD").
 - `critique` reports lost tests as a finding for the builder to fix
   ("Tests that left", `critique/SKILL.md`), not as a decision for the human,
@@ -63,6 +63,8 @@ user journeys below, the approved criteria - is open, and `PIPELINE.md`
 names only the security policy until this item settles the rest.
 
 ## Trust is bounded impact (2026-10-29, later the same day)
+
+`MANIFESTO.md` and `PIPELINE.md` say this since 5d72b9d.
 
 This reframes what follows; the sections below stay as the record of how
 we got here. Where they disagree, this section holds.
