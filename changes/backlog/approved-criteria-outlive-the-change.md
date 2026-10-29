@@ -146,9 +146,20 @@ Konten with their hierarchy across all four Kontoklassen" as its sentence.
 model. "No page of its own" and how its toggles behave belong to the change
 that approved them, and are held by the code and its tests.
 
+**The model and the actions are one file**, `DOMAIN.md`, settled
+2026-10-29. It opens with an ER diagram in Mermaid: the objects and their
+relations, no fields, which would only repeat the sections. Then one section
+per object: its fields, its relations, its rules, and the actions on it with
+their rules. Every action rule in the `haushaltsbuch` draft belonged to one
+object, and the breaks found in its history were all a new write path
+missing a rule its object already had; grouped by object, that rule sits
+beside the path. An action that touches several objects goes under the one
+it acts on and names the others by their terms. `SECURITY_POLICY.md`, the
+journeys and the glossary stay apart. Whether a large project splits it into
+a file per object waits for `drk-barmbek`.
+
 Open:
 
-- One file or several for the model and the actions.
 - A check that every object and field in the model has a glossary entry:
   it executes, and it is not a proxy, since a missing entry is the gap
   itself.
