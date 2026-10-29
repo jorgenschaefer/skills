@@ -30,8 +30,6 @@ Deviations in PLAN known when `PIPELINE.md` was accepted:
   (`accept-criteria/SKILL.md:17`), `CRITERIA.md`.
 - Stops outside the developer's stops: `ubiquitous-language/SKILL.md:73-83`,
   `.claude/skills/align/SKILL.md:11`.
-- `.claude/skills/align` judges a gap only against manifesto sentences (its
-  question 2), not against `PIPELINE.md`.
 
 ## Slicing finds nothing left to decide
 

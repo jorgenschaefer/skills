@@ -17,8 +17,9 @@ a skill, the only way to show a change holds is a fresh agent following it
 on a real case, before and after.
 
 `/align` fits skills, but only for changes that bring the repository closer
-to `MANIFESTO.md`: it asks "Is it alignment?" and sends anything else back
-to the backlog (`.claude/skills/align/SKILL.md`, question 2).
+to `MANIFESTO.md` or `PIPELINE.md`: it asks "Is it alignment?" and sends
+anything else back to the backlog (`.claude/skills/align/SKILL.md`,
+question 2).
 
 Instance: the `/idea` session on `question-a-picked-item` (2026-10-25). Its
 agreed problem was about to go to `/find-criteria`, which does not fit it,
