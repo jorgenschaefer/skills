@@ -10,7 +10,7 @@ Each stage and rule says which manifesto line it serves, if any, under *Serves*,
 
 A change that alters what a stage is for, what it produces, who checks it or when it runs, or a rule across stages, edits this document in the same change. The developer approves that edit like an acceptance criterion.
 
-*Serves:* "Changing anything they approved is theirs to decide."
+*Serves:* "Changing a lasting approval is theirs to decide."
 
 *Adds:* that the edit comes with the change that needs it, and is approved like an acceptance criterion.
 
@@ -119,12 +119,12 @@ IMPLEMENT starts when the developer asks to go on from approved criteria. From t
   - each **new dependency**.
 
   Then an outcome for each open item, an ADR for each decision that earns one, and the developer's acceptance.
-- **Before acceptance:** every check for something the developer approved is shown to fail when the code breaks it. A check weakened or deleted is a decision about what it checks.
+- **Before acceptance:** every check for a lasting approval is shown to fail when the code breaks it. A check weakened or deleted is shown; for a lasting approval it is a decision about what it checks.
 - **Passes on:** follow-ups to the backlog, what was hard to implement to REFACTOR, and steps only a person can do at deployment to the developer.
 - **When every criterion is met and the problem is not solved:** the change goes back to PLAN, starting at idea. The code built stays on its branch, unmerged, and the new PLAN decides whether the change builds on it or replaces it.
 - **Checked by:** the developer, who takes part in it. An agent with a fresh context looks for what the walk missed. A judged criterion gets an adversarial review.
 - **Runs:** after the run. Every change goes through it, however small, and so does every cleanup from REFACTOR.
-- **Serves:** "The developer approves before implementation, and the report after it shows what they need to see." "Where no check can show it, it is marked as judged." "A check for anything the developer approved counts only if it fails when the code breaks it, and that is confirmed for every change before it is accepted". "Where a criterion can only be judged, the review is adversarial." "The change is not accepted until they are decided."
+- **Serves:** "The developer approves before implementation, and the report after it shows what they need to see." "Where no check can show it, it is marked as judged." "A check for a lasting approval counts only if it fails when the code breaks it, and that is confirmed for every change before it is accepted". "Where a criterion can only be judged, the review is adversarial." "The change is not accepted until they are decided."
 - **Adds:** that every change goes through it, however small; that the checks are shown to fail here, before acceptance; and that a problem not solved goes back to idea, with the code kept on its unmerged branch.
 
 ### Deployment steps
@@ -140,11 +140,11 @@ IMPLEMENT starts when the developer asks to go on from approved criteria. From t
 
 - **For:** finding the cruft that built up over many changes, and cleaning it up. Every other check judges one change, and decay is the sum of many.
 - **Takes:** signals from several sources - which files change together in git history, and what the loop recorded as hard to implement.
-- **Produces:** cleanups, each going through ACCEPT. A cleanup that would change what the developer approved goes through PLAN first.
+- **Produces:** cleanups, each going through ACCEPT. A cleanup that would change a lasting approval goes through PLAN first.
 - **Checked by:** an adversarial review, like every phase.
 - **Runs:** every N loops or every M weeks, apart from the loop.
 - **Serves:** "Changes are fast to make and hard to get wrong, this one and every one after it."
-- **Adds:** the phase itself, its schedule, its signals, and that its cleanups go through ACCEPT, and through PLAN first where they change what was approved.
+- **Adds:** the phase itself, its schedule, its signals, and that its cleanups go through ACCEPT, and through PLAN first where they change a lasting approval.
 
 This is the least specified phase. Its own change settles what it produces in detail, and who checks it how.
 
@@ -171,7 +171,7 @@ A question found during slicing or the run does not stop the work.
 - Within what the developer approved, the agent decides.
 - Where the answer would change what was approved, the agent builds its best guess and records it as a departure. ACCEPT puts it to the developer.
 
-*Serves:* "An agent weighs only within what the developer approved; a tradeoff that would change it is a decision the plan didn't cover." "Something found while building that may change what the user wants is a **decision the plan didn't cover**, and waits for the developer." "The change is not accepted until they are decided."
+*Serves:* "An agent weighs only within what the developer approved for this change and what they marked as lasting; a tradeoff that would change either is a decision the plan didn't cover." "Something found while building that may change what the user wants is a **decision the plan didn't cover**, and waits for the developer." "The change is not accepted until they are decided."
 
 *Adds:* that the decision waits until ACCEPT, and the agent builds its best guess meanwhile. The manifesto says only that it waits.
 
@@ -179,7 +179,7 @@ A question found during slicing or the run does not stop the work.
 
 A departure is anything a build does that changes what the developer approved. For example: another concept, endpoint or wire format; data deleted; a dependency the code gets built around; behaviour the user sees that differs from the criteria or that they leave open; or a permission, an alert or kept data that the criteria do not name. A build records each departure where it makes it, and ACCEPT shows it.
 
-*Serves:* "Changing anything they approved is theirs to decide."
+*Serves:* "The rest of what a change approved holds for that change"
 
 *Adds:* the list of examples, and that the build records each departure where it makes it.
 
@@ -233,9 +233,9 @@ A step needed before the build is settled in PLAN. A step at deployment goes to 
 
 ### What outlives a change
 
-`SECURITY_POLICY.md` outlives every change, and its rules change only through criteria the developer approved. Some decisions look wrong to a later reader, who would "fix" them and do harm. Each of those is written down as an ADR, in PLAN or in ACCEPT. Which other approved artifacts outlive a change, the criteria among them, is open.
+Lasting approvals outlive every change. Today two kinds are written down. `SECURITY_POLICY.md`'s rules change only through criteria the developer approved. Some decisions look wrong to a later reader, who would "fix" them and do harm; each of those is written down as an ADR, in PLAN or in ACCEPT. Which artifacts hold the other lasting approvals, and in what form, is open. The rest of what a change approved is not kept apart from the code and its tests.
 
-*Serves:* "Changing anything they approved is theirs to decide."
+*Serves:* "Each lasting approval is written down where the next agent finds it, and held by a check, or marked as judged where no check can show it." "Changing a lasting approval is theirs to decide."
 
 *Adds:* that `SECURITY_POLICY.md` outlives every change, and ADRs.
 
