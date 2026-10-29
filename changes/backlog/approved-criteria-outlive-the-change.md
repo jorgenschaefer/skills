@@ -118,7 +118,7 @@ a file helps an agent keep a rule before it is settled what the files are.
 |---|---|---|---|---|
 | Domain model | The developer approves; drafts can come from the code | Rules about the data | Schema constraints, tests | A decision for the developer |
 | Domain actions | The same | Rules about the writes | Tests | A decision for the developer |
-| Critical user journeys | The developer only | The user's goals that matter | End-to-end tests that implement them | Discussed with the developer: the new way may fit the journey better |
+| `CRITICAL_JOURNEYS.md`, `J-n` | The developer only | The user's goals that matter | End-to-end tests that implement them | Discussed with the developer: the new way may fit the journey better |
 | `SECURITY_POLICY.md` | Exists | Who may see and do what | Rule tests and the policy check | Exists: ACs that add, change or remove R-n |
 | `UBIQUITOUS_LANGUAGE.md` | Exists | Terms | `/ubiquitous-language`'s drift check, judged | A decision for the developer |
 
@@ -320,8 +320,10 @@ How it was discussed to fit:
   designed, some just emerge. An end-to-end test is the journey's current
   implementation. A change that needs it changed goes to the developer as a
   question: the new way may serve the journey better.
-- **A lasting file**, e.g. `JOURNEYS.md` beside `UBIQUITOUS_LANGUAGE.md`,
-  with a format file copied into each skill that uses it. Accepted ACs live
+- **A lasting file**, `CRITICAL_JOURNEYS.md` beside `UBIQUITOUS_LANGUAGE.md`
+  (settled 2026-10-29: the name says only the critical ones, so it does
+  not invite listing every journey the code allows), with a format file
+  copied into each skill that uses it. Accepted ACs live
   on as tests grouped under the journey they serve.
 - `idea` places the problem on a journey; one that fits none is either a new
   journey or not worth doing.
