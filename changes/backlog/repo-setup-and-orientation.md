@@ -50,6 +50,7 @@ uses, possibly two skills:
   The developer already approves the rules with the criteria, so this needs
   no new stop.
 
-Depends on `critical-user-journeys`, whose first journeys `repo-overview`'s
-"Main workflows" would draft, and on `run-sh-without-a-check`. `PIPELINE.md`'s Setup says
+Depends on `approved-criteria-outlive-the-change`, whose critical user
+journeys `repo-overview`'s "Main workflows" would draft, and on
+`run-sh-without-a-check`. `PIPELINE.md`'s Setup says
 what the pipeline expects of a project.

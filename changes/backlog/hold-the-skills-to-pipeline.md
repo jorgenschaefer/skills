@@ -1,5 +1,5 @@
 ---
-effort: L
+effort: XL
 utility: L
 ---
 
@@ -48,6 +48,14 @@ Deviations known when `PIPELINE.md` was accepted:
   `criteria-to-tickets/SKILL.md:85-86`; `attempts` runner-owned
   (`TICKET_FORMAT.md:12`) but reset by a re-slice.
 - The check line's form: `critique/SKILL.md:28` against `run/checks.sh:67`.
+  `check_line` matches only the strict form, the command in backticks and
+  nothing after it. A line such as ``Check: true``, without backticks, is
+  not read at all: the runner asks a session for a command
+  (`run/checks.sh:63`) and says nothing about the line it skipped, so a typo
+  quietly changes what every build runs. `critique` reports such a line as a
+  should-fix, but only when it reviews. Found by the reviewer of a runner fix
+  while driving the runner, in the acceptance of the fast and slow checks
+  change.
 - Stage outputs left uncommitted while the runner refuses a dirty tree:
   glossary entries (`find-criteria/SKILL.md:43`), the run skill
   (`accept-criteria/SKILL.md:17`), `CRITERIA.md`.
@@ -58,5 +66,29 @@ Deviations known when `PIPELINE.md` was accepted:
 - `.claude/skills/align` judges a gap only against manifesto sentences (its
   question 2), not against `PIPELINE.md`.
 
-Related: `implement-is-how-code-gets-built`, `slicing-finds-nothing-to-decide`,
+## Slicing finds nothing left to decide
+
+Merged from `slicing-finds-nothing-to-decide` on 2026-10-29; the pipeline
+change listed it as a deviation in PLAN.
+
+Slicing should only group the ACs into pieces that fit one context window.
+In practice `/criteria-to-tickets` regularly finds questions for the
+developer, so the change stops between approving the criteria and the run.
+The user, on 2026-10-28: "criteria-to-tickets regularly asks questions.
+find-criteria needs something so that does not happen so regularly anymore."
+
+- `criteria-to-tickets/SKILL.md:53` reads the code each slice will touch
+  and walks each slice against it "as its builder would", looking for
+  behaviour the user sees that the ACs leave open, ACs that conflict, and a
+  technical decision the code shows to be short. The approval list (`:69`)
+  puts these to the user.
+- `find-criteria/SKILL.md:9` and `:49` set the bar: the loop is done when
+  "`/criteria-to-tickets` would not have to ask anything". Nothing in the
+  skill gets there.
+- `PIPELINE.md` ("A question found during IMPLEMENT"): IMPLEMENT runs
+  without interruption and slicing decides nothing new; a question it still
+  finds is decided within what was approved, recorded, and shown at
+  acceptance.
+
+Related: `implement-is-how-code-gets-built`,
 `acceptance-evidence-from-a-script`, `a-route-for-skill-changes`.

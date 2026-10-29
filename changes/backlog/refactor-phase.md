@@ -19,8 +19,8 @@ thought.
   name (`restructure/SKILL.md`).
 - `explain-code` explains a part of the code once the developer can no
   longer follow it.
-- Related items: `rule-cruft` (cases in a rule nothing needs any more),
-  `cut-files-by-concept` (what shape new code is held to).
+- Related items: `standard-follows-the-manifesto`, "Cut files by concept"
+  (what shape new code is held to).
 
 ## Finding where to work
 
@@ -37,7 +37,7 @@ These are directions, not decisions:
 - **Checks that warn early.** From cheap to expensive:
   1. coverage scatter: how many files and modules a behaviour's deciding
      code spans, from the test suite alone (the same measure as rule 2's
-     check in `cut-files-by-concept`);
+     check in `standard-follows-the-manifesto`, "Cut files by concept");
   2. history: churn, the share of bug fixes, and special cases piling up
      with each fix;
   3. the change test: a fresh agent makes a plausible change in the
@@ -138,8 +138,30 @@ then an instruction) are what the project side would reuse.
   - Where the report goes.
   - "The user" meaning both the developer and the app's user.
 
-Depends on `cut-files-by-concept` and `rule-cruft`, the parts it combines,
-and on `approved-criteria-outlive-the-change` for the list of behaviours.
+## Cases in a rule that are only accumulated cruft
+
+Merged from `rule-cruft` on 2026-10-29: finding the cruft is what
+`PIPELINE.md` has REFACTOR for.
+
+The rule a module implements grows complicated over time as fixes pile up.
+In the weight tracker, the logic for when a weight series shows as "gaining
+weight" became so convoluted that the developer no longer understood it.
+Some of its cases may be needed; others may be leftovers from earlier fixes
+that nothing requires any more. Nothing tells the two apart.
+
+A clear prose description of what the code does makes such cases visible,
+and should prompt asking at each one whether it is really needed. Removing
+one changes behaviour, so each removal is a product decision for the user.
+Parked from an `/idea` session about making code follow the structure of a
+readable description of what it does, which preserves behaviour. That work
+could surface candidates without acting on them.
+
+`restructure/SKILL.md:34` already proposes cutting whole features that cost
+more than they give, but not cases inside a rule.
+
+Depends on `standard-follows-the-manifesto`, whose "Cut files by concept" is
+one of the parts it combines, and on
+`approved-criteria-outlive-the-change` for the list of behaviours.
 
 ## A change of access model (2026-10-27)
 
