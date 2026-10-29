@@ -1,9 +1,58 @@
 ---
-effort: M
+effort: L
 utility: L
 ---
 
-# implement describes how code gets built, and nothing else
+# IMPLEMENT follows PIPELINE.md, and implement describes how code gets built
+
+`PIPELINE.md` now says what the pipeline is meant to be. The skills, the
+runner and the formats were written before it, and in places do something
+else. The user, on 2026-10-28: "The next step then is to hold the skills to
+that description." Split by phase from `hold-the-skills-to-pipeline` on
+2026-10-29.
+
+The developer's account of the pipeline and every disagreement decided
+while writing `PIPELINE.md` are in the change's `CRITERIA.md`, `## Left
+standing`, at commit 4a70caf (`git show 4a70caf:changes/2026-10-28-pipeline/CRITERIA.md`).
+
+Deviations in IMPLEMENT known when `PIPELINE.md` was accepted:
+
+- A question found during IMPLEMENT: `implement/SKILL.md:16` ("ask ... and
+  do not build past it") and `:54`, `CODING_STANDARDS.md:97`, the runner's
+  `undecided` halt (`run/prompts.sh:31`), the final review deferring rather
+  than building a best guess (`run/prompts.sh:101`),
+  `.claude/skills/align/SKILL.md:51`. Until this is done, sessions in this
+  repository meet only implement's "ask", since `CLAUDE.md` no longer says
+  to save questions for the stops.
+- A departure counted only in "None." groups: `run/prompts.sh:23`,
+  `TICKET_FORMAT.md:38`, `criteria-to-tickets/SKILL.md:37`,
+  `CRITERIA_FORMAT.md:27`. `PIPELINE.md`: anything that changes what was
+  approved.
+- The single-ticket brief (`criteria-to-tickets/SKILL.md:96`) claims to
+  match the runner's (`run/prompts.sh:19-33`) and does not.
+- Re-slice after drift: `run/drift.sh:113` against
+  `criteria-to-tickets/SKILL.md:85-86`; `attempts` runner-owned
+  (`TICKET_FORMAT.md:12`) but reset by a re-slice.
+- The check line's form: `critique/SKILL.md:28` against `run/checks.sh:67`.
+  `check_line` matches only the strict form, the command in backticks and
+  nothing after it. A line such as ``Check: true``, without backticks, is
+  not read at all: the runner asks a session for a command
+  (`run/checks.sh:63`) and says nothing about the line it skipped, so a typo
+  quietly changes what every build runs. `critique` reports such a line as a
+  should-fix, but only when it reviews. Found by the reviewer of a runner fix
+  while driving the runner, in the acceptance of the fast and slow checks
+  change.
+- What critique is handed in the CRITERIA path: `implement/SKILL.md:18`
+  against `:36` and `run/prompts.sh:101`.
+- Alerts shown to fire: `PIPELINE.md` (IMPLEMENT, Checked by) has the
+  reviewer check that each thing someone has to hear about sets off its
+  alert. No skill does this.
+
+## implement describes how code gets built, and nothing else
+
+Merged from `implement-is-how-code-gets-built` on 2026-10-29: it rewrites
+the same paragraphs in `implement`, `run/prompts.sh` and
+`criteria-to-tickets` as the deviations above.
 
 `implement` is meant to describe implementing, the way `git-commit-message`
 describes how a commit happens: it is how code gets built, whoever asks.
@@ -17,7 +66,7 @@ are called, is user-approved. Only what they discover themselves may need the
 user's review, and for each such discovery they decide: ask now, or add it to
 "discovered" in the output.
 
-## Pipeline protocol in the general skill
+### Pipeline protocol in the general skill
 
 - `implement/SKILL.md:18` is a paragraph on `CRITERIA.md`: its ACs, its
   technical decisions and AC groups as limits, departures, writing `## Left
@@ -31,7 +80,7 @@ user's review, and for each such discovery they decide: ask now, or add it to
   `criteria-to-tickets/SKILL.md:93`, which tells `/implement` "what the runner
   tells every build".
 
-## What a departure is, in eleven places
+### What a departure is, in eleven places
 
 What counts as a departure from what was approved is restated in about
 eleven files, each in its own words: both `CRITERIA_FORMAT.md` copies,
@@ -50,7 +99,7 @@ A trap in the same file: the briefs are double-quoted bash strings, so a
 bare `"` in one silently vanishes from what the session reads. Nothing
 checks it; it was caught on 2026-10-27 only by driving the runner.
 
-## Four answers to a discovery
+### Four answers to a discovery
 
 What a build does with something its input does not settle:
 
@@ -74,7 +123,7 @@ would change it, the agent builds its best guess, records it as a
 departure, and ACCEPT puts it to the developer. `implement` outside the
 pipeline, asked by someone in the session, is still open.
 
-## Related
+### Related
 
 - Both `CRITERIA_FORMAT.md` copies say Left standing is "Written by
   `/implement` when it builds this file directly".
