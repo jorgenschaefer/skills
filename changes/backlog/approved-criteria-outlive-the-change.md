@@ -209,13 +209,27 @@ Not in `DOMAIN.md`, because many signals belong to no object (a flood of
 login attempts, a drop in users), and not in the journeys, because errors
 and attacks cut across them.
 
+**The information model goes into `DOMAIN.md`**, in each object's section
+beside its fields: what is kept, until when, and what is never kept.
+Settled 2026-10-29, pending a full example. So each of `find-criteria`'s
+four AC groups has a lasting home: behaviour in the journeys and the action
+rules, production in `OBSERVABILITY.md`, the security policy in its file,
+the information model in `DOMAIN.md`.
+
+**The lasting files are living documents**, never finished in any project.
+The developer, 2026-10-29: the skills have to re-check that the tests for
+the documents are all current, too. A test naming an id that still exists
+can test what the rule said before it changed. So:
+
+- a change that changes or removes a rule also changes or removes its test,
+  in the same change - a check that executes on the diff;
+- the tests for the rules a change touches are shown to fail when the code
+  breaks the rule, before acceptance (part B);
+- the rules are read against their tests by a reviewer without a stake,
+  where the wording of a rule and what its test asserts may have parted.
+
 Open:
 
-- Where the information model goes (what is kept, for how long, never
-  kept): proposed, each object's section in `DOMAIN.md`. Then each of
-  `find-criteria`'s four AC groups has a lasting home: behaviour in the
-  journeys and the action rules, production in `OBSERVABILITY.md`, the
-  security policy in its file, the information model in `DOMAIN.md`.
 - A check that every object and field in the model has a glossary entry:
   it executes, and it is not a proxy, since a missing entry is the gap
   itself.
