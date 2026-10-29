@@ -93,16 +93,45 @@ file per concept, with journeys apart - or not. `ARCHITECTURE.md` fails all
 three tests and goes once these take over orientation
 (`drop-architecture-md`).
 
-Next: test the candidates on `../haushaltsbuch` before designing formats.
-The developer first writes down the rules they would want a later change to
-stop and ask about. Then the candidates are drafted, lasting entries only,
-each with the check that could hold it, and compared with that list.
-Predictions are written down before any run. Changes in the history that
-broke a rule a later commit restored are replayed in throwaway clones, with
-no artifacts, the drafts combined, and each candidate alone, three runs
-each: did the agent keep the rule, and how many files did it open. The
-developer confirms the cost before the runs. `drk-barmbek` follows if the
-result is open.
+### Tried on `../haushaltsbuch` (2026-10-29)
+
+The developer named the core: Konto and Buchung, a Buchung moving an amount
+between two Konten, and creating or updating either. Everything else is
+views. Security plays no part in a local single-user app. Drafts of the
+domain model and the domain actions were written from the code. The
+developer struck what was not theirs to vouch for: ISO dates, the
+Buchungstyp never being stored, parsing euros without `parseFloat`, every
+write going through a domain function (implementation), and the
+Bilanzgleichung (a view detail). Seven model rules and seven action rules
+stayed, such as "a Buchung has exactly two legs", "Eigenkapital holds only
+the Anfangsbestand", and "Soll and Haben are two different Konten".
+
+The project already keeps such rules in two places, neither small: the
+"Tragende Invarianten" in `CLAUDE.md`, and `UBIQUITOUS_LANGUAGE.md` (71 KB,
+100 terms), which mixes them with UI details that last only until the next
+change.
+
+Replays of past breaks were planned and dropped: they would measure whether
+a file helps an agent keep a rule before it is settled what the files are.
+
+| Artifact | Who writes it | What it holds | Held by | Changing the check |
+|---|---|---|---|---|
+| Domain model | The developer approves; drafts can come from the code | Rules about the data | Schema constraints, tests | A decision for the developer |
+| Domain actions | The same | Rules about the writes | Tests | A decision for the developer |
+| Critical user journeys | The developer only | The user's goals that matter | End-to-end tests that implement them | Discussed with the developer: the new way may fit the journey better |
+| `SECURITY_POLICY.md` | Exists | Who may see and do what | Rule tests and the policy check | Exists: ACs that add, change or remove R-n |
+| `UBIQUITOUS_LANGUAGE.md` | Exists | Terms | Nothing | Open |
+
+Open:
+
+- The glossary: whether it shrinks back to terms once the model and the
+  actions have a home.
+- One file or several for the model and the actions.
+- The format: ids, and tests that name them, as in
+  `SECURITY_POLICY_FORMAT.md`.
+- What production must show still has no home.
+
+`drk-barmbek` is the second project to try the result on.
 
 The evidence at acceptance below builds on this: it needs tests that say
 which approved criterion they prove. `refactor-phase` also builds on it:
@@ -142,9 +171,13 @@ How it was discussed to fit:
   developer decides, "what the software does", and the one approval that
   outlives every change. Changing one is a decision the plan didn't cover.
   The usability agent completes the journeys through the real interface, not
-  only the change's ACs. Each journey is held by an end-to-end check; its
-  written form stays short: who, what they want to get done, a few steps in
-  their words.
+  only the change's ACs. Its written form is the user's goal, in the
+  developer's words: "As a user, I can see where I spent my money this year,
+  and find out where the majority went." Which of the many things the
+  software lets you do are critical cannot be read from the code; some are
+  designed, some just emerge. An end-to-end test is the journey's current
+  implementation. A change that needs it changed goes to the developer as a
+  question: the new way may serve the journey better.
 - **A lasting file**, e.g. `JOURNEYS.md` beside `UBIQUITOUS_LANGUAGE.md`,
   with a format file copied into each skill that uses it. Accepted ACs live
   on as tests grouped under the journey they serve.
@@ -159,8 +192,8 @@ How it was discussed to fit:
   decision.
 - `accept-criteria` walks the change's journey end to end and holds the
   result against it as well as against the Problem.
-- `repo-overview`'s "Main workflows" become the draft for an existing
-  project's first journeys, and later show where code and journeys differ.
+- `repo-overview`'s "Main workflows" are not a draft of the journeys: they
+  list what the code allows, which is what the developer has to choose from.
 - `restructure`: a feature that serves no journey is a candidate among
   "features that cost more than they give"; `backlog` ranks utility by the
   journey an item serves; `ubiquitous-language` walks the approved journeys;
