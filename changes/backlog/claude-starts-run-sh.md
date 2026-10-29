@@ -86,5 +86,5 @@ skipping them. Re-slicing could end by pointing at "Hand off" instead.
 
 Depends on `implement-is-how-code-gets-built`, which moves the ticket protocol
 out of `implement` and touches the same `run/prompts.sh` and hand-off lines,
-and on `run-sh-without-a-check`, which is smaller and fixed before the files
-move.
+and on `pipeline-in-an-empty-repo`, which changes the runner's preflight
+and is done before the files move.
