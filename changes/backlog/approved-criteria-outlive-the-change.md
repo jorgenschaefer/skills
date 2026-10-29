@@ -187,8 +187,35 @@ a file per object waits for `drk-barmbek`.
 is no separate flag. `CRITERIA_FORMAT.md`'s *Concepts* decision becomes the
 change's Domain ACs.
 
+**What production must show lives in `OBSERVABILITY.md`**, settled
+2026-10-29. It is lasting: a later change that quietly drops an alert breaks
+what the developer decided. The format's first line says it holds only what
+someone has to hear about, who, and how fast. How the code records things to
+trace a problem to its cause stays with the coding standard, so logging
+conventions stay out. One rule per item, `O-n`, grouped by what it is
+about:
+
+```markdown
+## Import
+- **O-1** Ein Import, der scheitert: der Nutzer sieht es sofort im Import, mit dem Grund.
+```
+
+A test causes the situation, shows the signal leaving the code, and names
+the id. Whether it reaches the right person in time is set up outside the
+repository: checked where that setup is code in the repository, otherwise
+*Judged:*, and a step at deployment (`deployment-steps-handed-over`). A
+project where nothing applies has one line, as the security policy does.
+Not in `DOMAIN.md`, because many signals belong to no object (a flood of
+login attempts, a drop in users), and not in the journeys, because errors
+and attacks cut across them.
+
 Open:
 
+- Where the information model goes (what is kept, for how long, never
+  kept): proposed, each object's section in `DOMAIN.md`. Then each of
+  `find-criteria`'s four AC groups has a lasting home: behaviour in the
+  journeys and the action rules, production in `OBSERVABILITY.md`, the
+  security policy in its file, the information model in `DOMAIN.md`.
 - A check that every object and field in the model has a glossary entry:
   it executes, and it is not a proxy, since a missing entry is the gap
   itself.
