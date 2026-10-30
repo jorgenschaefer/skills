@@ -17,7 +17,7 @@ Run `facts.sh <A> <B>` from this skill's directory, in the repository. Its heade
 
 **Read every file at B, through `git show <B>:<path>`**, and the old version at A. When `facts.sh` says `worktree not at B`, the files on disk are not the change.
 
-**The claim** is what the change said it would do. Read, in this order: the `claim` files (`CRITERIA.md`, tickets, `REVIEW.md` of a pipeline change, at the commit `facts.sh` names), then the commit messages, then a PR description if there is one. Where there is none, the page says "no stated intent; inferred from the code", and section 1 is your reading of the code.
+**The claim** is what the change said it would do. Read, in this order: the `claim` files (`CHANGE.md`, its chunks and `REVIEW.md`, at the commit `facts.sh` names), then the commit messages, then a PR description if there is one. Where there is none, the page says "no stated intent; inferred from the code", and section 1 is your reading of the code.
 
 Read every non-test file of the diff in full. Read tests by their names, and in full only where section 5 needs it.
 

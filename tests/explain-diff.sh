@@ -45,9 +45,10 @@ has() {  # name, expected line, output
 # --- facts.sh -----------------------------------------------------------------
 
 workspace
-mkdir -p "$WORK/changes/2026-01-01-x" "$WORK/changes/backlog"
-echo criteria > "$WORK/changes/2026-01-01-x/CRITERIA.md"
+mkdir -p "$WORK/changes/2026-01-01-x" "$WORK/changes/backlog" "$WORK/changes/friction"
+echo change > "$WORK/changes/2026-01-01-x/CHANGE.md"
 echo idea > "$WORK/changes/backlog/later.md"
+echo hard > "$WORK/changes/friction/2026-01-01-x.md"
 commit paper
 echo '{}' > "$WORK/package.json"
 git -C "$WORK" rm -q src/rule.js
@@ -60,13 +61,16 @@ B="$(git -C "$WORK" rev-parse HEAD)"
 out="$(facts)"
 
 has "the range is named by its full shas" "range	$A	$B" "$out"
-# The criteria come and go inside the range, so the diff holds the four others.
-has "the size counts commits, files, insertions and deletions" "size	3	4	3	2" "$out"
+# The change's directory comes and goes inside the range, so the diff holds the five others.
+has "the size counts commits, files, insertions and deletions" "size	3	5	4	2" "$out"
 has "a change directory deleted in the range is read where it last stood" \
-  "claim	$paper	changes/2026-01-01-x/CRITERIA.md" "$out"
+  "claim	$paper	changes/2026-01-01-x/CHANGE.md" "$out"
 if ! grep -q 'backlog' <<<"$out"; then
   ok "the backlog is no claim"
 else bad "the backlog is no claim" "$out"; fi
+if ! grep -q 'friction' <<<"$out"; then
+  ok "the friction notes are no claim"
+else bad "the friction notes are no claim" "$out"; fi
 has "a dependency file is named as a decision" "decision	dependencies	package.json" "$out"
 has "a deleted file is named" "deleted	src/rule.js" "$out"
 has "a test counts declarations added, removed and skips added" "tests	M	src/app.test.js	1	1	1" "$out"
@@ -86,11 +90,11 @@ git -C "$WORK" checkout -q -- src/app.js
 
 workspace
 mkdir -p "$WORK/changes/2026-01-01-x"
-echo criteria > "$WORK/changes/2026-01-01-x/CRITERIA.md"
+echo change > "$WORK/changes/2026-01-01-x/CHANGE.md"
 commit paper
 B="$(git -C "$WORK" rev-parse HEAD)"
 has "a change directory still there at B is read at B" \
-  "claim	$B	changes/2026-01-01-x/CRITERIA.md" "$(facts)"
+  "claim	$B	changes/2026-01-01-x/CHANGE.md" "$(facts)"
 
 for origin in git@github.com:o/r.git https://github.com/o/r.git ssh://git@github.com/o/r https://github.com/o/r; do
   git -C "$WORK" remote remove origin 2>/dev/null || true
