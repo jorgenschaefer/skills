@@ -68,4 +68,4 @@ This skill's `JOURNEY_FORMAT.md` and `CHANGE_FORMAT.md` settle the shape of the 
 
 **Weigh what the user says before following it.** For each answer or correction, look for what would make it better - a gap, a simpler form, a consequence it misses - and propose it, or object where you think it is wrong. Once: a decision reaffirmed after hearing the objection is theirs.
 
-**Stopping here is an ending.** Say that `./run.sh changes/YYYY-MM-DD-<slug>` builds the change, and that `/split-change-into-chunks` splits it first where it is too big for one agent to build within one context. Leave going on to the user to ask for.
+**Stopping here is an ending.** Say that `./run.sh changes/YYYY-MM-DD-<slug>` builds the change with nobody watching, and splits it first where it is too big for one agent to build within one context. Leave going on to the user to ask for.
