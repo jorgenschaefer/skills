@@ -52,7 +52,7 @@ It interviews me and helps me identify the actual problem I am trying to solve.
 
 Once we have that identified, it finds the user journeys this change affects, and works with me to change them or add new ones. Where the software already does something that no journey describes yet, it first writes that journey from what the software does today, and I confirm it.
 
-It then walks the user journey and discusses with me how each step would look and feel. Where seeing a step says more than describing it, it builds a rough prototype I can click through, and we walk that. It provides alternative options all the way until we agree on a finished design. The prototype is thrown away afterwards.
+It then walks the user journey and discusses with me how each step would look and feel. Where seeing a step says more than describing it, it builds a rough prototype I can click through, and we walk that. It provides alternative options all the way until we agree on a finished design. The builder builds to the prototype, and the prototype is thrown away when the change is accepted.
 
 Once finalized, the agent creates two documents:
 
