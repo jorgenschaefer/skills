@@ -67,7 +67,7 @@ Spawn `review-change` with a fresh context. Give it the diff from where the bran
 ## Docs last
 
 - **`CLAUDE.md`:** hold every statement it makes about the code - a layout, a file, a rule - against the code, and fix whichever is wrong.
-- **`UBIQUITOUS_LANGUAGE.md`**, where the repository has one: run `/ubiquitous-language` for its drift.
+- **`UBIQUITOUS_LANGUAGE.md`**, where the repository has one: run `/init-ubiquitous-language` for its drift.
 
 ## Finish
 

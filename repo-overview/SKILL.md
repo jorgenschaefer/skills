@@ -1,6 +1,6 @@
 ---
 name: repo-overview
-description: Use when someone needs an orientation to a repository — "give me an overview of this repo", "I'm new to this codebase", "what does this repo do", "onboard me to this project" — or asks to write or refresh `ARCHITECTURE.md` ("regenerate the architecture doc", "the architecture doc is stale").
+description: Use when someone needs an orientation to a repository — "give me an overview of this repo", "I'm new to this codebase", "what does this repo do", "onboard me to this project".
 ---
 
 # Repo Overview
@@ -11,11 +11,7 @@ You are a tour guide for a developer who is new to this codebase. Your job is to
 
 ## Where the report goes
 
-Present it inline, and write the same text to `ARCHITECTURE.md` at the root of the repository you explored. It is a **build artifact, not a document** — re-derived whole every time this runs — and the banner in the output format below says so, because the only reader who can act on that is the person tempted to edit it.
-
-Say in your reply that you wrote it, and where. Three cases where you do not: the working directory is not a repository, the tree is not the user's to write into, or an existing `ARCHITECTURE.md` has uncommitted edits — overwriting a committed file is what this is for, but silently taking somebody's unsaved work with it is not. In that last case say what you found and let them decide.
-
-If the project commits it, the next run's overwrite shows up as a diff, which is the most useful form this file takes: what changed since somebody last looked.
+Present it inline. It is not saved: it describes the code as it is today, and a file of it would go out of date with the next change.
 
 ## Before starting
 
@@ -23,7 +19,7 @@ No arguments are required. Explore the current working directory.
 
 If `UBIQUITOUS_LANGUAGE.md` exists, read it first — it is the project's agreed vocabulary, and the report uses those words rather than inventing parallel ones.
 
-Read any existing `ARCHITECTURE.md` **yourself, and do not hand it to the agents below**. It describes the code as it was when somebody last ran this, and the reason to run again is that something has moved — an agent that reads the old claims while deriving the new ones will confirm them, which is also how a hand-edit survives the overwrite that was supposed to end it. Derive from the code, then diff what you found against what the file said. What changed is the most interesting thing you can tell the reader.
+Where `journeys/` exists, read it too: each file is a thing the software's user does, in their words, and the main workflows are named after them.
 
 ## Parallelize the reads
 
@@ -43,7 +39,7 @@ Stop on each item once you have enough for its section - reading every file in a
 
 1. **Dependency manifest** — `package.json`, `go.mod`, `pyproject.toml`, `Gemfile`, `pom.xml`, `Cargo.toml`, etc. → identify tech stack
 2. **Directory structure** — two levels deep → code organization
-3. **Entry documentation** — `README.md`, `CLAUDE.md`, `AGENTS.md` → stated purpose and conventions
+3. **Entry documentation** — `README.md`, `CLAUDE.md`, `AGENTS.md`, `journeys/` → stated purpose, conventions and what the users do
 4. **`UBIQUITOUS_LANGUAGE.md`** → the vocabulary to reuse rather than reinvent
 5. **Domain/model layer** — directories named `domain/`, `models/`, `entities/`, or equivalent → core domain objects
 6. **Service/application layer** — directories named `services/`, `use_cases/`, `application/`, `handlers/`, or equivalent → main workflows
@@ -90,7 +86,7 @@ For each workflow: name, entry point as `path/to/file:function_or_handler`, one-
 
 ### Where to start
 
-The few files a new developer should read first, in the order that builds understanding most efficiently. One reason per file — why this specific file, what it teaches that the others don't. Where `UBIQUITOUS_LANGUAGE.md` exists, it goes first: it is the shared domain vocabulary, and a developer who doesn't know it exists can't benefit from it. Never list `ARCHITECTURE.md` itself — the reader is holding it.
+The few files a new developer should read first, in the order that builds understanding most efficiently. One reason per file — why this specific file, what it teaches that the others don't. Where `UBIQUITOUS_LANGUAGE.md` exists, it goes first: it is the shared domain vocabulary, and a developer who doesn't know it exists can't benefit from it.
 
 ### The report as a whole
 
@@ -99,10 +95,6 @@ The few files a new developer should read first, in the order that builds unders
 ## Output format
 
 ```
-_Re-derived from the code by `/repo-overview` on <today's date, from `date`>. Not
-hand-edited: the next run overwrites this file whole, so a correction made here is
-a correction lost. Where it is wrong, the code has moved — run it again._
-
 ## What This Is
 2–3 sentences: what the system does, who uses it, what problem it solves.
 
@@ -138,4 +130,4 @@ Organizing principle: <one sentence>
 ...
 ```
 
-Aim for a report that takes 5 minutes to read, not 30. One text, written once, saved and shown.
+Aim for a report that takes 5 minutes to read, not 30.

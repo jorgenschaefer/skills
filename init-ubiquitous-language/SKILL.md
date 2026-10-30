@@ -1,5 +1,5 @@
 ---
-name: ubiquitous-language
+name: init-ubiquitous-language
 description: Use to write a UBIQUITOUS_LANGUAGE.md glossary from the domain terms in a codebase that has none - "create a glossary", "document our domain terms", "capture the vocabulary of this codebase" - or to refresh an existing one and check it against the code - "is our glossary still accurate", "check the glossary for drift".
 ---
 
