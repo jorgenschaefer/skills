@@ -47,7 +47,7 @@ else bad "the build is told the command, and that it was green" "$(calls)"; fi
 workspace
 STUB_VERIFY=false
 plan build build review
-rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" FAST_CHECK=true bash "$RUNNER" changes/x/tickets > "$WORK/.out" 2>&1 ); echo $?)"
+rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" FAST_CHECK=true bash "$RUNNER" changes/x > "$WORK/.out" 2>&1 ); echo $?)"
 if [ "$rc" != 0 ] && [ ! -s "$STUB_CALLS" ]; then
   ok "a FAST_CHECK already in the environment does not skip the checks"
 else bad "a FAST_CHECK already in the environment does not skip the checks" "rc=$rc $(out)"; fi

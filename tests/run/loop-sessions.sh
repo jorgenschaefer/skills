@@ -13,13 +13,13 @@ set -uo pipefail
 # --- the runner owns the claim
 #
 # A crashed session leaves its claim behind; only the runner can put it back,
-# and the proof is that the ticket gets picked up again at all.
+# and the proof is that the chunk gets picked up again at all.
 
 workspace
 plan die build build review
 run > /dev/null
-if [ "$(field 1-one status)" = "done" ]; then ok "a ticket whose session died is picked up again"
-else bad "a ticket whose session died is picked up again" "$(field 1-one status) $(out)"; fi
+if [ "$(field 1-one status)" = "done" ]; then ok "a chunk whose session died is picked up again"
+else bad "a chunk whose session died is picked up again" "$(field 1-one status) $(out)"; fi
 if [ "$(field 1-one attempts)" = 2 ]; then ok "a dead session still spends an attempt"
 else bad "a dead session still spends an attempt" "attempts=$(field 1-one attempts)"; fi
 
@@ -27,9 +27,9 @@ else bad "a dead session still spends an attempt" "attempts=$(field 1-one attemp
 workspace
 plan die die
 rc="$(run)"
-if [ "$rc" != 0 ] && [ "$(field 1-one status)" = halted ] && grep -q 'exhausted' <(tkt 1-one); then
-  ok "the attempt budget, once spent, halts the ticket as exhausted"
-else bad "the attempt budget, once spent, halts the ticket as exhausted" "rc=$rc $(tail -3 <(tkt 1-one))"; fi
+if [ "$rc" != 0 ] && [ "$(field 1-one status)" = halted ] && grep -q 'exhausted' <(chk 1-one); then
+  ok "the attempt budget, once spent, halts the chunk as exhausted"
+else bad "the attempt budget, once spent, halts the chunk as exhausted" "rc=$rc $(tail -3 <(chk 1-one))"; fi
 
 # --- a session that stops before it finishes
 #
@@ -82,7 +82,7 @@ else bad "what it left is stashed, not built on" "$(git -C "$WORK" ls-files) / $
 workspace
 plan stop-early stop-early build build review
 ( cd "$WORK/changes" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=0 LIMIT_MARGIN=0 MAX_ATTEMPTS=2 \
-    bash "$RUNNER" x/tickets > "$WORK/.out" 2>&1 )
+    bash "$RUNNER" x > "$WORK/.out" 2>&1 )
 if [ ! -e "$WORK/code" ] && git -C "$WORK" stash list | grep -q '1-one.*attempt 1'; then
   ok "started from a subdirectory, what is left at the root is stashed too"
 else bad "started from a subdirectory, what is left at the root is stashed too" "$(git -C "$WORK" status --porcelain) / $(git -C "$WORK" stash list) $(out)"; fi
@@ -99,8 +99,8 @@ else bad "what a finished build leaves behind is put aside under its own name, n
 workspace
 plan claim-dirty claim-only
 run > /dev/null
-if grep -q 'git stash' <(tkt 1-one); then ok "a halt after abandoned attempts points at the stash"
-else bad "a halt after abandoned attempts points at the stash" "$(tail -3 <(tkt 1-one))"; fi
+if grep -q 'git stash' <(chk 1-one); then ok "a halt after abandoned attempts points at the stash"
+else bad "a halt after abandoned attempts points at the stash" "$(tail -3 <(chk 1-one))"; fi
 
 # --- a build that committed nothing
 #
@@ -111,8 +111,8 @@ else bad "a halt after abandoned attempts points at the stash" "$(tail -3 <(tkt 
 workspace
 plan claim-only build build review
 run > /dev/null
-if [ "$(field 1-one status)" = "done" ]; then ok "a ticket whose session committed nothing is picked up again"
-else bad "a ticket whose session committed nothing is picked up again" "$(field 1-one status)"; fi
+if [ "$(field 1-one status)" = "done" ]; then ok "a chunk whose session committed nothing is picked up again"
+else bad "a chunk whose session committed nothing is picked up again" "$(field 1-one status)"; fi
 if [ "$(field 1-one attempts)" = 2 ]; then ok "a session that committed nothing still spends an attempt"
 else bad "a session that committed nothing still spends an attempt" "attempts=$(field 1-one attempts)"; fi
 
@@ -124,16 +124,16 @@ if [ -z "$(git -C "$WORK" ls-files code)" ] && git -C "$WORK" stash list | grep 
 else bad "what a build that committed nothing left behind is stashed, not built on" "$(git -C "$WORK" ls-files) / $(git -C "$WORK" stash list)"; fi
 
 # The finish goes into the build's own commit rather than one of its own, since
-# only a session can write a message - and a ticket the session left out of that
+# only a session can write a message - and a chunk the session left out of that
 # commit goes in with it.
 workspace
 plan code-only build review
 run > /dev/null
 built="$(git -C "$WORK" log -1 --format=%H --grep='^build 1-one')"
 if [ "$(git -C "$WORK" rev-list --count "$built")" = 3 ] && [ -z "$(git -C "$WORK" status --porcelain)" ] \
-   && [ "$(git -C "$WORK" show "$built:changes/x/tickets/1-one.md" | sed -n 's/^status: *//p')" = "done" ]; then
-  ok "done is amended into the build's commit, ticket and all"
-else bad "done is amended into the build's commit, ticket and all" "$(git -C "$WORK" log --stat) $(git -C "$WORK" status --porcelain)"; fi
+   && [ "$(git -C "$WORK" show "$built:changes/x/chunks/1-one.md" | sed -n 's/^status: *//p')" = "done" ]; then
+  ok "done is amended into the build's commit, chunk and all"
+else bad "done is amended into the build's commit, chunk and all" "$(git -C "$WORK" log --stat) $(git -C "$WORK" status --porcelain)"; fi
 
 workspace
 plan claim-only claim-only
@@ -141,9 +141,9 @@ rc="$(run)"
 if [ "$rc" != 0 ] && [ "$(field 1-one status)" = halted ]; then
   ok "a build that never commits halts once the budget is spent"
 else bad "a build that never commits halts once the budget is spent" "rc=$rc status=$(field 1-one status)"; fi
-if grep -q 'unbuilt' <(tkt 1-one) && grep -q 'committed nothing' <(tkt 1-one); then
+if grep -q 'unbuilt' <(chk 1-one) && grep -q 'committed nothing' <(chk 1-one); then
   ok "the halt is named for what happened, not for the budget"
-else bad "the halt is named for what happened, not for the budget" "$(tail -3 <(tkt 1-one))"; fi
+else bad "the halt is named for what happened, not for the budget" "$(tail -3 <(chk 1-one))"; fi
 
 # --- a session's own halt stops the run
 
@@ -158,8 +158,8 @@ else bad "a halt leaves the rest of the directory alone" "$(field 2-two status)"
 # A halt is the one thing a run leaves for a person, and the runner commits its
 # own. A session's own was left uncommitted, for the next start to read as
 # someone else's change.
-if [ "$(git -C "$WORK" show HEAD:changes/x/tickets/1-one.md | sed -n 's/^status: *//p')" = halted ] \
-   && [ -z "$(git -C "$WORK" status --porcelain -- changes/x/tickets)" ] \
+if [ "$(git -C "$WORK" show HEAD:changes/x/chunks/1-one.md | sed -n 's/^status: *//p')" = halted ] \
+   && [ -z "$(git -C "$WORK" status --porcelain -- changes/x/chunks)" ] \
    && [ "$(git -C "$WORK" log -1 --format=%s)" = "Halt 1-one: blocked" ]; then
   ok "a session's halt is committed, named for its kind"
 else bad "a session's halt is committed, named for its kind" "$(git -C "$WORK" log --oneline | head -3) $(git -C "$WORK" status --porcelain)"; fi

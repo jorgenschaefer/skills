@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# The tests for the runner: what it does with a ticket directory when nobody is
+# The tests for the runner: what it does with a change when nobody is
 # watching.
 #
 #   tests/run.sh
@@ -35,118 +35,60 @@ else bad "it refuses a repository with no commits, for the reason it gives" "rc=
 if [ ! -s "$STUB_CALLS" ]; then ok "a repository with no commits launches nothing"
 else bad "a repository with no commits launches nothing" "$(calls)"; fi
 
-# Someone's notes in the ticket directory are not a ticket.
+# Someone's notes in the chunk directory are not a chunk.
 workspace
-printf '# notes\n' > "$WORK/changes/x/tickets/README.md"; commit
+printf '# notes\n' > "$WORK/changes/x/chunks/README.md"; commit
 plan build build review
 rc="$(run)"
 if [ "$rc" = 0 ] && grep -q 'ignoring' "$WORK/.out"; then
-  ok "a file that is not a ticket is ignored, and said so"
-else bad "a file that is not a ticket is ignored, and said so" "rc=$rc $(out)"; fi
+  ok "a file that is not a chunk is ignored, and said so"
+else bad "a file that is not a chunk is ignored, and said so" "rc=$rc $(out)"; fi
 
-# --- on main: a branch of its own, named after the change directory
+# --- the change's directory, on the change's branch
 #
-# Started on main, a run makes its branch and runs there, rather than refusing
-# and being started a second time by hand.
+# /design-user-journeys commits the journeys and CHANGE.md on a branch of the
+# change's own, so main never describes software that is not built yet. Started
+# on main, the run refuses rather than building there.
 
 on()  { git -C "$WORK" rev-parse --abbrev-ref HEAD; }
 tip() { git -C "$WORK" rev-parse "$1"; }
-from_main() { workspace; git -C "$WORK" checkout -q main; started="$(tip main)"; }
-# Refused on main: nothing launched, no branch made, and main where it was.
-untouched() { [ ! -s "$STUB_CALLS" ] && [ "$(on)" = main ] && [ "$(tip main)" = "$started" ] \
-                && [ "$(git -C "$WORK" branch --list | wc -l)" = 2 ]; }
 
-from_main
-plan build build review
+workspace; git -C "$WORK" checkout -q main; started="$(tip main)"
+plan build
 rc="$(run)"
-if [ "$rc" = 0 ] && [ "$(on)" = x ] && [ "$(tip main)" = "$started" ] \
-   && [ "$(git -C "$WORK" merge-base x main)" = "$started" ]; then
-  ok "started on main, it runs on a branch named after the change, and main gains nothing"
-else bad "started on main, it runs on a branch named after the change, and main gains nothing" "rc=$rc on=$(on) $(out)"; fi
-if grep -q 'made branch x from main' "$WORK/.out"; then
-  ok "it says which branch it made, and from which"
-else bad "it says which branch it made, and from which" "$(out)"; fi
+if [ "$rc" = 2 ] && grep -q 'refusing to run on main' "$WORK/.out" && [ ! -s "$STUB_CALLS" ] \
+   && [ "$(on)" = main ] && [ "$(tip main)" = "$started" ]; then
+  ok "started on main, it refuses, touching nothing"
+else bad "started on main, it refuses, touching nothing" "rc=$rc on=$(on) $(out)"; fi
 
-from_main; git -C "$WORK" branch -q -m main master
-plan build build review
+workspace; git -C "$WORK" checkout -q main; git -C "$WORK" branch -q -m main master
+plan build
 rc="$(run)"
-if [ "$rc" = 0 ] && [ "$(on)" = x ] && [ "$(tip master)" = "$started" ]; then
-  ok "started on master, it runs on a branch of its own as on main"
-else bad "started on master, it runs on a branch of its own as on main" "rc=$rc on=$(on) $(out)"; fi
+if [ "$rc" = 2 ] && grep -q 'refusing to run on master' "$WORK/.out" && [ ! -s "$STUB_CALLS" ]; then
+  ok "started on master, it refuses as on main"
+else bad "started on master, it refuses as on main" "rc=$rc on=$(on) $(out)"; fi
 
-# Every path the run builds starts from the ticket directory's parent, so
-# `tickets/.` once named the branch `tickets` and halted every ticket as drift.
-from_main
+workspace
+plan build
+rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" bash "$RUNNER" changes/nope >"$WORK/.out" 2>&1 ); echo $?)"
+if [ "$rc" = 2 ] && grep -q 'no CHANGE.md in changes/nope' "$WORK/.out" && [ ! -s "$STUB_CALLS" ]; then
+  ok "a directory with no CHANGE.md is refused"
+else bad "a directory with no CHANGE.md is refused" "rc=$rc $(out)"; fi
+
+workspace
 plan build build review
 rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=0 LIMIT_MARGIN=0 MAX_ATTEMPTS=2 \
-           bash "$RUNNER" changes/x/tickets/. >"$WORK/.out" 2>&1 ); echo $?)"
-if [ "$rc" = 0 ] && [ "$(on)" = x ] && [ "$(field 2-two status)" = "done" ]; then
-  ok "the ticket directory named as tickets/. runs as tickets does"
-else bad "the ticket directory named as tickets/. runs as tickets does" "rc=$rc on=$(on) $(out)"; fi
-
-# A branch of that name is some earlier run's, and may need more than resuming.
-from_main; git -C "$WORK" branch x topic
-plan build
-rc="$(run)"
-if [ "$rc" = 2 ] && [ "$(tip x)" = "$(tip topic)" ] && grep -q 'branch x is already there' "$WORK/.out" \
-   && [ ! -s "$STUB_CALLS" ] && [ "$(on)" = main ] && [ "$(tip main)" = "$started" ]; then
-  ok "started on main beside a branch of the change's name, it stops, touching nothing"
-else bad "started on main beside a branch of the change's name, it stops, touching nothing" "rc=$rc on=$(on) $(out) $(calls)"; fi
-
-from_main
-plan build
-rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" bash "$RUNNER" changes/x/nope >"$WORK/.out" 2>&1 ); echo $?)"
-if [ "$rc" = 2 ] && untouched; then ok "on main, a refusal before the branch is made leaves no branch"
-else bad "on main, a refusal before the branch is made leaves no branch" "rc=$rc on=$(on) $(out)"; fi
-
-from_main
-echo x > "$WORK/stray"
-plan build
-rc="$(run)"
-if [ "$rc" = 2 ] && grep -q 'dirty tree' "$WORK/.out" && untouched; then
-  ok "on main, a dirty tree is refused before the branch is made"
-else bad "on main, a dirty tree is refused before the branch is made" "rc=$rc on=$(on) $(out)"; fi
-
-from_main
-# shellcheck disable=SC2016 # the backticks are Markdown's, written literally
-printf '# x\n\nCheck: `true`\nFast check: `true`\n' > "$WORK/CLAUDE.md"; commit; started="$(tip main)"
-plan build
-rc="$(run)"
-# shellcheck disable=SC2016 # the backticks are Markdown's, matched literally
-if [ "$rc" = 2 ] && grep -q 'remove `Check:`' "$WORK/.out" && untouched; then
-  ok "on main, a CLAUDE.md with both Check: and Fast check: is refused before the branch is made"
-else bad "on main, a CLAUDE.md with both Check: and Fast check: is refused before the branch is made" "rc=$rc on=$(on) $(out)"; fi
-
-from_main
-git -C "$WORK" mv changes/x changes/x..y; git -C "$WORK" commit -qm rename; started="$(tip main)"
-plan build
-rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" bash "$RUNNER" changes/x..y/tickets >"$WORK/.out" 2>&1 ); echo $?)"
-if [ "$rc" = 2 ] && grep -q "could not make the run's branch x..y" "$WORK/.out" && untouched; then
-  ok "on main, a change directory git cannot name a branch after is refused"
-else bad "on main, a change directory git cannot name a branch after is refused" "rc=$rc on=$(on) $(out)"; fi
-
-# The checks before the first build halt a ticket by committing it, and that
-# commit is the run's: it lands on the branch, which a second start carries on.
-from_main
-sed -i '/^- \*\*AC-1\*\*/d' "$WORK/changes/x/CRITERIA.md"; git -C "$WORK" commit -qam delete; started="$(tip main)"
-plan build
-rc="$(run)"
-if [ "$rc" != 0 ] && [ "$(on)" = x ] && [ "$(tip main)" = "$started" ] \
-   && git -C "$WORK" log --format=%s main..x | grep -q '^Halt 1-one'; then
-  ok "a halt before the first build, started on main, is committed on the run's branch"
-else bad "a halt before the first build, started on main, is committed on the run's branch" "rc=$rc on=$(on) $(out)"; fi
-rc="$(run)"
-if [ "$rc" != 0 ] && [ "$(on)" = x ] && grep -q 'AC-1 is gone from' "$WORK/.out" \
-   && ! grep -q 'already there' "$WORK/.out"; then
-  ok "started again on the run's branch, it carries on there"
-else bad "started again on the run's branch, it carries on there" "rc=$rc on=$(on) $(out)"; fi
+           bash "$RUNNER" changes/x/ >"$WORK/.out" 2>&1 ); echo $?)"
+if [ "$rc" = 0 ] && [ "$(field 2-two status)" = "done" ]; then
+  ok "the change's directory named with a trailing slash runs as without one"
+else bad "the change's directory named with a trailing slash runs as without one" "rc=$rc $(out)"; fi
 
 workspace
 plan build build review
 rc="$(run)"
 if [ "$rc" = 0 ] && [ "$(on)" = topic ] && [ "$(git -C "$WORK" branch --list | wc -l)" = 2 ]; then
-  ok "on any other branch, it makes and switches no branch"
-else bad "on any other branch, it makes and switches no branch" "rc=$rc on=$(on) $(out)"; fi
+  ok "on the change's branch, it makes and switches no branch"
+else bad "on the change's branch, it makes and switches no branch" "rc=$rc on=$(on) $(out)"; fi
 
 # --- one runner at a time
 #
@@ -191,16 +133,16 @@ else bad "a process the checks leave running does not hold the lock" "rc=$rc $(o
 
 # --- the frontmatter, and only the frontmatter
 #
-# A ticket about the ticket format has body lines that look exactly like fields,
-# and this repository's own tickets are full of them.
+# A chunk about the chunk format has body lines that look exactly like fields,
+# and this repository's own chunks are full of them.
 
 workspace
 # shellcheck disable=SC2016 # a Markdown fence, written literally
-printf '\n## Left standing\n\n```\nstatus:    review\nattempts:  7\n```\n' >> "$WORK/changes/x/tickets/1-one.md"; commit
+printf '\n## Left standing\n\n```\nstatus:    review\nattempts:  7\n```\n' >> "$WORK/changes/x/chunks/1-one.md"; commit
 plan build build review
 run > /dev/null
-if [ "$(grep -c '^status:    review' "$WORK/changes/x/tickets/1-one.md")" = 1 ]; then
+if [ "$(grep -c '^status:    review' "$WORK/changes/x/chunks/1-one.md")" = 1 ]; then
   ok "only the frontmatter is rewritten"
-else bad "only the frontmatter is rewritten" "$(tkt 1-one)"; fi
+else bad "only the frontmatter is rewritten" "$(chk 1-one)"; fi
 
 finish

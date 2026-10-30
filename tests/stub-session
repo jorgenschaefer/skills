@@ -2,7 +2,7 @@
 #
 # Stands in for `claude` while the runner's own tests run.
 #
-# Each invocation consumes one line of $STUB_PLAN and does to the ticket what
+# Each invocation consumes one line of $STUB_PLAN and does to the chunk what
 # that session would have done:
 #
 #   build        set status: done, write a Left standing that names something -
@@ -17,6 +17,7 @@
 #                than a narrated line, as the CLI reports a call it would not
 #                run - the first Bash one preceded by the event that gives the
 #                classifier's reason, the others by none
+#   build-journey  build, and add a step to journeys/one.md in the same commit
 #   build-dirty  build, and leave an untracked file behind besides
 #   build-killed build, then kill the runner with -9 before it can check the build
 #   build-red    build, and leave .red at the root, which a test's check reads
@@ -32,14 +33,14 @@
 #   claim-only   set status: done having committed nothing
 #   claim-dirty  the same, with code written and left uncommitted
 #   claim-killed set status: done, commit nothing, and kill the runner with -9
-#   code-only    set status: done, and commit the code but not the ticket
+#   code-only    set status: done, and commit the code but not the chunk
 #   halt:<kind>  write the halt, two paragraphs, and set status: halted - with
 #                $STUB_HALT_EXTRA's contents after them, where it names a file
 #   die          exit 1 having touched nothing, as a crash does
-#   stop-early   write code and leave it uncommitted, the ticket at `doing`, and
+#   stop-early   write code and leave it uncommitted, the chunk at `doing`, and
 #                exit 0 - a session that ended its turn waiting on background
 #                work, which `-p` then killed
-#   commit-stop  commit code, leave the ticket at `doing` and nothing
+#   commit-stop  commit code, leave the chunk at `doing` and nothing
 #                uncommitted, and exit 0 - a session that committed its build
 #                and ended its turn on the checks it had started
 #   limit        be rejected by a usage limit, in the events the CLI really
@@ -53,9 +54,15 @@
 #                window, but it goes on to finish - then `build`
 #   killed       write code, then kill the runner with -9 - it gets no chance to
 #                tidy up, as with a power cut or a closed laptop
+#   split-none   the split, finding that the change fits one agent: writes nothing
+#   split-two    the split, writing two chunks of the change - one per journey,
+#                the second after the first - and committing them
+#   split-dirty  split-two, leaving the chunks uncommitted
 #   review       the final review - write and commit the REVIEW.md its prompt
 #                names, and end in a successful result, as the CLI does
 #   review-red   the final review, and leave .red at the root besides
+#   review-journey  the final review, then add a step to journeys/one.md and
+#                commit that too
 #   review-dies  the final review, dying with no REVIEW.md and no result
 #   review-stop-early  the final review, ending in a successful result with no
 #                REVIEW.md - a review that ended its turn waiting on a subagent
@@ -73,9 +80,9 @@
 # 111 in its own context, on one message written twice as the CLI repeats a
 # message once per content block, and 1000 in a subagent's.
 #
-# Every call's session is written to $STUB_SESSIONS as `start <id> <ticket>` or
+# Every call's session is written to $STUB_SESSIONS as `start <id> <chunk>` or
 # `resume <id>` - the final review's start naming its REVIEW.md where a build's
-# names its ticket. A started call is told apart by how its brief opens, and
+# names its chunk. A started call is told apart by how its brief opens, and
 # one that opens neither way is an error. A resumed call names neither in its
 # prompt - the real session remembers what it was doing - so the stub looks it
 # up by the id.
@@ -103,11 +110,12 @@ if [[ " $* " == *" --json-schema "* ]]; then
   exit 0
 fi
 
-build_opening="Use /implement on the work described in "
+build_opening="Use /implement-change on the work described in "
+split_opening="Use /split-change-into-chunks on the change in "
 review_opening="Review the whole change this run built"
 review_named_by="write what you left standing to "
 
-# Reads the ticket or the review's file from where the brief names it on
+# Reads the chunk or the review's file from where the brief names it on
 # purpose: its opening, or the one sentence that names the review's file. The
 # rest of the brief may name REVIEW.md too - in a sentence, or in a test's
 # check command - and must not change which file the stub writes.
@@ -115,33 +123,36 @@ brief_names() {
   local first="${prompt%%$'\n'*}"
   case "$prompt" in
     "$build_opening"*)
-      ticket="${first#"$build_opening"}"
-      ticket="${ticket%.}" ;;
+      chunk="${first#"$build_opening"}"
+      chunk="${chunk%.}" ;;
+    "$split_opening"*)
+      chunk="${first#"$split_opening"}"
+      chunk="${chunk%.}/CHANGE.md" ;;
     "$review_opening"*)
       [[ "$prompt" == *"$review_named_by"* ]] \
         || { echo "stub: the review's brief no longer says \"$review_named_by<path>\": $prompt" >&2; exit 96; }
       review="${prompt#*"$review_named_by"}"
       review="${review%%[[:space:]]*}" ;;
-    *) echo "stub: a brief that is neither a build's nor the review's: $prompt" >&2; exit 96 ;;
+    *) echo "stub: a brief that is neither a build's, the split's nor the review's: $prompt" >&2; exit 96 ;;
   esac
 }
 
-ticket=""
+chunk=""
 review=""
 args=("$@")
 for i in "${!args[@]}"; do
   case "${args[$i]}" in
     --session-id) brief_names
-                  printf 'start %s %s\n' "${args[$((i + 1))]}" "${ticket:-$review}" >> "$STUB_SESSIONS" ;;
+                  printf 'start %s %s\n' "${args[$((i + 1))]}" "${chunk:-$review}" >> "$STUB_SESSIONS" ;;
     --resume)     id="${args[$((i + 1))]}"
                   printf 'resume %s\n' "$id" >> "$STUB_SESSIONS"
-                  ticket="$(awk -v id="$id" '$1 == "start" && $2 == id { print $3 }' "$STUB_SESSIONS")"
-                  case "$ticket" in *REVIEW.md) review="$ticket"; ticket="" ;; esac ;;
+                  chunk="$(awk -v id="$id" '$1 == "start" && $2 == id { print $3 }' "$STUB_SESSIONS")"
+                  case "$chunk" in *REVIEW.md) review="$chunk"; chunk="" ;; esac ;;
   esac
 done
 
 # One line per call, whitespace flattened, so a test can count calls and read
-# the first one to see which ticket went first.
+# the first one to see which chunk went first.
 n=$(( $(wc -l < "$STUB_CALLS") + 1 ))
 printf '%s\n' "$prompt" | tr '\n' ' ' >> "$STUB_CALLS"
 printf '\n' >> "$STUB_CALLS"
@@ -159,12 +170,12 @@ rejected_event() {
     "$(( $(date +%s) + ${STUB_RESET_IN:-0} ))"
 }
 
-set_status() { sed -i "2,/^---$/s/^status: .*/status:    $1/" "$ticket"; }
+set_status() { sed -i "2,/^---$/s/^status: .*/status:    $1/" "$chunk"; }
 
 case "$line" in
-  review|review-red|review-dies|review-stop-early)
-    # The final review names no ticket, which is how the stub tells it apart.
-    [ -n "$ticket" ] && { echo "stub: expected the review, got a ticket: $prompt" >&2; exit 97; }
+  review|review-red|review-journey|review-dies|review-stop-early)
+    # The final review names no chunk, which is how the stub tells it apart.
+    [ -n "$chunk" ] && { echo "stub: expected the review, got a chunk: $prompt" >&2; exit 97; }
     [ "$line" = review-dies ] && exit 1
     if [ "$line" = review-stop-early ]; then
       echo '{"type":"result","subtype":"success","is_error":false,"result":"waiting for critique"}'
@@ -174,21 +185,44 @@ case "$line" in
     git add "$review" >/dev/null 2>&1
     git commit -qm "review" >/dev/null 2>&1
     [ "$line" != review-red ] || : > "$(git rev-parse --show-toplevel)/.red"
+    if [ "$line" = review-journey ]; then
+      printf '2. a step the review added.\n' >> "$(git rev-parse --show-toplevel)/journeys/one.md"
+      git commit -qam "review the journey" >/dev/null 2>&1
+    fi
     echo '{"type":"result","subtype":"success","is_error":false,"result":"reviewed"}'
     ;;
-  build|build-declare|limit-passed|build-limit|build-refused|build-dirty|build-killed|build-red|build-red-killed)
+  split-none) echo '{"type":"result","subtype":"success","is_error":false,"result":"it fits"}' ;;
+  split-two|split-dirty)
+    # Two chunks of the change the split was handed, its Problem copied into
+    # each word for word, the second after the first.
+    dir="$(dirname "$chunk")"
+    mkdir -p "$dir/chunks"
+    problem="$(sed -n '/^## Problem$/,/^## /{/^## /d;p;}' "$chunk")"
+    for c in "1-one journeys/one.md " "2-two journeys/two.md 1-one"; do
+      read -r slug journeys after <<< "$c"
+      printf -- '---\njourneys:  %s\nafter:     %s\nstatus:    ready\nattempts:  0\n---\n\n# %s\n\n## Problem\n%s\n\n## Design\nx\n' \
+        "$journeys" "${after:-}" "$slug" "$problem" > "$dir/chunks/$slug.md"
+    done
+    if [ "$line" = split-two ]; then
+      git add "$dir/chunks" >/dev/null 2>&1
+      git commit -qm "split" >/dev/null 2>&1
+    fi
+    echo '{"type":"result","subtype":"success","is_error":false,"result":"split"}'
+    ;;
+  build|build-declare|build-journey|limit-passed|build-limit|build-refused|build-dirty|build-killed|build-red|build-red-killed)
     if [ "$line" = limit-passed ]; then
       echo '{"type":"assistant","message":{"role":"assistant","content":[]},"parent_tool_use_id":"toolu_sub","error":"rate_limit"}'
       rejected_event
       echo '{"type":"result","subtype":"success","is_error":false,"result":"built"}'
     fi
-    printf '\n## Left standing\n\n- left by %s\n' "$(basename "$ticket")" >> "$ticket"
-    [ -z "${STUB_LEFT_EXTRA:-}" ] || cat "$STUB_LEFT_EXTRA" >> "$ticket"
+    printf '\n## Left standing\n\n- left by %s\n' "$(basename "$chunk")" >> "$chunk"
+    [ -z "${STUB_LEFT_EXTRA:-}" ] || cat "$STUB_LEFT_EXTRA" >> "$chunk"
     # shellcheck disable=SC2016 # the backticks are Markdown's, written literally
     [ "$line" != build-declare ] || printf '%s: `%s`\n' "${STUB_DECLARE_AS:-Check}" "$STUB_DECLARE" >> "$(git rev-parse --show-toplevel)/CLAUDE.md"
+    [ "$line" != build-journey ] || printf '2. a step the build added.\n' >> "$(git rev-parse --show-toplevel)/journeys/one.md"
     set_status "done"
     git add -A >/dev/null 2>&1
-    git commit -qm "build $(basename "$ticket")" >/dev/null 2>&1
+    git commit -qm "build $(basename "$chunk")" >/dev/null 2>&1
     if [ "$line" = build-limit ]; then rejected_event; exit 1; fi
     if [ "$line" = build-refused ]; then
       printf '%s\n' '{"type":"system","subtype":"permission_denied","tool_name":"Bash","tool_use_id":"toolu_2","agent_id":"a1","decision_reason_type":"classifier","decision_reason":"[Irreversible Local Destruction]\nsecond line"}'
@@ -206,26 +240,26 @@ case "$line" in
   fix-red)
     rm -f "$(git rev-parse --show-toplevel)/.red"
     printf 'fixed\n' >> "$(git rev-parse --show-toplevel)/fix"
-    [ -z "$ticket" ] || set_status "done"
+    [ -z "$chunk" ] || set_status "done"
     git add -A >/dev/null 2>&1
-    git commit -qm "fix $(basename "$ticket")" >/dev/null 2>&1
+    git commit -qm "fix $(basename "$chunk")" >/dev/null 2>&1
     ;;
   fix-uncommitted) printf 'fixed\n' > "$(git rev-parse --show-toplevel)/fix" ;;
   claim-only|claim-dirty|claim-killed)
     [ "$line" != claim-dirty ] || printf 'half\n' > "$(git rev-parse --show-toplevel)/code"
-    printf 'built\n' >> "$ticket"
+    printf 'built\n' >> "$chunk"
     set_status "done"
     [ "$line" != claim-killed ] || kill -9 "$PPID"
     ;;
   code-only)
     printf 'built\n' > code
     git add code >/dev/null 2>&1
-    git commit -qm "build $(basename "$ticket")" >/dev/null 2>&1
+    git commit -qm "build $(basename "$chunk")" >/dev/null 2>&1
     set_status "done"
     ;;
   halt:*)
-    printf '\n## Halt\n\n%s - the stub was told to\n\nsecond line of the halt\n' "${line#halt:}" >> "$ticket"
-    [ -z "${STUB_HALT_EXTRA:-}" ] || cat "$STUB_HALT_EXTRA" >> "$ticket"
+    printf '\n## Halt\n\n%s - the stub was told to\n\nsecond line of the halt\n' "${line#halt:}" >> "$chunk"
+    [ -z "${STUB_HALT_EXTRA:-}" ] || cat "$STUB_HALT_EXTRA" >> "$chunk"
     set_status halted
     ;;
   die) exit 1 ;;
@@ -242,7 +276,7 @@ case "$line" in
   commit-stop)
     printf 'built\n' > "$(git rev-parse --show-toplevel)/code"
     git add "$(git rev-parse --show-toplevel)/code" >/dev/null 2>&1
-    git commit -qm "build $(basename "$ticket")" >/dev/null 2>&1
+    git commit -qm "build $(basename "$chunk")" >/dev/null 2>&1
     ;;
   limit-sub)
     echo '{"type":"assistant","message":{"role":"assistant","content":[]},"parent_tool_use_id":"toolu_sub","error":"rate_limit"}'

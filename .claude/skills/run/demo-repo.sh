@@ -1,8 +1,9 @@
 # shellcheck shell=bash
 #
 # Sourced, never run: builds a throwaway repository in $WORK with the runner's
-# own test harness - on main, one change in changes/2026-01-01-demo, a stub on
-# PATH where `claude` would be - and defines R, st and demo_done to drive it.
+# own test harness - one change in changes/2026-01-01-demo, on the branch of the
+# same name, a stub on PATH where `claude` would be - and defines R, st and
+# demo_done to drive it.
 
 # shellcheck source=SCRIPTDIR/../../../tests/run/harness.sh
 . "$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)/tests/run/harness.sh"
@@ -13,12 +14,13 @@ workspace
 git -C "$WORK" checkout -q main
 git -C "$WORK" mv changes/x changes/2026-01-01-demo
 git -C "$WORK" commit -qm "dated change dir"
-# The harness cuts topic before the rename; moved here, it holds the same change.
-git -C "$WORK" branch -f topic main
+# The change's own branch, as /design-user-journeys leaves it.
+git -C "$WORK" checkout -q -b 2026-01-01-demo
+git -C "$WORK" branch -q -D topic
 
-R() {  # [ticket dir] - run.sh on it, then its exit code
+R() {  # [change dir] - run.sh on it, then its exit code
   ( cd "$WORK" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=0 LIMIT_MARGIN=0 MAX_ATTEMPTS=2 \
-      bash "$RUNNER" "${1:-changes/2026-01-01-demo/tickets}" )
+      bash "$RUNNER" "${1:-changes/2026-01-01-demo}" )
   echo "exit=$?"
 }
 st() {  # [lines] - the branch checked out, the commit graph, sessions launched

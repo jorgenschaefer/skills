@@ -6,11 +6,11 @@
 #
 # Sourced by run.sh, never run.
 
-session() {  # ticket, --session-id or --resume, session id, prompt to resume with -> 0 ran, EX_LIMIT gave up on a limit, anything else failed
+session() {  # chunk, --session-id or --resume, session id, prompt to resume with -> 0 ran, EX_LIMIT gave up on a limit, anything else failed
   local rc prompt="${4:-$(brief "$1")}"
   say "session on $(basename "$1")"
   claude_through_limits "$(basename "$1" .md)" "$prompt" "$2" "$3"; rc=$?
-  say "session ended, exit $rc, ticket says status: $(field "$1" status)"
+  say "session ended, exit $rc, chunk says status: $(field "$1" status)"
   return $rc
 }
 
@@ -63,9 +63,9 @@ claude_through_limits() {  # log name, prompt, --session-id or --resume, session
 # refused log says which.
 #
 # `Agent` is the subagent tool, and it is what makes the review real:
-# `/implement` reviews its own diff by spawning `critique` in a session that did
+# `/implement-change` reviews its own diff by spawning `review-change` in a session that did
 # not write it, and there is no review pass here to fall back on. Without it the
-# build declines the spawn and every ticket reaches `done` unreviewed.
+# build declines the spawn and every chunk reaches `done` unreviewed.
 #
 # Nothing a session starts runs in the background. A turn ended with work still
 # running ends `claude -p` and kills that work, and telling sessions to stay in
@@ -82,7 +82,7 @@ claude_through_limits() {  # log name, prompt, --session-id or --resume, session
 # kept, for testing in the browser; the claude.ai connectors are not.
 #
 # The prompt goes in on stdin: Linux takes no single argument over 128 KiB, and
-# a final review handed 33 tickets' Left standing died before it started.
+# a final review handed 33 chunks' Left standing died before it started.
 TOOLS=(Bash Edit Write Read Glob Grep Skill Agent ToolSearch WebFetch WebSearch)
 claude_run() {  # log, --session-id or --resume, session id, prompt, claude's own options... -> claude's exit status
   ENABLE_CLAUDEAI_MCP_SERVERS=false CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1 \
@@ -138,7 +138,7 @@ refused() {  # log -> "Tool: target (reason)", one line per call the session was
 
 # Read off the events the CLI writes, never its wording: the message changed
 # once already, and a runner matching the old one relaunched a limited session
-# three times in four seconds and halted the ticket as exhausted. A session that
+# three times in four seconds and halted the chunk as exhausted. A session that
 # still finished was not stopped, whatever was rejected on the way - a subagent's
 # window, or one that overage paid for.
 limit_reset() {  # log -> the epoch the limit lifts, 0 where it named none; nothing when there was no limit
@@ -165,7 +165,7 @@ new_session_id() {
   cat /proc/sys/kernel/random/uuid 2>/dev/null || uuidgen | tr '[:upper:]' '[:lower:]'
 }
 
-# The token log: what each ticket cost, to find out where a slice gets too big
+# The token log: what each chunk cost, to find out where a chunk gets too big
 # to build. It is counted in context read, because a session re-reads its whole
 # context on every turn, and a long session pays for its size again each time.
 # Subagents are counted apart: a review is one. One line per session round,

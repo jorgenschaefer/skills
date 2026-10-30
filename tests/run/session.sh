@@ -18,13 +18,13 @@ set -uo pipefail
 #
 # The stub writes what the CLI writes when it is limited. The runner once
 # matched a message only the stub had ever printed, passed every case here, and
-# spent a real ticket's attempts in four seconds.
+# spent a real chunk's attempts in four seconds.
 
 workspace
 plan limit build build review
 run > /dev/null
-if [ "$(field 1-one status)" = "done" ]; then ok "a usage limit is waited out and the ticket still finishes"
-else bad "a usage limit is waited out and the ticket still finishes" "$(field 1-one status) $(out)"; fi
+if [ "$(field 1-one status)" = "done" ]; then ok "a usage limit is waited out and the chunk still finishes"
+else bad "a usage limit is waited out and the chunk still finishes" "$(field 1-one status) $(out)"; fi
 if [ "$(field 1-one attempts)" = 1 ]; then ok "waiting out a limit does not spend an attempt"
 else bad "waiting out a limit does not spend an attempt" "attempts=$(field 1-one attempts)"; fi
 first="$(awk 'NR == 1 && $1 == "start" { print $2 }' "$STUB_SESSIONS")"
@@ -41,7 +41,7 @@ else bad "the resumed session is told why it stopped" "$(calls)"; fi
 workspace
 plan limit build build review
 ( cd "$WORK" && PATH="$WORK/.bin:$PATH" STUB_RESET_IN=3600 LIMIT_MARGIN=120 WAIT_SECONDS=5 \
-    bash "$RUNNER" changes/x/tickets > "$WORK/.out" 2>&1 )
+    bash "$RUNNER" changes/x > "$WORK/.out" 2>&1 )
 slept="$(awk '{ s += $1 } END { print s + 0 }' "$SLEPT")"
 if [ "$slept" -ge 3715 ] && [ "$slept" -le 3720 ]; then
   ok "a limit is waited out until its reset, plus the margin"
@@ -54,7 +54,7 @@ workspace
 plan limit build build review
 echo 3000 > "$WORK/.suspend"
 ( cd "$WORK" && PATH="$WORK/.bin:$PATH" STUB_RESET_IN=3600 LIMIT_MARGIN=120 WAIT_SECONDS=5 \
-    bash "$RUNNER" changes/x/tickets > "$WORK/.out" 2>&1 )
+    bash "$RUNNER" changes/x > "$WORK/.out" 2>&1 )
 slept="$(awk '{ s += $1 } END { print s + 0 }' "$SLEPT")"
 if [ "$(field 1-one status)" = "done" ] && [ "$slept" -le 780 ]; then
   ok "a wait counts the time the machine was suspended"
@@ -67,7 +67,7 @@ plan limit-sub build build review
 run > /dev/null
 if [ ! -s "$SLEPT" ] && [ "$(field 1-one attempts)" = 2 ]; then
   ok "a subagent's limit does not make the session's failure a limit"
-else bad "a subagent's limit does not make the session's failure a limit" "slept=$(cat "$SLEPT") $(tkt 1-one)"; fi
+else bad "a subagent's limit does not make the session's failure a limit" "slept=$(cat "$SLEPT") $(chk 1-one)"; fi
 
 # A session that finished is not limited, whatever was rejected on the way.
 workspace
@@ -83,16 +83,16 @@ plan limit-quiet build build review
 run > /dev/null
 if [ "$(field 1-one status)" = "done" ] && [ "$(field 1-one attempts)" = 1 ]; then
   ok "a limit is recognised from the rejected event alone"
-else bad "a limit is recognised from the rejected event alone" "$(tkt 1-one) $(out)"; fi
+else bad "a limit is recognised from the rejected event alone" "$(chk 1-one) $(out)"; fi
 
 # A rate_limit error with no reset time still waits, for the fallback period.
 workspace
 plan limit-bare build build review
 ( cd "$WORK" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=7 LIMIT_MARGIN=0 \
-    bash "$RUNNER" changes/x/tickets > "$WORK/.out" 2>&1 )
+    bash "$RUNNER" changes/x > "$WORK/.out" 2>&1 )
 if [ "$(field 1-one status)" = "done" ] && [ "$(field 1-one attempts)" = 1 ] && [ "$(cat "$SLEPT")" = 7 ]; then
   ok "a limit that names no reset time is waited out too"
-else bad "a limit that names no reset time is waited out too" "$(tkt 1-one) $(out)"; fi
+else bad "a limit that names no reset time is waited out too" "$(chk 1-one) $(out)"; fi
 
 workspace
 plan build build limit review
@@ -104,7 +104,7 @@ else bad "a limit during the final review is waited out and the review carries o
 workspace
 plan build build limit limit limit
 rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=0 LIMIT_MARGIN=0 MAX_WAITS=2 \
-           bash "$RUNNER" changes/x/tickets > "$WORK/.out" 2>&1 ); echo $?)"
+           bash "$RUNNER" changes/x > "$WORK/.out" 2>&1 ); echo $?)"
 if [ "$rc" != 0 ] && grep -q 'gave up waiting out the limit' "$WORK/.out"; then
   ok "a final review that gives up on a limit fails the run"
 else bad "a final review that gives up on a limit fails the run" "rc=$rc $(out)"; fi
@@ -112,27 +112,27 @@ else bad "a final review that gives up on a limit fails the run" "rc=$rc $(out)"
 workspace
 plan build-limit
 ( cd "$WORK" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=0 LIMIT_MARGIN=0 MAX_WAITS=0 \
-    bash "$RUNNER" changes/x/tickets > "$WORK/.out" 2>&1 )
+    bash "$RUNNER" changes/x > "$WORK/.out" 2>&1 )
 if grep -q '1-one.md is at done' "$WORK/.out" && ! grep -q 'goes back to ready' "$WORK/.out"; then
   ok "giving up names the status the session left, not one it did not"
 else bad "giving up names the status the session left, not one it did not" "$(out)"; fi
 
 # And it is bounded: a limit that never lifts has to end the run rather than
-# wait forever - and without charging the ticket for it.
+# wait forever - and without charging the chunk for it.
 workspace
 plan limit limit limit
 rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=0 LIMIT_MARGIN=0 MAX_WAITS=2 MAX_ATTEMPTS=1 \
-           bash "$RUNNER" changes/x/tickets > "$WORK/.out" 2>&1 ); echo $?)"
+           bash "$RUNNER" changes/x > "$WORK/.out" 2>&1 ); echo $?)"
 if [ "$rc" != 0 ] && grep -q 'gave up waiting out the limit' "$WORK/.out"; then
   ok "a limit that never lifts gives up rather than waiting forever"
 else bad "a limit that never lifts gives up rather than waiting forever" "rc=$rc $(out)"; fi
 if [ "$(field 1-one status)" = ready ] && [ "$(field 1-one attempts)" = 0 ] && [ "$(wc -l < "$STUB_CALLS")" = 3 ]; then
-  ok "giving up on a limit hands the ticket back rather than halting it"
-else bad "giving up on a limit hands the ticket back rather than halting it" "$(tkt 1-one) $(calls)"; fi
+  ok "giving up on a limit hands the chunk back rather than halting it"
+else bad "giving up on a limit hands the chunk back rather than halting it" "$(chk 1-one) $(calls)"; fi
 
 # --- the token log
 #
-# Which tickets are expensive, counted in context read - a big session re-reads
+# Which chunks are expensive, counted in context read - a big session re-reads
 # a big context on every turn - with the subagents apart, since a review is
 # one. The stub's every call reads 111 in its own context, written twice the way
 # the CLI repeats a message per content block, and 1000 in a subagent's.
@@ -143,28 +143,28 @@ plan build build review
 run > /dev/null
 tokens="$WORK/.git/run-logs/changes_x.tokens"
 if grep -qx '1-one 111 1000' "$tokens" && grep -qx '2-two 111 1000' "$tokens"; then
-  ok "the token log keeps each ticket's context read, main session and subagents"
-else bad "the token log keeps each ticket's context read, main session and subagents" "$(cat "$tokens")"; fi
+  ok "the token log keeps each chunk's context read, main session and subagents"
+else bad "the token log keeps each chunk's context read, main session and subagents" "$(cat "$tokens")"; fi
 if grep -qx 'review 111 1000' "$tokens"; then
-  ok "the final review is counted beside the tickets"
-else bad "the final review is counted beside the tickets" "$(cat "$tokens")"; fi
+  ok "the final review is counted beside the chunks"
+else bad "the final review is counted beside the chunks" "$(cat "$tokens")"; fi
 
-# Every session a ticket took counts: a failed attempt read its context too.
+# Every session a chunk took counts: a failed attempt read its context too.
 workspace
 plan claim-only build build review
 run > /dev/null
 tokens="$WORK/.git/run-logs/changes_x.tokens"
 if [ "$(grep -cx '1-one 111 1000' "$tokens")" = 2 ]; then
-  ok "a ticket's count keeps every session it took"
-else bad "a ticket's count keeps every session it took" "$(cat "$tokens")"; fi
+  ok "a chunk's count keeps every session it took"
+else bad "a chunk's count keeps every session it took" "$(cat "$tokens")"; fi
 
 # A run is started again after a halt or a kill, and what the first start spent
 # is still spent.
 workspace
-sed -i 's/^after: .*/after:/' "$WORK/changes/x/tickets/2-two.md"; commit
+sed -i 's/^after: .*/after:/' "$WORK/changes/x/chunks/2-two.md"; commit
 plan build halt:blocked build review
 run > /dev/null
-sed -i '/^## Halt$/,$d; s/^status: .*/status:    ready/' "$WORK/changes/x/tickets/2-two.md"; commit
+sed -i '/^## Halt$/,$d; s/^status: .*/status:    ready/' "$WORK/changes/x/chunks/2-two.md"; commit
 run > /dev/null
 tokens="$WORK/.git/run-logs/changes_x.tokens"
 if [ "$(grep -c '^1-one ' "$tokens")" = 1 ] && [ "$(grep -c '^2-two ' "$tokens")" = 2 ]; then

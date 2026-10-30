@@ -19,12 +19,13 @@ npx skills add jorgenschaefer/skills@<skill-name>
 What developing with these skills is meant to be - its goals and its user journeys - is in
 `SDLC.md`. This README says how to install the skills and what the scripts do.
 
-Everything one change produces lives in `changes/YYYY-MM-DD-<slug>/`: `CRITERIA.md`, the
-agreed specimen in `specimens/`, the tickets in `tickets/`, and `REVIEW.md` where the runner's
-final review ran. ADRs go to `docs/adr/`.
+What outlives a change is in `journeys/`, one file per thing a user does. Everything else one
+change produces lives in `changes/YYYY-MM-DD-<slug>/`, on the change's branch, and is deleted
+once the change is accepted: `CHANGE.md`, the agreed prototype in `prototype/`, the chunks in
+`chunks/` where the change was split, and `REVIEW.md` where the runner's final review ran.
 
-`idea` fires by description; `find-criteria`, `criteria-to-tickets` and `accept-criteria` are
-typed.
+`idea` fires by description; `design-user-journeys` and `split-change-into-chunks` are typed,
+and the runner types the second itself.
 
 `run.sh` is a script rather than a skill. Its library is under `run/` - a directory with no
 `SKILL.md`, so not a skill, and `sync.sh` leaves it out.
@@ -43,59 +44,62 @@ over whatever turns out to be shared rather than over any file by name.
 
 ### The runner
 
-`./run.sh changes/<slug>/tickets` drives a ticket directory with nobody watching: it
-claims each ticket, builds it, and either finishes it or sends it back. Started on the
-main branch, it makes a branch named after the change's directory and runs there, and
-refuses where that branch already exists. It refuses to start on a dirty tree - the
-ticket files aside, which are its own bookkeeping - and before the first build it runs
+`./run.sh changes/<slug>` builds a change with nobody watching. It runs on the change's own
+branch, which `design-user-journeys` made, and refuses to start on main. On a first start a
+session runs `split-change-into-chunks`: where one agent cannot build the change within one
+context, it splits `CHANGE.md` into chunks in `chunks/`; where it can, the runner builds
+`CHANGE.md` as the one chunk. A split that halts - a question only the developer can answer, a
+step only a person can do - ends the run before anything is built. Then the runner claims each
+chunk, builds it, and either finishes it or sends it back. It refuses to start on a dirty tree -
+the chunk files aside, which are its own bookkeeping - and before the first build it runs
 the project's fast check and slow check itself - a run that starts red does not start,
 says which check is red, and every build is told the checks were green. The commands are
 the `Fast check:` and `Slow check:` lines in the project's `CLAUDE.md` - a `Check:` line
 with no `Fast check:` line is the fast check - read again before every run of the checks,
-so a ticket that declares one is held to it from its own commit on; only where no line
+so a chunk that declares one is held to it from its own commit on; only where no line
 names a fast check does a session name it, once per run. A `CLAUDE.md` with both `Check:`
 and `Fast check:` is refused, and on a build's commit it counts as a red check. It runs
 both checks again on every build's commit, rather than believing the session's account of
 them, so a session runs only the fast check: a red one goes back to the session that made
 it, told which check failed and where its output is, the first time without spending an
-attempt. It checks before every pass that the tickets still quote
-`CRITERIA.md`'s acceptance criteria and technical decisions word for word, that
-every ticket quotes every technical decision, that each ticket's `closes:` and
-`advances:` name exactly the criteria it quotes, and that every criterion is closed by
-exactly one ticket, built after every ticket that advances it - a criterion can take
-several slices, but one of them finishes it and writes its test. It enforces the attempt
-budget from a counter in the ticket file, and waits out a usage limit rather than
+attempt. It checks before every pass that every journey `CHANGE.md` names is there, that
+`after:` names chunks that exist, and, where the change was split, that every chunk carries
+`CHANGE.md`'s Problem word for word, names only journeys `CHANGE.md` names, and that together
+the chunks name all of them. The journeys were approved before the build, so a build or a final
+review whose commits change one stops the run, as a `departure` halt in the chunk or in the
+run's last lines, with its commits left for the developer to keep or revert. It enforces the attempt
+budget from a counter in the chunk file, and waits out a usage limit rather than
 spending the budget on it. A session that ends its turn with its work uncommitted is
 resumed once rather than started over, and what an abandoned attempt leaves behind goes
 to the stash, so the next one starts on the tree the checks were green on. Killed in the
-middle, it can simply be started again: the ticket it left claimed is carried on in the
+middle, it can simply be started again: the chunk it left claimed is carried on in the
 same session, on the same attempt, with its uncommitted work taken as that session's, and
 the checks wait until it is finished. It refuses to start beside a live run, or beside a
-session a killed run left running. Each build is pointed at what the tickets already done
+session a killed run left running. Each build is pointed at what the chunks already done
 left standing, since that is where one build leaves something for the next.
 
-There is one session per ticket, and the build spawns its own reviewer in a subagent that
-did not write the code. That session commits the ticket with its build at `status: done`, and
-the runner checks the commit is there - sending the ticket back if it is not, and amending the
-ticket into it if the session left it out - so no ticket's status is left uncommitted for the
+There is one session per chunk, and the build spawns its own reviewer in a subagent that
+did not write the code. That session commits the chunk with its build at `status: done`, and
+the runner checks the commit is there - sending the chunk back if it is not, and amending the
+chunk into it if the session left it out - so no chunk's status is left uncommitted for the
 next session to trip on. Its own halts it commits on the spot.
 
-When more than one ticket was built and none halted, **one final session reviews the whole
-change** - the diff from before its tickets were added - for what no single ticket's review
+When more than one chunk was built and none halted, **one final session reviews the whole
+change** - the diff from before its chunks were added - for what no single chunk's review
 can see: the same thing built twice, one concept under two names, seams that do not line up.
-It runs `critique`, fixes what is worth fixing and commits, two rounds at most, and writes what
-it left standing to `REVIEW.md`. It is handed what the builds left standing, though critique is
+It runs `review-change`, fixes what is worth fixing and commits, two rounds at most, and writes what
+it left standing to `REVIEW.md`. It is handed what the builds left standing, though the reviewer is
 not, and settles the blockers and should-fix a build left unfixed: fixed, or left for the
 person. `REVIEW.md` opens with `## For you`: what is still open once the review is done, what
 needs a decision first, then most important first. It goes through the same usage-limit handling as the builds,
 and a review that ends without committing `REVIEW.md` fails the run. Once it is committed,
 the runner runs both checks once more, and a red one goes back to the review session on a
-ticket's attempt budget. Still red, the run halts and names the red check and its output, for
+chunk's attempt budget. Still red, the run halts and names the red check and its output, for
 the developer to settle; a run started again over a committed review runs both checks and halts
-again while either is red, so a run never points on to acceptance with a red check. A re-slice
+again while either is red, so a run never points on to acceptance with a red check. A new split
 deletes `REVIEW.md`, so the rebuilt change is reviewed again.
 
-**It records what each ticket cost**, in context tokens read - main session and subagents
+**It records what each chunk cost**, in context tokens read - main session and subagents
 apart - since a long session re-reads its growing context on every turn. The counts are kept
 per change in `.git/run-logs` and survive a run started again. They are kept, not printed.
 Beside them it keeps every call a session's permissions refused, one line each with the
@@ -103,12 +107,12 @@ session it came from and the reason the CLI gave - sessions run in auto mode, an
 call does not stop one.
 
 However it ends, it ends with what needs a person, and only that, last on the screen. A halt
-stops the run, which ends saying which ticket halted and printing its whole `## Halt`. A
-finished run points on to `/accept-criteria`.
+stops the run, which ends saying which chunk halted and printing its whole `## Halt`. A
+finished run points on to `/accept-change`.
 
-Every unattended stop is a named halt written into the ticket: `blocked`, `undecided`
-and `mystery` from a session; `exhausted`, `drift` and `unbuilt` from the runner,
-because in each of those three the party that would report it is in no position to.
+Every unattended stop is a named halt written into the chunk: `blocked`, `undecided`
+and `mystery` from a session; `exhausted`, `drift`, `unbuilt` and `departure` from the
+runner, because in each of those four the party that would report it is in no position to.
 
 ### The sync
 
@@ -123,9 +127,9 @@ it is left out, and a session in this repository finds it there.
 
 ### The tests
 
-`./test.sh`. Every case of the runner's suites builds a throwaway repository - a change's `CRITERIA.md`
-with a ticket directory under it - puts a stub where `claude` goes, and runs the real
-script against it: the refusals, the drift pre-flight in both directions, the claim a
+`./test.sh`. Every case of the runner's suites builds a throwaway repository - a change's `CHANGE.md`
+with its journeys and chunks - puts a stub where `claude` goes, and runs the real
+script against it: the refusals, the split, the drift pre-flight, the departure halt, the claim a
 crashed session leaves behind, both budgets, the halt each one writes, the final review,
 the token log and the report a run ends with. `accept-criteria/signals.sh` gets a suite of
 its own, over the same kind of throwaway repository. Alongside them, the two checks the documents

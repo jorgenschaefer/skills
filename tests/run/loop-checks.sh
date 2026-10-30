@@ -56,10 +56,10 @@ workspace
 STUB_VERIFY='if [ -f .red ]; then echo REDMARK; exit 1; fi'
 plan build-red build-red build-red
 rc="$(run)"
-if [ "$rc" != 0 ] && [ "$(field 1-one status)" = halted ] && grep -q 'exhausted' <(tkt 1-one) \
-   && grep -q 'checks' <(sed -n '/^## Halt/,$p' "$WORK/changes/x/tickets/1-one.md") && [ "$(wc -l < "$STUB_CALLS")" = 3 ]; then
-  ok "checks still red once the budget is spent halt the ticket as exhausted, saying so"
-else bad "checks still red once the budget is spent halt the ticket as exhausted, saying so" "rc=$rc $(tkt 1-one) $(calls) $(out)"; fi
+if [ "$rc" != 0 ] && [ "$(field 1-one status)" = halted ] && grep -q 'exhausted' <(chk 1-one) \
+   && grep -q 'checks' <(sed -n '/^## Halt/,$p' "$WORK/changes/x/chunks/1-one.md") && [ "$(wc -l < "$STUB_CALLS")" = 3 ]; then
+  ok "checks still red once the budget is spent halt the chunk as exhausted, saying so"
+else bad "checks still red once the budget is spent halt the chunk as exhausted, saying so" "rc=$rc $(chk 1-one) $(calls) $(out)"; fi
 
 # The slow check is run on every build's commit as the fast one is, and the
 # session it goes back to is told which of the two failed.
