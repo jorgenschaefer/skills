@@ -1,6 +1,6 @@
 ---
 name: explain-diff
-description: Explain a git change - the commits between two refs, a branch or a PR - so the developer can own it without reading the diff, as a local HTML page. Use on "explain this diff", "what changed between X and Y", "walk me through this branch", "help me understand this change". It explains and does not judge; a review is critique's.
+description: Explain a git change - the commits between two refs, a branch or a PR - so the developer can own it without reading the diff, as a local HTML page. Use on "explain this diff", "what changed between X and Y", "walk me through this branch", "help me understand this change". It explains and does not judge; a review is review-change's.
 ---
 
 # Explain diff

@@ -47,7 +47,7 @@ Point at the log line, the commit or the ticket. A failure that could plainly ha
 **The strongest mechanism that fits:**
 
 1. **Something that executes.** What has to hold when a session is dead or lying belongs in `run.sh`. A mechanical violation - a pattern, a file location, a criterion a script can measure - gets a check, test or hook in the project. Look for one that exists and is not wired before proposing a new one. Never make a proxy the gate: a check on a number the goal is not about gets the number met and the goal missed.
-2. **Something without a stake checks it.** A judgement call goes to the adversary that sees that stage's output: `VERIFY.md`, `critique`, `CODING_STANDARDS.md`. Where a builder can excuse itself with a claim ("it is one part"), make the claim something a reviewer checks.
+2. **Something without a stake checks it.** A judgement call goes to the adversary that sees that stage's output: `VERIFY.md`, `review-change`, `walk-user-journeys`. Where a builder can excuse itself with a claim ("it is one part"), make the claim something a reviewer checks.
 3. **An instruction** in the stage that produces the output.
 
 Never `CLAUDE.md` for a repeated mistake: it loads into every session and goes stale. Moving or rescoping a rule that exists beats adding one, and deleting a rule that does harm or changes nothing is a fix.
