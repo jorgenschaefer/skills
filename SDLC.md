@@ -6,11 +6,11 @@ Software development is means to an end, not an end in itself.
 
 The end is supporting a user in their work. The software is not the work. The software enables the work.
 
-To achieve this, the software needs the *trust* of the user. Trust is the most important aspect. A slow, insecure software with bad interface that a user trusts is more valuable than a fast, secure, easy to use software that the user has lost trust in.
+To achieve this, the user has to trust the software. Trust is the most important aspect. Software the user has stopped trusting is worthless, however fast, secure or easy to use it is: they work around it. But the trust has to be earned. Software that is trusted without deserving it lets the user down the moment it breaks, and then it loses more trust than it ever had.
 
 ## Goals
 
-Software development is the art of crafting software that the user trusts. Trust is built in four
+Software development is the art of crafting software that deserves the user's trust. It earns that trust in four ways, in this order:
 
 ### 1. Utility
 
