@@ -59,7 +59,7 @@ Once finalized, the agent creates two documents:
 - A permanent `journeys/slug.md` file for each user journey, named after what the user does, such as `journeys/pay-an-invoice.md`. A change edits the journeys it affects, so each file always describes the software as it is.
 - A temporary `changes/YYYY-MM-DD-slug/CHANGE.md` description of the design, interactions, screens etc. to be implemented
 
-Based on these files, an agent implements the change. For each user journey, it writes a test that walks the journey the way a user would: it clicks, types or calls the API, and never calls the code's internals. The test stays. When it fails, it names the step that broke. A step that no test can show, such as "it feels quick", is marked as judged. A journey that no test walks drifts away from the software, and the next agent believes it anyway.
+Based on these files, agents implement the change, with nobody watching. First the work is split into chunks, each small enough for one agent to build within one context. Then a fresh agent builds each chunk. For each user journey, it writes a test that walks the journey the way a user would: it clicks, types or calls the API, and never calls the code's internals. The test stays. When it fails, it names the step that broke. A step that no test can show, such as "it feels quick", is marked as judged. A journey that no test walks drifts away from the software, and the next agent believes it anyway.
 
 An adversarial reviewer with a new context then checks the code and software against the user journeys, changes, and the four goals above. An agent that has not read the code walks each user journey on the running software, and reports where a person would hesitate, guess or give up.
 
@@ -84,6 +84,8 @@ The test and fix are reviewed by an adversarial reviewer with a new context.
 During any implementation run, agents note when they found a feature hard to implement.
 
 During debugging, agents also note down what piece of code was brittle or what made it hard to find a bug.
+
+Each note is one file, `changes/friction/YYYY-MM-DD-slug.md`, so runs on different branches never write to the same file. A refactor deletes the notes it has dealt with.
 
 In the refactor stage, those signals together with the git history - which files change often, which files change together, etc. - and possibly other signals are used together to come up with a refactoring plan that makes the code base more easy to change in the future.
 
