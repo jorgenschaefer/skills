@@ -10,17 +10,17 @@
 # Prints the base the change's diff is taken from, then one line per file:
 # its kind, a tab, its path.
 #
-# The base is found as run/report.sh's review_base finds it, from the paper
-# rather than from tickets/: a one-ticket change never meets the runner. The
-# two agree because criteria-to-tickets commits CRITERIA.md and its tickets
-# together; a skill installs alone, so the rule is held here twice.
+# The base is the commit before CHANGE.md, which design-user-journeys commits
+# with the journeys it changed. run/report.sh's review_base starts later, at
+# the chunks: the final review judges the builds, and the journeys were agreed
+# before them.
 
 set -euo pipefail
 
 change="${1:?usage: signals.sh changes/<slug>}"
 change="${change%/}"
 
-# The change's diff starts before its paper did: the commit before the first
+# The change's diff starts before its directory did: the commit before the first
 # one that added anything under its directory.
 added="$(git log --diff-filter=A --format=%H -- "$change" | tail -1)"
 if [ -z "$added" ]; then
@@ -51,7 +51,6 @@ kind() {  # path -> its kind, or nothing
   case "$1" in
     *migrat*|*alembic/versions/*) echo "stored formats" ;;
     .github/workflows/*|.gitlab-ci.yml|.circleci/*|charts/*|k8s/*|helm/*) echo operations ;;
-    docs/adr/*) echo "agreed rules" ;;
   esac
 }
 

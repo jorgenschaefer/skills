@@ -19,7 +19,7 @@
 #   tests     <status> <path> <declarations added> <declarations removed>
 #             <skips added>
 #
-# The kinds of `decision` are accept-criteria's signals.sh's; a skill installs
+# The kinds of `decision` are accept-change's signals.sh's; a skill installs
 # alone, so the list is held there and here.
 
 set -euo pipefail
@@ -51,10 +51,10 @@ else
   printf 'links\tnone\n'
 fi
 
-# What the change said it would do. accept-criteria deletes a change's
+# What the change said it would do. accept-change deletes a change's
 # directory in the change's last commit, so it is read where it last stood.
 git log --format= --name-only "$A..$B" -- changes/ |
-  awk -F/ 'NF > 2 && $2 != "backlog" {print $1 "/" $2}' | sort -u |
+  awk -F/ 'NF > 2 && $2 != "backlog" && $2 != "friction" {print $1 "/" $2}' | sort -u |
   while IFS= read -r dir; do
     if git cat-file -e "$B:$dir" 2>/dev/null; then
       at="$B"
@@ -88,7 +88,6 @@ kind() {  # path -> its kind, or nothing
   case "$1" in
     *migrat*|*alembic/versions/*) echo "stored formats" ;;
     .github/workflows/*|.gitlab-ci.yml|.circleci/*|charts/*|k8s/*|helm/*) echo operations ;;
-    docs/adr/*) echo "agreed rules" ;;
   esac
 }
 

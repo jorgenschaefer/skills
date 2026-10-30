@@ -146,7 +146,8 @@ review_checks() {  # the review's session id
 # The change starts where its chunks were first added: every build since is
 # part of it, whatever the branch it came from is called. The final review
 # only runs where there are chunks, so there always are.
-# accept-change/signals.sh holds the same rule: keep the two together.
+# accept-change/signals.sh starts earlier, at CHANGE.md: acceptance answers
+# for the journeys the change edited too.
 review_base() {
   local added
   added="$(git log --diff-filter=A --format=%H -- "$CHUNKS" | tail -1)"

@@ -47,7 +47,7 @@ done
 # A skill installs on its own and cannot reach into a sibling's directory, so a
 # reference file two skills both need is copied into each of them. Identical is
 # the whole point, and an n-way edit is easy to make (n-1)-way by accident -
-# today that is CODING_STANDARDS.md in five skills and ADR_FORMAT.md in three.
+# today that is JOURNEY_FORMAT.md and CHANGE_FORMAT.md, among others.
 #
 # Quantified over whatever is shared rather than over that file by name: the
 # holders move as skills come and go, and an assertion pinned to a list is one
@@ -78,7 +78,7 @@ for name in ${names[@]+"${names[@]}"}; do
 done
 
 # Zero groups found is zero failures, which reads as success - and the day this
-# stops finding CODING_STANDARDS.md is the day it stops checking anything.
+# stops finding JOURNEY_FORMAT.md is the day it stops checking anything.
 expect_counted "$shared" "files held by more than one skill"
 
 # --- every script passes shellcheck --------------------------------------------
@@ -91,7 +91,7 @@ expect_counted "$shared" "files held by more than one skill"
 # an error inside a sourced file is not reported.
 if ! command -v shellcheck >/dev/null; then
   bad "every script passes shellcheck" "shellcheck is not on PATH"
-elif lint="$(shellcheck -x -P SCRIPTDIR "$HERE"/run.sh "$HERE"/run/*.sh "$HERE"/sync.sh "$HERE"/test.sh "$HERE"/accept-criteria/signals.sh "$HERE"/explain-diff/*.sh \
+elif lint="$(shellcheck -x -P SCRIPTDIR "$HERE"/run.sh "$HERE"/run/*.sh "$HERE"/sync.sh "$HERE"/test.sh "$HERE"/accept-change/signals.sh "$HERE"/explain-diff/*.sh \
                  "$HERE"/tests/*.sh "$HERE"/tests/run/*.sh "$HERE"/tests/stub-session 2>&1)"; then
   ok "every script passes shellcheck"
 else
