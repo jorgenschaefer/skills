@@ -18,7 +18,7 @@ A divergence between your reading and the statement's is not proof the statement
 
 **The instance is real, and no argument is dressed as one.** It should point at something a reader could go and look at - a file, a commit, a number, a day it happened.
 
-**It is one problem.** A statement that joins two, each worth solving on its own, will be answered by criteria that serve neither well.
+**It is one problem.** A statement that joins two, each worth solving on its own, will be answered by a design that serves neither well.
 
 ## Reporting
 
@@ -28,7 +28,7 @@ Rank by what it would cost to be wrong. For each: where it is, what is wrong in 
 
 **Say who each finding is for** - the author to fix, or the person whose problem this is to decide.
 
-**Return a verdict, not a mood.** Clean, or findings that must be addressed before criteria are worked out against it.
+**Return a verdict, not a mood.** Clean, or findings that must be addressed before the journeys are designed against it.
 
 **Say plainly when it is sound.** Padding a clean review with observations teaches the next reader to skim.
 
