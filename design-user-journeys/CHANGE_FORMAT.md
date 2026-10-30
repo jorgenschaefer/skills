@@ -13,7 +13,7 @@ attempts:  0               # the runner's
 # <The change, in a few words>
 
 ## Problem
-<The problem agreed with the developer: what is wrong and what would be true instead, with no mechanism in it. Then the one real instance it came from. Acceptance holds the finished change against this.>
+<The problem agreed with the developer: what is wrong and what would be true instead, with no mechanism in it. Then the one real instance it came from, and the backlog item's path where it came from one. Acceptance holds the finished change against this.>
 
 ## Design
 <What to build. Where a prototype was agreed, link it - `prototype/` beside this file - with:
