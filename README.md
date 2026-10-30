@@ -16,9 +16,8 @@ npx skills add jorgenschaefer/skills@<skill-name>
 
 ## How it works
 
-What the pipeline is meant to be - its phases, the stages in each, the developer's stops and the
-rules across them - is in `PIPELINE.md`, beneath `MANIFESTO.md`. This README says how to
-install the skills and what the scripts do.
+What developing with these skills is meant to be - its goals and its user journeys - is in
+`SDLC.md`. This README says how to install the skills and what the scripts do.
 
 Everything one change produces lives in `changes/YYYY-MM-DD-<slug>/`: `CRITERIA.md`, the
 agreed specimen in `specimens/`, the tickets in `tickets/`, and `REVIEW.md` where the runner's
@@ -129,14 +128,13 @@ with a ticket directory under it - puts a stub where `claude` goes, and runs the
 script against it: the refusals, the drift pre-flight in both directions, the claim a
 crashed session leaves behind, both budgets, the halt each one writes, the final review,
 the token log and the report a run ends with. `accept-criteria/signals.sh` gets a suite of
-its own, over the same kind of throwaway repository. Alongside them, the three checks the documents
-need: that the copies of a shared file are identical, that no live instruction points at
-something that is not there, and that every quote on a *Serves* line of `PIPELINE.md` is in
-`MANIFESTO.md` word for word.
+its own, over the same kind of throwaway repository. Alongside them, the two checks the documents
+need: that the copies of a shared file are identical, and that no live instruction points at
+something that is not there.
 
 ## Available skills
 
-What each skill does today. What the pipeline is meant to be is in `PIPELINE.md`.
+What each skill does today. What it is meant to be is in `SDLC.md`.
 
 - **backlog** - the ideas not started yet, one file per item in `changes/backlog/` with its effort and utility from XS to XL, proposed from the code and confirmed by the user. Adding reads the code for evidence and extends an item that overlaps rather than writing a second; picking ranks by utility against effort, checks the top three against the current code, proposes deleting what is already solved, recommends one and hands it to `idea`. `accept-criteria` hands it each follow-up and deletes the items a change finished. Converts an older backlog's items to its shape on first use
 - **idea** - the door in for an idea, fired without being typed: the problem underneath the idea the user arrived with, dug at around one real instance until a reader who was not there could restate it, stated back and agreed - or a reasoned no. Proposes nothing but deleting a backlog item it said no to, and writes no file: the statement stays in the conversation for `find-criteria`
