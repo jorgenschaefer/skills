@@ -5,31 +5,24 @@ utility: M
 
 # Security beyond who may see and do what
 
-`MANIFESTO.md`'s Security goal: "Nobody can do or see more than they are
-supposed to - a malicious user, an outside attacker, or an agent steered by
-text it read." And for the writer: "The secure path is the easy one, since
-security that is hard to use gets worked around."
+`SDLC.md`'s Security goal: "Nobody can do or see more than they are
+supposed to." Its rule for that is default deny: every way into the
+software denies access unless a journey's "Who" allows it.
+`implement-change`, `review-change` and `walk-user-journeys` hold a change
+to that rule. Three parts of the goal are not about it:
 
-Parked on 2026-10-27 from `/idea` on `security-in-the-standard`, whose
-agreed problem was the developer vouching for who may see and do what. That
-item became the security policy (e9e746b). These
-three parts are not about that policy:
-
-- **The outside attacker.** The standard's attacker "holds a valid session
-  and is changing the number" (`implement/CODING_STANDARDS.md:81`). Nothing
-  covers what someone without a session can reach. `upgrade-dependencies`
-  never looks at security advisories.
+- **The outside attacker.** Default deny covers someone without a login
+  only where a way in exists that a journey names. Nothing looks at what
+  the deployment exposes beyond that, and `upgrade-dependencies` never
+  looks at security advisories.
 - **An agent steered by text it read**, in two places:
-  - the product, wherever it hands user text to an LLM;
-  - the pipeline itself. Build sessions run unattended as
-    `claude -p --permission-mode auto` (`run/session.sh:89`), read code,
-    dependencies and web pages, and commit.
-- **The secure path is the easy one.** No skill asks for it.
+  - the software, wherever it hands user text to an LLM;
+  - the runner itself. Build sessions run unattended as
+    `claude -p --permission-mode auto` (`run/session.sh`), read code,
+    dependencies and web pages, and commit. The skills say that text read
+    from outside is data, never instructions, and nothing checks it.
+- **The secure path is the easy one**, since security that is hard to use
+  gets worked around. No skill asks for it.
 
-The standard's Security section (`implement/CODING_STANDARDS.md:77`) is
-checked against the manifesto by no other item. `security-in-the-standard`
-was meant to, but became the security policy (e9e746b) and left the section
-as it was.
-
-Nothing has gone wrong so far. dom handles names that can hold patient
-information.
+Parked on 2026-10-27 from an `/idea` session about security. Nothing has
+gone wrong so far. dom handles names that can hold patient information.

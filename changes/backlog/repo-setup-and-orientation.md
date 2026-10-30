@@ -3,47 +3,27 @@ effort: L
 utility: M
 ---
 
-# Set a repo up for the pipeline, and help me understand a repo
+# Set a repo with code up for these skills
 
-The user wants `repo-overview` and `ubiquitous-language` combined into two
-uses, possibly two skills:
+The user wants a use for "This is a new repo, set it up for my pipeline."
+`repo-overview` stays for the other use, "I want to understand the repo",
+and is a good starting point for this one.
 
-- **"This is a new repo, set it up for my pipeline."**
-- **"I want to understand the repo"**: what it is about, how things
-  interact, the data model, and so on.
+Nothing sets a repository up today. What the skills expect of a project is
+spread out:
 
-The user also wants the `ubiquitous-language` skill renamed to
-`init-ubiquitous-language`.
+- the `Fast check:` and `Slow check:` lines in `CLAUDE.md`, which `run.sh`
+  reads, and with no line naming a fast check, the runner asks a session to
+  find one (`run/checks.sh`, `find_checks`);
+- a `run` skill for starting the software, which `implement-change` writes
+  where there is none (`implement-change/SKILL.md`, "Before you write
+  anything");
+- `journeys/`. In a repo with code and no journeys, `design-user-journeys`
+  writes the journeys a change affects from what the software does today,
+  one change at a time. Nothing writes the rest, so the software's other
+  journeys have no test that walks them;
+- `UBIQUITOUS_LANGUAGE.md`, which `init-ubiquitous-language` writes.
 
-## What is there today
-
-- `repo-overview` writes `ARCHITECTURE.md` for "a developer who is new to
-  this codebase", ending with "the few files a new developer should read
-  first" (`repo-overview/SKILL.md:93`). `MANIFESTO.md`: "Humans do not read
-  the code." The rule "What a fresh agent finds with one search or in one
-  file needs no documentation" left the manifesto and waits to go into the
-  standard (`standard-follows-the-manifesto`). Much of `ARCHITECTURE.md` is what an
-  agent finds with one search, and it is re-derived only when someone runs it
-  again; `restructure` reruns it ("Docs last").
-  The user wants it gone in its current form: `drop-architecture-md`.
-- `ubiquitous-language` writes or refreshes `UBIQUITOUS_LANGUAGE.md` from
-  the code's vocabulary and reports drift. The pipeline relies on it: the
-  standard's naming rules, `find-criteria` and `criteria-to-tickets` asking
-  for terms, `critique` reading it. This fits the manifesto:
-  the developer "agrees with the user on the concepts: what the user calls
-  things and how they fit together."
-- Nothing sets a repo up for the pipeline. What the pipeline expects of a
-  project is spread out: a `Check:` line in `CLAUDE.md` in the standard's
-  form (`CODING_STANDARDS.md`, _Test Coverage_), written by a preparatory
-  ticket (`criteria-to-tickets/SKILL.md:42`) or by `restructure` ("Checks
-  first"); a `run` skill for starting the app, written by `implement` or
-  `accept-criteria` when missing; structural rules as checks; and the
-  glossary. A repo with no code yet is `pipeline-in-an-empty-repo`.
-
-Depends on `approved-criteria-outlive-the-change`, whose critical user
-journeys `repo-overview`'s "Main workflows" would draft. `PIPELINE.md`'s
-Setup says what the pipeline expects of a project.
-
-`pipeline-in-an-empty-repo` creates the same files - the check lines, the
-glossary, the security policy - in a repo with no code. Whichever of the two
-is built first decides how they are created, and the other follows it.
+`pipeline-in-an-empty-repo` creates the same files in a repo with no code.
+Whichever of the two is built first decides how they are created, and the
+other follows it.

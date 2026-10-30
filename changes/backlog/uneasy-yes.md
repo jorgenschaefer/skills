@@ -6,14 +6,14 @@ utility: S
 # An uneasy yes is taken as a yes
 
 Where the developer is asked to agree - a problem statement in `/idea`, the
-criteria in `/find-criteria`, the change in `/accept-criteria` - they
+journeys in `/design-user-journeys`, the change in `/accept-change` - they
 sometimes agree with an itch they cannot put into words yet. The agent takes
 the answer as agreement and moves on, and the itch is passed over instead of
 drawn out.
 
 Instance: the `/idea` session on `question-a-picked-item` (2026-10-25). The
 user answered the problem statement twice with "I THINK so", and the agent
-took both as agreement and pointed at `/find-criteria`. Asked afterwards, the
+took both as agreement and pointed at the next skill. Asked afterwards, the
 user said they had an itch that something was wrong but could not put their
 finger on it.
 
