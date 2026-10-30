@@ -49,4 +49,4 @@ Work in what it finds, and where that changes the statement, get their agreement
 
 **Weigh what the user says before following it.** For each answer or correction, look for what would make it better - a gap, a simpler form, a consequence it misses - and propose it, or object where you think it is wrong. Once: a decision reaffirmed after hearing the objection is theirs.
 
-**Stopping here is an ending.** `/design-user-journeys` is what works out with them how the software should change - name it, because it will not find its own way in - and leave going on to them to ask for.
+**Stopping here is an ending.** `/design-user-journeys` is what works out with them how the software should change - name it, because it will not find its own way in - and leave going on to them to ask for. Where the idea came from a backlog item, name the item's path with the problem statement, so the change's `CHANGE.md` names it and acceptance deletes it.

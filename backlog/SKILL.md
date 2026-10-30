@@ -1,6 +1,6 @@
 ---
 name: backlog
-description: Add to, extend or pick from the project's backlog in changes/backlog/. Use on "create a backlog item for ...", "add this to the backlog", "put that on the backlog", "what should we build next", "what's next from the backlog", and when /accept-change hands over a follow-up.
+description: Add to, extend or pick from the project's backlog in changes/backlog/. Use on "create a backlog item for ...", "add this to the backlog", "put that on the backlog", "what should we build next", "what's next from the backlog", and when /accept-change hands over a follow-up or /debug a feature request.
 ---
 
 # Backlog
@@ -21,7 +21,7 @@ utility: L
 ```
 
 - **Sizes** run XS, S, M, L, XL. Effort is the work to build it; utility is what it gives the user.
-- **The body is what the user had in mind**, as far as it got: an idea for `/idea` to start from, or the problem `/idea` already settled. Add the evidence from the code - files, lines, where it showed up. Do not add a solution the user did not have.
+- **The body is what the user had in mind**, as far as it got, or what the skill that handed it over found: an idea for `/idea` to start from, or the problem `/idea` already settled. Add the evidence from the code - files, lines, where it showed up. Do not add a solution the user did not have.
 - Write in the language the backlog's items already use; in an empty backlog, in the user's.
 
 ## Before anything else: convert an older backlog
@@ -40,6 +40,6 @@ Where `changes/backlog/` holds items in another shape - numbered files, a direct
 1. **Rank** by utility minus effort, counting XS as 1 to XL as 5; on a tie the smaller effort goes first.
 2. **Check the top three against the current code.** Where the problem no longer shows, show the evidence and propose deleting the item. Where a size no longer holds, propose a new one. Apply what the user agrees to and commit it, then rank again.
 3. **Recommend one item and a runner-up**, each with why.
-4. **Run `/idea` with the item the user picks**, however settled it reads: an item is a quick note, and what it is meant to improve, and whether that is worth the work, are worked out there.
+4. **Run `/idea` with the item the user picks**, naming its path, however settled it reads: an item is a quick note, and what it is meant to improve, and whether that is worth the work, are worked out there.
 
-Do not delete a picked item; `/accept-change` deletes it once the change is accepted, and `/idea` where the user agrees it is already solved or not worth the work.
+Do not delete a picked item; `/accept-change` deletes it once the change it started is accepted, and `/idea` where the user agrees it is already solved or not worth the work.
