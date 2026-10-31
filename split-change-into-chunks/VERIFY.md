@@ -12,6 +12,14 @@ You are reading the chunks written for one change against the `CHANGE.md` they s
 - **The copies match `CHANGE.md` word for word.** Check the words, not the sense: a copy cut short has dropped part of what was approved, and a paraphrase changed it.
 - **Nothing in a chunk asks for more than `CHANGE.md` does.**
 
+## What passes between chunks
+
+**Walk every journey step by step.** For each step, take the chunk that builds it and ask what the step needs from other chunks: data and the fields it carries, a route or a page and who may reach it, a rule that holds on a screen, a name or format. Then find the chunk that makes each thing, and check that it names the step's chunk among those it makes it for. Where the thing goes through other chunks on its way to the step, check that each of them passes it on.
+
+**When a chunk sets a rule for a screen**, such as how wide it may be, every chunk that adds to that screen later repeats the rule. One that does not is a finding.
+
+A thing a step needs that no chunk makes or passes on is a finding: the build halts on it, builds without it, or builds it a second time.
+
 ## Each chunk is provable on its own, and one context long
 
 **Provable on its own.** Each chunk ends in journey steps its build can test and its reviewer can see. A chunk that only builds what a later chunk will use is a finding.
