@@ -42,4 +42,4 @@ Where `changes/backlog/` holds items in another shape - numbered files, a direct
 3. **Recommend one item and a runner-up**, each with why.
 4. **Run `/idea` with the item the user picks**, naming its path, however settled it reads: an item is a quick note, and what it is meant to improve, and whether that is worth the work, are worked out there.
 
-Do not delete a picked item; `/accept-change` deletes it once the change it started is accepted, and `/idea` where the user agrees it is already solved or not worth the work.
+Do not delete a picked item; `/accept-change` deletes it once the change it started is accepted, `/solve-problem` with the commit that solves it, and `/idea` where the user agrees it is already solved or not worth the work.

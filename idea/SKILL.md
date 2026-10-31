@@ -7,7 +7,7 @@ description: Use when a user presents an idea for a change to establish the prob
 
 Help the user sharpen an idea by finding the problem underneath it: what is wrong, and what would be true instead. Not how.
 
-The result is a problem statement, agreed and left in the conversation for `/design-user-journeys` to work from. There is no file.
+The result is a problem statement, agreed and left in the conversation for the skill that works out a solution from it. There is no file.
 
 ## The problem
 
@@ -49,4 +49,9 @@ Work in what it finds, and where that changes the statement, get their agreement
 
 **Weigh what the user says before following it.** For each answer or correction, look for what would make it better - a gap, a simpler form, a consequence it misses - and propose it, or object where you think it is wrong. Once: a decision reaffirmed after hearing the objection is theirs.
 
-**Stopping here is an ending.** `/design-user-journeys` is what works out with them how the software should change - name it, because it will not find its own way in - and leave going on to them to ask for. Where the idea came from a backlog item, name the item's path with the problem statement, so the change's `CHANGE.md` names it and acceptance deletes it.
+**Stopping here is an ending.** Name both ways on, because neither will find its own way in, and leave going on to them to ask for:
+
+- `/design-user-journeys` works out with them how the software should change, and `run.sh` builds it with nobody watching;
+- `/solve-problem` works out a solution with them and builds it in this session.
+
+Recommend one: the first where a user journey changes, the second where none does. Where the idea came from a backlog item, name the item's path with the problem statement: the pipeline deletes it at acceptance, `/solve-problem` with its commit.
