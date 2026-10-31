@@ -25,5 +25,5 @@ There are two retros: one improves these skills and the runner, and one
 improves the process in the codebase they run in. This item is the first.
 Today's `retro` does both, sorting each finding under "Pipeline or
 project". The project side belongs with the refactor
-(`more-signals-for-the-refactor`); here a project finding is handed on,
+(`refactor-decides-from-measurable-signals`); here a project finding is handed on,
 not fixed.
