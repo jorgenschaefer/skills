@@ -48,7 +48,8 @@ checks for that and `CLAUDE.md` does not say it. A structural test beside
 What limits this: "keeps happening" needs the mistake seen more than once,
 and of the records only the friction notes and the git history survive
 acceptance. The review findings and every `## Left standing` are deleted
-with the change's directory.
+with the change's directory. `builds-keep-maintainability-findings` would
+keep the maintainability findings.
 
 `SDLC.md` ("Refactor"): "and possibly other signals". These are directions
 for the signals, not decisions:
