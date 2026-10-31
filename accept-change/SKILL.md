@@ -77,6 +77,8 @@ Blast radius and revert, and new dependencies, you checked yourself: where you f
 
 Every item in the report that needs a decision, everything under `REVIEW.md`'s `## For you`, and everything in a `## Left standing` needs an outcome before the change can be accepted. A tradeoff, a blast radius or a dependency that stays within what was agreed is shown, not settled. Drop, after checking, what the walk settled or the code no longer shows.
 
+A finding about the code alone - duplication, coupling, a name inside the code, structure - is the refactor's, not the developer's, and its outcome is a note for the refactor. Check that the code still shows it, and write it into `changes/friction/<today>-<change-slug>-findings.md`: file and line, the reviewer's words, and the `## Left standing` or `REVIEW.md` it came from. These do not go on the list.
+
 Show the rest as one list. Give each item where it came from, a proposed outcome and a one-line reason:
 
 - **Keep**: the developer approves it as built. Access no journey gives stays only on a keep, and only once a journey's "Who" gives it - that journey edit is a fix now. Any other outcome takes the access out of the code.
@@ -91,7 +93,7 @@ The developer agrees to the list or names items to discuss. Take those one at a 
 
 Delete the backlog item that `CHANGE.md`'s Problem names, where it names one. Then show the items in `changes/backlog/` this change looks related to, and ask which of them it finished, including one it solved by accident. Delete those too.
 
-Delete the change's directory: `CHANGE.md`, the chunks, the prototype and `REVIEW.md`. The notes in `changes/friction/` stay; the refactor reads them. Commit the deletion with the follow-ups' backlog items and the backlog items you deleted, and nothing else. The commit message lists each skip with its reason, since the files that held them are gone.
+Delete the change's directory: `CHANGE.md`, the chunks, the prototype and `REVIEW.md`. The notes in `changes/friction/` stay; the refactor reads them. Commit the deletion with the friction note, where you wrote one, the follow-ups' backlog items and the backlog items you deleted, and nothing else. The commit message lists each skip with its reason, since the files that held them are gone.
 
 Then hand over what is left for a person: every step the builds left for deployment, in the order to take them. Say that the change's branch is ready to merge. Merging it is the developer's.
 

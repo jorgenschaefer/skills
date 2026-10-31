@@ -1,6 +1,6 @@
 ---
 name: refactor-codebase
-description: Make a codebase easier to change, every few changes - from the friction notes the builds and debug sessions left in changes/friction/, the git history and the code, agree a plan with the developer, build its most important items without changing what the software does, and have them reviewed.
+description: Make a codebase easier to change, every few changes - from the friction notes the builds, debug sessions and acceptances left in changes/friction/, the git history and the code, agree a plan with the developer, build its most important items without changing what the software does, and have them reviewed.
 disable-model-invocation: true
 ---
 
@@ -14,7 +14,7 @@ This skill's `JOURNEY_FORMAT.md` settles the shape of a journey.
 
 ## Gather the signals
 
-- **The friction notes**, every file in `changes/friction/`. The builds and the debug sessions wrote them where something was hard to change or hard to find. A place several notes name is the strongest signal there is.
+- **The friction notes**, every file in `changes/friction/`. The builds and the debug sessions wrote them where something was hard to change or hard to find, and acceptance wrote down the review findings about the code that nobody fixed. A place several notes name is the strongest signal there is.
 - **The git history.** Which files change often, which change together, and which keep getting fixed. Use `git log --name-only`, ignoring commits that touch more than about 20 files, and lockfiles and generated files. Files that change together in several commits but live far apart are coupled, even where the imports do not show it.
 - **The code.** What a change to one piece would force in another: a shared concept, a shared data shape, a name or key that has to match elsewhere. And names that are not the journeys' words for the same thing.
 

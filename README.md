@@ -30,7 +30,7 @@ Each of the developer's journeys uses these skills:
 - **Debug:** `debug` finds a bug and ends one of three ways: as intended, a feature request
   for the backlog, or a fix.
 - **Refactor:** `refactor-codebase` makes the code easier to change, from the friction notes
-  the builds and `debug` left.
+  the builds, `debug` and acceptance left.
 - **Backlog:** `backlog` holds the ideas not started yet, and picks the next one.
 
 What lives where:
@@ -41,8 +41,9 @@ What lives where:
   `CHANGE.md`, the agreed prototype in `prototype/`, the chunks in `chunks/` where the change
   was split, and `REVIEW.md` where the runner's final review ran. It is deleted once the change
   is accepted.
-- `changes/friction/` holds one note per place that was hard to change or hard to debug, until
-  a refactor deals with it.
+- `changes/friction/` holds one note per place that was hard to change or hard to debug and, for
+  an accepted change, the review findings about the code that nobody fixed. They stay until a
+  refactor deals with them.
 - `changes/backlog/` holds one file per idea not started yet.
 
 A skill marked **Typed** below only runs when you type its name, such as `/accept-change`.
@@ -186,7 +187,7 @@ What each skill does today. What it is meant to be is in `SDLC.md`.
 ### Debug, refactor and the backlog
 
 - **debug** - find a bug from however it was reported, on the running software: reproduce it, agree with the developer what the software is meant to do there, and find the cause from evidence. It ends one of three ways: it works as intended and that is right, and it explains why; the intention is wrong, and it hands a feature request to `backlog`; or it is a bug, and it writes a test that reproduces it, fixes it on a branch and has `review-change` review the fix. What made the bug hard to find goes in a note in `changes/friction/`
-- **refactor-codebase** - make the codebase easier to change, every few changes. It gathers the friction notes the builds and debug sessions left in `changes/friction/`, the git history's churn and co-change, and the coupling in the code, and agrees a ranked plan with the developer, each item naming the future change it makes easier. It builds the chosen items - deleting dead code, colocating, splitting, making hidden coupling explicit, unifying, collapsing layers, generalizing, simplifying, renaming to the journeys' words, correcting comments - one commit each, only where tests prove what the software does stays the same. The journeys' tests pass unchanged; what would change behaviour is listed apart, in the user's words. `review-change` reviews the result, and the friction notes it dealt with are deleted. Typed
+- **refactor-codebase** - make the codebase easier to change, every few changes. It gathers the friction notes the builds, debug sessions and acceptances left in `changes/friction/`, the git history's churn and co-change, and the coupling in the code, and agrees a ranked plan with the developer, each item naming the future change it makes easier. It builds the chosen items - deleting dead code, colocating, splitting, making hidden coupling explicit, unifying, collapsing layers, generalizing, simplifying, renaming to the journeys' words, correcting comments - one commit each, only where tests prove what the software does stays the same. The journeys' tests pass unchanged; what would change behaviour is listed apart, in the user's words. `review-change` reviews the result, and the friction notes it dealt with are deleted. Typed
 - **backlog** - the ideas not started yet, one file per item in `changes/backlog/` with its effort and utility from XS to XL, proposed from the code and confirmed by the user. Adding reads the code for evidence and extends an item that overlaps rather than writing a second; picking ranks by utility against effort, checks the top three against the current code, proposes deleting what is already solved, recommends one and hands it to `idea`. `accept-change` hands it each follow-up and deletes the items a change finished, and `debug` hands it each feature request: behaviour that works as intended where the intention is wrong. Converts an older backlog's items to its shape on first use
 
 ### Understanding the code

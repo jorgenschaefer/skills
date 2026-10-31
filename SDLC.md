@@ -85,6 +85,8 @@ During any implementation run, agents note when they found a feature hard to imp
 
 During debugging, agents also note down what piece of code was brittle or what made it hard to find a bug.
 
+At acceptance, the review findings about the code that nobody fixed are noted down too.
+
 Each note is one file, `changes/friction/YYYY-MM-DD-slug.md`, so runs on different branches never write to the same file. A refactor deletes the notes it has dealt with.
 
 In the refactor stage, those signals together with the git history - which files change often, which files change together, etc. - and possibly other signals are used together to come up with a refactoring plan that makes the code base more easy to change in the future.
