@@ -65,6 +65,8 @@ LIB="$(dirname "${BASH_SOURCE[0]}")/run"
 . "$LIB/checks.sh"
 # shellcheck source=run/report.sh
 . "$LIB/report.sh"
+# shellcheck source=run/run-skill.sh
+. "$LIB/run-skill.sh"
 
 # --- refusals, before anything is launched
 

@@ -53,7 +53,8 @@ EOF
   git -C "$WORK" checkout -q -b topic
   # The stub's own files sit in the workspace and are nobody's change: without
   # this every case would be refused as a dirty tree.
-  printf '/.*\n' >> "$WORK/.git/info/exclude"
+  # A run skill lives under .claude/, which is the project's.
+  printf '/.*\n!/.claude/\n' >> "$WORK/.git/info/exclude"
   STUB_CALLS="$WORK/.calls"; STUB_PLAN="$WORK/.plan"; STUB_SESSIONS="$WORK/.sessions"
   STUB_ARGS="$WORK/.args"
   : > "$STUB_CALLS"; : > "$STUB_PLAN"; : > "$STUB_SESSIONS"; : > "$STUB_ARGS"

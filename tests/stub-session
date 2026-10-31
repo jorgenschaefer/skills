@@ -110,6 +110,25 @@ if [[ " $* " == *" --json-schema "* ]]; then
   exit 0
 fi
 
+# The run skill generator consumes no plan line either. It does what
+# $STUB_RUN_SKILL says: `write` writes a run skill, `broken` writes one with a
+# file beside it that a test's check reads as red, `committed` is `broken` and
+# commits it itself, `stray` writes only a file that is not a run skill, and
+# empty writes nothing - a generator that asked which app to run.
+if [ "$prompt" = /run-skill-generator ]; then
+  top="$(git rev-parse --show-toplevel)"
+  case "${STUB_RUN_SKILL:-}" in
+    write|broken|committed)
+      mkdir -p "$top/.claude/skills/run-app"
+      printf -- '---\nname: run-app\n---\n' > "$top/.claude/skills/run-app/SKILL.md"
+      [ "$STUB_RUN_SKILL" = write ] || : > "$top/.claude/skills/run-app/broken"
+      [ "$STUB_RUN_SKILL" != committed ] || { git -C "$top" add .claude >/dev/null; git -C "$top" commit -qm "run skill"; } ;;
+    stray) printf 'notes\n' > "$top/run-notes.txt" ;;
+  esac
+  echo '{"type":"result","subtype":"success","is_error":false,"result":"done"}'
+  exit 0
+fi
+
 build_opening="Use /implement-change on the work described in "
 split_opening="/split-change-into-chunks on the change in "
 review_opening="Review the whole change this run built"

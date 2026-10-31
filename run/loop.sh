@@ -164,6 +164,7 @@ drive() {
     fi
     say "the checks pass"
     release "$chunk"
+    run_skill
   done
 }
 

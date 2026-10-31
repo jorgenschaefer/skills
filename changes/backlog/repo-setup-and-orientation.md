@@ -15,9 +15,9 @@ spread out:
 - the `Fast check:` and `Slow check:` lines in `CLAUDE.md`, which `run.sh`
   reads, and with no line naming a fast check, the runner asks a session to
   find one (`run/checks.sh`, `find_checks`);
-- a `run` skill for starting the software, which `implement-change` writes
-  where there is none (`implement-change/SKILL.md`, "Before you write
-  anything");
+- a run skill for starting the software, `.claude/skills/run-<name>/`, which
+  `run.sh` has `/run-skill-generator` write after a chunk where there is none
+  (`run/run-skill.sh`);
 - `journeys/`. In a repo with code and no journeys, `design-user-journeys`
   writes the journeys a change affects from what the software does today,
   one change at a time. Nothing writes the rest, so the software's other

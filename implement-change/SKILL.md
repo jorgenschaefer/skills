@@ -17,7 +17,7 @@ This skill's `CHANGE_FORMAT.md` and `JOURNEY_FORMAT.md` settle the shape of what
 
 **Look at what is there.** What already does this, or half of it, and what the project calls things. The code uses the user's words for the same things - the words in the journeys.
 
-**Find the project's way of running the software** - a `run` skill, `CLAUDE.md`, the README. The reviewers start it that way. Where there is none, build one, write it up as the project's run skill, `.claude/skills/run/SKILL.md`, with the scripts it drives beside it, and commit it with the change.
+**Find the project's way of running the software** - a `run` skill, `CLAUDE.md`, the README. The reviewers start it that way.
 
 **Find the project's checks** - the `Fast check:` and `Slow check:` lines in `CLAUDE.md`. A `Check:` line with no `Fast check:` line beside it is the fast check. Where no line names a fast check, run what exists and say so.
 

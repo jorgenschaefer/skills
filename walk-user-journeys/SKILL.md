@@ -19,7 +19,7 @@ The journeys to walk - named by your caller, or every file in `journeys/` where 
 
 Start it the way the project says - a `run` skill, `CLAUDE.md`, the README - reading only how to start it. Where it cannot be got running, say so and stop: a walk that never ran is not a clean one.
 
-Where it has screens, walk them in a browser at the narrowest and the widest size it supports. Where it is a command line or an API, use it the way its user would, from the docs written for them.
+Where it has screens, walk them in a browser at the narrowest and the widest size it supports. Keep one browser open for the whole walk, and log in once for each user. Wait for what the page should show, never for a fixed time. Where it is a command line or an API, use it the way its user would, from the docs written for them.
 
 ## Walk each journey
 
@@ -39,7 +39,7 @@ Where it has screens, walk them in a browser at the narrowest and the widest siz
 
 ## Clean up
 
-Remove every row, session, account and file you created, and report what you removed.
+Remove every row, session, account and file you created, and report what you removed. Close the browser.
 
 ## Report
 

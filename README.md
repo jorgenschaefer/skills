@@ -117,6 +117,10 @@ reviewer and walker in subagents that did not write the code.
   session's. The checks wait until it is finished.
 - Each build is pointed at what the chunks already done left standing, since that is where one
   build leaves something for the next.
+- After a chunk's checks pass, where the project has no run skill (`.claude/skills/run-*/`), a
+  session runs Claude Code's built-in `run-skill-generator`, once per run. The runner commits
+  what that session wrote in a commit of its own, and runs the fast check. If it is red, the
+  commit is dropped. Without a run skill, the walkers start the software as before.
 
 **The final review.** When more than one chunk was built and none halted, one more session
 reviews the whole change, from before its chunks were added. It looks for what no single
