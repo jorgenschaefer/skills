@@ -72,7 +72,7 @@ workspace; unsplit
 plan split-two build build review
 rc="$(run)"
 if [ "$rc" = 0 ] && [ "$(field 1-one status)" = "done" ] && [ "$(field 2-two status)" = "done" ] \
-   && grep -q 'split into 2 chunks' "$WORK/.out" && grep -q '^Use /split-change-into-chunks on the change in ' <(head -1 "$STUB_CALLS"); then
+   && grep -q 'split into 2 chunks' "$WORK/.out" && grep -q '^/split-change-into-chunks on the change in ' <(head -1 "$STUB_CALLS"); then
   ok "a change split on a first start builds its chunks"
 else bad "a change split on a first start builds its chunks" "rc=$rc $(calls) $(out)"; fi
 if [ "$(field CHANGE status)" = ready ]; then
@@ -93,7 +93,7 @@ workspace; unsplit
 plan split-none die build
 run > /dev/null
 rc="$(run)"
-if [ "$rc" = 0 ] && [ "$(grep -c '^Use /split-change-into-chunks' "$STUB_CALLS")" = 1 ] && [ "$(field CHANGE status)" = "done" ]; then
+if [ "$rc" = 0 ] && [ "$(grep -c '^/split-change-into-chunks' "$STUB_CALLS")" = 1 ] && [ "$(field CHANGE status)" = "done" ]; then
   ok "a run started again after the split does not split again"
 else bad "a run started again after the split does not split again" "rc=$rc $(calls) $(out)"; fi
 

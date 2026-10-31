@@ -46,8 +46,11 @@ Each one's \`## Left standing\` says what its build did not settle. Handle an it
   printf '%s' "$prompt"
 }
 
+# The split skill is hidden from the model, so a Skill call cannot load it. The
+# CLI loads it where the prompt starts with its command, and hands the rest of
+# the prompt to it as its arguments. Text before the command stops it loading.
 split_brief() {  # -> the prompt the session that splits the change starts from
-  printf '%s' "Use /split-change-into-chunks on the change in $(realpath "$CHANGE_DIR").
+  printf '%s' "/split-change-into-chunks on the change in $(realpath "$CHANGE_DIR").
 
 $(checks_said "The checks pass on the commit you start from.")
 

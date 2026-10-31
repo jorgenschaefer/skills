@@ -111,7 +111,7 @@ if [[ " $* " == *" --json-schema "* ]]; then
 fi
 
 build_opening="Use /implement-change on the work described in "
-split_opening="Use /split-change-into-chunks on the change in "
+split_opening="/split-change-into-chunks on the change in "
 review_opening="Review the whole change this run built"
 review_named_by="write what you left standing to "
 
