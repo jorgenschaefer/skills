@@ -83,7 +83,8 @@ library is under `run/`, a directory with no `SKILL.md`, so not a skill.
 both `Check:` and `Fast check:` is refused, and on a build's commit it counts as a red check.
 The lines are read again before every run of the checks, so a chunk that declares one is held
 to it from its own commit on. Only where no line names a fast check does a session name it,
-once per run.
+once per run. In a new project there is nothing to name yet: the run then starts with no
+checks, and the build that sets them up declares them in `CLAUDE.md`.
 
 The runner runs both checks again on every build's commit, rather than believing the
 session's account of them, so a session runs only the fast check. A red check goes back to the

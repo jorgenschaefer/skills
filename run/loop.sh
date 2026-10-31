@@ -37,7 +37,7 @@ drive() {
       chunk="$(ready_chunk)" || break
       # Run here rather than at startup: a run started again runs them only once
       # the chunk it was killed in is finished, never on its half-built work.
-      [ -n "$FAST_CHECK" ] || verify
+      [ -n "$CHECKED" ] || verify
 
       attempts=$(( $(field "$chunk" attempts) + 1 ))
       if [ "$attempts" -gt "$MAX_ATTEMPTS" ]; then

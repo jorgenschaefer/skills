@@ -104,7 +104,7 @@ final_review() {
     say "the checks pass"
     return 0
   fi
-  [ -n "$FAST_CHECK" ] || verify
+  [ -n "$CHECKED" ] || verify
   id="$(new_session_id)" head_before="$(git rev-parse HEAD)"
   claude_through_limits review "$(review_brief)" --session-id "$id"; rc=$?
   if [ "$rc" = 0 ] && ! git cat-file -e "HEAD:./$REVIEW" 2>/dev/null; then

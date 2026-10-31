@@ -17,7 +17,7 @@ brief() {  # chunk -> the prompt a fresh session on it starts from
   # one in a subdirectory looked for a relative path at the repository root.
   prompt="Use /implement-change on the work described in $(realpath "$1").
 
-$(checks_named). The checks pass on the commit you start from, and a check that fails now failed because of this build. The runner runs both checks on your commit itself, so run only the fast check.
+$(checks_said "The checks pass on the commit you start from, and a check that fails now failed because of this build. The runner runs both checks on your commit itself, so run only the fast check.")
 
 That file is the whole brief, with the journeys its frontmatter names. Its design was agreed with the person: build to it, and where it links a prototype, build to that. Its \`## Not in this change\` names what you must not build here. How to build it is yours to work out from the code, and so is every implementation question on the way: decide it, and record under \`## Left standing\` the ones /implement-change says to leave standing.
 
@@ -49,7 +49,7 @@ Each one's \`## Left standing\` says what its build did not settle. Handle an it
 split_brief() {  # -> the prompt the session that splits the change starts from
   printf '%s' "Use /split-change-into-chunks on the change in $(realpath "$CHANGE_DIR").
 
-$(checks_named). The checks pass on the commit you start from.
+$(checks_said "The checks pass on the commit you start from.")
 
 Nobody is watching: ask nothing. Where the skill says to halt, append a \`## Halt\` section to $(realpath "$CHANGE") naming the kind, set its \`status: halted\`, commit it, and stop. Never write \`status: doing\`. It belongs to the runner."
 }
@@ -82,16 +82,28 @@ red_output() {  # -> what a session handed red checks is told about fixing and r
   done
 }
 
-checks_named() {  # -> the project's checks, named in a sentence without its full stop
-  if [ -n "$SLOW_CHECK" ]; then
-    printf '%s' "The project's fast check is \`$FAST_CHECK\`, and its slow check is \`$SLOW_CHECK\`"
+# A project with no checks yet gets them from a build, and the runner reads them
+# from CLAUDE.md, so a build that sets them up has to declare them there.
+checks_said() {  # what to say of the checks where there are some -> the paragraph a brief says them in
+  if [ -z "$FAST_CHECK$SLOW_CHECK" ]; then
+    printf '%s' "The project has no checks yet. Where this work sets up its tests, lint or type check, declare the one command that runs them all in CLAUDE.md, in the same commit, on a \`Fast check:\` line with the command in backticks. The runner runs it on that commit and on every commit after it."
   else
-    printf '%s' "The project's fast check is \`$FAST_CHECK\`, and it has no slow check"
+    printf '%s' "$(checks_named). $1"
+  fi
+}
+
+checks_named() {  # -> the project's checks, named in a sentence without its full stop
+  local fast="The project's fast check is \`$FAST_CHECK\`"
+  [ -n "$FAST_CHECK" ] || fast="The project has no fast check"
+  if [ -n "$SLOW_CHECK" ]; then
+    printf '%s' "$fast, and its slow check is \`$SLOW_CHECK\`"
+  else
+    printf '%s' "$fast, and it has no slow check"
   fi
 }
 
 checks_question() {  # -> what the session that finds the checks is asked
-  printf '%s' "Find this project's verification command: the one shell line, run from $(pwd), that runs everything a change here has to pass - tests, type check, lint. Where CI runs these, what CI runs is the authority. Do not run it and change nothing; answer with the command."
+  printf '%s' "Find this project's verification command: the one shell line, run from $(pwd), that runs everything a change here has to pass - tests, type check, lint. Where CI runs these, what CI runs is the authority. Name only a command that works on the code as it is now, not one a plan or a design describes: where the project has no checks yet, answer with no command. Do not run it and change nothing; answer with the command."
 }
 
 review_brief() {  # -> the prompt the final review starts from
@@ -105,7 +117,7 @@ review_brief() {  # -> the prompt the final review starts from
 What the builds left standing is below. Among it are review findings a build did not fix, with the severity its reviewer gave each - one run's build left a blocker there, and its review found the same bug again. Every blocker and should-fix among them is yours to settle as you settle the review's: fix it - unless the fix would change what the design or the journeys say, and then it goes under \`## For you\` for the person. A fix a build made after its last review was seen by no reviewer: check each against the finding it answers, and settle one that is wrong or incomplete like a should-fix. Leave the nits and everything else for acceptance, and hand none of it to the reviewers.$standing"
   printf '%s' "Review the whole change this run built: \`git diff $(review_base)\`. The chunks in $(realpath "$CHUNKS") built it, and each build was reviewed on its own - which cannot see what lies between them. Look for that: the same thing built twice, one concept under two names, seams between chunks that do not line up.
 
-$(checks_named). The checks pass on the commit you start from. The runner runs both checks again on your commits once your review is committed, so run only the fast check yourself.
+$(checks_said "The checks pass on the commit you start from. The runner runs both checks again on your commits once your review is committed, so run only the fast check yourself.")
 
 Spawn two subagents with fresh contexts, side by side. To \`walk-user-journeys\`, hand the journeys $(realpath "$CHANGE") names and how to run the software - not the diff, the code or the design. To \`review-change\`, hand the diff, the result of the checks - the runner's last run of both checks, green on the commit you start from, or, once you have changed the code, your own run of the fast check - saying which it is, and $(realpath "$CHANGE") and the journeys it names as what was asked for, and its problem as what the change is for - not the chunks or what their builds left standing, which are the reasoning behind the code. Evaluate what comes back, fix what is worth fixing, run the fast check and commit. A fix that would change what the design or the journeys say is not made: it goes under \`## For you\`. Never change the journeys in journeys/: they were approved before the build, and the runner stops the run on a review that changes them. Then review again the same way, except that in the second round the walker walks only the journeys the fixes since the first round touched - name them to it. Where the first round found only nits, fix the ones worth fixing, and review again only if one of those fixes changes what the user sees or gets back, or where an action leads. Two rounds at most: stop when the second round is done, or when a review comes back clean or with only nits and none of your fixes changed what the user sees or gets back.
 

@@ -14,6 +14,11 @@
 # run. A slow check nobody declared is none. Running them is not judgement, so
 # the runner does, and believes the exit status rather than an account of it.
 #
+# A new project has no checks yet: its first chunk sets them up. Asked for a
+# command there, a session named one the design only planned, and the run did
+# not start. So a session may answer that there is none, and then nothing runs
+# until a build declares one in CLAUDE.md.
+#
 # Every build used to meet the same failures that were already on HEAD, prove
 # each time by a different route that they were not its own, and in one case
 # halt over them. A run that starts red does not start, and a build that is told
@@ -31,14 +36,20 @@ verify() {
     for log in "${RED_LOGS[@]}"; do tail -20 "$log" >&2; done
     die "the run does not start: $RED"
   fi
-  say "the checks pass"
+  # shellcheck disable=SC2034 # read by run.sh and the library beside this file
+  CHECKED=yes
+  if [ -z "$FAST_CHECK$SLOW_CHECK" ]; then
+    say "the project has no checks yet - nothing runs until a build declares one in CLAUDE.md"
+  else
+    say "the checks pass"
+  fi
 }
 
 run_checks() {  # -> 0 where every check is green; else RED says which is not, and RED_LOGS holds their output
   RED="" RED_LOGS=()
   two_fast_checks && return 1
   read_checks
-  run_check fast "$FAST_CHECK"
+  [ -z "$FAST_CHECK" ] || run_check fast "$FAST_CHECK"
   [ -z "$SLOW_CHECK" ] || run_check slow "$SLOW_CHECK"
   [ -z "$RED" ]
 }
@@ -60,7 +71,7 @@ read_checks() {  # -> FAST_CHECK and SLOW_CHECK as HEAD declares them, else the 
   [ -n "$FAST_CHECK" ] && return 0
   FAST_CHECK="$(check_line Check <<< "$claude")"
   [ -n "$FAST_CHECK" ] && return 0
-  [ -n "$ASKED_FAST_CHECK" ] || find_checks
+  [ -n "$ASKED" ] || find_checks
   FAST_CHECK="$ASKED_FAST_CHECK"
 }
 
@@ -71,10 +82,10 @@ check_line() {  # what the line names -> the command on the first such line on s
 
 find_checks() {
   claude_through_limits verify "$(checks_question)" --session-id "$(new_session_id)" \
-    --json-schema '{"type":"object","properties":{"command":{"type":"string"}},"required":["command"]}'
+    --json-schema '{"type":"object","properties":{"command":{"type":["string","null"]}},"required":["command"]}'
   [ $? = "$EX_LIMIT" ] && end_run 1 "a usage limit outlasted every wait while finding the project's checks - run again once it has lifted"
   ASKED_FAST_CHECK="$(jq -R -r 'fromjson? | select(.type == "result") | .structured_output.command // empty' "$LOG")"
-  [ -n "$ASKED_FAST_CHECK" ] || die "the session found no verification command, and CLAUDE.md names no fast check on a Fast check: or Check: line - see $LOG"
+  ASKED=yes
 }
 
 run_check() {  # fast or slow, its command -> its exit status; a red one is added to RED and RED_LOGS

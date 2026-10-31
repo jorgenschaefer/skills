@@ -36,7 +36,7 @@ split_change() {
   local rc
   is_split && return 0
   [ "$(field "$CHANGE" status)" = ready ] && [ "$(field "$CHANGE" attempts)" = 0 ] || return 0
-  [ -n "$FAST_CHECK" ] || verify
+  [ -n "$CHECKED" ] || verify
   say "splitting $CHANGE where one agent cannot build it within one context"
   claude_through_limits split "$(split_brief)" --session-id "$(new_session_id)"; rc=$?
   [ "$rc" = "$EX_LIMIT" ] && end_run 1 "a usage limit outlasted every wait while splitting the change - run again once it has lifted"

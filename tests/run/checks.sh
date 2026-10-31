@@ -24,13 +24,26 @@ if [ "$rc" != 0 ] && grep -q 'false' "$WORK/.out" && [ ! -s "$STUB_CALLS" ]; the
   ok "checks that fail before any build stop the run, naming the command"
 else bad "checks that fail before any build stop the run, naming the command" "rc=$rc $(out) $(calls)"; fi
 
+# A new project has no checks until a build sets them up.
 workspace
 STUB_VERIFY=
 plan build build review
 rc="$(run)"
-if [ "$rc" != 0 ] && grep -q 'no verification command' "$WORK/.out" && [ ! -s "$STUB_CALLS" ]; then
-  ok "a session that names no verification command stops the run"
-else bad "a session that names no verification command stops the run" "rc=$rc $(out) $(calls)"; fi
+if [ "$rc" = 0 ] && grep -q 'no checks yet' "$WORK/.out" && [ "$(grep -c -- '--json-schema' "$STUB_ARGS")" = 1 ]; then
+  ok "where a session names no verification command, the run builds without checks, asking once"
+else bad "where a session names no verification command, the run builds without checks, asking once" "rc=$rc $(out) $(calls)"; fi
+if grep -q 'no checks yet.*Fast check:' <(head -1 "$STUB_CALLS"); then
+  ok "a build in a project with no checks is told to declare the one it sets up"
+else bad "a build in a project with no checks is told to declare the one it sets up" "$(calls)"; fi
+
+workspace
+STUB_VERIFY=
+export STUB_DECLARE='touch .declared'
+plan build-declare build review
+rc="$(run)"
+if [ "$rc" = 0 ] && [ -f "$WORK/.declared" ] && grep -q 'touch .declared' <(sed -n 2p "$STUB_CALLS"); then
+  ok "a check a build declares in a project that had none runs from its commit on"
+else bad "a check a build declares in a project that had none runs from its commit on" "rc=$rc $(out) $(calls)"; fi
 
 workspace
 STUB_VERIFY='touch .verified'
