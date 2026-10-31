@@ -28,6 +28,28 @@ leave it to the builder, and keep it out of the design (`design-user-journeys`:
 of 2026-10-31, the layout came from a hand-written `TECHNICAL.md` that
 copied `../weight-tracker`; no skill writes that file.
 
+The user, on 2026-10-31, also: the refactor could find mistakes that keep
+happening and add something that prevents them, such as an entry in
+`CLAUDE.md`. It should be rare, because an entry there loads context in
+every session. Against `CLAUDE.md` itself: `retro/SKILL.md` says "Never
+`CLAUDE.md` for a repeated mistake: it loads into every session and goes
+stale", and picks the strongest mechanism that fits - something that
+executes, then a check without a stake, then an instruction in the stage
+that produces the output. An instruction can also sit closer than the root
+`CLAUDE.md`: a comment at the trap, a `CLAUDE.md` in the subdirectory, the
+project's `run` skill.
+
+An instance from the workout-tracker run: the friction note
+`changes/friction/2026-10-31-training-eintragen.md` ends "Any phone screen
+that uses `router.push` or `next/link` brings the problem back". No test
+checks for that and `CLAUDE.md` does not say it. A structural test beside
+`src/test/domain-boundaries.test.ts` would.
+
+What limits this: "keeps happening" needs the mistake seen more than once,
+and of the records only the friction notes and the git history survive
+acceptance. The review findings and every `## Left standing` are deleted
+with the change's directory.
+
 `SDLC.md` ("Refactor"): "and possibly other signals". These are directions
 for the signals, not decisions:
 
