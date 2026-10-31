@@ -75,6 +75,3 @@ README's runner section, and the hand-off line in `design-user-journeys`.
   `run.sh`) and a preflight halt both exit 2.
 - The halt excerpt cut at 20 lines can stay, since Claude can open the
   chunk.
-
-Depends on `pipeline-in-an-empty-repo`, which changes the runner's preflight
-and is done before the files move.
