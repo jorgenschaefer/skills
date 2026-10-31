@@ -1,14 +1,35 @@
 ---
 effort: L
-utility: M
+utility: L
 ---
 
-# More signals for the refactor
+# The refactor decides from measurable signals
 
-`refactor-codebase` finds where to work from the friction notes in
-`changes/friction/`, the git history and the code. `SDLC.md` ("Refactor"):
-"and possibly other signals". These are directions for those, not
-decisions:
+The user, on 2026-10-31: `refactor-codebase` should base its decisions on
+what to refactor on measurable signals, not on general knowledge written
+into the skill.
+
+Today `refactor-codebase/SKILL.md` carries such knowledge in three places:
+
+- the third source under "Gather the signals", "The code": coupling and
+  names judged by reading the code;
+- the ten "kinds of refactoring": colocate "grouped by feature", split a
+  god file, collapse layers that spare their caller nothing, generalize,
+  simplify "code you had to read twice to follow";
+- the measure in its opening: "the code that has to change with it should
+  be close by and easy to find".
+
+The friction notes in `changes/friction/` and the git history are already
+measurable signals.
+
+This matters because nothing else steers the code's structure. The skills
+leave it to the builder, and keep it out of the design (`design-user-journeys`:
+"Do not put details of the code to the user"). In the workout-tracker run
+of 2026-10-31, the layout came from a hand-written `TECHNICAL.md` that
+copied `../weight-tracker`; no skill writes that file.
+
+`SDLC.md` ("Refactor"): "and possibly other signals". These are directions
+for the signals, not decisions:
 
 - **Checks that warn early**, from cheap to expensive:
   1. coverage scatter: how many files and modules a journey's deciding code
