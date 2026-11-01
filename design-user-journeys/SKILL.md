@@ -46,7 +46,9 @@ This skill's `JOURNEY_FORMAT.md` and `CHANGE_FORMAT.md` settle the shape of the 
 
 **Use the user's words.** A new thing gets its name from the user, and the journeys and the design use that name.
 
-**Do not put details of the code to the user** - tables, columns, files, modules, ideas for how to build it. They are the builder's.
+**For everything the software keeps, ask what it keeps, and what happens to what it already holds** when the change alters it. Each answer goes under "Data".
+
+**Do not put details of the code to the user** - files, modules, ideas for how to build it. They are the builder's.
 
 **Settle every open question.** Each one ends in a journey, in the design, or under "Not in this change". None is settled by guessing what only the user knows.
 
