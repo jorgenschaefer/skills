@@ -1,9 +1,22 @@
 ---
-effort: S
-utility: S
+effort: M
+utility: M
 ---
 
-# The runner runs the tests twice in a row
+# The slow check should be a full check that includes the fast check
+
+The skills and the runner call a project's two checks the fast check and the
+slow check, as if the slow check were a separate set of slow tests. Projects
+include the fast check in it instead. So the second check should be called
+the full check: it runs everything, and the fast check is a fast subset of it.
+
+The name "slow check" is in the README, `run.sh`, `run/checks.sh`,
+`run/prompts.sh`, their tests, and the skills `implement-change`,
+`review-change`, `debug`, `refactor-codebase`, `accept-change`,
+`split-change-into-chunks` and `upgrade-dependencies`, and on the
+`Slow check:` line of each project's `CLAUDE.md`.
+
+## The runner runs the tests twice in a row
 
 After every build, `run_checks` (`run/checks.sh`) runs the fast check and then
 the slow check. The comment at the top of that file says the slow check is
