@@ -171,6 +171,23 @@ if [ "$(grep -c '^1-one ' "$tokens")" = 1 ] && [ "$(grep -c '^2-two ' "$tokens")
   ok "the count survives a run started again"
 else bad "the count survives a run started again" "$(cat "$tokens")"; fi
 
+# --- the narration
+#
+# What a session and its subagents say is narrated whole; a tool call is one
+# line, cut where it is long. A subagent's lines carry the number its spawn names.
+workspace
+plan build-talks build review
+run > /dev/null
+if grep -qxF '    > Reading the code.' "$WORK/.out" && grep -qxF '    > Then the tests.' "$WORK/.out"; then
+  ok "what a session says is narrated whole, line by line"
+else bad "what a session says is narrated whole, line by line" "$(out)"; fi
+if grep -qxF "    Bash: $(printf 'true; %.0s' $(seq 30) | cut -c1-100)…" "$WORK/.out"; then ok "a tool call is narrated on one line, cut"
+else bad "a tool call is narrated on one line, cut" "$(out)"; fi
+if grep -qxF '    Agent: Review the build [1]' "$WORK/.out" && grep -qxF '    [1] Bash: Show the diff' "$WORK/.out" \
+   && grep -qxF '    [1] > No blockers.' "$WORK/.out" && grep -qxF '    [1] > One nit.' "$WORK/.out"; then
+  ok "a subagent's calls and report are narrated under its number"
+else bad "a subagent's calls and report are narrated under its number" "$(out)"; fi
+
 # --- the refused log
 #
 # A call the session's permissions refuse does not stop it: it carries on, works

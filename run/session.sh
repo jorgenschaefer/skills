@@ -92,8 +92,12 @@ claude_run() {  # log, --session-id or --resume, session id, prompt, claude's ow
   return "${PIPESTATUS[0]}"
 }
 
-# A session's event stream, cut to one line per tool call, remark and result.
-# Subagents are left out - their spawn shows, their insides are in the log.
+# A session's event stream as it happens: one line per tool call, cut where it
+# is long, and what the session says - its remarks, and the report a subagent
+# hands back in its `SubagentHandback` call - whole, each line under a `>`. A
+# subagent's lines carry its number, which its spawn names, because subagents
+# run side by side and their lines interleave. A subagent's own subagents are
+# not in the stream at all: its spawn shows, and the report it hands back.
 # Lines that are not JSON are the CLI talking rather than the session, and are
 # passed through as they are.
 #
@@ -111,22 +115,29 @@ DENIAL='def line(n): tostring | split("\n") as $l | $l[0] | if length > n or ($l
   def denial($why; target): "\(.tool_name): \(.tool_input | (.file_path // .command // .pattern // .url // tostring) | target)\(if $why[.tool_use_id] then " (\($why[.tool_use_id] | line(160)))" else "" end)";'
 narrate() {
   jq -n -R --unbuffered -r "$DENIAL"'
-    foreach (inputs | fromjson? // {type: "raw", line: .}) as $e ({}; . + ($e | why); [., $e])
-    | . as [$why, $e] | $e
-    | select(.parent_tool_use_id == null)
+    def uses: select(.type == "assistant") | .message.content[]? | select(.type == "tool_use");
+    def said($pre): split("\n")[] | "\($pre)>\(if . == "" then "" else " " + . end)";
+    foreach (inputs | fromjson? // {type: "raw", line: .}) as $e ({why: {}, agents: {}};
+      .why += ($e | why)
+      | reduce ($e | uses | select(.name == "Agent") | .id) as $id (.; .agents[$id] = (.agents | length) + 1);
+      [., $e])
+    | . as [$s, $e]
+    | "    \(if $e.parent_tool_use_id then "[\($s.agents[$e.parent_tool_use_id] // "?")] " else "" end)" as $pre | $e
     | if .type == "raw" then "    \(.line)"
       elif .type == "assistant" then
         .message.content[]?
-        | if .type == "tool_use" then
-            "    \(.name): \(.input | (.description // .file_path // .pattern // .skill // .command // "") | line(100))"
-          elif .type == "text" then "    > \(.text | line(120))"
+        | if .type == "tool_use" and .name == "SubagentHandback" then .input.message // "" | said($pre)
+          elif .type == "tool_use" then
+            "\($pre)\(.name): \(.input | (.description // .file_path // .pattern // .skill // .command // "") | line(100))\(if $s.agents[.id] then " [\($s.agents[.id])]" else "" end)"
+          elif .type == "text" then .text | said($pre)
           else empty end
+      elif .parent_tool_use_id != null then empty
       elif .type == "rate_limit_event" then
         select(.rate_limit_info.status == "rejected")
         | "    ! usage limit, resets \(.rate_limit_info.resetsAt // 0 | strflocaltime("%a %H:%M"))"
       elif .type == "result" then
         "    = \(.subtype)\(if .is_error then " (error)" else "" end), \(.num_turns // "?") turns, $\(.total_cost_usd // 0 | . * 100 | round / 100)",
-        (.permission_denials[]? | "    ! refused \(denial($why; line(160)))")
+        (.permission_denials[]? | "    ! refused \(denial($s.why; line(160)))")
       else empty end'
 }
 
