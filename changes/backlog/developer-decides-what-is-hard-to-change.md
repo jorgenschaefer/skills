@@ -1,9 +1,9 @@
 ---
-effort: M
-utility: L
+effort: L
+utility: XL
 ---
 
-# The developer approves new stored data and names the outside sees
+# The developer decides what is hard to change
 
 The user, on 2026-11-02: in one change, a migration was built that they did
 not see, and two environment variables got names nobody discussed with them.
@@ -14,6 +14,16 @@ at least be put to them for a veto.
 Later the same day, after a design in `workout-tracker`: "Mir fehlt
 tatsächlich die klare Darstellung, wie das in der DB gespeichert wird. Ohne
 das fühle ich mich unsicher."
+
+And then: the `workout-tracker` design said not a word about the tech stack
+or the like. The idea that technical details are not put to the developer is
+wrong. Serious decisions that are not easy to change must lie with the
+developer: tech stack, deployment, databases. Which module goes where,
+perhaps not, at least for small tools.
+
+The rule behind it, `design-user-journeys/SKILL.md:51`: "Do not put details
+of the code to the user - files, modules, ideas for how to build it. They
+are the builder's."
 
 ## Where it showed up
 
@@ -77,3 +87,8 @@ committed as `0fced9e` on 2026-11-02, not built yet (session `707c3e2c`).
 - **The password is again a name nobody gave.** `CHANGE.md:72`: "ein
   Passwort, das beim Einrichten des Servers festgelegt wird". What it is
   called and how it is kept is left to the build.
+- **No word on the stack, the database or deployment.** At 13:36 the
+  developer brought up TanStack Query for retries. The answer: "Wie man das
+  baut, entscheidet der Builder." `CHANGE.md` names no stack, no database
+  and no way to deploy. The repository holds no code yet, so the first
+  build decides all of it alone.
