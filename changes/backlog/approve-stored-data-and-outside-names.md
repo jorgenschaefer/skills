@@ -1,6 +1,6 @@
 ---
-effort: S
-utility: M
+effort: M
+utility: L
 ---
 
 # The developer approves new stored data and names the outside sees
@@ -11,7 +11,13 @@ Stored data is a question of the domain model and should be agreed at least
 in the abstract. Environment variables are an outside interface and should
 at least be put to them for a veto.
 
+Later the same day, after a design in `workout-tracker`: "Mir fehlt
+tatsächlich die klare Darstellung, wie das in der DB gespeichert wird. Ohne
+das fühle ich mich unsicher."
+
 ## Where it showed up
+
+### haushaltsbuch
 
 `haushaltsbuch`, change `changes/2026-11-01-ausgaben-import`, designed and
 built on 2026-11-01.
@@ -51,3 +57,23 @@ not as decisions:
 
 `SDLC.md`, Future Changes: "Stored data (database schemas) and wire formats
 are relevant but are not mentioned yet."
+
+### workout-tracker
+
+`workout-tracker`, change `changes/2026-11-02-workouts-tracken`, design
+committed as `0fced9e` on 2026-11-02, not built yet (session `707c3e2c`).
+
+- **The data came only as a list in words.** At 14:22: "Die App speichert:
+  Übungen: Name, und ob Kraft oder Cardio. Pläne: … Trainings: …", followed
+  straight away by the question whether to import old records. How the
+  things hang together did not come up: whether a training points to its
+  plan or only keeps its name, whether an exercise in a training points to
+  the exercise that "Letztes Mal" is found through. The build will make the
+  tables from this, and the developer will first see them as a migration.
+- **Two stores, and no picture of them.** "Alle Trainings liegen auf dem
+  Handy" came in only with the verifier's findings. A queue of waiting
+  changes is added. What lies on the device, what on the server, and which
+  one wins is spread over "Interactions" in `CHANGE.md`, lines 63 to 66.
+- **The password is again a name nobody gave.** `CHANGE.md:72`: "ein
+  Passwort, das beim Einrichten des Servers festgelegt wird". What it is
+  called and how it is kept is left to the build.
