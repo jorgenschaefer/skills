@@ -66,6 +66,44 @@ reviews, and the walk happens once, at acceptance. That replaces the chunk
 rule "Provable on its own" (`split-change-into-chunks/SKILL.md`, "What a
 chunk is").
 
+The reviews inside `run.sh` are not `review-change`. The user: "review-change
+is the wrong name. We might need a new skill for pure code review" - a review
+at the level of the plan, of the code against its plan or part.
+
+### `accept-change` takes any spec
+
+A build can come from more than `CHANGE.md` (see "Who builds through it"
+below), so `accept-change` holds it against whatever spec it came from: for
+a bug, that the bug no longer happens; for `solve-problem`, each item on its
+"Done when" list. Then every run of `run.sh` ends the same way.
+
+## Who builds through it
+
+- **`design-user-journeys`**, as above.
+- **`debug`**, where the fix is larger than one session. Today it hands such
+  a fix to `/backlog` (`debug/SKILL.md`, "It does not work as intended"),
+  which sends a bug whose cause and intention are settled back through
+  `/idea`. Instead it hands it to `create-plan`. The spec is the report, the
+  intention the developer agreed, and the cause. The plan's first step is the
+  test that reproduces the bug.
+- **`solve-problem`** writes a plan of some kind - what it wants to do -
+  before it does it. That plan can be the input to `create-plan`, or
+  `solve-problem` builds it itself.
+- **`refactor-codebase`** may end in `create-plan`.
+- **`upgrade-dependencies`**: not sure. It has to try the upgrade first to
+  see what needs to be done.
+
+Small work keeps being built in the session: a plan, a plan review and a run
+for a three-line fix cost more than they give. But building in the session
+may be a problem of its own. The user: "we might want to have a good 'coding
+skill' that handles coding", for `debug`, `solve-problem` and
+`implement-plan` alike.
+
+The rules for hard and soft decisions and tests hold at every size, for
+every skill that builds, in the session as much as in `run.sh`: a three-line
+fix can add a migration too. In the session it costs one question to the
+developer before a hard decision.
+
 ### Sizing a part
 
 An agent cannot measure how many tokens a later session will use, so
@@ -293,9 +331,11 @@ committed as `0fced9e` on 2026-11-02, not built yet (session `707c3e2c`).
 
 ## What it touches
 
-`SDLC.md` ("Add a feature", "Refactor", Future Changes); new skills
-`create-plan`, `split-plan` and `implement-plan`, in place of
-`split-change-into-chunks` and `implement-change`; `run.sh` and `run/`
+`SDLC.md` ("Add a feature", "Debug", "Refactor", Future Changes); new
+skills `create-plan`, `split-plan` and `implement-plan`, in place of
+`split-change-into-chunks` and `implement-change`; a new skill for code
+review at the level of the plan; perhaps a coding skill; `run.sh` and `run/`
 (chunks, `after:`, `final_review`); `accept-change`, `review-change`,
-`design-user-journeys`, `debug`, `refactor-codebase`; the four copies of
-`CHANGE_FORMAT.md` and the copies of `JOURNEY_FORMAT.md`.
+`design-user-journeys`, `debug`, `solve-problem`, `refactor-codebase`,
+perhaps `upgrade-dependencies`; the four copies of `CHANGE_FORMAT.md` and the
+copies of `JOURNEY_FORMAT.md`.
