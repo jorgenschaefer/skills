@@ -143,6 +143,15 @@ change ones, and leave me alone with the rest."
   where it would have to change a hard decision the developer approved.
 - **When in doubt, a decision counts as hard.** An agent that calls a hard
   decision soft takes it past the developer without a word.
+- **Main's four technical decisions are the starting list.** The user, on
+  2026-11-02, after comparing this branch with `main`: main's
+  `find-criteria/CRITERIA_FORMAT.md` had the developer approve four
+  technical decisions for every change: stored formats, wire formats, trust
+  boundaries and dependencies. All four were always present, "none" counted
+  as an answer, and a build that went beyond one recorded it as a
+  departure. `create-plan` starts from these four. The list is not
+  exhaustive: the access model, names that leave the code and effects in
+  the world (above) are hard too.
 
 ## Review shows what is hard to undo
 
