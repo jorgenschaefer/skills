@@ -78,3 +78,6 @@ design-user-journeys, implement-change, split-change-into-chunks) and their
 `journeys:` frontmatter, which `run/drift.sh` and `run/chunks.sh` check;
 the routing in `idea/SKILL.md`; `design-user-journeys`, `implement-change`
 and `review-change`.
+
+`plan-the-build-and-decide-only-what-is-hard-to-change.md` proposes hard
+tests as one permanent place for what must last.
