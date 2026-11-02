@@ -10,8 +10,9 @@ The user, on 2026-11-02, after reading Anthropic's AI-native SDLC playbook
 pipeline. Discovery makes the change; a plan pipeline builds it. In the same
 conversation they agreed how the plan, its reviews and the tests should work,
 and that the developer should be asked only about what is hard to change.
-This item holds all of it. It took in the item "The developer decides what is
-hard to change", whose evidence is under "Where it showed up" below.
+This item holds all of it but the design side. It took in the item "The
+developer decides what is hard to change", whose evidence is under "Where it
+showed up" below.
 
 ## The pipeline
 
@@ -205,22 +206,8 @@ What was agreed:
   "the hard tests pass without being changed". A diff that touches a hard
   test goes on the list the developer reads at acceptance.
 
-## Light journeys
-
-The user: "User journeys should still exist, but be very light - they need
-to be kept around for the agent to orient itself in the software, to find out
-what the intended use is, but not to know every single step and special case.
-That's what the code is for."
-
-So a journey keeps who uses the software and for what. During the change, the
-details of each step and the special cases live in the prototype and in
-`CHANGE.md`'s design - both temporary, both agreed with the developer. After
-acceptance they live in the code and the hard tests; a hard test's name says
-its rule in the user's words. This changes `design-user-journeys` and the
-journey and change formats. It also touches `SDLC.md`'s Future Changes, "The
-domain model is a good idea, but has no place yet": a list of rules is part
-of a domain model. `designs-declare-what-must-be-true.md` asks for a
-permanent place for what must last; hard tests are one answer to it.
+Light journeys, and where their detail goes instead, are in
+`several-skills-contribute-to-the-design.md`.
 
 ## UI design stays in discovery
 
@@ -337,5 +324,4 @@ skills `create-plan`, `split-plan` and `implement-plan`, in place of
 review at the level of the plan; perhaps a coding skill; `run.sh` and `run/`
 (chunks, `after:`, `final_review`); `accept-change`, `review-change`,
 `design-user-journeys`, `debug`, `solve-problem`, `refactor-codebase`,
-perhaps `upgrade-dependencies`; the four copies of `CHANGE_FORMAT.md` and the
-copies of `JOURNEY_FORMAT.md`.
+perhaps `upgrade-dependencies`; the four copies of `CHANGE_FORMAT.md`.
