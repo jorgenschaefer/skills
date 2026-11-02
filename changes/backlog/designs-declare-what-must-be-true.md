@@ -48,6 +48,29 @@ unnamed:
 - Where the user sees the result, the agreed design is part of the goal
   state, not only what it achieves.
 
+## What Anthropic's playbook adds
+
+The user, on 2026-11-02, after comparing the pipeline with Anthropic's
+AI-native SDLC playbook (`anthropic-sdlc.md`), asked for two points from
+its worked example to go here.
+
+1. **Constraints belong in the problem statement, before the design.** Its
+   intent.md has a `## Constraints` section: "No new PII in the portal
+   session. Existing authentication only."
+2. **Each constraint says how it is met and how that is checked.** Its
+   spec.md has a table, "How each constraint in the intent is met", with
+   one row per constraint, such as "No new PII in the portal session | R3.
+   None of the three fields is tagged pii in the schema."
+
+These are constraints no user sees on screen: no PII, existing
+authentication only, data at most 60 seconds old, staying under a
+downstream rate limit of 50 requests a second. Today nothing holds a change
+to one. A journey step is what a user does and sees (`JOURNEY_FORMAT.md`),
+`CHANGE.md`'s Problem has "no mechanism in it" and its Design is screens,
+interactions and data. `review-change` checks the four goals in general,
+and `walk-user-journeys` cannot see them. A constraint written into
+`CHANGE.md` is deleted at acceptance, though most of these must last.
+
 ## What it touches
 
 `SDLC.md`; the four copies of `CHANGE_FORMAT.md` (accept-change,
