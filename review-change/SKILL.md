@@ -33,7 +33,7 @@ Load `/review-code` and do what it says, with the diff, the checks' result and w
 
 **The hard tests.** A file with `.hard.` in its name is a hard test: it needs the developer's yes to change.
 
-- **Each journey has a hard test that would catch it breaking.** For every journey step the change builds, and every "When it goes wrong" case, find the test that walks it from the outside - clicking, typing, calling the API, never the code's internals - and names its journey and step. Read what it asserts: a test that would still pass with the step broken is no test. A step marked *(judged)* needs none. A step with none is a should-fix; one whose break would cost the user money, data or access is a blocker.
+- **Each journey has a hard test that would catch it breaking.** For every journey step the change builds, and every failure case in `spec.md` where the user's work is kept or something must not be shown, find the test that walks it from the outside - clicking, typing, calling the API, never the code's internals - and names its journey and step, or its failure case. Read what it asserts: a test that would still pass with the step broken is no test. A step marked *(judged)* needs none. A step with none is a should-fix; one whose break would cost the user money, data or access is a blocker.
 - **Every changed, renamed or deleted `.hard.` file is listed** under "Hard tests" in the output, so the developer sees it, with whether the plan lists the change as approved.
 
 **The constraints.** Hold the change against each line under `## Constraints` in the project's `CLAUDE.md`. A constraint the change breaks is a blocker.

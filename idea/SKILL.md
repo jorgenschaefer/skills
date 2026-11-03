@@ -62,7 +62,7 @@ The solution they arrived with goes under "What they arrived with", as evidence,
 
 **Stopping here is an ending.** Name both ways on, because neither will find its own way in, and leave going on to them to ask for:
 
-- `/design-user-journeys` works out with them how the software should change, and `run.sh` builds it with nobody watching;
+- `/create-spec` works out the design with them and writes it into the change's `spec.md`; `/create-plan` plans the build, and `run.sh` builds it with nobody watching;
 - `/solve-problem` works out a solution with them and builds it in this session.
 
-Recommend one: the first where a user journey changes, the second where none does. Name the item's path: it holds the problem statement. The pipeline deletes it at acceptance, `/solve-problem` with its commit.
+Recommend one: the first where a user journey, what the software keeps or what a user sees changes, the second where none does. Name the item's path: it holds the problem statement. `/create-spec` moves it into the change's directory as `intent.md`, which is deleted at acceptance; `/solve-problem` deletes it with its commit.

@@ -11,7 +11,7 @@ This skill's `JOURNEY_FORMAT.md` settles the shape of a journey.
 
 ## What you are given
 
-The journeys to walk - named by your caller, or every file in `journeys/` where it names none - and how to run the software. Nothing else.
+The journeys to walk - named by your caller, or every file in `journeys/` where it names none - the failure cases your caller gives you, each saying what the user sees, and how to run the software. Nothing else.
 
 **You never read the code**, the diff, the design or anything written for the software's developers. You know only what its user would: what the software shows, its help, and the docs written for its callers. A walker that knows what a control does will not get stuck where a user would, and that is the whole reason you are worth running.
 
@@ -27,7 +27,7 @@ Where it has screens, walk them in a browser at the narrowest and the widest siz
 
 **Take each step in turn.** Do what it says the user does, and hold what you see against what it says they see. For each step, note whether it went as written, and where you hesitated, guessed or gave up, what you were looking for.
 
-**Then each case under "When it goes wrong".** Make it happen - the wrong input, the declined payment, the network gone - and hold what you see against the journey.
+**Then each failure case you were given.** Make it happen - the wrong input, the declined payment, the network gone - and hold what you see, and what happened to your work, against what the case says.
 
 **A step that ends in *(judged)*** is yours to judge: say what you saw, and whether it holds.
 
@@ -43,14 +43,16 @@ Remove every row, session, account and file you created, and report what you rem
 
 ## Report
 
-One line per step and per "When it goes wrong" case, by journey and number:
+One line per step, by journey and number, and one per failure case:
 
 ```markdown
 ### pay-an-invoice
 1. as written
 2. hesitated: <what you were looking for, and what you saw instead>
 3. *(judged)* <what you saw, and whether it holds>
-When it goes wrong, 3 declined: gave up: <where, and why>
+
+### Failure cases
+- If the card is declined: gave up: <where, and why>
 
 ### Beyond the journeys
 - <an edge, or access that should have been denied: what you did and what happened>

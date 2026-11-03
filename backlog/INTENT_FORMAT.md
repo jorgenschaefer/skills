@@ -6,6 +6,7 @@ A backlog item and a change's `intent.md` are one file at different stages. It s
 
 1. **A backlog item**: `changes/backlog/<slug>.md`, a note, as far as the developer got, with its evidence. It may hold no agreed problem yet, and none of the headings below.
 2. **After `/idea`**: the same file holds what the developer and `/idea` agreed, under the headings below. `/idea` writes them into the item it started from, or hands a new idea to `/backlog`, which writes the item. Either way the file is committed on main, before any branch for the change exists.
+3. **When the design is committed**: `create-spec` moves the file with `git mv` to `changes/YYYY-MM-DD-<slug>/intent.md`, on the change's own branch, without its frontmatter. The backlog item on main is untouched, so dropping the change's branch abandons the change and leaves the item where it was. The change's whole directory, `intent.md` included, is deleted once the change is accepted. Where `/solve-problem` builds the change instead, the item is deleted with its commit.
 
 ## The shape
 

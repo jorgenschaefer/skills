@@ -41,7 +41,7 @@ Nothing changes. Explain to the developer why the software does this, with the e
 
 ### 2. It works as intended, but the intention is wrong
 
-This is a feature request. Hand it to `/backlog`, with the report as the one real instance it came from. Change nothing in the code or the journeys: what the software should do instead is settled through `/idea` and `/design-user-journeys`.
+This is a feature request. Hand it to `/backlog`, with the report as the one real instance it came from. Change nothing in the code or the journeys: what the software should do instead is settled through `/idea` and `/create-spec`.
 
 ### 3. It does not work as intended
 

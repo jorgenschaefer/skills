@@ -1,6 +1,6 @@
 ---
 name: backlog
-description: Add to, extend or pick from the project's backlog in changes/backlog/. Use on "create a backlog item for ...", "add this to the backlog", "put that on the backlog", "what should we build next", "what's next from the backlog", and when /accept-change hands over a follow-up or /debug a feature request.
+description: Add to, extend or pick from the project's backlog in changes/backlog/. Use on "create a backlog item for ...", "add this to the backlog", "put that on the backlog", "what should we build next", "what's next from the backlog", and when /accept-change hands over a follow-up, /create-spec an item that could wait, or /debug a feature request.
 ---
 
 # Backlog
@@ -36,7 +36,7 @@ When `/idea` hands you a new idea, it gives you the parts in `INTENT_FORMAT.md`'
 1. **Read the code the item touches.**
 2. **Look for an item it overlaps.** Where one exists, add the new finding to that item instead of writing a new one, and propose its sizes again.
 3. **Propose effort and utility**, each with a one-line reason. Write the file once the user confirms or corrects them.
-4. **Commit that file alone.** When `/accept-change` handed you the item, do not commit - it commits the item with its deletion.
+4. **Commit that file alone.** When `/accept-change` or `/create-spec` handed you the item, do not commit - each commits the item with its own work.
 
 ## Picking the next item
 
@@ -45,4 +45,4 @@ When `/idea` hands you a new idea, it gives you the parts in `INTENT_FORMAT.md`'
 3. **Recommend one item and a runner-up**, each with why.
 4. **Run `/idea` with the item the user picks**, naming its path, however settled it reads: an item is a quick note, and what it is meant to improve, and whether that is worth the work, are worked out there.
 
-Do not delete a picked item; `/accept-change` deletes it once the change it started is accepted, `/solve-problem` with the commit that solves it, and `/idea` where the user agrees it is already solved or not worth the work.
+Do not move or delete a picked item. `/create-spec` moves it into the change's directory as `intent.md`, on the change's branch, and `/accept-change` deletes it with that directory once the change is accepted. `/solve-problem` deletes it with the commit that solves it, and `/idea` where the user agrees it is already solved or not worth the work.

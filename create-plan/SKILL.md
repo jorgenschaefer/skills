@@ -7,7 +7,7 @@ description: Write the plan.md that run.sh builds, from any agreed specification
 
 Write `plan.md`: how the change is built, step by step, so that an engineer who has never seen the conversation could build it from the plan alone. Then put the hard decisions in it to the developer, while they are still here. The build runs with nobody to ask.
 
-This skill's `PLAN_FORMAT.md` settles the shape of `plan.md`.
+This skill's `PLAN_FORMAT.md` settles the shape of `plan.md`, and `SPEC_FORMAT.md` the shape of a `spec.md` from the design.
 
 ## What this takes
 
