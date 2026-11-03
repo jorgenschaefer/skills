@@ -39,4 +39,32 @@ Risks seen so far:
 - Each change has fixed costs: a design session and an acceptance with the
   developer, finding the checks, the split, the final review.
 
+## Fewer journeys alone did not make it small
+
+The second `workout-tracker` run, of 2026-11-02, built 4 journeys instead of
+11, in 10 chunks instead of 17. It took 9 hours instead of about 10, and
+about $99 instead of about $150. The time hardly moved, for two reasons:
+
+- **Each chunk has a fixed cost** of about 20 to 35 minutes - two rounds of
+  review and walk, and the fast check about four times - however little it
+  builds. Chunk 09 built 242 lines of app code and 656 of tests, in 82
+  minutes.
+- **The hard part stayed.** Offline sync was chunks 03 and 05 (95 minutes),
+  the cause of the one flaky test (44 minutes), and 5 of the 14 points under
+  "For you" in `REVIEW.md`.
+
+What the problem needed, as `CHANGE.md` states it: the plan in the gym,
+"Letztes Mal" for each exercise across plans, today's sets written down, and
+all of it without network. What could have waited, judged in the retro:
+correcting and deleting trainings (chunk 09); the notices for refused
+changes with their content in words; reordering exercises, renaming an
+exercise everywhere, „Notiz übernehmen“, „schon im Plan“; deleting a plan
+while one of its trainings is open; logging out every device on a new
+password, and the 500 ms delay.
+
+So the size of a change is counted in chunks, not journeys, and the
+technical choices count as much as the features. See
+`plan-the-build-and-decide-only-what-is-hard-to-change.md`, "workout-tracker,
+the build", for the storage choice that made offline sync this large.
+
 This changes the "Add a feature" journey in `SDLC.md`.
