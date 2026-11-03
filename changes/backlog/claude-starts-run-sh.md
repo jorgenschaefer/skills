@@ -5,7 +5,7 @@ utility: L
 
 # Claude starts run.sh itself
 
-After `/design-user-journeys` commits a change, the user has to start
+After `/create-plan` commits a change's plan, the user has to start
 `./run.sh changes/<slug>` by hand. Claude Code should find the
 runner and start it itself, and when the run ends, tell how it ended and what
 comes next.
@@ -17,22 +17,22 @@ In a project that installed the skills, `run.sh` is not there.
 `run.sh` and `run/` sit beside them at the repository root, with no
 `SKILL.md` (README "`run.sh` is a script rather than a skill"; `sync.sh`
 skips directories without a `SKILL.md`). The hand-off in
-`design-user-journeys/SKILL.md` ("Stopping here is an ending") names
-`./run.sh`, which resolves only in this repository.
+`create-plan/SKILL.md` names `./run.sh`, which resolves only in this
+repository.
 
 What the user had in mind: move `run.sh` and `run/` into a skill directory
 of their own, for example `run-change/`, whose `SKILL.md` has Claude run
 `${CLAUDE_SKILL_DIR}/run.sh changes/<slug>` with
 `run_in_background`. Claude Code documents `${CLAUDE_SKILL_DIR}` as the
 directory that holds the skill's `SKILL.md` (code.claude.com/docs/en/skills).
-A skill of its own, not a line in `design-user-journeys`, because a restart
+A skill of its own, not a line in `create-plan`, because a restart
 after a halt also starts the runner.
 The script still enforces everything. The skill only starts it.
 
 Touched by the move: `test.sh` (shellcheck over `run.sh` and `run/*.sh`),
 `tests/run.sh` and the suites beside it, the demo skill
 `.claude/skills/run`, whose name would clash with a skill named `run`, the
-README's runner section, and the hand-off line in `design-user-journeys`.
+README's runner section, and the hand-off line in `create-plan`.
 
 ## What happens to a background run (from the Claude Code docs)
 
@@ -65,13 +65,14 @@ README's runner section, and the hand-off line in `design-user-journeys`.
 - **One exit code per outcome**, because Claude acts differently on each:
   - finished → `/accept-change`
   - halted → relay `## Halt` and stop, since settling it is the user's
-    decision
+    decision. The kinds are `blocked`, `departure` and `mystery` from a
+    session, and `exhausted`, `unbuilt` and `departure` from the runner
   - a usage limit outlasted every wait → start again after the reset
   - refused to start → report the refusal
 
   Today `EX_LIMIT=75` (`run/session.sh`) never becomes the script's exit
   code: every limit ending is `end_run 1`, the same code as a halt
-  (`run/loop.sh`, `run/checks.sh`, `run/report.sh`). A refusal (`die` in
-  `run.sh`) and a preflight halt both exit 2.
+  (`run/loop.sh`, `run/checks.sh`, `run/report.sh`). Only a refusal (`die`
+  in `run.sh`) exits 2.
 - The halt excerpt cut at 20 lines can stay, since Claude can open the
-  chunk.
+  part.

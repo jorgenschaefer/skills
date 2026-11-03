@@ -1,6 +1,6 @@
 ---
 name: nextjs-project-setup
-description: Set up a new TypeScript / Next.js project the way this developer sets them up - Node, Biome, Vitest, the check command and the preferred libraries - or bring an existing one in line. Use when creating a Next.js app, starting a TypeScript web project in an empty repository, or when a change or chunk sets up a project that has no code yet.
+description: Set up a new TypeScript / Next.js project the way this developer sets them up - Node, Biome, Vitest, the check command and the preferred libraries - or bring an existing one in line. Use when creating a Next.js app, starting a TypeScript web project in an empty repository, or when a change or a part of one sets up a project that has no code yet.
 ---
 
 # Set up a Next.js project

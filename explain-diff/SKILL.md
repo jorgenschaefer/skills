@@ -17,7 +17,7 @@ Run `facts.sh <A> <B>` from this skill's directory, in the repository. Its heade
 
 **Read every file at B, through `git show <B>:<path>`**, and the old version at A. When `facts.sh` says `worktree not at B`, the files on disk are not the change.
 
-**The claim** is what the change said it would do. Read, in this order: the `claim` files (`CHANGE.md`, its chunks and `REVIEW.md`, at the commit `facts.sh` names), then the commit messages, then a PR description if there is one. Where there is none, the page says "no stated intent; inferred from the code", and section 1 is your reading of the code.
+**The claim** is what the change said it would do. Read, in this order: the `claim` files (`intent.md`, `spec.md`, `plan.md` and its parts in `plan/`, at the commit `facts.sh` names), then the commit messages, then a PR description if there is one. Where there is none, the page says "no stated intent; inferred from the code", and section 1 is your reading of the code.
 
 Read every non-test file of the diff in full. Read tests by their names, and in full only where section 5 needs it.
 
@@ -25,7 +25,7 @@ Read every non-test file of the diff in full. Read tests by their names, and in 
 
 Copy `page.html` from this skill's directory to a temporary directory outside the repository - the session's scratchpad where it has one - and fill it in. It is a local file only: the code it quotes stays on the machine. Write in the user's language, and use the project's domain terms as the code and `UBIQUITOUS_LANGUAGE.md` spell them.
 
-**Every claim carries its evidence** as a reference: `data-f="path:line"` for a line at B, `data-a` for one at A, `data-c` for a commit. Something taken from a document without checking it in the code says so ("per `REVIEW.md`"). Something inferred says so.
+**Every claim carries its evidence** as a reference: `data-f="path:line"` for a line at B, `data-a` for one at A, `data-c` for a commit. Something taken from a document without checking it in the code says so ("per `spec.md`"). Something inferred says so.
 
 **A section with nothing to say says so in one line** ("no migration, no schema change"). That a section was checked is information; a missing section is not.
 

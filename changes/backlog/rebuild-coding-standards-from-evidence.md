@@ -22,10 +22,9 @@ code, never turning a check off), naming, efficiency, and maintainability
 (one way to do each thing, colocation, file and function size, fields
 listed once).
 
-On this branch, no skill has rules for the code itself. `review-change` has
-one paragraph on maintainability. `implement-change/SKILL.md` says "Every
-other test is yours. Write what helps you build; delete it later if it gets
-in the way", so business logic outside a journey has no rule for its tests.
+On this branch, no skill has rules for the code itself.
+`implement-code/SKILL.md` says only that soft tests are its own, so
+business logic outside a hard test has no rule for its tests.
 Injection, which `security-beyond-access.md` does not name, has no rule
 either.
 
@@ -47,11 +46,13 @@ its file and line, and the assumed reason, is
 
 Two causes came up again and again:
 
-- `implement-change` builds each chunk with a fresh agent, which does not
-  know what earlier chunks wrote. "Look at what is there" does not say to
+- `implement-change` built each chunk with a fresh agent, which did not
+  know what earlier chunks wrote. `implement-plan` builds each part of a
+  plan the same way. "Look at what is there" does not say to
   search before writing, and duplicates may be fixed only in files the
   change already touches.
-- `review-change` gets the diff, and a copy outside the diff is not in it.
+- `review-change` got the diff, and a copy outside the diff was not in it.
+  `review-code` gets only the diff too.
 
 The rules the proposal draws from it, each with the problem behind it:
 
@@ -92,12 +93,11 @@ The rules the proposal draws from it, each with the problem behind it:
 Left without a rule on purpose: file size ("agents game it"), small points
 that need judgement, and cases specific to that repository.
 
-In pipeline v4 (`changes/2026-11-03-pipeline-v4/spec.md`), the rebuilt
-standards live in `implement-code`, and `review-code` reviews against them
-(spec 631-632). Rule I is close to v4's rule that a failure case earns its
-place and that a hard decision goes to the developer. The proposal's point
-about code snippets in `ARCHITECTURE.md` going stale is moot there: a v4
-plan holds no code and is deleted after the build.
+The rebuilt standards live in `implement-code`, and `review-code` reviews
+against them. Rule I is close to the pipeline's rule that a failure case
+earns its place and that a hard decision goes to the developer. The
+proposal's point about code snippets in `ARCHITECTURE.md` going stale is
+moot: a plan holds no code and is deleted after the build.
 
 Open: whether one project's review is evidence enough, or the rules wait
 for a second run.
