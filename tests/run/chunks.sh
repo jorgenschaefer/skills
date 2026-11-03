@@ -45,15 +45,6 @@ if [ "$(field 1-one status)" = halted ] && [ -z "$(git -C "$WORK" status --porce
   ok "a halt the runner writes is committed"
 else bad "a halt the runner writes is committed" "$(git -C "$WORK" status --porcelain) $(git -C "$WORK" log --oneline | head -3)"; fi
 
-# A drift nobody has resolved is the same halt on every start, not one more.
-workspace
-sed -i 's#^journeys: .*#journeys:  journeys/three.md#' "$WORK/changes/x/chunks/2-two.md"; commit
-plan build build review
-run > /dev/null; run > /dev/null
-if [ "$(grep -c '^## Halt' <(chk 2-two))" = 1 ]; then
-  ok "starting again on an unresolved drift does not halt it twice"
-else bad "starting again on an unresolved drift does not halt it twice" "$(chk 2-two)"; fi
-
 # One runner leaves one claim.
 workspace
 sed -i 's/^status: .*/status:    doing/' "$WORK"/changes/x/chunks/*.md; commit

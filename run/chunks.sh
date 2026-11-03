@@ -117,11 +117,10 @@ put_aside() {  # chunk, attempt
 }
 
 # Committed, and once: a halt is the one thing a run leaves for a person, and
-# left uncommitted it was every later session's someone else's change - and a
-# drift nobody had resolved yet was halted again on every start.
+# left uncommitted it was every later session's someone else's change.
 #
 # HALTED names the last chunk halted here, for the end of the run to name what
-# stopped it: one already halted is named again, as a drift nobody resolved is.
+# stopped it.
 halt() {  # chunk, kind, why
   # shellcheck disable=SC2034 # read where the run ends, in run.sh and the loop
   HALTED="$1"
@@ -144,5 +143,11 @@ commit_halt() {  # chunk, kind
 # put it; empty where that line names none of them.
 halt_kind() {  # chunk
   sed -n '/^## Halt$/,$p' "$1" | sed -n '2,$p' | sed '/^[[:space:]]*$/d' | head -1 \
-    | grep -o -m1 -w 'blocked\|undecided\|mystery\|exhausted\|drift\|unbuilt\|departure' | head -1
+    | grep -o -m1 -w 'blocked\|undecided\|mystery\|exhausted\|unbuilt\|departure' | head -1
+}
+
+# The journeys a session's commits changed since the given commit, one per
+# line: approved before the build, so a change to one is a departure.
+journeys_touched() {  # commit
+  git diff --name-only "$1" HEAD -- "$(git rev-parse --show-toplevel)/journeys"
 }

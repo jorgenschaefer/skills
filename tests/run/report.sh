@@ -89,6 +89,16 @@ if [ "$rc" != 0 ] && [ "$(wc -l < "$STUB_CALLS")" = 4 ] && grep -q 'the final re
   ok "a final review is resumed once, and a second stop fails the run"
 else bad "a final review is resumed once, and a second stop fails the run" "rc=$rc $(calls) $(out)"; fi
 
+# The journeys were approved before the build, and the review is held to them as
+# a build is. It has no chunk to halt in, so the run's last lines say it.
+workspace
+plan build build review-journey
+rc="$(run)"
+if [ "$rc" = 1 ] && grep -q 'RUN STOPPED: the final review changed journeys' "$WORK/.out" \
+   && grep -q 'journeys/one.md' "$WORK/.out" && ! grep -q '/accept-change' "$WORK/.out"; then
+  ok "a final review that changes a journey stops the run, naming it"
+else bad "a final review that changes a journey stops the run, naming it" "rc=$rc $(out)"; fi
+
 # And where it did finish, it does not run again - but the checks do, since
 # nothing else stands between a commit nobody checked and acceptance.
 workspace
@@ -161,14 +171,6 @@ if [ "$rc" != 0 ] && ending | grep -q 'line 17 of the halt' && ! ending | grep -
    && ending | grep -q 'rest in the chunk'; then
   ok "a long halt is cut short, saying where the rest is"
 else bad "a long halt is cut short, saying where the rest is" "rc=$rc $(out)"; fi
-
-workspace
-sed -i 's/^x$/a different problem/' "$WORK/changes/x/CHANGE.md"; commit
-plan build
-rc="$(run)"
-if [ "$rc" != 0 ] && ending | grep -q 'RUN STOPPED: 1-one.md halted (drift)' && ending | grep -q 'split the change again'; then
-  ok "a run stopped by drift ends with the halt"
-else bad "a run stopped by drift ends with the halt" "rc=$rc $(out)"; fi
 
 # A halt whose first line names no kind still reads as a halt.
 workspace
@@ -243,8 +245,7 @@ else bad "a review handed more than 128 KiB of Left standing still starts" "rc=$
 
 # --- nothing selectable is not the same as everything finished
 
-# Two chunks that each wait on the other pass the drift pre-flight, and leave
-# the loop nothing it can pick.
+# Two chunks that each wait on the other leave the loop nothing it can pick.
 workspace
 sed -i 's/^after: .*/after:     2-two/' "$WORK/changes/x/chunks/1-one.md"; commit
 plan build

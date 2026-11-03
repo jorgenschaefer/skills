@@ -53,8 +53,6 @@ set_field() { sed -i "2,/^---$/s|^$2:.*|$2:$(printf '%*s' $((10 - ${#2})) '')$3|
 LIB="$(dirname "${BASH_SOURCE[0]}")/run"
 # shellcheck source=run/chunks.sh
 . "$LIB/chunks.sh"
-# shellcheck source=run/drift.sh
-. "$LIB/drift.sh"
 # shellcheck source=run/loop.sh
 . "$LIB/loop.sh"
 # shellcheck source=run/session.sh
@@ -123,8 +121,6 @@ REFUSED="${TOKENS%.tokens}.refused"
 REVIEW="$CHANGE_DIR/REVIEW.md"
 
 split_change
-
-preflight || end_run 2 "$HALTED"
 
 drive
 

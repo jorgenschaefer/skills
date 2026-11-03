@@ -12,8 +12,6 @@ drive() {
   local chunk attempts id head_before rc resume_with="" reds=0
 
   while :; do
-    preflight || end_run 2 "$HALTED"
-
     # A chunk in flight at the top of the loop is one a killed runner left: every
     # pass below settles its chunk and releases the record. What the record says
     # - which session, and where HEAD was - is picked up wherever the kill

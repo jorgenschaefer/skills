@@ -92,11 +92,6 @@ session's account of them, so a session runs only the fast check. A red check go
 session that made it, told which check failed and where its output is. The first time, that
 costs no attempt.
 
-**Before every pass**, it checks that every journey `CHANGE.md` names is there and that
-`after:` names chunks that exist. Where the change was split, it also checks that every chunk
-carries `CHANGE.md`'s Problem word for word, names only journeys `CHANGE.md` names, and that
-the chunks together name all of them. Where they disagree, the run halts as `drift`.
-
 **The journeys were approved before the build.** A build or a final review whose commits
 change one stops the run as a `departure` halt, and leaves its commits for the developer to
 keep or revert.
@@ -146,11 +141,12 @@ sessions run in auto mode, and a refused call does not stop one. Both are kept p
 
 **How it ends.** With what needs a person, and only that, last on the screen. A halt stops the
 run, which ends by naming the chunk that halted and printing its whole `## Halt`. A finished
-run points on to `/accept-change`.
+run points on to `/accept-change`. It exits 0 when the run finished, 1 when it halted or
+stopped, and 2 only when it refused to start.
 
 Every unattended stop is a named halt, written into the chunk: `blocked`, `undecided` and
-`mystery` from a session; `exhausted`, `drift`, `unbuilt` and `departure` from the runner,
-because in each of those four the party that would report it is in no position to.
+`mystery` from a session; `exhausted`, `unbuilt` and `departure` from the runner,
+because in each of those three the party that would report it is in no position to.
 
 ### The sync
 
@@ -167,7 +163,7 @@ skills here. It is left out of the sync, and a session in this repository finds 
 
 `./test.sh`. Every case of the runner's suites builds a throwaway repository - a change's
 `CHANGE.md` with its journeys and chunks - puts a stub where `claude` goes, and runs the real
-script against it: the refusals, the split, the drift checks, the departure halt, the claim a
+script against it: the refusals, the split, the departure halt, the claim a
 crashed session leaves behind, both budgets, the halt each one writes, the final review, the
 token log and the report a run ends with. The scripts of `accept-change` and `explain-diff`
 get suites of their own, over the same kind of throwaway repository. Beside them run the

@@ -172,4 +172,21 @@ if [ "$(git -C "$WORK" log -1 --format=%s)" = "Halt 1-one: mystery" ]; then
   ok "a session's halt commit names the kind it wrote"
 else bad "a session's halt commit names the kind it wrote" "$(git -C "$WORK" log --oneline | head -3)"; fi
 
+# --- a build that changes a journey
+#
+# The journeys were changed and committed before the build. A build that
+# changes one has changed what the developer agreed to.
+
+workspace
+plan build-journey build review
+rc="$(run)"
+if [ "$rc" = 1 ] && [ "$(field 1-one status)" = halted ] && grep -q '^departure' <(sed -n '/^## Halt$/,$p' "$(chunk_path 1-one)" | sed -n 3p) \
+   && grep -q 'journeys/one.md' <(chk 1-one) && [ "$(wc -l < "$STUB_CALLS")" = 1 ]; then
+  ok "a build that changes a journey halts as a departure, naming it"
+else bad "a build that changes a journey halts as a departure, naming it" "rc=$rc $(chk 1-one) $(out)"; fi
+if grep -q 'RUN STOPPED: 1-one.md halted (departure)' "$WORK/.out" \
+   && git -C "$WORK" log --format=%s | grep -q '^build 1-one.md' && [ -z "$(git -C "$WORK" status --porcelain)" ]; then
+  ok "the build's commit stands for the developer, and the halt is committed"
+else bad "the build's commit stands for the developer, and the halt is committed" "$(out) $(git -C "$WORK" status --porcelain)"; fi
+
 finish
