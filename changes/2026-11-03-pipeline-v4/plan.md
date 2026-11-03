@@ -9,8 +9,26 @@ Line numbers such as "spec 516" point at `spec.md`.
 ## How to use this plan
 
 There is no `create-plan`, `split-plan` or `implement-plan` yet, so a person
-builds this plan by hand, one part at a time, each part in a fresh session.
-Give the session this file, `spec.md` and the part's number.
+builds this plan by hand, one session at a time, each in a fresh context.
+The sessions are `plan/01.md` to `plan/10.md`. Each holds one part, or two
+small parts that read the same files, copied word for word from below.
+Give the session this file, `spec.md` and its `plan/NN.md`.
+
+| Session | Parts |
+|---|---|
+| `plan/01.md` | 1, 2 |
+| `plan/02.md` | 3, 4 |
+| `plan/03.md` | 5a |
+| `plan/04.md` | 5b |
+| `plan/05.md` | 6 |
+| `plan/06.md` | 7 |
+| `plan/07.md` | 8 |
+| `plan/08.md` | 9, 10 |
+| `plan/09.md` | 11 |
+| `plan/10.md` | 12 |
+
+Where a session changes what its part says, it changes the part here and
+in its `plan/NN.md` in the same commit.
 
 Nothing else uses this repository while the plan is built. Between two
 parts, the skills may not work together, and no project has to keep
