@@ -63,6 +63,14 @@ details of each step and the special cases live in the prototype and in
 acceptance they live in the code and the hard tests (from the plan item); a
 hard test's name says its rule in the user's words.
 
+The user, on 2026-11-03: journeys lose their "When it goes wrong" section.
+"What happens when it goes wrong can be checked in the code, there is no
+need for a permanent record ("what" vs. "how" I guess?). It still needs to
+be in some kind of design document (intent/plan?) - especially how to show
+or handle the error - but not in the user journeys." Today the section is in
+`JOURNEY_FORMAT.md` (all copies), and `design-user-journeys/SKILL.md:39` and
+`VERIFY.md:13` ask for failure cases for every step.
+
 ## Where the domain fits
 
 `design-domain` would give a place to things that have none today:
