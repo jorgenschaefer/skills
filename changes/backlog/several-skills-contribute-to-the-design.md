@@ -41,6 +41,12 @@ the conflict and a human decides it.
   document. The prototype is deleted at acceptance, as today. A frontend
   design system - colours, type, components - would last too.
 
+  Dropped by the user on 2026-11-03: the design system lives in the code -
+  the theme, the shared components, the screens - and a document beside it
+  would only drift. A new app instead needs "a specific, full design session
+  asking the skills to come up with a good, appropriate design system - also
+  as a decision with multiple proposed options".
+
 ## Light journeys
 
 Agreed. The user: "User journeys should still exist, but be very light - they
