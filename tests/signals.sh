@@ -31,7 +31,7 @@ workspace() {
   git -C "$WORK" config user.email t@t; git -C "$WORK" config user.name t
   echo '{}' > "$WORK/package-lock.json"; echo x > "$WORK/app.js"
   git -C "$WORK" add . && git -C "$WORK" commit -qm before
-  mkdir -p "$WORK/changes/x"; echo x > "$WORK/changes/x/CHANGE.md"
+  mkdir -p "$WORK/changes/x"; echo x > "$WORK/changes/x/spec.md"
   git -C "$WORK" add . && git -C "$WORK" commit -qm change
 }
 build() {  # path... -> each written and committed
@@ -69,6 +69,15 @@ if ! grep -q 'changes/x' <<<"$out"; then
   ok "the change's own directory is not named"
 else bad "the change's own directory is not named" "$out"; fi
 
+# A hard test needs the developer's yes to change, so acceptance shows every
+# diff that touches one.
+workspace
+build src/invoice.hard.test.ts src/invoice.test.ts
+out="$(signals)"
+if grep -qx $'hard tests\tsrc/invoice.hard.test.ts' <<<"$out" && ! grep -q 'src/invoice.test.ts' <<<"$out"; then
+  ok "a changed hard test is named under hard tests, and a soft one is not"
+else bad "a changed hard test is named under hard tests, and a soft one is not" "$out"; fi
+
 # The base is the commit before the change: a lockfile changed before the
 # change began is somebody else's decision.
 workspace
@@ -89,7 +98,7 @@ else bad "the change's directory may be named with a trailing slash"; fi
 EMPTY="$(mktemp -d)"; WORKSPACES+=("$EMPTY")
 git -C "$EMPTY" init -q -b main
 git -C "$EMPTY" config user.email t@t; git -C "$EMPTY" config user.name t
-mkdir -p "$EMPTY/changes/x"; echo x > "$EMPTY/changes/x/CHANGE.md"; echo '{}' > "$EMPTY/package.json"
+mkdir -p "$EMPTY/changes/x"; echo x > "$EMPTY/changes/x/spec.md"; echo '{}' > "$EMPTY/package.json"
 git -C "$EMPTY" add . && git -C "$EMPTY" commit -qm change
 out="$( cd "$EMPTY" && "$SIGNALS" changes/x )"
 if [ "$(head -1 <<<"$out")" = "base	$(git -C "$EMPTY" hash-object -t tree /dev/null)" ] \

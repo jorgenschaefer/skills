@@ -1,6 +1,6 @@
 ---
 name: walk-user-journeys
-description: Walk user journeys on the running software as a user would, without reading the code, and report where a person would hesitate, guess or give up. Spawned by implement-change and run.sh's final review; also on "walk the journeys", "try it as a user", "walk all journeys now".
+description: Walk user journeys on the running software as a user would, without reading the code, and report where a person would hesitate, guess or give up. Spawned by accept-change, which walks a change once, at acceptance; also on "walk the journeys", "try it as a user", "walk all journeys now".
 ---
 
 # Walk the user journeys

@@ -74,7 +74,7 @@ if grep -q '^Use /implement-plan on ' <(sed -n 2p "$STUB_CALLS") && ! grep -q 'u
 else bad "a build's brief names /implement-plan and the halt kinds of a session, and no undecided" "$(sed -n 2p "$STUB_CALLS")"; fi
 # The end review is a code review against the plan; the walk is acceptance's.
 if grep -q 'review-code' <(tail -1 "$STUB_CALLS") && grep -qF "$(realpath "$WORK")/changes/x/plan.md as the spec" <(tail -1 "$STUB_CALLS") \
-   && ! grep -q 'walk' <(tail -1 "$STUB_CALLS") && ! grep -q 'review-change\|implement-change' <(tail -1 "$STUB_CALLS"); then
+   && ! grep -q 'walk' <(tail -1 "$STUB_CALLS") && ! grep -q 'review-change' <(tail -1 "$STUB_CALLS"); then
   ok "the end review's brief has review-code review the diff against plan.md, and walks nothing"
 else bad "the end review's brief has review-code review the diff against plan.md, and walks nothing" "$(tail -1 "$STUB_CALLS")"; fi
 

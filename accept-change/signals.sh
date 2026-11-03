@@ -10,10 +10,10 @@
 # Prints the base the change's diff is taken from, then one line per file:
 # its kind, a tab, its path.
 #
-# The base is the commit before CHANGE.md, which design-user-journeys commits
-# with the journeys it changed. run/report.sh's review_base starts later, at
-# the chunks: the final review judges the builds, and the journeys were agreed
-# before them.
+# The base is the commit before the first that added anything under the
+# change's directory, so the diff holds the design's journey edits too.
+# run/report.sh's review_base starts later, at plan/: the end review judges the
+# builds, and the design was agreed before them.
 
 set -euo pipefail
 
@@ -32,6 +32,10 @@ printf 'base\t%s\n' "$base"
 
 kind() {  # path -> its kind, or nothing
   local name="${1##*/}"
+  # A hard test needs the developer's yes to change, whatever else its name says.
+  case "$name" in
+    *.hard.*) echo "hard tests"; return ;;
+  esac
   case "$name" in
     package.json|package-lock.json|npm-shrinkwrap.json|yarn.lock|pnpm-lock.yaml|bun.lockb|go.mod|go.sum|\
     Cargo.toml|Cargo.lock|pyproject.toml|poetry.lock|uv.lock|requirements*.txt|setup.py|setup.cfg|\
