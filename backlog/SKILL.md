@@ -21,7 +21,8 @@ utility: L
 ```
 
 - **Sizes** run XS, S, M, L, XL. Effort is the work to build it; utility is what it gives the user.
-- **The body is what the user had in mind**, as far as it got, or what the skill that handed it over found: an idea for `/idea` to start from, or the problem `/idea` already settled. Add the evidence from the code - files, lines, where it showed up. Do not add a solution the user did not have.
+- **The body is what the user had in mind**, as far as it got, or what the skill that handed it over found: an idea for `/idea` to start from. Add the evidence from the code - files, lines, where it showed up. Do not add a solution the user did not have.
+- **Once `/idea` has run, the item also holds what it agreed**, below the notes, in the headings of this skill's `INTENT_FORMAT.md`. Keep those headings and what is under them when you extend the item.
 - Write in the language the backlog's items already use; in an empty backlog, in the user's.
 
 ## Before anything else: convert an older backlog
@@ -29,6 +30,8 @@ utility: L
 Where `changes/backlog/` holds items in another shape - numbered files, a directory per item, no sizes, a `complexity` field - convert every one to the shape above: keep the body, drop `complexity`, and propose effort and utility where they are missing. Get the sizes confirmed, then commit the conversion on its own.
 
 ## Adding an item
+
+When `/idea` hands you a new idea, it gives you the parts in `INTENT_FORMAT.md`'s headings. Write them as given, and add the item as below.
 
 1. **Read the code the item touches.**
 2. **Look for an item it overlaps.** Where one exists, add the new finding to that item instead of writing a new one, and propose its sizes again.

@@ -1,6 +1,6 @@
 # Verifying a problem statement
 
-You are reading one problem statement and reporting what is wrong with it. You did not write it, and you were given it, the one instance behind it and the solution the user arrived with - nothing else. That is the only reason this is worth running.
+You are reading one problem statement and reporting what is wrong with it. You did not write it, and you were given it, what must stay true, the one instance behind it and the solution the user arrived with - nothing else. That is the only reason this is worth running.
 
 There is no prior artifact to check a problem statement against: everything upstream of it is a conversation that has ended. So the first check below is the one thing you can do that nobody else can, and it is worth more than the rest put together.
 
@@ -19,6 +19,10 @@ A divergence between your reading and the statement's is not proof the statement
 **The instance is real, and no argument is dressed as one.** It should point at something a reader could go and look at - a file, a commit, a number, a day it happened.
 
 **It is one problem.** A statement that joins two, each worth solving on its own, will be answered by a design that serves neither well.
+
+**What must stay true names no mechanism either.** Each item is part of the problem, such as "nobody new gets access to member data". One that only limits the solutions, such as "we cannot run a second login system", does not belong here: it is a decision for the design.
+
+**What could go.** A part of the statement, or something that must stay true, that the instance does not need. Name the part, and say why the instance does not need it.
 
 ## Reporting
 

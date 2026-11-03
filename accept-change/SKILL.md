@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 You are given a change's directory, `changes/YYYY-MM-DD-<slug>/`. It holds the spec the change was built from in `spec.md`, the build's `plan.md` and, where the plan was split, its parts in `plan/`. A change that came through the design also holds `intent.md`, the problem it was for, and its agreed prototype in `prototype/`. Find out with the developer whether the change does what was agreed and solves the problem it was for.
 
-This skill's `JOURNEY_FORMAT.md` settles the shape of a journey.
+This skill's `JOURNEY_FORMAT.md` settles the shape of a journey, and `INTENT_FORMAT.md` the shape of `intent.md`.
 
 Whether to accept is the developer's.
 
@@ -16,7 +16,7 @@ Whether to accept is the developer's.
 
 The spec it was built from:
 
-- **A change from the design**: `intent.md`, `spec.md` and the journeys `spec.md` names.
+- **A change from the design**: `intent.md`'s Problem, Outcome and What must stay true, `spec.md`, and the journeys `spec.md` names.
 - **A bug**: the bug no longer happens. `spec.md` holds the report, the agreed intention and the cause.
 - **A change from `solve-problem`**: each item on its "Done when" list, in `spec.md`.
 
@@ -39,7 +39,9 @@ Every `## Left standing` in the directory says what a build did not settle: `pla
 
 ## Hold the change against its spec
 
-**Hold the whole against the problem.** Where every journey step holds and the problem in `intent.md` is not solved, or the bug still happens, or a "Done when" item does not hold, say so first. That is the most important thing this stage can find, and nothing before it could. The change is not accepted. A change from the design goes back to `/idea`; a bug, to `/debug`.
+**Hold the whole against the problem.** Where every journey step holds and the Outcome in `intent.md` is not true for its Instance, or the bug still happens, or a "Done when" item does not hold, say so first. That is the most important thing this stage can find, and nothing before it could. The change is not accepted. A change from the design goes back to `/idea`; a bug, to `/debug`.
+
+**Where the change breaks something under What must stay true in `intent.md`**, that comes first under "Decisions for the developer".
 
 For each journey step, take what checks it from the review: the test that names that journey and step, with its path and line, or *(judged)*. Take what the walk found for it. A step with no test that is not judged is a finding. So is a green test over a step the walk found the software does not do.
 
