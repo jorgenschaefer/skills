@@ -30,16 +30,16 @@ STUB_VERIFY='if [ -f .red ]; then echo REDMARK; exit 1; fi'
 plan build-red fix-red build review
 rc="$(run)"
 first="$(awk 'NR == 1 && $1 == "start" { print $2 }' "$STUB_SESSIONS")"
-if [ "$rc" = 0 ] && [ "$(field 1-one status)" = "done" ] && [ "$(field 1-one attempts)" = 1 ]; then
+if [ "$rc" = 0 ] && [ "$(field 01 status)" = "done" ] && [ "$(field 01 attempts)" = 1 ]; then
   ok "a build whose checks are red is carried on without spending an attempt"
-else bad "a build whose checks are red is carried on without spending an attempt" "rc=$rc $(field 1-one status) $(field 1-one attempts) $(out)"; fi
+else bad "a build whose checks are red is carried on without spending an attempt" "rc=$rc $(field 01 status) $(field 01 attempts) $(out)"; fi
 if [ -n "$first" ] && [ "$(sed -n 2p "$STUB_SESSIONS")" = "resume $first" ]; then
   ok "a red build is resumed in its own session, not started over"
 else bad "a red build is resumed in its own session, not started over" "$(cat "$STUB_SESSIONS")"; fi
 if grep -q 'REDMARK' <(sed -n 2p "$STUB_CALLS") && grep -qF '.red' <(sed -n 2p "$STUB_CALLS"); then
   ok "the resumed session is told the command and what it printed"
 else bad "the resumed session is told the command and what it printed" "$(sed -n 2p "$STUB_CALLS")"; fi
-if [ ! -e "$WORK/.red" ] && [ "$(field 2-two status)" = "done" ]; then
+if [ ! -e "$WORK/.red" ] && [ "$(field 02 status)" = "done" ]; then
   ok "the next build starts only once the checks are green"
 else bad "the next build starts only once the checks are green" "$(out)"; fi
 
@@ -48,18 +48,18 @@ STUB_VERIFY='if [ -f .red ]; then echo REDMARK; exit 1; fi'
 plan build-red build-red fix-red build review
 rc="$(run)"
 first="$(awk 'NR == 1 && $1 == "start" { print $2 }' "$STUB_SESSIONS")"
-if [ "$rc" = 0 ] && [ "$(field 1-one attempts)" = 2 ] && [ "$(sed -n 3p "$STUB_SESSIONS")" = "resume $first" ]; then
+if [ "$rc" = 0 ] && [ "$(field 01 attempts)" = 2 ] && [ "$(sed -n 3p "$STUB_SESSIONS")" = "resume $first" ]; then
   ok "a second red in the same claim spends an attempt, and resumes the same session"
-else bad "a second red in the same claim spends an attempt, and resumes the same session" "rc=$rc $(field 1-one attempts) $(cat "$STUB_SESSIONS") $(out)"; fi
+else bad "a second red in the same claim spends an attempt, and resumes the same session" "rc=$rc $(field 01 attempts) $(cat "$STUB_SESSIONS") $(out)"; fi
 
 workspace
 STUB_VERIFY='if [ -f .red ]; then echo REDMARK; exit 1; fi'
 plan build-red build-red build-red
 rc="$(run)"
-if [ "$rc" != 0 ] && [ "$(field 1-one status)" = halted ] && grep -q 'exhausted' <(chk 1-one) \
-   && grep -q 'checks' <(sed -n '/^## Halt/,$p' "$WORK/changes/x/chunks/1-one.md") && [ "$(wc -l < "$STUB_CALLS")" = 3 ]; then
-  ok "checks still red once the budget is spent halt the chunk as exhausted, saying so"
-else bad "checks still red once the budget is spent halt the chunk as exhausted, saying so" "rc=$rc $(chk 1-one) $(calls) $(out)"; fi
+if [ "$rc" != 0 ] && [ "$(field 01 status)" = halted ] && grep -q 'exhausted' <(chk 01) \
+   && grep -q 'checks' <(sed -n '/^## Halt/,$p' "$WORK/changes/x/plan/01.md") && [ "$(wc -l < "$STUB_CALLS")" = 3 ]; then
+  ok "checks still red once the budget is spent halt the part as exhausted, saying so"
+else bad "checks still red once the budget is spent halt the part as exhausted, saying so" "rc=$rc $(chk 01) $(calls) $(out)"; fi
 
 # The slow check is run on every build's commit as the fast one is, and the
 # session it goes back to is told which of the two failed.
@@ -71,7 +71,7 @@ rc="$(run)"
 first="$(awk 'NR == 1 && $1 == "start" { print $2 }' "$STUB_SESSIONS")"
 log="$(grep -o '[^ ]*slow-check-[^ ]*\.log' <(sed -n 2p "$STUB_CALLS") | head -1)"
 # shellcheck disable=SC2016 # the backticks are Markdown's, matched literally
-if [ "$rc" = 0 ] && [ "$(sed -n 2p "$STUB_SESSIONS")" = "resume $first" ] && [ "$(field 1-one attempts)" = 1 ] \
+if [ "$rc" = 0 ] && [ "$(sed -n 2p "$STUB_SESSIONS")" = "resume $first" ] && [ "$(field 01 attempts)" = 1 ] \
    && grep -qF 'the slow check, `if [ -f .red ]; then echo SLOWMARK; exit 1; fi`, is red' <(sed -n 2p "$STUB_CALLS") && grep -q 'SLOWMARK' <(sed -n 2p "$STUB_CALLS") \
    && [ -n "$log" ] && grep -q SLOWMARK "$log"; then
   ok "a red slow check goes back to the build's session, told it is the slow check and where its output is"
@@ -100,8 +100,8 @@ plan build-red killed fix-red build review
 run > /dev/null 2>&1
 rc="$(run)"
 first="$(awk 'NR == 1 && $1 == "start" { print $2 }' "$STUB_SESSIONS")"
-if [ "$rc" = 0 ] && [ "$(sed -n 3p "$STUB_SESSIONS")" = "resume $first" ] && [ "$(field 1-one attempts)" = 1 ]; then
+if [ "$rc" = 0 ] && [ "$(sed -n 3p "$STUB_SESSIONS")" = "resume $first" ] && [ "$(field 01 attempts)" = 1 ]; then
   ok "a run killed while a red build is fixed carries on with that session"
-else bad "a run killed while a red build is fixed carries on with that session" "rc=$rc $(cat "$STUB_SESSIONS") $(field 1-one attempts) $(out)"; fi
+else bad "a run killed while a red build is fixed carries on with that session" "rc=$rc $(cat "$STUB_SESSIONS") $(field 01 attempts) $(out)"; fi
 
 finish

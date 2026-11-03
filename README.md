@@ -63,26 +63,26 @@ name, and a new exception has to be added there as well as here.
 
 ### The runner
 
-`./run.sh changes/YYYY-MM-DD-<slug>` builds a change with nobody watching. It is a script
-rather than a skill, because what it holds has to be true when a session is dead or lying. Its
-library is under `run/`, a directory with no `SKILL.md`, so not a skill.
+`./run.sh changes/YYYY-MM-DD-<slug>` builds a change's `plan.md` with nobody watching. It is a
+script rather than a skill, because what it holds has to be true when a session is dead or
+lying. Its library is under `run/`, a directory with no `SKILL.md`, so not a skill.
 
 **Before it builds anything:**
 
-- It runs on the change's own branch, which `design-user-journeys` made. It refuses to start
-  on main or master, in a repository with no commits, on a dirty tree (its own chunk files
+- It runs on the change's own branch. It refuses to start on main or master, in a directory
+  with no `plan.md`, in a repository with no commits, on a dirty tree (its own part files
   aside), beside a live run, or beside a session a killed run left running.
-- On a first start, a session runs `split-change-into-chunks`. Where one agent can build the
-  change within one context, the runner builds `CHANGE.md` as the one chunk. Otherwise the
-  session splits it into chunks in `chunks/`. A split that halts - on a question only the
-  developer can answer, or a step only a person can do - ends the run before anything is built.
+- On a first start, a session runs `split-plan`. Where one agent can build the plan within one
+  context, or the plan says to build it as one part, the runner builds `plan.md` as the one
+  part. Otherwise the session splits it into parts in `plan/`, numbered `01`, `02` and so
+  on. A split that halts on a step only a person can do ends the run before anything is built.
 - It runs the project's fast check and slow check itself. A run that starts red does not
   start, and says which check is red. Every build is told the checks were green.
 
 **The checks.** The commands are the `Fast check:` and `Slow check:` lines in the project's
 `CLAUDE.md`. A `Check:` line with no `Fast check:` line is the fast check. A `CLAUDE.md` with
 both `Check:` and `Fast check:` is refused, and on a build's commit it counts as a red check.
-The lines are read again before every run of the checks, so a chunk that declares one is held
+The lines are read again before every run of the checks, so a part that declares one is held
 to it from its own commit on. Only where no line names a fast check does a session name it,
 once per run. In a new project there is nothing to name yet: the run then starts with no
 checks, and the build that sets them up declares them in `CLAUDE.md`.
@@ -96,57 +96,66 @@ costs no attempt.
 change one stops the run as a `departure` halt, and leaves its commits for the developer to
 keep or revert.
 
-**Each chunk** gets one session, which runs `implement-change`. That skill spawns its own
-reviewer and walker in subagents that did not write the code.
+**The parts are built one after the other**, in the order of their numbers, since each rests
+on what the parts before it built. A part is built only once every part before it is done, so
+nothing after a halted part is built.
 
-- The session commits the chunk with its build at `status: done`. The runner checks the commit
-  is there: it sends the chunk back if it is not, and amends the chunk file into it if the
-  session left it out. A session commits its own halts on the spot.
-- The attempt budget is a counter in the chunk file. A usage limit is waited out rather than
+**Each part** gets one session, which runs `implement-plan`. That skill builds through
+`implement-code`, which has `review-code` review the diff in a subagent that did not write the
+code. Nothing is walked inside the run: the walk is acceptance's.
+
+- The session commits the part with its build at `status: done`, with any updates to the plan
+  in the same commit. The runner checks the commit is there: it sends the part back if it is
+  not, and amends the part file into it if the session left it out. A session commits its own
+  halts on the spot.
+- The attempt budget is a counter in the part file. A usage limit is waited out rather than
   spent from the budget.
 - A session that ends its turn with its work uncommitted is resumed once rather than started
   over. What an abandoned attempt leaves behind goes to the stash, so the next one starts on the
   tree the checks were green on.
-- Killed in the middle, the runner can simply be started again. The chunk it left claimed is
+- Killed in the middle, the runner can simply be started again. The part it left claimed is
   carried on in the same session, on the same attempt, with its uncommitted work taken as that
   session's. The checks wait until it is finished.
-- Each build is pointed at what the chunks already done left standing, since that is where one
+- Each build is pointed at what the parts already done left standing, since that is where one
   build leaves something for the next.
-- After a chunk's checks pass, where the project has no run skill (`.claude/skills/run-*/`), a
+- After a part's checks pass, where the project has no run skill (`.claude/skills/run-*/`), a
   session runs Claude Code's built-in `run-skill-generator`, once per run. The runner commits
   what that session wrote in a commit of its own, and runs the fast check. If it is red, the
-  commit is dropped. Without a run skill, the walkers start the software as before.
+  commit is dropped. The walker at acceptance uses the run skill; without one, it starts the
+  software as before.
 
-**The final review.** When more than one chunk was built and none halted, one more session
-reviews the whole change, from before its chunks were added. It looks for what no single
-chunk's review can see: the same thing built twice, one concept under two names, seams that do
-not line up. It runs `review-change` and `walk-user-journeys`, fixes what is worth fixing, two
-rounds at most, and commits. It is handed what the builds left standing, though its reviewer is
+**The final review.** When more than one part was built and none halted, one more session
+reviews the whole change, from before its parts were added. It looks for what no single
+part's review can see: the same thing built twice, one concept under two names, seams that do
+not line up. It has `review-code` review the diff against `plan.md`, walks nothing, fixes what
+is worth fixing, two rounds at most, and commits. It is handed what the builds left standing, though its reviewer is
 not, and settles the blockers and should-fix a build left unfixed: fixed, or left for the
 person.
 
 It writes what it left to `REVIEW.md`, which opens with `## For you`: what is still open, what
 needs a decision first, then the rest, most important first. A review that ends without
 committing `REVIEW.md` fails the run. Once it is committed, the runner runs both checks again.
-A red one goes back to the review session, on a chunk's attempt budget. Still red, the run
+A red one goes back to the review session, on a part's attempt budget. Still red, the run
 halts and names the red check and its output. A run started again over a committed review
 runs both checks and halts again while either is red, so a run never points on to acceptance
 with a red check. A new split deletes `REVIEW.md`, so the rebuilt change is reviewed again.
 
-**What it records.** Each chunk's cost in context tokens read, main session and subagents
+**What it records.** Each part's cost in context tokens read, main session and subagents
 apart, since a long session re-reads its growing context on every turn. And every call a
 session's permissions refused, one line each with the session and the reason the CLI gave:
 sessions run in auto mode, and a refused call does not stop one. Both are kept per change in
 `.git/run-logs`, survive a run started again, and are not printed.
 
 **How it ends.** With what needs a person, and only that, last on the screen. A halt stops the
-run, which ends by naming the chunk that halted and printing its whole `## Halt`. A finished
+run, which ends by naming the part that halted and printing its whole `## Halt`. A finished
 run points on to `/accept-change`. It exits 0 when the run finished, 1 when it halted or
 stopped, and 2 only when it refused to start.
 
-Every unattended stop is a named halt, written into the chunk: `blocked`, `undecided` and
-`mystery` from a session; `exhausted`, `unbuilt` and `departure` from the runner,
-because in each of those three the party that would report it is in no position to.
+Every unattended stop is a named halt, written into the part: `blocked`, `departure` and
+`mystery` from a session; `exhausted`, `unbuilt` and `departure` from the runner, because in
+each of those the party that would report it is in no position to. A session halts as a
+`departure` where a hard decision or a hard test would have to change; the runner, where a
+build changed a journey.
 
 ### The sync
 
@@ -162,10 +171,11 @@ skills here. It is left out of the sync, and a session in this repository finds 
 ### The tests
 
 `./test.sh`. Every case of the runner's suites builds a throwaway repository - a change's
-`CHANGE.md` with its journeys and chunks - puts a stub where `claude` goes, and runs the real
-script against it: the refusals, the split, the departure halt, the claim a
-crashed session leaves behind, both budgets, the halt each one writes, the final review, the
-token log and the report a run ends with. The scripts of `accept-change` and `explain-diff`
+`plan.md` with its parts in `plan/`, and the project's journeys - puts a stub where `claude`
+goes, and runs the real script against it: the refusals, the split, the order the parts are
+built in, the departure halt, the claim a crashed session leaves behind, both budgets, the halt
+each one writes, what each session is told, the final review, the token log and the report a
+run ends with. The scripts of `accept-change` and `explain-diff`
 get suites of their own, over the same kind of throwaway repository. Beside them run the
 checks the documents need: that the copies of a shared file are identical, that no live
 instruction points at something that is not there, and that every script passes `shellcheck`.

@@ -18,15 +18,15 @@ set -uo pipefail
 #
 # The stub writes what the CLI writes when it is limited. The runner once
 # matched a message only the stub had ever printed, passed every case here, and
-# spent a real chunk's attempts in four seconds.
+# spent a real part's attempts in four seconds.
 
 workspace
 plan limit build build review
 run > /dev/null
-if [ "$(field 1-one status)" = "done" ]; then ok "a usage limit is waited out and the chunk still finishes"
-else bad "a usage limit is waited out and the chunk still finishes" "$(field 1-one status) $(out)"; fi
-if [ "$(field 1-one attempts)" = 1 ]; then ok "waiting out a limit does not spend an attempt"
-else bad "waiting out a limit does not spend an attempt" "attempts=$(field 1-one attempts)"; fi
+if [ "$(field 01 status)" = "done" ]; then ok "a usage limit is waited out and the part still finishes"
+else bad "a usage limit is waited out and the part still finishes" "$(field 01 status) $(out)"; fi
+if [ "$(field 01 attempts)" = 1 ]; then ok "waiting out a limit does not spend an attempt"
+else bad "waiting out a limit does not spend an attempt" "attempts=$(field 01 attempts)"; fi
 first="$(awk 'NR == 1 && $1 == "start" { print $2 }' "$STUB_SESSIONS")"
 if [ -n "$first" ] && [ "$(sed -n 2p "$STUB_SESSIONS")" = "resume $first" ]; then
   ok "after a limit the same session carries on"
@@ -56,7 +56,7 @@ echo 3000 > "$WORK/.suspend"
 ( cd "$WORK" && PATH="$WORK/.bin:$PATH" STUB_RESET_IN=3600 LIMIT_MARGIN=120 WAIT_SECONDS=5 \
     bash "$RUNNER" changes/x > "$WORK/.out" 2>&1 )
 slept="$(awk '{ s += $1 } END { print s + 0 }' "$SLEPT")"
-if [ "$(field 1-one status)" = "done" ] && [ "$slept" -le 780 ]; then
+if [ "$(field 01 status)" = "done" ] && [ "$slept" -le 780 ]; then
   ok "a wait counts the time the machine was suspended"
 else bad "a wait counts the time the machine was suspended" "slept=$slept $(out)"; fi
 
@@ -65,15 +65,15 @@ else bad "a wait counts the time the machine was suspended" "slept=$slept $(out)
 workspace
 plan limit-sub build build review
 run > /dev/null
-if [ ! -s "$SLEPT" ] && [ "$(field 1-one attempts)" = 2 ]; then
+if [ ! -s "$SLEPT" ] && [ "$(field 01 attempts)" = 2 ]; then
   ok "a subagent's limit does not make the session's failure a limit"
-else bad "a subagent's limit does not make the session's failure a limit" "slept=$(cat "$SLEPT") $(chk 1-one)"; fi
+else bad "a subagent's limit does not make the session's failure a limit" "slept=$(cat "$SLEPT") $(chk 01)"; fi
 
 # A session that finished is not limited, whatever was rejected on the way.
 workspace
 plan limit-passed build review
 run > /dev/null
-if [ "$(field 1-one status)" = "done" ] && [ ! -s "$SLEPT" ] && [ "$(wc -l < "$STUB_CALLS")" = 3 ]; then
+if [ "$(field 01 status)" = "done" ] && [ ! -s "$SLEPT" ] && [ "$(wc -l < "$STUB_CALLS")" = 3 ]; then
   ok "a session that finishes despite a rejected limit is not waited on"
 else bad "a session that finishes despite a rejected limit is not waited on" "slept=$(cat "$SLEPT") $(calls)"; fi
 
@@ -81,18 +81,18 @@ else bad "a session that finishes despite a rejected limit is not waited on" "sl
 workspace
 plan limit-quiet build build review
 run > /dev/null
-if [ "$(field 1-one status)" = "done" ] && [ "$(field 1-one attempts)" = 1 ]; then
+if [ "$(field 01 status)" = "done" ] && [ "$(field 01 attempts)" = 1 ]; then
   ok "a limit is recognised from the rejected event alone"
-else bad "a limit is recognised from the rejected event alone" "$(chk 1-one) $(out)"; fi
+else bad "a limit is recognised from the rejected event alone" "$(chk 01) $(out)"; fi
 
 # A rate_limit error with no reset time still waits, for the fallback period.
 workspace
 plan limit-bare build build review
 ( cd "$WORK" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=7 LIMIT_MARGIN=0 \
     bash "$RUNNER" changes/x > "$WORK/.out" 2>&1 )
-if [ "$(field 1-one status)" = "done" ] && [ "$(field 1-one attempts)" = 1 ] && [ "$(cat "$SLEPT")" = 7 ]; then
+if [ "$(field 01 status)" = "done" ] && [ "$(field 01 attempts)" = 1 ] && [ "$(cat "$SLEPT")" = 7 ]; then
   ok "a limit that names no reset time is waited out too"
-else bad "a limit that names no reset time is waited out too" "$(chk 1-one) $(out)"; fi
+else bad "a limit that names no reset time is waited out too" "$(chk 01) $(out)"; fi
 
 workspace
 plan build build limit review
@@ -113,12 +113,12 @@ workspace
 plan build-limit
 ( cd "$WORK" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=0 LIMIT_MARGIN=0 MAX_WAITS=0 \
     bash "$RUNNER" changes/x > "$WORK/.out" 2>&1 )
-if grep -q '1-one.md is at done' "$WORK/.out" && ! grep -q 'goes back to ready' "$WORK/.out"; then
+if grep -q '01.md is at done' "$WORK/.out" && ! grep -q 'goes back to ready' "$WORK/.out"; then
   ok "giving up names the status the session left, not one it did not"
 else bad "giving up names the status the session left, not one it did not" "$(out)"; fi
 
 # And it is bounded: a limit that never lifts has to end the run rather than
-# wait forever - and without charging the chunk for it.
+# wait forever - and without charging the part for it.
 workspace
 plan limit limit limit
 rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=0 LIMIT_MARGIN=0 MAX_WAITS=2 MAX_ATTEMPTS=1 \
@@ -126,13 +126,13 @@ rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=0 LIMIT_MARGIN=0 MAX
 if [ "$rc" != 0 ] && grep -q 'gave up waiting out the limit' "$WORK/.out"; then
   ok "a limit that never lifts gives up rather than waiting forever"
 else bad "a limit that never lifts gives up rather than waiting forever" "rc=$rc $(out)"; fi
-if [ "$(field 1-one status)" = ready ] && [ "$(field 1-one attempts)" = 0 ] && [ "$(wc -l < "$STUB_CALLS")" = 3 ]; then
-  ok "giving up on a limit hands the chunk back rather than halting it"
-else bad "giving up on a limit hands the chunk back rather than halting it" "$(chk 1-one) $(calls)"; fi
+if [ "$(field 01 status)" = ready ] && [ "$(field 01 attempts)" = 0 ] && [ "$(wc -l < "$STUB_CALLS")" = 3 ]; then
+  ok "giving up on a limit hands the part back rather than halting it"
+else bad "giving up on a limit hands the part back rather than halting it" "$(chk 01) $(calls)"; fi
 
 # --- the token log
 #
-# Which chunks are expensive, counted in context read - a big session re-reads
+# Which parts are expensive, counted in context read - a big session re-reads
 # a big context on every turn - with the subagents apart, since a review is
 # one. The stub's every call reads 111 in its own context, written twice the way
 # the CLI repeats a message per content block, and 1000 in a subagent's.
@@ -142,32 +142,31 @@ workspace
 plan build build review
 run > /dev/null
 tokens="$WORK/.git/run-logs/changes_x.tokens"
-if grep -qx '1-one 111 1000' "$tokens" && grep -qx '2-two 111 1000' "$tokens"; then
-  ok "the token log keeps each chunk's context read, main session and subagents"
-else bad "the token log keeps each chunk's context read, main session and subagents" "$(cat "$tokens")"; fi
+if grep -qx '01 111 1000' "$tokens" && grep -qx '02 111 1000' "$tokens"; then
+  ok "the token log keeps each part's context read, main session and subagents"
+else bad "the token log keeps each part's context read, main session and subagents" "$(cat "$tokens")"; fi
 if grep -qx 'review 111 1000' "$tokens"; then
-  ok "the final review is counted beside the chunks"
-else bad "the final review is counted beside the chunks" "$(cat "$tokens")"; fi
+  ok "the final review is counted beside the parts"
+else bad "the final review is counted beside the parts" "$(cat "$tokens")"; fi
 
-# Every session a chunk took counts: a failed attempt read its context too.
+# Every session a part took counts: a failed attempt read its context too.
 workspace
 plan claim-only build build review
 run > /dev/null
 tokens="$WORK/.git/run-logs/changes_x.tokens"
-if [ "$(grep -cx '1-one 111 1000' "$tokens")" = 2 ]; then
-  ok "a chunk's count keeps every session it took"
-else bad "a chunk's count keeps every session it took" "$(cat "$tokens")"; fi
+if [ "$(grep -cx '01 111 1000' "$tokens")" = 2 ]; then
+  ok "a part's count keeps every session it took"
+else bad "a part's count keeps every session it took" "$(cat "$tokens")"; fi
 
 # A run is started again after a halt or a kill, and what the first start spent
 # is still spent.
 workspace
-sed -i 's/^after: .*/after:/' "$WORK/changes/x/chunks/2-two.md"; commit
 plan build halt:blocked build review
 run > /dev/null
-sed -i '/^## Halt$/,$d; s/^status: .*/status:    ready/' "$WORK/changes/x/chunks/2-two.md"; commit
+sed -i '/^## Halt$/,$d; s/^status: .*/status:    ready/' "$WORK/changes/x/plan/02.md"; commit
 run > /dev/null
 tokens="$WORK/.git/run-logs/changes_x.tokens"
-if [ "$(grep -c '^1-one ' "$tokens")" = 1 ] && [ "$(grep -c '^2-two ' "$tokens")" = 2 ]; then
+if [ "$(grep -c '^01 ' "$tokens")" = 1 ] && [ "$(grep -c '^02 ' "$tokens")" = 2 ]; then
   ok "the count survives a run started again"
 else bad "the count survives a run started again" "$(cat "$tokens")"; fi
 
@@ -199,12 +198,12 @@ plan build-refused build review
 run > /dev/null
 refused="$WORK/.git/run-logs/changes_x.refused"
 long="$(printf 'true; %.0s' $(seq 30))rm -rf /tmp/testakte-*"
-if grep -qx "1-one Edit: $(realpath "$WORK")/.claude/skills/run/SKILL.md" "$refused" \
-   && grep -qxF '1-one Bash: rm -rf lager/.env ⏎ ls ([Irreversible Local Destruction]…)' "$refused"; then
+if grep -qx "01 Edit: $(realpath "$WORK")/.claude/skills/run/SKILL.md" "$refused" \
+   && grep -qxF '01 Bash: rm -rf lager/.env ⏎ ls ([Irreversible Local Destruction]…)' "$refused"; then
   ok "each refused call is logged by the session it came from, one line each"
 else bad "each refused call is logged by the session it came from, one line each" "$(cat "$refused" 2>&1)"; fi
 # Cut at 160 characters, a refused `rm -rf /tmp/testakte-*` once read as `rm -rf /`.
-if grep -qxF "1-one Bash: $long" "$refused"; then ok "the refused log keeps a refused command whole"
+if grep -qxF "01 Bash: $long" "$refused"; then ok "the refused log keeps a refused command whole"
 else bad "the refused log keeps a refused command whole" "$(cat "$refused" 2>&1)"; fi
 if [ "$(cat "$refused" 2>/dev/null | wc -l)" = 3 ]; then ok "a session with nothing refused logs nothing"
 else bad "a session with nothing refused logs nothing" "$(cat "$refused" 2>&1)"; fi

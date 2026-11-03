@@ -5,53 +5,52 @@
 #
 # Sourced by run.sh, never run.
 
-# The chunks are the files in chunks/, where the change was split, and
-# CHANGE.md itself where it was not. A file without the frontmatter is
-# someone's notes, and reading it as a chunk fails every pass.
+# The parts are plan/NN.md, where the plan was split, and plan.md itself where
+# it was not. A file without the frontmatter is someone's notes, and reading it
+# as a part fails every pass.
 #
-# Everything but the chunk files, as a pathspec: what is uncommitted in them is
+# Everything but the part files, as a pathspec: what is uncommitted in them is
 # the runner's own bookkeeping, and a run started again carries on from it.
 load_chunks() {
   local f t
   CHUNK_FILES=()
-  for f in "$CHUNKS"/*.md; do
-    grep -q '^journeys:' "$f" && CHUNK_FILES+=("$f") || printf 'ignoring %s: not a chunk\n' "$f" >&2
+  for f in "$PARTS"/[0-9][0-9].md; do
+    [ -n "$(field "$f" status)" ] && CHUNK_FILES+=("$f") || printf 'ignoring %s: not a part\n' "$f" >&2
   done
-  [ "${#CHUNK_FILES[@]}" -gt 0 ] || CHUNK_FILES=("$CHANGE")
+  [ "${#CHUNK_FILES[@]}" -gt 0 ] || CHUNK_FILES=("$PLAN")
   NOT_CHUNKS=(':/')
   for t in "${CHUNK_FILES[@]}"; do NOT_CHUNKS+=(":!$t"); done
 }
 
-is_split() { [ "${CHUNK_FILES[*]}" != "$CHANGE" ]; }
+is_split() { [ "${CHUNK_FILES[*]}" != "$PLAN" ]; }
 
-# On a first start only: CHANGE.md unclaimed and never attempted, and no
-# chunks. Once CHANGE.md is claimed as the one chunk its attempts count, so a
-# run started again does not split again; one killed in the split itself does,
-# which costs a session and nothing else.
+# On a first start only: plan.md unclaimed and never attempted, and no parts.
+# Once plan.md is claimed as the one part its attempts count, so a run started
+# again does not split again; one killed in the split itself does, which costs
+# a session and nothing else.
 #
-# The split asks nobody anything. A question only the developer can answer, or
-# a step only a person can do, is a halt in CHANGE.md, and the run ends on it
-# before anything is built.
+# The split asks nobody anything. A step only a person can do is a halt in
+# plan.md, and the run ends on it before anything is built.
 split_change() {
   local rc
   is_split && return 0
-  [ "$(field "$CHANGE" status)" = ready ] && [ "$(field "$CHANGE" attempts)" = 0 ] || return 0
+  [ "$(field "$PLAN" status)" = ready ] && [ "$(field "$PLAN" attempts)" = 0 ] || return 0
   [ -n "$CHECKED" ] || verify
-  say "splitting $CHANGE where one agent cannot build it within one context"
+  say "splitting $PLAN where one agent cannot build it within one context"
   claude_through_limits split "$(split_brief)" --session-id "$(new_session_id)"; rc=$?
-  [ "$rc" = "$EX_LIMIT" ] && end_run 1 "a usage limit outlasted every wait while splitting the change - run again once it has lifted"
-  if [ "$(field "$CHANGE" status)" = halted ]; then
-    commit_halt "$CHANGE" "$(halt_kind "$CHANGE")"
-    end_run 1 "$CHANGE"
+  [ "$rc" = "$EX_LIMIT" ] && end_run 1 "a usage limit outlasted every wait while splitting the plan - run again once it has lifted"
+  if [ "$(field "$PLAN" status)" = halted ]; then
+    commit_halt "$PLAN" "$(halt_kind "$PLAN")"
+    end_run 1 "$PLAN"
   fi
   [ "$rc" = 0 ] || end_run 1 "the split failed, exit $rc - see $LOG, then run again"
-  # Before the chunks are loaded: once they are, what is uncommitted in them
-  # reads as bookkeeping, and a split that never committed its chunks would
+  # Before the parts are loaded: once they are, what is uncommitted in them
+  # reads as bookkeeping, and a split that never committed its parts would
   # pass for one that did.
   [ -z "$(left_behind)" ] \
     || end_run 1 "the split left work uncommitted - commit or remove it, then run again:"$'\n'"$(left_behind)"
   load_chunks
-  if is_split; then say "split into ${#CHUNK_FILES[@]} chunks"; else say "it fits one agent: building CHANGE.md as it is"; fi
+  if is_split; then say "split into ${#CHUNK_FILES[@]} parts"; else say "it fits one agent: building plan.md as it is"; fi
 }
 
 # Whatever is lying around uncommitted is someone's, and a session cannot tell
@@ -71,7 +70,7 @@ check_tree() {
   case "$(claimed | wc -l)" in
     0) [ -z "$dirty" ] || die "refusing to run on a dirty tree: commit or remove what is here first"$'\n'"$dirty" ;;
     1) [ -z "$dirty" ] || say "carrying on with $(claimed), taking this as its session's work:"$'\n'"$dirty" ;;
-    *) die "more than one chunk is claimed, which one runner cannot leave behind - put back all but one:"$'\n'"$(claimed)" ;;
+    *) die "more than one part is claimed, which one runner cannot leave behind - put back all but one:"$'\n'"$(claimed)" ;;
   esac
 }
 
@@ -92,7 +91,7 @@ unchecked_done() {  # chunk
 
 # Which session a claim was given, and where HEAD stood, for a runner started
 # again after being killed. Named for the chunk's whole path: every change has
-# a 1-one.md, and one's record resumed another's session. It stays until the
+# a plan/01.md, and one's record resumed another's session. It stays until the
 # runner has settled the chunk, not only until the session returns: a `done`
 # the runner was killed before checking is a claim to check, not a result.
 claim_record() {  # chunk -> the file
@@ -143,7 +142,7 @@ commit_halt() {  # chunk, kind
 # put it; empty where that line names none of them.
 halt_kind() {  # chunk
   sed -n '/^## Halt$/,$p' "$1" | sed -n '2,$p' | sed '/^[[:space:]]*$/d' | head -1 \
-    | grep -o -m1 -w 'blocked\|undecided\|mystery\|exhausted\|unbuilt\|departure' | head -1
+    | grep -o -m1 -w 'blocked\|mystery\|departure\|exhausted\|unbuilt' | head -1
 }
 
 # The journeys a session's commits changed since the given commit, one per

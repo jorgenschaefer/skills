@@ -9,13 +9,14 @@
 # `.claude/skills/run-<name>/`. It can only be started as a session's prompt,
 # never from inside a session, so the runner starts it.
 #
-# After a chunk's checks pass, because before that a new project has nothing to
+# After a part's checks pass, because before that a new project has nothing to
 # run, and at most once per run: a generator that wrote nothing - it asks which
 # app where a repository has several, and nobody is here to answer - would
-# write nothing again after the next chunk. What it writes, and whatever it
+# write nothing again after the next part. What it writes, and whatever it
 # committed itself, is kept only if the fast check stays green: no build's
 # review looks at it, and the next build would be told the red was its own.
-# Without a run skill, the walks start the software as they did before.
+# Without a run skill, the walker at acceptance starts the software as it did
+# before.
 #
 # A project may still have a run skill under the older name,
 # `.claude/skills/run/`, which builds used to write. That one counts too.
@@ -42,7 +43,7 @@ run_skill() {
   if ! has_run_skill; then
     git reset -q --keep "$before" || end_run 1 "could not undo what the run skill generator committed - reset to $(git rev-parse --short "$before") by hand"
     put_aside "run-skill" 1
-    say "the generator wrote no run skill - the walks start the software as before"
+    say "the generator wrote no run skill - the walker at acceptance starts the software as before"
     return 0
   fi
   if [ -n "$(left_behind)" ]; then
@@ -51,7 +52,7 @@ run_skill() {
       || end_run 1 "could not commit the run skill"
   fi
   if [ "$(git rev-parse HEAD)" = "$before" ]; then
-    say "the run skill is there but nothing was committed - is .claude/ ignored? This run's walks use it all the same"
+    say "the run skill is there but nothing was committed - is .claude/ ignored? The walker at acceptance can use it all the same"
     return 0
   fi
   read_checks

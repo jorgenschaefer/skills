@@ -14,9 +14,9 @@ set -uo pipefail
 #
 # Each build is reviewed on its own, which cannot see what lies between them:
 # the same thing built twice, two names for one concept, seams that do not line
-# up. One session reviews the whole change once every chunk is built.
+# up. One session reviews the whole change once every part is built.
 
-# Chunks added in the very first commit have no commit before them, and the
+# Parts added in the very first commit have no commit before them, and the
 # change is then everything.
 workspace
 rm -rf "$WORK/.git"
@@ -28,21 +28,19 @@ git -C "$WORK" checkout -q -b topic
 plan build build review
 rc="$(run)"
 if [ "$rc" = 0 ] && grep -qF "$(git -C "$WORK" hash-object -t tree /dev/null)" <(tail -1 "$STUB_CALLS"); then
-  ok "chunks added in the first commit are reviewed from the empty tree"
-else bad "chunks added in the first commit are reviewed from the empty tree" "rc=$rc $(tail -1 "$STUB_CALLS") $(out)"; fi
+  ok "parts added in the first commit are reviewed from the empty tree"
+else bad "parts added in the first commit are reviewed from the empty tree" "rc=$rc $(tail -1 "$STUB_CALLS") $(out)"; fi
 
-# One chunk was reviewed whole by its own build.
+# One part was reviewed whole by its own build.
 workspace
-rm "$WORK/changes/x/chunks/2-two.md"
-sed -i 's#^journeys: .*#journeys:  journeys/one.md#' "$WORK/changes/x/CHANGE.md"; commit
+rm "$WORK/changes/x/plan/02.md"; commit
 plan build
 rc="$(run)"
 if [ "$rc" = 0 ] && [ "$(wc -l < "$STUB_CALLS")" = 1 ] && [ ! -e "$WORK/changes/x/REVIEW.md" ]; then
-  ok "a single chunk gets no final review"
-else bad "a single chunk gets no final review" "rc=$rc $(calls) $(out)"; fi
+  ok "a single part gets no final review"
+else bad "a single part gets no final review" "rc=$rc $(calls) $(out)"; fi
 
 workspace
-sed -i 's/^after: .*/after:/' "$WORK/changes/x/chunks/2-two.md"; commit
 plan build halt:blocked
 rc="$(run)"
 if [ "$rc" != 0 ] && [ "$(wc -l < "$STUB_CALLS")" = 2 ]; then
@@ -90,7 +88,7 @@ if [ "$rc" != 0 ] && [ "$(wc -l < "$STUB_CALLS")" = 4 ] && grep -q 'the final re
 else bad "a final review is resumed once, and a second stop fails the run" "rc=$rc $(calls) $(out)"; fi
 
 # The journeys were approved before the build, and the review is held to them as
-# a build is. It has no chunk to halt in, so the run's last lines say it.
+# a build is. It has no part to halt in, so the run's last lines say it.
 workspace
 plan build build review-journey
 rc="$(run)"
@@ -119,7 +117,7 @@ else bad "a run started again after its review runs the checks before pointing o
 # Nobody watches a run, so what needs a person is printed at the end of it,
 # however it ended - and only that, last, where the screen stops. One run that
 # halted ended in pages of what every build left standing, and nothing near
-# the end said a chunk had halted, or why. What a finished run leaves open,
+# the end said a part had halted, or why. What a finished run leaves open,
 # acceptance reads whole and puts to the person, so none of it is printed.
 
 # Everything from the line the end of the run starts at: what follows the last
@@ -138,15 +136,16 @@ if tail -1 "$WORK/.out" | grep -q '/accept-change .*changes/x'; then
 else bad "a finished run ends pointing on to /accept-change" "$(out)"; fi
 
 workspace
-sed -i 's/^after: .*/after:/' "$WORK/changes/x/chunks/2-two.md"; commit
 plan build halt:blocked
 rc="$(run)"
-if [ "$rc" != 0 ] && ending | grep -q 'RUN STOPPED: 2-two.md halted (blocked)' \
+if [ "$rc" != 0 ] && ending | grep -q 'RUN STOPPED: 02.md halted (blocked)' \
    && ending | grep -q 'blocked - the stub was told to' && ending | grep -q 'second line of the halt'; then
-  ok "a run that halts ends saying which chunk halted, and the whole of why"
-else bad "a run that halts ends saying which chunk halted, and the whole of why" "rc=$rc $(out)"; fi
-if ending | grep -q 'changes/x/chunks/2-two.md'; then ok "a halt names the chunk file to read"
-else bad "a halt names the chunk file to read" "$(out)"; fi
+  ok "a run that halts ends saying which part halted, and the whole of why"
+else bad "a run that halts ends saying which part halted, and the whole of why" "rc=$rc $(out)"; fi
+if ending | grep -q 'changes/x/plan/02.md'; then ok "a halt names the part file to read"
+else bad "a halt names the part file to read" "$(out)"; fi
+if ending | grep -q 'log: .*/02-'; then ok "a halt comes with its own session's log"
+else bad "a halt comes with its own session's log" "$(out)"; fi
 if ! grep -q 'left by' "$WORK/.out"; then
   ok "a run that halts does not print what the builds left standing"
 else bad "a run that halts does not print what the builds left standing" "$(out)"; fi
@@ -155,9 +154,9 @@ else bad "a run that halts does not point on to acceptance" "$(out)"; fi
 
 # A halt in a shape the runner did not ask for still names its kind.
 workspace
-plan build 'halt:**Kind:** undecided'
+plan build 'halt:**Kind:** departure'
 rc="$(run)"
-if [ "$rc" != 0 ] && ending | grep -q 'RUN STOPPED: 2-two.md halted (undecided)'; then
+if [ "$rc" != 0 ] && ending | grep -q 'RUN STOPPED: 02.md halted (departure)'; then
   ok "a halt is named by its kind wherever its first line puts it"
 else bad "a halt is named by its kind wherever its first line puts it" "rc=$rc $(out)"; fi
 
@@ -168,7 +167,7 @@ printf '%s\n' "$(seq -f 'line %g of the halt' 30)" > "$WORK/.halt-extra"
 rc="$(STUB_HALT_EXTRA="$WORK/.halt-extra" run)"
 # Twenty lines of it: the stub's own three, then the first seventeen of these.
 if [ "$rc" != 0 ] && ending | grep -q 'line 17 of the halt' && ! ending | grep -q 'line 18 of the halt' \
-   && ending | grep -q 'rest in the chunk'; then
+   && ending | grep -q 'rest in the part'; then
   ok "a long halt is cut short, saying where the rest is"
 else bad "a long halt is cut short, saying where the rest is" "rc=$rc $(out)"; fi
 
@@ -176,44 +175,33 @@ else bad "a long halt is cut short, saying where the rest is" "rc=$rc $(out)"; f
 workspace
 plan 'halt:the migration tool is not installed'
 rc="$(run)"
-if [ "$rc" != 0 ] && ending | grep -q 'RUN STOPPED: 1-one.md halted (kind not named)'; then
+if [ "$rc" != 0 ] && ending | grep -q 'RUN STOPPED: 01.md halted (kind not named)'; then
   ok "a halt that names no kind says so"
 else bad "a halt that names no kind says so" "rc=$rc $(out)"; fi
 
-# A run started again over a halt nobody settled builds what does not wait on
-# it - and what stops it then is what the end of the run names, not the halt it
-# started with.
+# A run started again over a halt nobody settled builds nothing after it, and
+# ends naming that halt, with the parts after it listed as not done.
 workspace
-sed -i 's/^after: .*/after:/' "$WORK/changes/x/chunks/2-two.md"; commit
 plan halt:blocked
 run > /dev/null
-plan halt:mystery
 : > "$STUB_CALLS"
 rc="$(run)"
-if [ "$rc" != 0 ] && ending | grep -q 'RUN STOPPED: 2-two.md halted (mystery)' \
-   && ! ending | grep -q 'RUN STOPPED: 1-one'; then
-  ok "a run started again over an old halt ends naming the halt that stopped it"
-else bad "a run started again over an old halt ends naming the halt that stopped it" "rc=$rc $(out)"; fi
-if ending | grep -q 'log: .*/2-two-' && ending | grep -q '1-one.md: halted (blocked)'; then
-  ok "the halt that stopped it comes with its own session's log, and the old halt is listed"
-else bad "the halt that stopped it comes with its own session's log, and the old halt is listed" "$(out)"; fi
+if [ "$rc" = 1 ] && [ ! -s "$STUB_CALLS" ] && ending | grep -q 'RUN STOPPED: 01.md halted (blocked)' \
+   && ending | grep -q '02.md: ready$' && ! ending | grep -q 'log:'; then
+  ok "a run started again over an old halt ends naming it, launching nothing and naming no log"
+else bad "a run started again over an old halt ends naming it, launching nothing and naming no log" "rc=$rc $(calls) $(out)"; fi
 
+# A stop that is not a halt is named for what it was, with no halt's log.
 workspace
-sed -i 's/^after: .*/after:/' "$WORK/changes/x/chunks/2-two.md"; commit
-plan halt:blocked
-run > /dev/null
 plan limit limit
-: > "$STUB_CALLS"
 rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=0 LIMIT_MARGIN=0 MAX_WAITS=1 \
            bash "$RUNNER" changes/x > "$WORK/.out" 2>&1 ); echo $?)"
-if [ "$rc" != 0 ] && ending | grep -q 'RUN STOPPED: .*usage limit' && ending | grep -q '2-two.md' \
-   && ! ending | grep -q 'RUN STOPPED: 1-one'; then
-  ok "a limit that stops a run started over an old halt is what the end of the run names"
-else bad "a limit that stops a run started over an old halt is what the end of the run names" "rc=$rc $(out)"; fi
-if ! ending | grep -q 'log:'; then ok "a stop that is not a halt is given no halt's log"
-else bad "a stop that is not a halt is given no halt's log" "$(out)"; fi
+if [ "$rc" != 0 ] && ending | grep -q 'RUN STOPPED: .*usage limit' && ending | grep -q '01.md' \
+   && ! ending | grep -q 'log:'; then
+  ok "a limit that stops a run is what the end of the run names, with no halt's log"
+else bad "a limit that stops a run is what the end of the run names, with no halt's log" "rc=$rc $(out)"; fi
 
-# Every chunk done, and the review did not finish: the end says that, not that
+# Every part done, and the review did not finish: the end says that, not that
 # work is left.
 workspace
 plan build build review-dies
@@ -228,11 +216,11 @@ workspace
 printf '%s\n' '' '### Checks' '' '- the lint was not run' >> "$WORK/.left-extra"
 plan build build review
 rc="$( STUB_LEFT_EXTRA="$WORK/.left-extra" run )"
-if [ "$rc" = 0 ] && grep -q 'left by 1-one.md' <(tail -1 "$STUB_CALLS") && grep -q 'the lint was not run' <(tail -1 "$STUB_CALLS"); then
+if [ "$rc" = 0 ] && grep -q 'left by 01.md' <(tail -1 "$STUB_CALLS") && grep -q 'the lint was not run' <(tail -1 "$STUB_CALLS"); then
   ok "the review is handed a Left standing with subheadings to its end"
 else bad "the review is handed a Left standing with subheadings to its end" "rc=$rc $(calls) $(out)"; fi
 
-# The review is handed every build's Left standing, and one run's 33 chunks
+# The review is handed every build's Left standing, and one run's 33 parts
 # came to 148 KB of it - more than Linux takes in a single argument, so the
 # review died before it started.
 workspace
@@ -242,18 +230,6 @@ rc="$( STUB_LEFT_EXTRA="$WORK/.left-extra" run )"
 if [ "$rc" = 0 ] && [ -f "$WORK/changes/x/REVIEW.md" ] && grep -q 'a thing left standing' <(tail -1 "$STUB_CALLS"); then
   ok "a review handed more than 128 KiB of Left standing still starts"
 else bad "a review handed more than 128 KiB of Left standing still starts" "rc=$rc $(tail -5 "$WORK/.out")"; fi
-
-# --- nothing selectable is not the same as everything finished
-
-# Two chunks that each wait on the other leave the loop nothing it can pick.
-workspace
-sed -i 's/^after: .*/after:     2-two/' "$WORK/changes/x/chunks/1-one.md"; commit
-plan build
-rc="$(run)"
-if [ "$rc" != 0 ] && [ ! -s "$STUB_CALLS" ] && ending | grep -q 'RUN STOPPED: no chunk left is ready' \
-   && ending | grep -q '1-one.md: ready, after: 2-two' && ending | grep -q '2-two.md: ready, after: 1-one'; then
-  ok "chunks that wait on each other are named, with what each waits on"
-else bad "chunks that wait on each other are named, with what each waits on" "rc=$rc $(out)"; fi
 
 # --- the checks after the final review
 #
@@ -278,7 +254,7 @@ if [ "$(wc -l < "$WORK/.runs")" = 5 ]; then
   ok "the checks run after the final review's commit, and again after its fix"
 else bad "the checks run after the final review's commit, and again after its fix" "runs=$(wc -l < "$WORK/.runs") $(out)"; fi
 
-# The first red is free, and each one after it spends from a chunk's budget:
+# The first red is free, and each one after it spends from a part's budget:
 # with two attempts, the review is handed back twice and then the run halts.
 workspace
 STUB_VERIFY='if [ -f .red ]; then echo REDMARK; exit 1; fi'

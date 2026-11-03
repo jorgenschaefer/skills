@@ -2,8 +2,9 @@
 #
 # Stands in for `claude` while the runner's own tests run.
 #
-# Each invocation consumes one line of $STUB_PLAN and does to the chunk what
-# that session would have done:
+# Each invocation consumes one line of $STUB_PLAN and does to the part what
+# that session would have done - a part being plan/NN.md, or plan.md where the
+# plan is not split:
 #
 #   build        set status: done, write a Left standing that names something -
 #                with $STUB_LEFT_EXTRA's contents after it, where it names a
@@ -36,14 +37,14 @@
 #   claim-only   set status: done having committed nothing
 #   claim-dirty  the same, with code written and left uncommitted
 #   claim-killed set status: done, commit nothing, and kill the runner with -9
-#   code-only    set status: done, and commit the code but not the chunk
+#   code-only    set status: done, and commit the code but not the part
 #   halt:<kind>  write the halt, two paragraphs, and set status: halted - with
 #                $STUB_HALT_EXTRA's contents after them, where it names a file
 #   die          exit 1 having touched nothing, as a crash does
-#   stop-early   write code and leave it uncommitted, the chunk at `doing`, and
+#   stop-early   write code and leave it uncommitted, the part at `doing`, and
 #                exit 0 - a session that ended its turn waiting on background
 #                work, which `-p` then killed
-#   commit-stop  commit code, leave the chunk at `doing` and nothing
+#   commit-stop  commit code, leave the part at `doing` and nothing
 #                uncommitted, and exit 0 - a session that committed its build
 #                and ended its turn on the checks it had started
 #   limit        be rejected by a usage limit, in the events the CLI really
@@ -57,10 +58,10 @@
 #                window, but it goes on to finish - then `build`
 #   killed       write code, then kill the runner with -9 - it gets no chance to
 #                tidy up, as with a power cut or a closed laptop
-#   split-none   the split, finding that the change fits one agent: writes nothing
-#   split-two    the split, writing two chunks of the change - one per journey,
-#                the second after the first - and committing them
-#   split-dirty  split-two, leaving the chunks uncommitted
+#   split-none   the split, finding that the plan fits one agent: writes nothing
+#   split-two    the split, writing the plan's two steps as plan/01.md and
+#                plan/02.md, and committing them
+#   split-dirty  split-two, leaving the parts uncommitted
 #   review       the final review - write and commit the REVIEW.md its prompt
 #                names, and end in a successful result, as the CLI does
 #   review-red   the final review, and leave .red at the root besides
@@ -83,15 +84,16 @@
 # 111 in its own context, on one message written twice as the CLI repeats a
 # message once per content block, and 1000 in a subagent's.
 #
-# Every call's session is written to $STUB_SESSIONS as `start <id> <chunk>` or
+# Every call's session is written to $STUB_SESSIONS as `start <id> <part>` or
 # `resume <id>` - the final review's start naming its REVIEW.md where a build's
-# names its chunk. A started call is told apart by how its brief opens, and
-# one that opens neither way is an error. A resumed call names neither in its
+# names its part. A started call is told apart by how its brief opens - `Use
+# /implement-plan on <part>.`, `/split-plan on <plan.md>.` or the review's
+# opening - and one that opens none of these ways is an error. A resumed call names neither in its
 # prompt - the real session remembers what it was doing - so the stub looks it
 # up by the id.
 #
 # There is one role now where there were two. The runner used to launch a second
-# session to review what the first built; `/implement` spawns that reviewer
+# session to review what the first built; the build spawns that reviewer
 # itself, so a plan line no longer has to say which of the two is being answered.
 #
 # A call the plan did not expect is an error rather than a repeat: a test that
@@ -132,12 +134,12 @@ if [ "$prompt" = /run-skill-generator ]; then
   exit 0
 fi
 
-build_opening="Use /implement-change on the work described in "
-split_opening="/split-change-into-chunks on the change in "
+build_opening="Use /implement-plan on "
+split_opening="/split-plan on "
 review_opening="Review the whole change this run built"
 review_named_by="write what you left standing to "
 
-# Reads the chunk or the review's file from where the brief names it on
+# Reads the part or the review's file from where the brief names it on
 # purpose: its opening, or the one sentence that names the review's file. The
 # rest of the brief may name REVIEW.md too - in a sentence, or in a test's
 # check command - and must not change which file the stub writes.
@@ -149,7 +151,7 @@ brief_names() {
       chunk="${chunk%.}" ;;
     "$split_opening"*)
       chunk="${first#"$split_opening"}"
-      chunk="${chunk%.}/CHANGE.md" ;;
+      chunk="${chunk%.}" ;;
     "$review_opening"*)
       [[ "$prompt" == *"$review_named_by"* ]] \
         || { echo "stub: the review's brief no longer says \"$review_named_by<path>\": $prompt" >&2; exit 96; }
@@ -174,7 +176,7 @@ for i in "${!args[@]}"; do
 done
 
 # One line per call, whitespace flattened, so a test can count calls and read
-# the first one to see which chunk went first.
+# the first one to see which part went first.
 n=$(( $(wc -l < "$STUB_CALLS") + 1 ))
 printf '%s\n' "$prompt" | tr '\n' ' ' >> "$STUB_CALLS"
 printf '\n' >> "$STUB_CALLS"
@@ -196,8 +198,8 @@ set_status() { sed -i "2,/^---$/s/^status: .*/status:    $1/" "$chunk"; }
 
 case "$line" in
   review|review-red|review-journey|review-dies|review-stop-early)
-    # The final review names no chunk, which is how the stub tells it apart.
-    [ -n "$chunk" ] && { echo "stub: expected the review, got a chunk: $prompt" >&2; exit 97; }
+    # The final review names no part, which is how the stub tells it apart.
+    [ -n "$chunk" ] && { echo "stub: expected the review, got a part: $prompt" >&2; exit 97; }
     [ "$line" = review-dies ] && exit 1
     if [ "$line" = review-stop-early ]; then
       echo '{"type":"result","subtype":"success","is_error":false,"result":"waiting for critique"}'
@@ -215,18 +217,18 @@ case "$line" in
     ;;
   split-none) echo '{"type":"result","subtype":"success","is_error":false,"result":"it fits"}' ;;
   split-two|split-dirty)
-    # Two chunks of the change the split was handed, its Problem copied into
-    # each word for word, the second after the first.
+    # One part per step of the plan the split was handed, each step copied
+    # into its part word for word.
     dir="$(dirname "$chunk")"
-    mkdir -p "$dir/chunks"
-    problem="$(sed -n '/^## Problem$/,/^## /{/^## /d;p;}' "$chunk")"
-    for c in "1-one journeys/one.md " "2-two journeys/two.md 1-one"; do
-      read -r slug journeys after <<< "$c"
-      printf -- '---\njourneys:  %s\nafter:     %s\nstatus:    ready\nattempts:  0\n---\n\n# %s\n\n## Problem\n%s\n\n## Design\nx\n' \
-        "$journeys" "${after:-}" "$slug" "$problem" > "$dir/chunks/$slug.md"
+    mkdir -p "$dir/plan"
+    for n in 1 2; do
+      step="$(sed -n "/^### $n\\. /p" "$chunk")"
+      # shellcheck disable=SC2016 # the backticks are Markdown's, written literally
+      printf -- '---\nstatus:    ready\nattempts:  0\n---\n\n# Part 0%s\n\nPart of `%s`.\n\n## Steps\n\n%s\n' \
+        "$n" "$chunk" "$step" > "$dir/plan/0$n.md"
     done
     if [ "$line" = split-two ]; then
-      git add "$dir/chunks" >/dev/null 2>&1
+      git add "$dir/plan" >/dev/null 2>&1
       git commit -qm "split" >/dev/null 2>&1
     fi
     echo '{"type":"result","subtype":"success","is_error":false,"result":"split"}'

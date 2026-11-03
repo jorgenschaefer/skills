@@ -14,7 +14,7 @@
 # run. A slow check nobody declared is none. Running them is not judgement, so
 # the runner does, and believes the exit status rather than an account of it.
 #
-# A new project has no checks yet: its first chunk sets them up. Asked for a
+# A new project has no checks yet: its first part sets them up. Asked for a
 # command there, a session named one the design only planned, and the run did
 # not start. So a session may answer that there is none, and then nothing runs
 # until a build declares one in CLAUDE.md.

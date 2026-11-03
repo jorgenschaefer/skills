@@ -1,8 +1,8 @@
 # shellcheck shell=bash
 #
 # What every suite of the runner's tests stands on. Each case builds a
-# throwaway repository in the layout a change really has - its CHANGE.md, the
-# journeys it names and its chunks - puts a stub on PATH where `claude` would
+# throwaway repository in the layout a change really has - its plan.md, its
+# parts in plan/ and the project's journeys - puts a stub on PATH where `claude` would
 # be, and runs the real run.sh against it.
 #
 # Sourced, never run: tests/run.sh and every suite under tests/run/ start here.
@@ -21,34 +21,43 @@ cleanup() {
 }
 trap cleanup EXIT
 
-# One change: two journeys and a chunk for each, the second after the first.
-# On a branch whose history starts before the change's paper, as a real one does.
+# One change: a plan split into two parts, built in the order of their
+# numbers, and two journeys the project already has. On a branch whose history
+# starts before the change's paper, as a real one does.
 workspace() {
   WORK="$(mktemp -d)"; WORKSPACES+=("$WORK")
   git -C "$WORK" init -q -b main
   git -C "$WORK" config user.email t@t; git -C "$WORK" config user.name t
   git -C "$WORK" commit -q --allow-empty -m start
-  mkdir -p "$WORK/changes/x/chunks" "$WORK/journeys"
+  mkdir -p "$WORK/changes/x/plan" "$WORK/journeys"
   printf '# One\n\n**Who:** x\n**Wants:** x\n\n## Steps\n1. the first thing happens.\n' > "$WORK/journeys/one.md"
   printf '# Two\n\n**Who:** x\n**Wants:** x\n\n## Steps\n1. the second thing happens.\n' > "$WORK/journeys/two.md"
-  cat > "$WORK/changes/x/CHANGE.md" <<'EOF'
+  cat > "$WORK/changes/x/plan.md" <<'EOF'
 ---
-journeys:  journeys/one.md, journeys/two.md
-after:
 status:    ready
 attempts:  0
 ---
 
 # x
 
-## Problem
-x
+Planned from `changes/x/spec.md`.
 
-## Design
-x
+## Hard decisions
+
+No hard decisions.
+
+## Hard tests
+
+No hard tests.
+
+## Steps
+
+### 1. the first thing
+
+### 2. the second thing
 EOF
-  chunk 1-one journeys/one.md ""
-  chunk 2-two journeys/two.md "1-one"
+  chunk 01
+  chunk 02
   git -C "$WORK" add -A >/dev/null; git -C "$WORK" commit -qm paper
   git -C "$WORK" checkout -q -b topic
   # The stub's own files sit in the workspace and are nobody's change: without
@@ -78,30 +87,33 @@ STUB
   chmod +x "$WORK/.bin/sleep" "$WORK/.bin/date"
 }
 
-chunk() {  # slug, journeys, after
-  cat > "$WORK/changes/x/chunks/$1.md" <<EOF
+chunk() {  # NN
+  cat > "$WORK/changes/x/plan/$1.md" <<EOF
 ---
-journeys:  $2
-after:     $3
 status:    ready
 attempts:  0
 ---
 
-# $1
+# Part $1: x
 
-## Problem
-x
+Part of \`changes/x/plan.md\`.
 
-## Design
-x
+## Hard decisions
+None.
 
-## Not in this change
+## Hard tests
+None.
+
+## From the parts before
+Nothing.
+
+## Steps
 x
 EOF
 }
 
-# The change unsplit: CHANGE.md is what gets built, or split on a first start.
-unsplit() { git -C "$WORK" rm -rq changes/x/chunks; git -C "$WORK" commit -qm unsplit; }
+# The plan unsplit: plan.md is what gets built, or split on a first start.
+unsplit() { git -C "$WORK" rm -rq changes/x/plan; git -C "$WORK" commit -qm unsplit; }
 
 plan()  { printf '%s\n' "$@" > "$STUB_PLAN"; }
 commit() { git -C "$WORK" add -A >/dev/null; git -C "$WORK" commit -qm edit; }
@@ -109,6 +121,6 @@ run()   { ( cd "$WORK" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=0 LIMIT_MARGIN=0 
               bash "$RUNNER" changes/x > "$WORK/.out" 2>&1 ); echo $?; }
 field() { sed -n "s/^$2: *//p" "$(chunk_path "$1")" | head -1; }
 chk()   { cat "$(chunk_path "$1")"; }
-chunk_path() { if [ "$1" = CHANGE ]; then echo "$WORK/changes/x/CHANGE.md"; else echo "$WORK/changes/x/chunks/$1.md"; fi; }
+chunk_path() { if [ "$1" = PLAN ]; then echo "$WORK/changes/x/plan.md"; else echo "$WORK/changes/x/plan/$1.md"; fi; }
 out()   { cat "$WORK/.out"; }
 calls() { cat "$STUB_CALLS"; }

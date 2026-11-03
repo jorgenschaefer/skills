@@ -1,9 +1,9 @@
 # shellcheck shell=bash
 #
 # Sourced, never run: builds a throwaway repository in $WORK with the runner's
-# own test harness - one change in changes/2026-01-01-demo, on the branch of the
-# same name, a stub on PATH where `claude` would be - and defines R, st and
-# demo_done to drive it.
+# own test harness - one change in changes/2026-01-01-demo, its plan.md split
+# into two parts, on the branch of the same name, a stub on PATH where `claude`
+# would be - and defines R, st and demo_done to drive it.
 
 # shellcheck source=SCRIPTDIR/../../../tests/run/harness.sh
 . "$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)/tests/run/harness.sh"
@@ -14,7 +14,7 @@ workspace
 git -C "$WORK" checkout -q main
 git -C "$WORK" mv changes/x changes/2026-01-01-demo
 git -C "$WORK" commit -qm "dated change dir"
-# The change's own branch, as /design-user-journeys leaves it.
+# The change's own branch, which its plan.md was committed on.
 git -C "$WORK" checkout -q -b 2026-01-01-demo
 git -C "$WORK" branch -q -D topic
 

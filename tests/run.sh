@@ -35,20 +35,20 @@ else bad "it refuses a repository with no commits, for the reason it gives" "rc=
 if [ ! -s "$STUB_CALLS" ]; then ok "a repository with no commits launches nothing"
 else bad "a repository with no commits launches nothing" "$(calls)"; fi
 
-# Someone's notes in the chunk directory are not a chunk.
+# Someone's notes in plan/ are not a part, even under a part's name.
 workspace
-printf '# notes\n' > "$WORK/changes/x/chunks/README.md"; commit
+printf '# notes\n' > "$WORK/changes/x/plan/03.md"; commit
 plan build build review
 rc="$(run)"
-if [ "$rc" = 0 ] && grep -q 'ignoring' "$WORK/.out"; then
-  ok "a file that is not a chunk is ignored, and said so"
-else bad "a file that is not a chunk is ignored, and said so" "rc=$rc $(out)"; fi
+if [ "$rc" = 0 ] && grep -q 'ignoring .*03.md' "$WORK/.out" && [ "$(wc -l < "$STUB_CALLS")" = 3 ]; then
+  ok "a file in plan/ without the frontmatter is not a part, and is said so"
+else bad "a file in plan/ without the frontmatter is not a part, and is said so" "rc=$rc $(out)"; fi
 
 # --- the change's directory, on the change's branch
 #
-# /design-user-journeys commits the journeys and CHANGE.md on a branch of the
-# change's own, so main never describes software that is not built yet. Started
-# on main, the run refuses rather than building there.
+# A change is built on a branch of its own, so main never describes software
+# that is not built yet. Started on main, the run refuses rather than building
+# there, and names no skill: whatever made the plan made the branch.
 
 on()  { git -C "$WORK" rev-parse --abbrev-ref HEAD; }
 tip() { git -C "$WORK" rev-parse "$1"; }
@@ -56,7 +56,8 @@ tip() { git -C "$WORK" rev-parse "$1"; }
 workspace; git -C "$WORK" checkout -q main; started="$(tip main)"
 plan build
 rc="$(run)"
-if [ "$rc" = 2 ] && grep -q 'refusing to run on main' "$WORK/.out" && [ ! -s "$STUB_CALLS" ] \
+if [ "$rc" = 2 ] && grep -q 'refusing to run on main: a change is built on its own branch' "$WORK/.out" \
+   && ! grep -q '/' <(grep 'refusing' "$WORK/.out") && [ ! -s "$STUB_CALLS" ] \
    && [ "$(on)" = main ] && [ "$(tip main)" = "$started" ]; then
   ok "started on main, it refuses, touching nothing"
 else bad "started on main, it refuses, touching nothing" "rc=$rc on=$(on) $(out)"; fi
@@ -71,15 +72,25 @@ else bad "started on master, it refuses as on main" "rc=$rc on=$(on) $(out)"; fi
 workspace
 plan build
 rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" bash "$RUNNER" changes/nope >"$WORK/.out" 2>&1 ); echo $?)"
-if [ "$rc" = 2 ] && grep -q 'no CHANGE.md in changes/nope' "$WORK/.out" && [ ! -s "$STUB_CALLS" ]; then
-  ok "a directory with no CHANGE.md is refused"
-else bad "a directory with no CHANGE.md is refused" "rc=$rc $(out)"; fi
+if [ "$rc" = 2 ] && grep -q 'no plan.md in changes/nope' "$WORK/.out" && [ ! -s "$STUB_CALLS" ]; then
+  ok "a directory with no plan.md is refused"
+else bad "a directory with no plan.md is refused" "rc=$rc $(out)"; fi
+
+# A change described the old way, with a CHANGE.md and no plan, was never
+# planned: the runner does not start on it.
+workspace
+git -C "$WORK" mv changes/x/plan.md changes/x/CHANGE.md; git -C "$WORK" commit -qm old
+plan build build review
+rc="$(run)"
+if [ "$rc" = 2 ] && grep -q 'no plan.md in changes/x' "$WORK/.out" && [ ! -s "$STUB_CALLS" ]; then
+  ok "a change with a CHANGE.md and no plan.md is refused"
+else bad "a change with a CHANGE.md and no plan.md is refused" "rc=$rc $(out)"; fi
 
 workspace
 plan build build review
 rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=0 LIMIT_MARGIN=0 MAX_ATTEMPTS=2 \
            bash "$RUNNER" changes/x/ >"$WORK/.out" 2>&1 ); echo $?)"
-if [ "$rc" = 0 ] && [ "$(field 2-two status)" = "done" ]; then
+if [ "$rc" = 0 ] && [ "$(field 02 status)" = "done" ]; then
   ok "the change's directory named with a trailing slash runs as without one"
 else bad "the change's directory named with a trailing slash runs as without one" "rc=$rc $(out)"; fi
 
@@ -111,13 +122,13 @@ workspace
 plan orphaned build build review
 run > /dev/null 2>&1
 rc="$(run)"
-if [ "$rc" != 0 ] && grep -q 'still' "$WORK/.out" && [ "$(field 1-one status)" = doing ] \
+if [ "$rc" != 0 ] && grep -q 'still' "$WORK/.out" && [ "$(field 01 status)" = doing ] \
    && [ "$(wc -l < "$STUB_CALLS")" = 1 ]; then
   ok "a run started while a killed run's session still runs stops, touching nothing"
 else bad "a run started while a killed run's session still runs stops, touching nothing" "rc=$rc $(out)"; fi
 flock -w 10 "$WORK/.git/run.lock" true
 rc="$(run)"
-if [ "$rc" = 0 ] && [ "$(field 1-one status)" = "done" ] && grep -q '^resume' "$STUB_SESSIONS"; then
+if [ "$rc" = 0 ] && [ "$(field 01 status)" = "done" ] && grep -q '^resume' "$STUB_SESSIONS"; then
   ok "once that session has ended, a run carries on with its claim"
 else bad "once that session has ended, a run carries on with its claim" "rc=$rc $(cat "$STUB_SESSIONS") $(out)"; fi
 
@@ -133,16 +144,16 @@ else bad "a process the checks leave running does not hold the lock" "rc=$rc $(o
 
 # --- the frontmatter, and only the frontmatter
 #
-# A chunk about the chunk format has body lines that look exactly like fields,
-# and this repository's own chunks are full of them.
+# A part about the plan format has body lines that look exactly like fields,
+# and this repository's own plans are full of them.
 
 workspace
 # shellcheck disable=SC2016 # a Markdown fence, written literally
-printf '\n## Left standing\n\n```\nstatus:    review\nattempts:  7\n```\n' >> "$WORK/changes/x/chunks/1-one.md"; commit
+printf '\n## Left standing\n\n```\nstatus:    review\nattempts:  7\n```\n' >> "$WORK/changes/x/plan/01.md"; commit
 plan build build review
 run > /dev/null
-if [ "$(grep -c '^status:    review' "$WORK/changes/x/chunks/1-one.md")" = 1 ]; then
+if [ "$(grep -c '^status:    review' "$WORK/changes/x/plan/01.md")" = 1 ]; then
   ok "only the frontmatter is rewritten"
-else bad "only the frontmatter is rewritten" "$(chk 1-one)"; fi
+else bad "only the frontmatter is rewritten" "$(chk 01)"; fi
 
 finish

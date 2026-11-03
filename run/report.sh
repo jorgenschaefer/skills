@@ -14,30 +14,29 @@
 #
 # Sourced by run.sh, never run.
 
-# Told what stopped the run by whoever stopped it: a run started again over a
-# halt nobody settled builds what does not wait on it, and one that ended named
-# the first halt it found named the old one, with another session's log.
+# Told what stopped the run by whoever stopped it: a usage limit or a review
+# that did not finish leaves no halt in a part to find.
 end_run() {  # exit status, what stopped the run: the chunk that halted it, or why in a line
   local t why="${2:-}" built=0
   for t in "${CHUNK_FILES[@]}"; do
     [ "$(field "$t" status)" != "done" ] || built=$((built + 1))
   done
-  # Nothing named it where the loop ran out of chunks it could pick, and then
-  # every halt and every dependency that cannot be met is why: the first halt
-  # first, and the rest are listed under it.
+  # Nothing named it where the loop found no part it could pick: the parts are
+  # built in order, so the first one not done stopped it - a halt, as a rule -
+  # and the rest are listed under it.
   if [ "$1" != 0 ] && [ -z "$why" ]; then
     for t in "${CHUNK_FILES[@]}"; do
       [ "$(field "$t" status)" = halted ] && { why="$t"; break; }
     done
-    why="${why:-no chunk left is ready: each waits on one that is not done}"
+    why="${why:-no part left is ready}"
   fi
-  printf '\n%s of %s chunks done\n' "$built" "${#CHUNK_FILES[@]}"
+  printf '\n%s of %s parts done\n' "$built" "${#CHUNK_FILES[@]}"
   if [ "$1" != 0 ]; then
     if [ -f "$why" ]; then
       printf '\nRUN STOPPED: %s %s\n\n' "$(basename "$why")" "$(halt_label "$why")"
-      section "$why" Halt | awk 'NR <= 20 { print (NF ? "  " $0 : "") } NR == 21 { print "  ... (rest in the chunk)" }'
-      printf '\n  chunk: %s\n' "$why"
-      # The last session's log, where that session was this chunk's.
+      section "$why" Halt | awk 'NR <= 20 { print (NF ? "  " $0 : "") } NR == 21 { print "  ... (rest in the part)" }'
+      printf '\n  part:   %s\n' "$why"
+      # The last session's log, where that session was this part's.
       case "$(basename "${LOG:-}")" in
         "$(basename "$why" .md)"-*) printf '  log:    %s\n' "$LOG" ;;
       esac
@@ -64,7 +63,7 @@ unfinished() {  # the chunks not done, one line each, saying why
 unfinished_line() {  # chunk -> why it is not done
   case "$(field "$1" status)" in
     halted) printf '%s: %s\n' "$(basename "$1")" "$(halt_label "$1")" ;;
-    *)      printf '%s: %s, after: %s\n' "$(basename "$1")" "$(field "$1" status)" "$(field "$1" after)" ;;
+    *)      printf '%s: %s\n' "$(basename "$1")" "$(field "$1" status)" ;;
   esac
 }
 
@@ -143,13 +142,13 @@ review_checks() {  # the review's session id
   say "the checks pass"
 }
 
-# The change starts where its chunks were first added: every build since is
-# part of it, whatever the branch it came from is called. The final review
-# only runs where there are chunks, so there always are.
-# accept-change/signals.sh starts earlier, at CHANGE.md: acceptance answers
-# for the journeys the change edited too.
+# The change starts where its parts were first added to plan/: every build
+# since is part of it, whatever the branch it came from is called. The final
+# review only runs where there are parts, so there always are.
+# accept-change/signals.sh starts earlier, at the change's first file:
+# acceptance answers for the journeys the change edited too.
 review_base() {
   local added
-  added="$(git log --diff-filter=A --format=%H -- "$CHUNKS" | tail -1)"
+  added="$(git log --diff-filter=A --format=%H -- "$PARTS" | tail -1)"
   git rev-parse -q --verify "$added^" || git hash-object -t tree /dev/null
 }

@@ -11,23 +11,23 @@ set -uo pipefail
 
 # --- what earlier builds left standing
 #
-# A build that leaves something for a later chunk - a rename that belongs to
+# A build that leaves something for a later part - a rename that belongs to
 # the code the next one touches - says so in its Left standing, and nothing else ever
-# carried it there: every session reads its own chunk and no other.
+# carried it there: every session reads its own part and no other.
 
 workspace
 plan build build review
 run > /dev/null
 if ! grep -q 'already built' <(sed -n 1p "$STUB_CALLS") \
-   && grep -qF "$WORK/changes/x/chunks/1-one.md" <(sed -n 2p "$STUB_CALLS") \
+   && grep -qF "$WORK/changes/x/plan/01.md" <(sed -n 2p "$STUB_CALLS") \
    && grep -q 'already built.*## Left standing' <(sed -n 2p "$STUB_CALLS"); then
-  ok "a later build is pointed at what the chunks already built left standing"
-else bad "a later build is pointed at what the chunks already built left standing" "$(calls)"; fi
+  ok "a later build is pointed at what the parts already built left standing"
+else bad "a later build is pointed at what the parts already built left standing" "$(calls)"; fi
 
 # --- what a build is told about the checks
 #
 # The runner runs the fast and the slow check on every build's commit, so a
-# build runs only the fast one, and has to be told so: told nothing, /implement
+# build runs only the fast one, and has to be told so: told nothing, /implement-code
 # runs the slow check before its commit too.
 
 workspace
@@ -55,6 +55,29 @@ if grep -q 'it has no slow check' <(head -1 "$STUB_CALLS"); then
   ok "a build in a project with no slow check is told it has none"
 else bad "a build in a project with no slow check is told it has none" "$(head -1 "$STUB_CALLS")"; fi
 
+# --- the skills a session is told to use
+#
+# A session loads the skill its brief names, so a brief naming one that is gone
+# builds with none. The build halts in the kinds the runner reads back, and
+# `undecided` is not among them: the plan left no question for the build.
+
+workspace; unsplit
+plan split-two build build review
+run > /dev/null
+if grep -q '^/split-plan on ' <(sed -n 1p "$STUB_CALLS"); then
+  ok "the split's brief starts with /split-plan, which loads it"
+else bad "the split's brief starts with /split-plan, which loads it" "$(sed -n 1p "$STUB_CALLS")"; fi
+# shellcheck disable=SC2016 # the backticks are Markdown's, matched literally
+if grep -q '^Use /implement-plan on ' <(sed -n 2p "$STUB_CALLS") && ! grep -q 'undecided' <(sed -n 2p "$STUB_CALLS") \
+   && grep -q '`departure`.*`blocked`.*`mystery`' <(sed -n 2p "$STUB_CALLS"); then
+  ok "a build's brief names /implement-plan and the halt kinds of a session, and no undecided"
+else bad "a build's brief names /implement-plan and the halt kinds of a session, and no undecided" "$(sed -n 2p "$STUB_CALLS")"; fi
+# The end review is a code review against the plan; the walk is acceptance's.
+if grep -q 'review-code' <(tail -1 "$STUB_CALLS") && grep -qF "$(realpath "$WORK")/changes/x/plan.md as the spec" <(tail -1 "$STUB_CALLS") \
+   && ! grep -q 'walk' <(tail -1 "$STUB_CALLS") && ! grep -q 'review-change\|implement-change' <(tail -1 "$STUB_CALLS"); then
+  ok "the end review's brief has review-code review the diff against plan.md, and walks nothing"
+else bad "the end review's brief has review-code review the diff against plan.md, and walks nothing" "$(tail -1 "$STUB_CALLS")"; fi
+
 # --- what the final review is told
 #
 # One review of the whole change, run with nobody watching: what it reviews,
@@ -65,8 +88,8 @@ workspace
 plan build build review
 run > /dev/null
 if grep -qF "$(git -C "$WORK" rev-parse main~1)" <(tail -1 "$STUB_CALLS"); then
-  ok "the review is given the change from before its chunks were added"
-else bad "the review is given the change from before its chunks were added" "$(tail -1 "$STUB_CALLS")"; fi
+  ok "the review is given the change from before its parts were added"
+else bad "the review is given the change from before its parts were added" "$(tail -1 "$STUB_CALLS")"; fi
 # shellcheck disable=SC2016 # the backticks are Markdown's, matched literally
 if grep -qF "$(realpath "$WORK")/changes/x/REVIEW.md" <(tail -1 "$STUB_CALLS") \
    && grep -q '`true`' <(tail -1 "$STUB_CALLS"); then
@@ -74,8 +97,8 @@ if grep -qF "$(realpath "$WORK")/changes/x/REVIEW.md" <(tail -1 "$STUB_CALLS") \
 else bad "the review is told where REVIEW.md goes, and the project's checks" "$(tail -1 "$STUB_CALLS")"; fi
 # A build left a blocker it had not fixed in its Left standing, and the review,
 # shown none of them, found the same bug again. Left standing is handed over
-# whole, not pointed at: whole chunks are the plans the reviewer must not see.
-if grep -q 'left by 1-one' <(tail -1 "$STUB_CALLS") && grep -q 'left by 2-two' <(tail -1 "$STUB_CALLS"); then
+# whole, not pointed at: whole parts are the plans the reviewer must not see.
+if grep -q 'left by 01' <(tail -1 "$STUB_CALLS") && grep -q 'left by 02' <(tail -1 "$STUB_CALLS"); then
   ok "the review is handed what every build left standing"
 else bad "the review is handed what every build left standing" "$(tail -1 "$STUB_CALLS")"; fi
 

@@ -15,4 +15,4 @@ st                                  # branch checked out, commit graph, sessions
 demo_done                           # remove $WORK
 ```
 
-Everything up to the first session - refusals, the split, preflight - is the real script; what a session does is the stub's plan. The change is already split into two chunks; `git rm -r changes/2026-01-01-demo/chunks` and a commit leave it for the split session to judge. Each source makes a new temporary repository, so call `demo_done` before sourcing again. `git checkout main` shows the refusal on main.
+Everything around the sessions - refusals, claims, checks, halts - is the real script; what a session does is the stub's plan. The change's `plan.md` is already split into two parts in `plan/`; `git rm -r changes/2026-01-01-demo/plan` and a commit leave `plan.md` for the split session to judge, with `plan split-two build build review`. Each source makes a new temporary repository, so call `demo_done` before sourcing again. `git checkout main` shows the refusal on main.

@@ -65,7 +65,7 @@ drive() {
     # nothing when none does. It is resumed once rather than started over,
     # because everything it did is still in the tree, the commits and its context.
     if [ "$rc" = 0 ] && [ "$(field "$chunk" status)" = doing ]; then
-      say "session stopped with the chunk unfinished - resuming it"
+      say "session stopped with the part unfinished - resuming it"
       session "$chunk" --resume "$id" "$STOPPED_EARLY"; rc=$?
     fi
     if [ "$rc" = "$EX_LIMIT" ]; then
@@ -166,15 +166,18 @@ drive() {
   done
 }
 
-ready_chunk() {  # the first chunk whose dependencies are done
-  local t dep ok
+# The parts are built one after the other, in the order of their numbers: a
+# part rests on what the parts before it built. So the next part is the first
+# one not done, and where that one is not ready - halted, say - nothing after it
+# is either.
+ready_chunk() {  # -> the next part to build
+  local t
   for t in "${CHUNK_FILES[@]}"; do
-    [ "$(field "$t" status)" = ready ] || continue
-    ok=yes
-    for dep in $(field "$t" after | tr ',' ' '); do
-      [ "$(field "$CHUNKS/$dep.md" status)" = "done" ] 2>/dev/null || ok=no
-    done
-    [ "$ok" = yes ] && { printf '%s' "$t"; return 0; }
+    case "$(field "$t" status)" in
+      done) ;;
+      ready) printf '%s' "$t"; return 0 ;;
+      *) return 1 ;;
+    esac
   done
   return 1
 }
