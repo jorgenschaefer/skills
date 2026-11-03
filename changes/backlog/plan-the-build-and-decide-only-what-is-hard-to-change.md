@@ -325,6 +325,37 @@ committed as `0fced9e` on 2026-11-02, not built yet (session `707c3e2c`).
   and no way to deploy. The repository holds no code yet, so the first
   build decides all of it alone.
 
+### workout-tracker, the build
+
+After the design, in the same session `707c3e2c` but outside any skill, the
+developer asked at 18:48: "Ich würde gerne Tech Stack,
+Deployment-Infrastruktur, Datenbank-Schema und Typ-Definitionen (für die
+Browser-DB) festlegen. Erstelle ein entsprechendes technisches Dokument."
+That took until 20:23, about as long as the design. The document was
+committed as `e548d34`, and `CHANGE.md` pointed the build at it. The run
+built exactly to it: six tables, a `PUT` and `DELETE` per resource, three
+safeguards against losing input.
+
+- **No skill asked for it.** The developer saw the gap and filled it by
+  hand.
+- **Nothing checked it.** The journeys and `CHANGE.md` get a fresh verifier
+  before the final yes. This document got none, and the same commit changed
+  two journeys after their verification.
+- **The agent started complex, and the developer simplified.** The first
+  draft had Dexie and IndexedDB, SQLite, and its own protocol: an `Op` type,
+  `POST /api/ops`, `opId` and an `applied_op` table. The developer pointed
+  it at `../infrastructure` and TanStack Query, then asked: "ob die
+  Komplexität mit Op sinnvoll ist … 'last one wins' ist ja genau das.
+  Wieso so eine komplexe Logik?" The agent agreed that `Op` was left over
+  from the Dexie draft. Asked to check for more simplifications, it trimmed
+  inside the same design.
+- **The simplest storage never came up.** The design had agreed that one
+  device writes at a time and the last write wins. One document holding all
+  the data, kept on the phone and sent whole, would do exactly that. It was
+  not offered. Offline sync then cost chunks 03 and 05, and 5 of the 14
+  points under "For you" in the run's `REVIEW.md`, among them a plan deleted
+  on one phone coming back from another phone's offline change.
+
 ## What it touches
 
 `SDLC.md` ("Add a feature", "Debug", "Refactor", Future Changes); new
