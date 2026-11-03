@@ -255,11 +255,11 @@ a skill is for, so it goes first.
 **Files:**
 
 - `SDLC.md`:
-  - A fifth goal, simplicity: "the smallest software that solves the
-    problem"; every feature, failure case and moving part earns its place;
-    less software is less that can break the user's trust. Say that it
-    serves Utility and Maintainability. See Q12 for where it goes in the
-    order.
+  - Simplicity, as a paragraph under "Goals" before the four ranked goals,
+    not as a fifth (Q12): "the smallest software that solves the problem";
+    every feature, failure case and moving part earns its place; less
+    software is less that can break the user's trust. Say that it serves
+    Utility and Maintainability.
   - Maintainability: "in the journeys, the tests and the code" becomes "in
     the light journeys, `UBIQUITOUS_LANGUAGE.md`, the hard tests and the
     code" (spec 547-549).
@@ -736,11 +736,12 @@ fix.
   stages (a backlog note, and after `/idea`). Part 11 adds the third. Copies in
   `backlog/INTENT_FORMAT.md` and `accept-change/INTENT_FORMAT.md`.
 - `idea/SKILL.md`:
-  - writes the agreed statement into the backlog item it came from, or into
-    a new item, so every idea takes this path; the solution the developer
-    arrived with is marked as evidence; commits that file alone;
-  - for a new item, proposes effort and utility with a one-line reason
-    each, as `backlog` does, and the developer confirms them (Q7);
+  - writes the agreed statement, in `INTENT_FORMAT.md`'s headings, into the
+    backlog item it came from and commits that file alone; for a new idea
+    it hands the same to `/backlog`, which writes, sizes and commits the
+    item (Q7). Either way the commit lands on main, before any change
+    branch exists (Q6). The solution the developer arrived with is marked
+    as evidence;
   - digs under a constraint the developer arrives with: where the answer is
     part of the problem, it goes under "What must stay true"; where it only
     limits the solutions, it is named as a hard decision for later;
@@ -751,7 +752,9 @@ fix.
   no-mechanism rule, and reports what could go: a part of the statement
   the instance does not need.
 - `backlog/SKILL.md`: an item can hold what `/idea` agreed, in
-  `INTENT_FORMAT.md`'s headings; keep them when extending the item.
+  `INTENT_FORMAT.md`'s headings; keep them when extending the item. When
+  `/idea` hands it a new idea, it writes the parts as given, and adds
+  sizes and commits as for any new item.
 - `accept-change/SKILL.md`: holds the change against `intent.md`'s parts,
   as `INTENT_FORMAT.md` names them.
 - `README.md`: the entries.
@@ -814,8 +817,6 @@ glossary: the drawn model uses the glossary's words and leaves out IDs.
 **Achieves:** the one entry point to the design, which writes `spec.md`
 (spec 229-356, 551-588). After this part the whole v4 pipeline runs.
 
-Answer Q5, Q6, Q10 and Q14 before this part.
-
 **Files:**
 
 - `create-spec/SPEC_FORMAT.md`, new, and copies in
@@ -850,8 +851,8 @@ Answer Q5, Q6, Q10 and Q14 before this part.
     directory; works in what it finds; asks for the final yes;
   - moves the backlog item to `changes/<dir>/intent.md` with `git mv`,
     without its frontmatter; writes each "could wait" item to the backlog,
-    pointing at the `intent.md` it came from (Q5); commits all of it
-    together;
+    with the Problem and Outcome it rests on copied in, and a line naming
+    the change (Q5); commits all of it together;
   - ends by naming `/create-plan`.
 - `create-spec/VERIFY.md`, new: `spec.md` against `intent.md`: nothing
   missing; nothing that serves no part of the problem, each part naming
@@ -1004,42 +1005,53 @@ The developer decides what moves. Nothing here is cut from the plan.
 
 ## Questions
 
-Gaps and contradictions found in `spec.md`. Each has the reading this plan
-takes until the developer says otherwise, and the part that depends on it.
+Gaps and contradictions found in `spec.md`, and how the developer settled
+each, with the part that depends on it. All are settled.
 
 - **Q1. Is there a review at the end of `run.sh`?** The pipeline (spec 118)
   and the Reviews table (spec 453) say "review of the whole against
   `plan.md`". The Skills table (spec 612) says "no final review". Reading:
-  a `review-code` session at the end, no walk. (Part 5b.)
+  a `review-code` session at the end, no walk. (Part 5b.) Settled by the
+  developer, 2026-11-03: as read.
 - **Q2. Who fixes what the end review finds, and where does the rest go?**
   `review-code` changes nothing (spec 171-173), and `REVIEW.md` is not among
   a change's files (spec 531-545). Reading: the end-review session fixes
   blockers and should-fix, two rounds at most, writes the rest into
   `plan.md`'s `## Left standing`, and sets `plan.md`'s `status: done`.
-  (Part 6.)
+  (Part 6.) Settled by the developer, 2026-11-03: as read.
 - **Q3. Where does a specification that is not a `spec.md` live?** `debug`,
   `solve-problem` and `refactor-codebase` hand larger work to
   `create-plan`, and `accept-change` holds the build against it. spec.md
   does not say in which file the bug's cause or the "Done when" list is
   kept, or who makes the branch. Reading: the caller makes the branch and
   writes `changes/<dir>/spec.md` in its own words, and `create-plan`
-  writes `plan.md` beside it. (Parts 7, 8.)
+  writes `plan.md` beside it. (Parts 7, 8.) Settled by the developer,
+  2026-11-03: as read. The caller writes `spec.md` in free text and does
+  not go through `create-spec`: the work is already agreed, it has no
+  `intent.md`, and `create-plan`'s verifier checks the plan against it.
 - **Q4. Who writes a constraint's line into `CLAUDE.md`, and when?**
   spec 349-354 says where it goes, not who writes it. Reading:
   `create-plan` makes it a step of the plan, and the build writes it.
-  (Part 3.)
+  (Part 3.) Settled by H6.
 - **Q5. What does a "could wait" backlog item point to?** spec 576-577 says
   it points to the `intent.md` it came from. That file is deleted at
-  acceptance (spec 542). Reading: the item names the path, and git keeps
-  the file. (Part 11.)
+  acceptance (spec 542). Settled by the developer, 2026-11-03: the item
+  copies the parts of `intent.md` it rests on, usually Problem and Outcome,
+  under the same headings, and names the change it was cut from in one
+  line. (Part 11.)
 - **Q6. Who moves `intent.md` back when a change is abandoned, and what
   counts as abandoned?** spec 210-211 says it moves back, but no skill
-  abandons a change. Reading: no skill does it; the README's "What lives
-  where" says the developer moves it back by hand. (Part 11.)
+  abandons a change. Settled by the developer, 2026-11-03: nobody moves it.
+  `/idea` commits the backlog item on main; `create-spec` makes the
+  change's branch first and does the `git mv` on it. Abandoning a change
+  means dropping its branch, and the backlog item on main is untouched.
+  The README's "What lives where" says so. (Parts 9, 11.)
 - **Q7. Does `/idea` propose effort and utility for a new backlog item?**
   spec 207-208 has `/idea` write a new item when there is none, and
-  backlog items need both sizes. Reading: yes, as `backlog` does.
-  (Part 9.)
+  backlog items need both sizes. Settled by the developer, 2026-11-03:
+  `/idea` hands a new idea to `/backlog`, which checks for an overlapping
+  item, proposes the sizes and commits the file alone. An idea that came
+  from an item is still updated by `/idea` itself. (Part 9.)
 - **Q8. May the build change a hard test the developer approved changing
   in the plan?** spec 410-412 says `implement-plan` halts where it would
   change "an existing hard test". But a change that edits a journey changes
@@ -1047,23 +1059,32 @@ takes until the developer says otherwise, and the part that depends on it.
   developer's yes (spec 378-379, 499). Halting on it would stop every such
   run on its first part. Reading: it halts only on a `.hard.` change its
   part does not list. The runner does not check this itself, as it checks
-  `journeys/`. (Part 4.)
+  `journeys/`. (Part 4.) Settled by the developer, 2026-11-03: as read.
 - **Q9. How does a script flag "exported types"?** spec 463-466 names
   them among the places a script flags. They cannot be found by file name,
-  as `signals.sh` finds the rest. Reading: left to the reviewers.
+  as `signals.sh` finds the rest. Settled by the developer, 2026-11-03:
+  left to the reviewers; `review-code` checks the callers of every exported
+  name it touches.
 - **Q10. Do the `design-*` skills, used on their own, have a verifier?**
   spec 248-249 has one verifier for the whole spec, so
   `design-user-journeys/VERIFY.md` goes. Then `design-frontend` used for a
-  redesign on its own is checked by nobody. Reading: as spec.md says, no
-  verifier. (Part 11.)
+  redesign on its own is checked by nobody. Settled by the developer,
+  2026-11-03: no verifier in the `design-*` skills. Used alone, the
+  developer judges the result; a build of it goes through `create-plan`,
+  whose verifier checks the plan. (Part 11.)
 - **Q11. Does the "Backlog" journey in `SDLC.md` change?** The Skills
   table names only "Add a feature", "Debug" and "Refactor". The Backlog
   journey says the item "is deleted" once the change is accepted, but in v4
-  it moves into the change as `intent.md` first. Reading: that one
-  paragraph changes. (Part 1.)
+  it moves into the change as `intent.md` first. Settled by the
+  developer, 2026-11-03: part 1 rewrites that one paragraph: the item
+  becomes `intent.md` once `/idea` has run, moves into the change's
+  directory when the design is committed, and is deleted with it at
+  acceptance. (Part 1.)
 - **Q12. Where does simplicity go among the goals?** spec 44-46 calls it a
   new goal that serves Utility and Maintainability. The goals are ranked.
-  Reading: the fifth. (Part 1.)
+  Settled by the developer, 2026-11-03: not a ranked goal. A paragraph
+  under "Goals", before the four, says the smallest software that solves
+  the problem, and why; the four stay as they are. (Part 1.)
 - **Q13. Does `.hard.` work in every language?** spec 518-519 says "the
   same rule holds in any language". It does not:
   - Go's test files must end in `_test.go`, so a hard Go test would be
@@ -1072,11 +1093,14 @@ takes until the developer says otherwise, and the part that depends on it.
     the dot reads as a package.
 
   Reading: `.hard.` as spec.md says, which works for JavaScript and
-  TypeScript. (Parts 2, 7.)
+  TypeScript. (Parts 2, 7.) Settled by H5.
 - **Q14. What does a light journey still hold?** spec 259-265 says it says
   "who uses the software and for what", and that agents "do not need every
   step and special case". But each plan step "names the journey steps it
   makes testable" (spec 364-365), journey tests are hard tests, and a test
   today names its journey and step. Does a light journey keep numbered
-  steps, and `*(judged)*`? Reading: a few numbered steps per journey, the
-  ones a user would name, and `*(judged)*`. (Part 11.)
+  steps, and `*(judged)*`? Settled by the developer, 2026-11-03: Who,
+  Wants, and a few numbered steps: as many as a user would tell a
+  colleague, usually three to seven, not every click or special case.
+  `*(judged)*` stays. Tests and plan steps name journey and step as
+  today. (Part 11.)
