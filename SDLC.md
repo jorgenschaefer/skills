@@ -10,7 +10,11 @@ To achieve this, the user has to trust the software. Trust is the most important
 
 ## Goals
 
-Software development is the art of crafting software that deserves the user's trust. It earns that trust in four ways, in this order:
+Software development is the art of crafting software that deserves the user's trust.
+
+The aim is the smallest software that solves the problem. Every feature, failure case and moving part has to earn its place. Less software is less that can break the user's trust. This is not a goal of its own: it serves Utility and Maintainability.
+
+Software earns the user's trust in four ways, in this order:
 
 ### 1. Utility
 
@@ -38,7 +42,7 @@ If the user does not have to think about how to do things, and just enjoys the p
 
 New features can be added quickly, and bugs can be fixed fast.
 
-The next change is made by an agent that remembers nothing of this one. So whatever it needs to know is in the repository: in the journeys, the tests and the code.
+The next change is made by an agent that remembers nothing of this one. So whatever it needs to know is in the repository: in the light journeys, `UBIQUITOUS_LANGUAGE.md`, the hard tests and the code.
 
 If a user reports a problem or a wishlist item and receives an update soon, they will trust the software more even if it breaks in the future.
 
@@ -48,22 +52,25 @@ If a user reports a problem or a wishlist item and receives an update soon, they
 
 As a developer, I open claude code and tell it about an idea I have for the software.
 
-It interviews me and helps me identify the actual problem I am trying to solve.
+With `/idea`, it interviews me and helps me identify the actual problem I am trying to solve. What we agree is written down in `intent.md`: the problem, what would be true instead, the one real instance of it, what must stay true, and the solution I arrived with, kept as evidence and not as the brief.
 
-Once we have that identified, it finds the user journeys this change affects, and works with me to change them or add new ones. Where the software already does something that no journey describes yet, it first writes that journey from what the software does today, and I confirm it.
+Then `create-spec` works out the design with me and writes it into `changes/YYYY-MM-DD-slug/spec.md`. It holds the design against the instance in `intent.md` and proposes two lists: what the instance needs, and what could wait. I decide each item, and what could wait goes to the backlog. At every decision it offers alternatives, the simplest first and called the simplest, until we agree. It uses one part of the design or several, as the change needs:
 
-It then walks the user journey and discusses with me how each step would look and feel. Where seeing a step says more than describing it, it builds a rough prototype I can click through, and we walk that. It provides alternative options all the way until we agree on a finished design. The builder builds to the prototype, and the prototype is thrown away when the change is accepted.
+- `design-user-journeys` finds the journeys this change affects, and works with me to change them or add new ones. A journey is light: who uses the software and for what, in a few steps. Each is a permanent `journeys/slug.md` file, named after what the user does, such as `journeys/pay-an-invoice.md`. A change edits the journeys it affects, so each file always describes the software as it is. Where the software already does something that no journey describes yet, it first writes that journey from what the software does today, and I confirm it.
+- `design-domain` works out with me the things the user works with, how they hang together, and their rules, in the user's words. It keeps `UBIQUITOUS_LANGUAGE.md` up to date.
+- `design-frontend` works out how the screens look and feel, to match the design system in the code. It builds a rough prototype I can click through, and we walk that. The builder builds to the prototype, and the prototype is thrown away when the change is accepted.
 
-Once finalized, the agent creates two documents:
+Then `create-plan` writes `plan.md`: how to build the change, step by step, with the files, the order of the work and the tests. A fresh agent checks it against the design. Then it puts the hard decisions to me, one at a time, each with its options, the simplest first, and a recommendation.
 
-- A permanent `journeys/slug.md` file for each user journey, named after what the user does, such as `journeys/pay-an-invoice.md`. A change edits the journeys it affects, so each file always describes the software as it is.
-- A temporary `changes/YYYY-MM-DD-slug/CHANGE.md` description of the design, interactions, screens etc. to be implemented
+A decision or a test is hard if something outside the code depends on it: a revert removes the code, but not what the code wrote, sent or promised. I make the hard decisions; the agent makes the soft ones and does not mention them. A hard test needs my yes to change; a soft test is the agent's to write, change or delete.
 
-Based on these files, agents implement the change, with nobody watching. First the work is split into chunks, each small enough for one agent to build within one context. Then a fresh agent builds each chunk. For each user journey, it writes a test that walks the journey the way a user would: it clicks, types or calls the API, and never calls the code's internals. The test stays. When it fails, it names the step that broke. A step that no test can show, such as "it feels quick", is marked as judged. A journey that no test walks drifts away from the software, and the next agent believes it anyway.
+Based on the plan, `run.sh` builds the change, with nobody watching. First the plan is split into parts, each small enough for one agent to build within one context. Then a fresh agent builds each part, one after the other, and a reviewer with a new context reviews its code. For each user journey, the build writes a hard test that walks the journey the way a user would: it clicks, types or calls the API, and never calls the code's internals. When it fails, it names the step that broke. A step that no test can show, such as "it feels quick", is marked as judged. A journey that no test walks drifts away from the software, and the next agent believes it anyway. Where the build would have to change a hard decision I made, it stops and leaves that to me. At the end, one more reviewer looks at the whole build against `plan.md`.
 
-An adversarial reviewer with a new context then checks the code and software against the user journeys, changes, and the four goals above. An agent that has not read the code walks each user journey on the running software, and reports where a person would hesitate, guess or give up.
+At acceptance, an adversarial reviewer with a new context checks the whole change against `intent.md`, the design, the journeys and the four goals above. At the same time, an agent that has not read the code walks each user journey on the running software, and reports where a person would hesitate, guess or give up.
 
-Then I walk the user journey myself, on the running software. For each step, the agent shows me what checks it and what the check found. If the software does what we designed but does not solve my problem, we go back to the interview. The change is done when I accept it.
+Then I walk the user journey myself, on the running software. For each step, the agent shows me what checks it and what the check found. It shows me every change to a hard test, and everything that is hard to undo. If the software does what we designed but does not solve my problem, we go back to the interview. The change is done when I accept it.
+
+Small work skips the design, the plan and the run. Work that fits in one session, and has no hard decision I have not seen, is built in the session with `implement-code`, and its code is reviewed by `review-code`, a reviewer with a new context.
 
 ### Debug
 
@@ -75,9 +82,9 @@ Once identified, it ends in one of three ways:
 
 1. The software works as intended, and the intention is right. Nothing changes, and the agent explains to me why it works this way.
 2. The software works as intended, but this shows the intention is wrong. This is a feature request, and goes into the backlog.
-3. The software does not work as intended. The agent writes a test that reproduces the bug, and then implements a fix.
+3. The software does not work as intended. The agent writes a test that reproduces the bug, and then implements a fix. The test is a hard test: it stays, and changing it needs my yes.
 
-The test and fix are reviewed by an adversarial reviewer with a new context.
+The test and fix are reviewed by `review-code`, an adversarial reviewer with a new context. A fix larger than one session goes to `create-plan`, and is built from the plan as in "Add a feature".
 
 ### Refactor
 
@@ -91,7 +98,7 @@ Each note is one file, `changes/friction/YYYY-MM-DD-slug.md`, so runs on differe
 
 In the refactor stage, those signals together with the git history - which files change often, which files change together, etc. - and possibly other signals are used together to come up with a refactoring plan that makes the code base more easy to change in the future.
 
-The most important items are implemented and reviewed by an adversarial reviewer. The tests for the user journeys pass without being changed. A refactor that needs to change one changes what the software does, and goes through "Add a feature" instead.
+The most important items are implemented and reviewed by an adversarial reviewer. The hard tests pass without being changed. A refactor that needs to change one changes what the software does, and goes through "Add a feature" instead.
 
 ### Backlog
 
@@ -103,11 +110,8 @@ Items also come from the other journeys: a debug run that shows the intention is
 
 When I ask what to do next, the agent ranks the items by utility against effort. It checks the top ones against the current code, and proposes deleting an item whose problem no longer shows. It recommends one item and a runner-up, and says why.
 
-An item is a note, not a plan. The item I pick starts "Add a feature" at the interview, however settled it reads. Once the change is accepted, the item is deleted.
+An item is a note, not a plan. The item I pick starts "Add a feature" at the interview, however settled it reads. Once `/idea` has run, the item holds what we agreed and is the change's `intent.md`. It moves into the change's directory when the design is committed, and is deleted with that directory once the change is accepted.
 
 ## Future Changes
 
-- The ubiquitous language is a good idea, but has no place yet
-- The domain model is a good idea, but has no place yet
-- Stored data (database schemas) and wire formats are relevant but are not mentioned yet
 - How production problems are noticed before a user reports them (errors, alerts, logs) is not mentioned yet
