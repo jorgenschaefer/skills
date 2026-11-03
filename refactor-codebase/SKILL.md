@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Make the codebase easier to change for the next agent, which will remember nothing of this one. For any likely change, the code that has to change with it should be close by and easy to find, and understanding a feature should mean reading a small part of the code. Line count is not the measure: deletion matters only because it leaves less to read.
 
-**What the software does stays the same.** The journeys' tests pass without being changed. A refactor that needs to change a journey or its test changes what the software does: it is a change, and goes through `/idea`.
+**What the software does stays the same.** The hard tests - the files with `.hard.` in their name - pass without being changed. A refactor that needs to change a journey or a hard test changes what the software does: it is a change, and goes through `/idea`.
 
 This skill's `JOURNEY_FORMAT.md` settles the shape of a journey.
 
@@ -33,7 +33,7 @@ Rank the items by how much easier they make the changes most likely to come, aga
 
 What would change what the software does - two screens that do almost the same thing, a feature that costs more than it gives the user - is not an item. List it apart, in the user's words: what the user would lose, and which changes would get easier.
 
-Show the plan to the developer, and agree which items to build now.
+Show the plan to the developer, and agree which items to build now. An item too large for this session gets a plan of its own: make a branch named `YYYY-MM-DD-refactor-<slug>`, write `changes/YYYY-MM-DD-refactor-<slug>/spec.md` with the item, commit it with `git-commit-message`, and hand it to `/create-plan`.
 
 ## The kinds of refactoring
 
@@ -52,7 +52,7 @@ Show the plan to the developer, and agree which items to build now.
 
 **Work on a branch.** Where you are on `main` or `master`, make one named `YYYY-MM-DD-refactor` first.
 
-**Prove that each item keeps what the software does.** Reading the code and concluding it is the same is not proof. The proof is tests that cover the code the item touches and pass before and after: the journeys' tests, unchanged, and any other test. Where nothing covers it, first write a test that pins what it does today, and break the code to watch it fail - a pinning test passes from the start, so that is the only proof it pins anything. Tests other than the journeys' are yours to change or delete once they are in the way.
+**Prove that each item keeps what the software does.** Reading the code and concluding it is the same is not proof. The proof is tests that cover the code the item touches and pass before and after: the hard tests, unchanged, and any other test. Where nothing covers it, first write a test that pins what it does today, and break the code to watch it fail - a pinning test passes from the start, so that is the only proof it pins anything. Soft tests are yours to change or delete once they are in the way.
 
 **An item you cannot prove**, leave as it is, and say so in the report.
 
@@ -62,7 +62,7 @@ Show the plan to the developer, and agree which items to build now.
 
 ## Review it
 
-Spawn `review-change` with a fresh context. Give it the diff from where the branch started, the result of the checks, and as what was asked for, the plan items you built. Not how you built them. Tell it that what the software does must not change, and that a journey's test changed is a blocker. Fix the blockers and the should-fix, and say what you left standing.
+Spawn `review-code` with a fresh context. Give it the diff from where the branch started, the result of the checks, and as its spec, the plan items you built. Not how you built them. Tell it that what the software does must not change, and that a changed `.hard.` file is a blocker. Fix the blockers and the should-fix, and say what you left standing.
 
 ## Docs last
 

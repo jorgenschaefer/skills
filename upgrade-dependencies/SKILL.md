@@ -1,6 +1,6 @@
 ---
 name: upgrade-dependencies
-description: Upgrade npm dependencies safely and incrementally - keeping the project green after every step.
+description: Upgrade npm dependencies safely and incrementally - keeping the project green after every step, with every commit reviewed by review-code, and each upgrade that needs real code changes handed to the backlog.
 disable-model-invocation: true
 ---
 
@@ -15,6 +15,12 @@ Find the project's checks in `CLAUDE.md`: the fast check on the `Fast check:` li
 line where there is none - and the slow check on the `Slow check:` line. Where `CLAUDE.md` names
 none, find the commands that run type-checks, lint and tests. Wherever this skill says to run the
 checks, run both.
+
+**The hard tests pass unchanged** - the test files with `.hard.` in their name. An upgrade that would
+need one changed changes what the software does: revert it, and put it to the developer.
+
+**Replacing a library is not an upgrade.** It is a hard decision: what the code is built around.
+Propose it to the developer, and do not do it.
 
 ## 1. Baseline
 
@@ -48,7 +54,7 @@ For each package, in order:
 2. Bump it (edit the range in `package.json` and `npm install`).
 3. Apply any migration the changelog calls for.
 4. Run the checks. Green: commit this single upgrade. Red and not a quick fix: revert this one
-   package and move on, noting it as needing manual follow-up. Revert cleanly so the lockfile stays
+   package and move on, noting it for the follow-up list. Revert cleanly so the lockfile stays
    consistent: `git checkout package.json package-lock.json && npm install`.
 
 If the bump fails to install with a peer-dependency conflict (npm's `ERESOLVE`), read which peer is
@@ -57,7 +63,7 @@ single logical upgrade). **Do not** reach for `--force` or `--legacy-peer-deps` 
 those mask the conflict instead of resolving it, and leave the tree in a state that breaks later.
 
 If a major bump implies real code changes or a behavior shift rather than a mechanical migration,
-stop and surface it rather than guessing at the intended behavior.
+revert it and put it on the follow-up list rather than guessing at the intended behavior.
 
 ## Node version alignment
 
@@ -77,3 +83,17 @@ is rather than assuming from memory) rather than silently picking one.
 
 As part of pass 3, bump `@types/node` to match the Node major the project actually runs on **today**
 – not a higher LTS you have only proposed moving to.
+
+## 4. Review every commit
+
+Spawn `review-code` with a fresh context for each commit of the upgrade. Give it the commit's diff,
+the result of the checks, and as its spec, the changelogs and migration notes of the packages it
+upgrades. Fix the blockers and the should-fix in a commit of their own, and say what you left
+standing.
+
+## 5. The follow-up list goes to the backlog
+
+Hand each upgrade on the follow-up list to `/backlog`, one item per upgrade: the package and the
+version, the changelog's migration notes, and what failed. When the developer picks such an item,
+it is built with `/implement-code` where it fits one session and has no hard decision the
+developer has not seen, and planned with `/create-plan` otherwise.

@@ -1,6 +1,6 @@
 ---
 name: solve-problem
-description: Work out a solution to an agreed problem together with the user - alternatives at every decision, questions instead of guesses - and build it in this session once you both see the same result, reviewed by an agent that did not build it. Use when /idea hands over to it, and on "let's work this out together and build it".
+description: Work out a solution to an agreed problem together with the user - alternatives at every decision, questions instead of guesses - and once you both see the same result, build it in this session with implement-code, or hand it to create-plan where it does not fit one session. Use when /idea hands over to it, and on "let's work this out together and build it".
 ---
 
 # Solve a problem
@@ -15,7 +15,7 @@ Read what the problem touches before you propose anything: the files, what the p
 
 ## Settle the solution
 
-- Walk it one decision at a time. At each one, propose at least three genuinely different alternatives, or say why there are fewer. Give each one its effort (XS to XL) and the complexity it adds, then recommend one and say why.
+- Walk it one decision at a time. At each one, propose at least three genuinely different alternatives, or say why there are fewer. Put the simplest first, and call it the simplest. Give each one its effort (XS to XL) and the complexity it adds, then recommend one and say why.
 - Where only the user knows something, ask; do not guess.
 - Weigh what the user says before following it: propose what would make it better, or object where you think it is wrong. Once: a decision they reaffirm is theirs.
 - End your turn at the first question mark.
@@ -24,10 +24,10 @@ Read what the problem touches before you propose anything: the files, what the p
 
 ## Build it
 
-The project's checks, if there are any, are the `Fast check:` and `Slow check:` lines in `CLAUDE.md`; a `Check:` line with no `Fast check:` line beside it is the fast check.
+**Where the work does not fit this session, or has a hard decision the user has not seen, plan it.** Where you are on `main` or `master`, make a branch named `YYYY-MM-DD-<slug>`. Write `changes/YYYY-MM-DD-<slug>/spec.md` with the problem, the agreed result and the "Done when" list, commit it on the branch with `git-commit-message`, and hand it to `/create-plan`. Stop there.
 
-1. Make the change, and run the fast check as you go.
-2. Spawn a fresh agent that has not seen this conversation to review the change. Give it the problem, the agreed result and the "Done when" list, and let it review in whatever way fits the change.
-3. Fix every finding that holds up.
-4. Check every criterion on the "Done when" list that you can check now, and run the slow check. Fix what fails.
-5. Show the user what changed, the fixes, the findings you rejected and why, and each criterion on the "Done when" list: met, not met and why, or still to check, by whom and when. Once they say yes, commit, if the work is in a repository. Where the problem came from a backlog item, delete the item in the same commit.
+**Otherwise, build it with `/implement-code`.** Give it the agreed result and the "Done when" list as its spec, and tell it that you commit. It builds the change, runs the project's checks and has it reviewed by `review-code`.
+
+Then check every criterion on the "Done when" list that you can check now, and fix what fails.
+
+Show the user what changed, what `implement-code` left standing, and each criterion on the "Done when" list: met, not met and why, or still to check, by whom and when. Once they say yes, commit with `git-commit-message`, if the work is in a repository. Where the problem came from a backlog item, delete the item in the same commit.

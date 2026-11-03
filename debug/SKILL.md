@@ -1,6 +1,6 @@
 ---
 name: debug
-description: Find a bug from however it was reported - a stack trace, a screenshot, a user's complaint, "this is broken", "why does it do that" - and end in one of three ways - it works as intended and that is right, it works as intended and the intention is wrong, or it is a bug, fixed with a test that reproduces it and reviewed by an agent that did not write the fix.
+description: Find a bug from however it was reported - a stack trace, a screenshot, a user's complaint, "this is broken", "why does it do that" - and end in one of three ways - it works as intended and that is right, it works as intended and the intention is wrong, or it is a bug, fixed with implement-code and a hard test that reproduces it, or planned with create-plan where the fix is larger than one session.
 ---
 
 # Debug
@@ -51,15 +51,13 @@ Fix it.
 
 **Work on a branch.** Where you are on `main` or `master`, make one named `YYYY-MM-DD-fix-<slug>` first.
 
-**Write a test that reproduces the bug, and see it fail** for the reason you found. Where a journey step covers what broke, the test is that journey's: its test missed the bug, so strengthen it, naming the journey and step. Otherwise write a test of its own, from the outside where you can.
+**Where the fix is larger than this session, or needs a hard decision the developer has not seen, plan it.** Write `changes/YYYY-MM-DD-fix-<slug>/spec.md` with the report, the intention the developer agreed, and the cause, and say in it that the plan's first step is a test that reproduces the bug. Commit it on the branch with `git-commit-message`, and hand it to `/create-plan`. Stop there.
 
-**Then fix it** with the least code that does the job. Where the fix needs a decision about what the user sees that no journey settles, ask the developer. Where it is larger than this session, it is a change: hand it to `/backlog` with what you found, and stop.
+**Otherwise, write a test that reproduces the bug, and see it fail** for the reason you found. It is a hard test: test from the outside - the UI, the API or the stored data - name it for its rule in the user's words, and put `.hard.` before its test suffix, such as `invoice-overdue.hard.test.ts`. Where a journey's hard test covers what broke, that test missed the bug: strengthen it, naming the journey and step, but ask the developer's yes before you touch it.
 
-**Run the checks** - the `Fast check:` and `Slow check:` lines in `CLAUDE.md` - and see them green. Report the real result.
+**Then build the fix with `/implement-code`.** Give it as its spec the report, the intention the developer agreed, the cause and the reproducing test, and where the developer said yes to changing a hard test, that they did. Where the fix needs a decision about what the user sees that no journey settles, settle it with the developer first, and add it to the spec. Tell it that you commit. It builds the fix, runs the checks and has it reviewed by `review-code`.
 
-**Have the test and the fix reviewed.** Spawn `review-change` with a fresh context. Give it the diff, the result of the checks, and as what was asked for, the report, the intention the developer agreed, and the cause. Not how you got there. Fix the blockers and the should-fix, and say what you left standing.
-
-**Commit** with `git-commit-message`. Stage only the files the fix touched; never `git add -A`. Merging the branch is the developer's.
+**Commit** the test, the fix and the friction note below together, with `git-commit-message`, once the checks are green. Stage only the files the fix touched; never `git add -A`. Say what `implement-code` left standing. Merging the branch is the developer's.
 
 ## Write down what was hard
 
