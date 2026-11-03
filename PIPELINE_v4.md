@@ -39,7 +39,7 @@ problems.
 
 ## Principles
 
-### 1. The smallest software that solves the problem (agreed)
+### 1. The smallest software that solves the problem
 
 A new goal in `SDLC.md`: every feature, failure case and moving part has to
 earn its place. Less software is less that can break the user's trust, so
@@ -58,7 +58,7 @@ they did not hold. What does the work:
 - **The simplest option comes first, and is called the simplest**, at every
   decision. This holds for design choices and technical choices alike.
 
-### 2. Hard and soft (agreed)
+### 2. Hard and soft
 
 A decision or a test is **hard** if something outside the code depends on
 it. The test for this: a revert removes the code, but not what the code
@@ -78,7 +78,7 @@ wrote, sent or promised. Everything else is **soft**.
 The lists of what counts as hard are below, under "Hard decisions" and
 "Hard tests".
 
-### 3. The developer's attention has two jobs (agreed)
+### 3. The developer's attention has two jobs
 
 1. Hard decisions.
 2. Judgements only a person can make: does this screen make sense, does this
@@ -88,12 +88,12 @@ Everything else is left to the agents. This is why UI design stays in the
 design stage and does not go into the plan: the plan would fill up with
 details the developer wants to be left alone with.
 
-### 4. Each level is reviewed against its own document (agreed)
+### 4. Each level is reviewed against its own document
 
 Every document is checked by an agent with a fresh context, against the
 document one level above it. See the table under "Reviews".
 
-**All code is reviewed (agreed).** Every change to code, however it was
+**All code is reviewed.** Every change to code, however it was
 made - by `implement-code`, `implement-plan`, `debug`, `solve-problem`,
 `refactor-codebase` or `upgrade-dependencies` - is reviewed by
 `review-code` in a fresh context. No path through the skills commits code
@@ -121,7 +121,7 @@ accept-change              review and walk of the whole change,
                            then the developer walks it
 ```
 
-**Other ways in (agreed in outline).** `create-plan` takes any
+**Other ways in.** `create-plan` takes any
 specification, not only a `spec.md`:
 
 - `debug`, when the fix is larger than one session. The spec is the bug
@@ -132,7 +132,7 @@ specification, not only a `spec.md`:
 - `upgrade-dependencies`, through the backlog, for the upgrades it could
   not do itself (see below).
 
-**`upgrade-dependencies` stays outside the pipeline (agreed).** It already
+**`upgrade-dependencies` stays outside the pipeline.** It already
 tries before it decides: one package at a time, the checks after each, a
 revert where they fail. In v4:
 
@@ -156,7 +156,7 @@ three-line fix. The rule: work that fits in one session, and has no hard
 decision the developer has not seen, goes to `implement-code`. Everything
 else goes through `create-plan`.
 
-## implement-code and review-code (agreed)
+## implement-code and review-code
 
 Two skills that know nothing about the pipeline: no plans, no journeys, no
 `run.sh`. The pipeline's skills build on them.
@@ -196,7 +196,7 @@ look for solutions. It needs no more brainstorming: the playbook's
 "brainstorm until the problem is concrete" is what `/idea`'s digging already
 does. New:
 
-- **`/idea` writes `intent.md` (agreed).** Today almost nothing of the
+- **`/idea` writes `intent.md`.** Today almost nothing of the
   conversation survives `/idea`. In v4 the backlog item and `intent.md` are
   one file at two stages:
   1. **A backlog item** is a note, as far as the developer got, with its
@@ -213,7 +213,7 @@ does. New:
 
   `intent.md` is what `spec.md` and acceptance are held against. `spec.md`
   points to it and does not restate the problem.
-- **What must stay true (agreed).** A constraint the developer arrives with
+- **What must stay true.** A constraint the developer arrives with
   is evidence, like the solution they arrive with. "Existing login only"
   limits the solutions, and `/idea` digs under it: why? Where the answer is
   part of the problem, such as "nobody new gets access to member data", it
@@ -226,7 +226,7 @@ does. New:
   needs is `create-spec`'s job, not `/idea`'s. See "The size of a change"
   below.
 
-### create-spec (agreed)
+### create-spec
 
 `create-spec` owns `spec.md`, as `create-plan` owns `plan.md`. It is the one
 entry point to the design, and the result is always one `spec.md`.
@@ -256,14 +256,14 @@ entry point to the design, and the result is always one `spec.md`.
   keeps its name for now, because it says what matters most about it:
   finding the problem underneath the idea.
 
-**`design-user-journeys` - light journeys (agreed).** A journey says who
+**`design-user-journeys` - light journeys.** A journey says who
 uses the software and for what. Agents read the journeys to find their way
 around the software and to learn what it is for. They do not need every step
 and special case: that is what the code is for. During the change, the
 details of each step live in the prototype and in `spec.md`. After
 acceptance, they live in the code and in the hard tests.
 
-**Journeys have no "When it goes wrong" section (agreed).** A journey says
+**Journeys have no "When it goes wrong" section.** A journey says
 what the software is for. What happens when something fails is the *how*,
 and the code shows it. The failure cases still have to be designed: which
 ones earn their place, how the error is shown, and what happens to the
@@ -275,18 +275,18 @@ where the user would lose work or see something they must not see gets a
 hard test (see "Hard tests"). How the error looks and what it says is soft.
 
 Each failure case in `spec.md` has one shape: "If <what goes wrong>, the
-user sees <what>, and their work <is kept / is lost>" (agreed). This is the
+user sees <what>, and their work <is kept / is lost>". This is the
 "unwanted behaviour" pattern of EARS, and close to the old "When it goes
 wrong" line. The last part makes it hard to leave out what happens to the
 user's work, and that part decides whether the case gets a hard test.
 
-**`design-domain` (agreed).** It covers the things the user works with,
+**`design-domain`.** It covers the things the user works with,
 how they hang together, their rules and their lifecycle, in the user's
 words. For example: "a training keeps the name of its plan, so deleting a
 plan loses nothing". It settles what the hard decisions about data mean,
 and `create-plan` later turns them into a schema.
 
-**There is no domain document that lasts (agreed).** A domain model kept
+**There is no domain document that lasts.** A domain model kept
 beside the schema would drift from it: nothing breaks when it is wrong, and
 the next agent would trust it. So the domain model is drawn when it is
 needed, not kept:
@@ -306,41 +306,39 @@ Why the model is shaped as it is - "deleting a plan keeps its trainings" -
 is a rule a user relies on, so it becomes a hard test named in the user's
 words.
 
-**`UBIQUITOUS_LANGUAGE.md` is the part that lasts (agreed).** Which word
+**`UBIQUITOUS_LANGUAGE.md` is the part that lasts.** Which word
 means what, and which code name stands for which word, cannot be read from
 the code. `design-domain` reads the glossary and updates it when a change
 brings new words. `init-ubiquitous-language` stays, for projects that have
 no glossary yet. This gives the glossary a place in the pipeline: today no
 skill of the SDLC journeys reads it.
 
-**`design-frontend` (agreed).** It covers the look and feel, and builds
+**`design-frontend`.** It covers the look and feel, and builds
 the prototype that `design-user-journeys` builds today. The plugin skill
 `frontend-design:frontend-design` could be a starting point.
 
-**The design system lives in the code, not in a document (agreed).** In an
+**The design system lives in the code, not in a document.** In an
 app that exists, the theme (colours, type, spacing), the shared components
 and the existing screens are the design system. `design-frontend` reads
 them and designs new screens to match. A document beside them would only
 drift. Why the UI looks as it does, such as "used one-handed in the gym",
 is about the user, and belongs in a journey's "Who" or in `intent.md`.
 
-**A new app gets its design system in a design session of its own
-(agreed).** `design-frontend` proposes several design systems that fit the
+**A new app gets its design system in a design session of its own.** `design-frontend` proposes several design systems that fit the
 app and its users, with a recommendation, and the developer picks one. This
 is a decision like the hard ones, with options side by side. The first
 change then builds the chosen design system as code: the theme and the
 first shared components.
 
-**Constraints (agreed).** `spec.md` lists each constraint - what must stay
+**Constraints.** `spec.md` lists each constraint - what must stay
 true from `intent.md`, and the limits on solutions found in the design -
 with how it is met and how that is checked. The check is a test from the
 outside, a reviewer, or a person's judgement. Each constraint is one
-statement with a single condition. There is no fixed notation such as EARS
-(agreed): most constraints are things that must always hold, so the pattern
+statement with a single condition. There is no fixed notation such as EARS: most constraints are things that must always hold, so the pattern
 would add only "shall", and "how it is checked" already makes each one
 testable.
 
-**A constraint that must last outlives `spec.md` this way (agreed),**
+**A constraint that must last outlives `spec.md` this way,**
 strongest first:
 
 1. **Something that executes.** Most constraints can be made a hard test.
@@ -357,7 +355,7 @@ strongest first:
 
 Not the glossary: it holds words, not rules.
 
-### create-plan (agreed)
+### create-plan
 
 `create-plan` runs in the interactive session, while the developer is still
 there. Questions only the developer can answer come up here.
@@ -393,7 +391,7 @@ For a new repository, this is where the stack, the database and deployment
 are decided. In `workout-tracker`, the developer wrote that document by
 hand.
 
-### run.sh (agreed)
+### run.sh
 
 Once `run.sh` starts, it runs on its own until it finishes or halts.
 
@@ -416,7 +414,7 @@ Once `run.sh` starts, it runs on its own until it finishes or halts.
   and, at the end, against `plan.md`. A part such as "add the schema" has no
   journey to walk, so nothing is walked inside `run.sh`.
 
-### accept-change (agreed)
+### accept-change
 
 The review and the walk of the whole change move here, out of `run.sh`'s
 final review. `accept-change` spawns `review-change` and
@@ -430,7 +428,7 @@ list. So every run of `run.sh` ends the same way.
 The developer sees every diff that touches a hard test, and everything that
 is hard to undo (see below).
 
-**`accept-change` is the only `accept-*` skill (agreed).** The developer
+**`accept-change` is the only `accept-*` skill.** The developer
 accepts a document with a yes inside the session that made it: `intent.md`
 at the end of `/idea`, the hard decisions at the end of `create-plan`.
 `accept-change` is a different kind of thing: it happens later, in another
@@ -439,7 +437,7 @@ session, on the running software, and the developer walks it.
 ## Reviews
 
 **A review is its own skill only if more than one skill uses it, or a
-person calls it directly (agreed).** Otherwise it is a `VERIFY.md` in the
+person calls it directly.** Otherwise it is a `VERIFY.md` in the
 skill that creates the document, and that skill spawns a fresh agent with
 it, as `idea` and `design-user-journeys` do today. That gives two review
 skills: `review-code` (used by `implement-code`, `implement-plan` and
@@ -456,10 +454,10 @@ before a merge).
 | `accept-change` | interactive session | `review-change`, `walk-user-journeys` | `intent.md`, `spec.md`, the journeys, the four goals |
 | `implement-code` outside the pipeline | interactive session | `review-code` | the agreed spec it was given |
 
-Every reviewer reports what could go, as well as what is missing (agreed,
-from principle 1).
+Every reviewer reports what could go, as well as what is missing, as
+principle 1 asks.
 
-**Reviews show what is hard to undo (agreed).** They point out where the
+**Reviews show what is hard to undo.** They point out where the
 blast radius is large, or where a revert after deployment is hard:
 migrations, changed API shapes, new calls to other services, deletions. They
 put that in front of the developer and leave out most of the rest. A script
@@ -467,7 +465,7 @@ can flag diffs that touch known places - migration folders, schema files,
 OpenAPI or proto files, exported types - so the list does not depend on the
 agent noticing.
 
-## Hard decisions (agreed)
+## Hard decisions
 
 Main's four technical decisions are the starting list: stored formats, wire
 formats, trust boundaries and dependencies. Each was always answered, and
@@ -494,7 +492,7 @@ or an API, and points back to the line of the design each one comes from.
 So the developer decides the substance in the design, and in the plan only
 checks the translation.
 
-## Hard tests (agreed)
+## Hard tests
 
 Today a journey's test stays, and "every other test is yours". In v4:
 
@@ -515,7 +513,7 @@ Today a journey's test stays, and "every other test is yours". In v4:
   data. A hard test of internals would freeze the code, and then every
   refactor would need a yes.
 - **A hard test's name says its rule in the user's words.**
-- **A hard test is marked by its file name (agreed, to be tried out):**
+- **A hard test is marked by its file name (to be tried out):**
   `.hard.` before the test suffix, such as `invoice-overdue.hard.test.ts` or
   `pay-an-invoice.hard.spec.ts`. The same rule holds in any language. A
   file is all hard or all soft, which fits, because hard tests test from
@@ -544,7 +542,7 @@ is the problem, `spec.md` the design, `plan.md` the build.
 | `intent.md` | a backlog item, then the problem the change is held against | deleted |
 | `spec.md`, including the failure cases | the design | deleted |
 | prototype | what the build builds the UI to | deleted |
-| `plan.md`, `plan-XX.md` | what the build follows | deleted (agreed): it describes the build, and the code is what was built. Its hard decisions live on in the schema, the API and the hard tests. Git keeps the plan. No decision records for now; an agent proposing a rejected option again would be the evidence for them. |
+| `plan.md`, `plan-XX.md` | what the build follows | deleted: it describes the build, and the code is what was built. Its hard decisions live on in the schema, the API and the hard tests. Git keeps the plan. No decision records for now; an agent proposing a rejected option again would be the evidence for them. |
 
 `SDLC.md` says that whatever the next agent needs is "in the journeys, the
 tests and the code". In v4 that becomes: the light journeys,
@@ -566,8 +564,7 @@ version first, now that code is cheap. What is known:
 - Each change also has fixed costs: a design session, the plan, the run, the
   acceptance.
 
-**The cut is made in `create-spec`, and the developer decides it
-(agreed):**
+**The cut is made in `create-spec`, and the developer decides it:**
 
 - `create-spec` holds every part of the spec against the instance in
   `intent.md`: what does the one real instance need?
