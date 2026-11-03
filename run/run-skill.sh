@@ -47,7 +47,7 @@ run_skill() {
     return 0
   fi
   if [ -n "$(left_behind)" ]; then
-    git add -A -- "${NOT_CHUNKS[@]}"
+    git add -A -- "${NOT_PARTS[@]}"
     git commit -q -m "Add the project's run skill, written by /run-skill-generator" \
       || end_run 1 "could not commit the run skill"
   fi

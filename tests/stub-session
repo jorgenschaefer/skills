@@ -62,14 +62,17 @@
 #   split-two    the split, writing the plan's two steps as plan/01.md and
 #                plan/02.md, and committing them
 #   split-dirty  split-two, leaving the parts uncommitted
-#   review       the final review - write and commit the REVIEW.md its prompt
-#                names, and end in a successful result, as the CLI does
+#   review       the final review - write what it left under `### End review` in
+#                the Left standing of the plan.md its prompt names, set that
+#                plan.md to status: done, commit it, and end in a successful
+#                result, as the CLI does
 #   review-red   the final review, and leave .red at the root besides
 #   review-journey  the final review, then add a step to journeys/one.md and
 #                commit that too
-#   review-dies  the final review, dying with no REVIEW.md and no result
-#   review-stop-early  the final review, ending in a successful result with no
-#                REVIEW.md - a review that ended its turn waiting on a subagent
+#   review-dies  the final review, dying with plan.md untouched and no result
+#   review-stop-early  the final review, ending in a successful result with
+#                plan.md untouched - a review that ended its turn waiting on a
+#                subagent
 #   orphaned     write code, kill the runner with -9, and keep running a while -
 #                a session outliving the runner that launched it
 #
@@ -85,8 +88,8 @@
 # message once per content block, and 1000 in a subagent's.
 #
 # Every call's session is written to $STUB_SESSIONS as `start <id> <part>` or
-# `resume <id>` - the final review's start naming its REVIEW.md where a build's
-# names its part. A started call is told apart by how its brief opens - `Use
+# `resume <id>` - the final review's start as `start <id> <plan.md> review`,
+# since an unsplit plan's build names plan.md too. A started call is told apart by how its brief opens - `Use
 # /implement-plan on <part>.`, `/split-plan on <plan.md>.` or the review's
 # opening - and one that opens none of these ways is an error. A resumed call names neither in its
 # prompt - the real session remembers what it was doing - so the stub looks it
@@ -137,11 +140,11 @@ fi
 build_opening="Use /implement-plan on "
 split_opening="/split-plan on "
 review_opening="Review the whole change this run built"
-review_named_by="write what you left standing to "
+review_named_by="write what you left standing into "
 
-# Reads the part or the review's file from where the brief names it on
-# purpose: its opening, or the one sentence that names the review's file. The
-# rest of the brief may name REVIEW.md too - in a sentence, or in a test's
+# Reads the part or the review's plan.md from where the brief names it on
+# purpose: its opening, or the one sentence that names where the review writes.
+# The rest of the brief may name plan.md too - in a sentence, or in a test's
 # check command - and must not change which file the stub writes.
 brief_names() {
   local first="${prompt%%$'\n'*}"
@@ -156,7 +159,8 @@ brief_names() {
       [[ "$prompt" == *"$review_named_by"* ]] \
         || { echo "stub: the review's brief no longer says \"$review_named_by<path>\": $prompt" >&2; exit 96; }
       review="${prompt#*"$review_named_by"}"
-      review="${review%%[[:space:]]*}" ;;
+      review="${review%%[[:space:]]*}"
+      review="${review%,}" ;;
     *) echo "stub: a brief that is neither a build's, the split's nor the review's: $prompt" >&2; exit 96 ;;
   esac
 }
@@ -167,11 +171,11 @@ args=("$@")
 for i in "${!args[@]}"; do
   case "${args[$i]}" in
     --session-id) brief_names
-                  printf 'start %s %s\n' "${args[$((i + 1))]}" "${chunk:-$review}" >> "$STUB_SESSIONS" ;;
+                  printf 'start %s %s%s\n' "${args[$((i + 1))]}" "${chunk:-$review}" "${review:+ review}" >> "$STUB_SESSIONS" ;;
     --resume)     id="${args[$((i + 1))]}"
                   printf 'resume %s\n' "$id" >> "$STUB_SESSIONS"
-                  chunk="$(awk -v id="$id" '$1 == "start" && $2 == id { print $3 }' "$STUB_SESSIONS")"
-                  case "$chunk" in *REVIEW.md) review="$chunk"; chunk="" ;; esac ;;
+                  chunk="$(awk -v id="$id" '$1 == "start" && $2 == id && $4 != "review" { print $3 }' "$STUB_SESSIONS")"
+                  review="$(awk -v id="$id" '$1 == "start" && $2 == id && $4 == "review" { print $3 }' "$STUB_SESSIONS")" ;;
   esac
 done
 
@@ -205,7 +209,8 @@ case "$line" in
       echo '{"type":"result","subtype":"success","is_error":false,"result":"waiting for critique"}'
       exit 0
     fi
-    printf '## For you\n\n1. the review left: a seam\n\n## Findings\n\nthe review'"'"'s detail\n' > "$review"
+    printf '\n### End review\n\n1. the review left: a seam\n\nthe review'"'"'s detail\n' >> "$review"
+    sed -i "2,/^---$/s/^status: .*/status:    done/" "$review"
     git add "$review" >/dev/null 2>&1
     git commit -qm "review" >/dev/null 2>&1
     [ "$line" != review-red ] || : > "$(git rev-parse --show-toplevel)/.red"

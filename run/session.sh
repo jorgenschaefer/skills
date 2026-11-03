@@ -83,7 +83,7 @@ claude_through_limits() {  # log name, prompt, --session-id or --resume, session
 # kept, for testing in the browser; the claude.ai connectors are not.
 #
 # The prompt goes in on stdin: Linux takes no single argument over 128 KiB, and
-# a final review handed 33 chunks' Left standing died before it started.
+# a final review handed 33 parts' Left standing died before it started.
 TOOLS=(Bash Edit Write Read Glob Grep Skill Agent ToolSearch WebFetch WebSearch)
 claude_run() {  # log, --session-id or --resume, session id, prompt, claude's own options... -> claude's exit status
   ENABLE_CLAUDEAI_MCP_SERVERS=false CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1 \

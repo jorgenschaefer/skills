@@ -95,7 +95,7 @@ exec 9>"$LOCK"
 flock -n 9 || die "another run, or a session one started, is still working this repository (pids:$(exec 9>&-; fuser "$LOCK" 2>/dev/null | tr -s ' ' '\n' | grep -vx "$$" | tr '\n' ' ')) - let it finish or stop it, then start again"
 
 shopt -s nullglob
-load_chunks
+load_parts
 
 # Where each session's full event stream goes. Inside the git directory, so a
 # session that commits everything it sees cannot commit its own transcript.
@@ -115,10 +115,6 @@ esac
 # what they hold is in run/session.sh.
 TOKENS="$LOG_DIR/$(realpath --relative-to="$(git rev-parse --show-toplevel)" "$CHANGE_DIR" | tr / _).tokens"
 REFUSED="${TOKENS%.tokens}.refused"
-
-# The final review leaves its findings here, and its being committed is how the
-# review is known to have finished.
-REVIEW="$CHANGE_DIR/REVIEW.md"
 
 split_change
 

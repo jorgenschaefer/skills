@@ -1,6 +1,6 @@
 # shellcheck shell=bash
 #
-# The chunks' state in git: what is claimed, what a session left behind, and
+# The parts' state in git: what is claimed, what a session left behind, and
 # the halts a run leaves for a person.
 #
 # Sourced by run.sh, never run.
@@ -11,18 +11,18 @@
 #
 # Everything but the part files, as a pathspec: what is uncommitted in them is
 # the runner's own bookkeeping, and a run started again carries on from it.
-load_chunks() {
+load_parts() {
   local f t
-  CHUNK_FILES=()
+  PART_FILES=()
   for f in "$PARTS"/[0-9][0-9].md; do
-    [ -n "$(field "$f" status)" ] && CHUNK_FILES+=("$f") || printf 'ignoring %s: not a part\n' "$f" >&2
+    [ -n "$(field "$f" status)" ] && PART_FILES+=("$f") || printf 'ignoring %s: not a part\n' "$f" >&2
   done
-  [ "${#CHUNK_FILES[@]}" -gt 0 ] || CHUNK_FILES=("$PLAN")
-  NOT_CHUNKS=(':/')
-  for t in "${CHUNK_FILES[@]}"; do NOT_CHUNKS+=(":!$t"); done
+  [ "${#PART_FILES[@]}" -gt 0 ] || PART_FILES=("$PLAN")
+  NOT_PARTS=(':/')
+  for t in "${PART_FILES[@]}"; do NOT_PARTS+=(":!$t"); done
 }
 
-is_split() { [ "${CHUNK_FILES[*]}" != "$PLAN" ]; }
+is_split() { [ "${PART_FILES[*]}" != "$PLAN" ]; }
 
 # On a first start only: plan.md unclaimed and never attempted, and no parts.
 # Once plan.md is claimed as the one part its attempts count, so a run started
@@ -49,24 +49,24 @@ split_change() {
   # pass for one that did.
   [ -z "$(left_behind)" ] \
     || end_run 1 "the split left work uncommitted - commit or remove it, then run again:"$'\n'"$(left_behind)"
-  load_chunks
-  if is_split; then say "split into ${#CHUNK_FILES[@]} parts"; else say "it fits one agent: building plan.md as it is"; fi
+  load_parts
+  if is_split; then say "split into ${#PART_FILES[@]} parts"; else say "it fits one agent: building plan.md as it is"; fi
 }
 
 # Whatever is lying around uncommitted is someone's, and a session cannot tell
 # it from its own work: it lints it, reviews it, and carves it out of every
 # diff. Untracked files count - an untracked mockup failed the lint of every
-# session in a whole run. The chunk files are not counted: what is uncommitted
+# session in a whole run. The part files are not counted: what is uncommitted
 # in them is the runner's own bookkeeping - a claim, a counter, a halt it wrote
 # - and a run started again reads it as the state to carry on from.
 #
-# Except beside a claim. A chunk at `doing` when no runner is running is one a
+# Except beside a claim. A part at `doing` when no runner is running is one a
 # killed runner was building, and what is uncommitted is that session's work,
 # which the loop carries on with. One runner leaves one claim; more than one is
 # not something this script did.
 check_tree() {
   local dirty
-  dirty="$(git status --porcelain -- "${NOT_CHUNKS[@]}")"
+  dirty="$(git status --porcelain -- "${NOT_PARTS[@]}")"
   case "$(claimed | wc -l)" in
     0) [ -z "$dirty" ] || die "refusing to run on a dirty tree: commit or remove what is here first"$'\n'"$dirty" ;;
     1) [ -z "$dirty" ] || say "carrying on with $(claimed), taking this as its session's work:"$'\n'"$dirty" ;;
@@ -74,9 +74,9 @@ check_tree() {
   esac
 }
 
-claimed() {  # the chunks in flight - at `doing`, on record, or `done` unchecked - one per line
+claimed() {  # the parts in flight - at `doing`, on record, or `done` unchecked - one per line
   local t
-  for t in "${CHUNK_FILES[@]}"; do
+  for t in "${PART_FILES[@]}"; do
     if [ "$(field "$t" status)" = doing ] || [ -f "$(claim_record "$t")" ] || unchecked_done "$t"; then
       printf '%s\n' "$t"
     fi
@@ -85,42 +85,42 @@ claimed() {  # the chunks in flight - at `doing`, on record, or `done` unchecked
 
 # A `done` in the working tree that HEAD does not carry: a session's claim the
 # runner never got to check, whatever became of its record.
-unchecked_done() {  # chunk
+unchecked_done() {  # part
   [ "$(field "$1" status)" = "done" ] && [ "$(field <(git show "HEAD:./$1" 2>/dev/null) status)" != "done" ]
 }
 
 # Which session a claim was given, and where HEAD stood, for a runner started
-# again after being killed. Named for the chunk's whole path: every change has
+# again after being killed. Named for the part's whole path: every change has
 # a plan/01.md, and one's record resumed another's session. It stays until the
-# runner has settled the chunk, not only until the session returns: a `done`
+# runner has settled the part, not only until the session returns: a `done`
 # the runner was killed before checking is a claim to check, not a result.
-claim_record() {  # chunk -> the file
+claim_record() {  # part -> the file
   printf '%s/%s.claim' "$LOG_DIR" "$(realpath --relative-to="$(git rev-parse --show-toplevel)" "$1" | tr / _)"
 }
 release() { rm -f "$(claim_record "$1")"; }
 
-# What a session left in the tree besides the chunk files, which are the
-# runner's bookkeeping - another chunk's halt among them, which went into the
+# What a session left in the tree besides the part files, which are the
+# runner's bookkeeping - another part's halt among them, which went into the
 # stash with a later build's leftovers and came back out as a fresh budget.
 left_behind() {  # -> git status lines, empty for none
-  git status --porcelain -- "${NOT_CHUNKS[@]}"
+  git status --porcelain -- "${NOT_PARTS[@]}"
 }
 
 # The next attempt is told the checks were green when the run started, which is
 # only true of a tree without this one's leftovers in it. Stashed rather than
 # dropped: it may be most of a build.
-put_aside() {  # chunk, attempt
+put_aside() {  # part, attempt
   [ -n "$(left_behind)" ] || return 0
-  git stash push -q -u -m "run.sh: $(basename "$1") attempt $2, left uncommitted" -- "${NOT_CHUNKS[@]}"
+  git stash push -q -u -m "run.sh: $(basename "$1") attempt $2, left uncommitted" -- "${NOT_PARTS[@]}"
   say "what it left uncommitted is in the stash"
 }
 
 # Committed, and once: a halt is the one thing a run leaves for a person, and
 # left uncommitted it was every later session's someone else's change.
 #
-# HALTED names the last chunk halted here, for the end of the run to name what
+# HALTED names the last part halted here, for the end of the run to name what
 # stopped it.
-halt() {  # chunk, kind, why
+halt() {  # part, kind, why
   # shellcheck disable=SC2034 # read where the run ends, in run.sh and the loop
   HALTED="$1"
   [ "$(field "$1" status)" != halted ] || return 0
@@ -129,10 +129,10 @@ halt() {  # chunk, kind, why
   commit_halt "$1" "$2"
 }
 
-# A session's own halt is committed the same way, and only the chunk file:
+# A session's own halt is committed the same way, and only the part file:
 # whatever the session left besides is its unfinished build, for the person who
 # settles the halt to keep or throw away.
-commit_halt() {  # chunk, kind
+commit_halt() {  # part, kind
   git diff --quiet HEAD -- "$1" && return 0
   git commit -q -m "Halt $(basename "$1" .md)${2:+: $2}" -- "$1" >/dev/null \
     || echo "could not commit the halt in $1" >&2
@@ -140,7 +140,7 @@ commit_halt() {  # chunk, kind
 
 # The kind a halt names, read off its first line in whatever shape its writer
 # put it; empty where that line names none of them.
-halt_kind() {  # chunk
+halt_kind() {  # part
   sed -n '/^## Halt$/,$p' "$1" | sed -n '2,$p' | sed '/^[[:space:]]*$/d' | head -1 \
     | grep -o -m1 -w 'blocked\|mystery\|departure\|exhausted\|unbuilt' | head -1
 }

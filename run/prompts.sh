@@ -30,7 +30,7 @@ Never write \`status: doing\`. It belongs to the runner."
   # A session reads its own part - so an item one build left standing for the
   # next is pointed at. Pointed at rather than extracted: a Left standing says
   # it in whatever shape its build chose.
-  for t in "${CHUNK_FILES[@]}"; do
+  for t in "${PART_FILES[@]}"; do
     [ "$(field "$t" status)" = "done" ] && built+=$'\n'"- $(realpath "$t")"
   done
   [ -z "$built" ] || prompt+="
@@ -59,14 +59,14 @@ STOPPED_EARLY="Your turn ended before the part was finished; what you did is sti
 # shellcheck disable=SC2034
 INTERRUPTED="The run was interrupted while you were working, and has been started again. Your uncommitted work is still in the tree. Carry on from where you stopped - rerun whatever was cut short, a subagent or a check included - and finish as the brief said."
 # shellcheck disable=SC2034
-REVIEW_STOPPED_EARLY="Your turn ended before REVIEW.md was committed. Carry on from there - rerun a review that did not report - and finish as the brief said."
+REVIEW_STOPPED_EARLY="Your turn ended before plan.md was committed at \`status: done\`. Carry on from there - rerun a review that did not report - and finish as the brief said."
 
 red_checks() {  # -> what a build's session is told when the checks fail on its commit
   printf '%s' "The project's checks fail on your commit $(git rev-parse --short HEAD): $RED. The runner set the part back to \`status: doing\`. Fix it, commit, and set \`status: done\` again.$(red_output)"
 }
 
 red_review_checks() {  # -> what the final review is told when the checks fail on its commit
-  printf '%s' "The project's checks fail on your commit $(git rev-parse --short HEAD), after $(realpath "$REVIEW") was committed: $RED. Fix it and commit, with the fix added to REVIEW.md among the fixes no reviewer saw.$(red_output)"
+  printf '%s' "The project's checks fail on your commit $(git rev-parse --short HEAD), after $(realpath "$PLAN") was committed at \`status: done\`: $RED. Fix it and commit, with the fix added to what you left standing in plan.md, among the fixes no reviewer saw.$(red_output)"
 }
 
 # Nothing where no check ran: a CLAUDE.md naming the fast check twice is red
@@ -106,18 +106,18 @@ checks_question() {  # -> what the session that finds the checks is asked
 
 review_brief() {  # -> the prompt the final review starts from
   local t left standing=""
-  for t in "${CHUNK_FILES[@]}"; do
+  for t in "${PART_FILES[@]}"; do
     left="$(left_standing "$t")"
     [ -z "$left" ] || standing+=$'\n\n'"$(basename "$t") left standing:"$'\n'"$left"
   done
   [ -z "$standing" ] || standing="
 
-What the builds left standing is below. Among it are review findings a build did not fix, with the severity its reviewer gave each - one run's build left a blocker there, and its review found the same bug again. Every blocker and should-fix among them is yours to settle as you settle the review's: fix it - unless the fix would change a hard decision of the plan or what the journeys say, and then it goes under \`## For you\` for the person. A fix a build made after its last review was seen by no reviewer: check each against the finding it answers, and settle one that is wrong or incomplete like a should-fix. Leave the nits and everything else for acceptance, and hand none of it to the reviewer.$standing"
+What the builds left standing is below. Among it are review findings a build did not fix, with the severity its reviewer gave each - one run's build left a blocker there, and its review found the same bug again. Every blocker and should-fix among them is yours to settle as you settle the review's: fix it - unless the fix would change a hard decision of the plan or what the journeys say, and then you leave it standing for the person. A fix a build made after its last review was seen by no reviewer: check each against the finding it answers, and settle one that is wrong or incomplete like a should-fix. Leave the nits and everything else for acceptance, and hand none of it to the reviewer.$standing"
   printf '%s' "Review the whole change this run built: \`git diff $(review_base)\`. The parts in $(realpath "$PARTS") built it, and each build was reviewed on its own - which cannot see what lies between them. Look for that: the same thing built twice, one concept under two names, seams between parts that do not line up.
 
 $(checks_said "The checks pass on the commit you start from. The runner runs both checks again on your commits once your review is committed, so run only the fast check yourself.")
 
-Spawn a subagent with a fresh context that uses \`review-code\`. Hand it the diff, $(realpath "$PLAN") as the spec it reviews against, and the result of the checks - the runner's last run of both checks, green on the commit you start from, or, once you have changed the code, your own run of the fast check - saying which it is. Not the parts or what their builds left standing, which are the reasoning behind the code. Evaluate what comes back, fix what is worth fixing, run the fast check and commit. A fix that would change a hard decision of the plan or what the journeys say is not made: it goes under \`## For you\`. Never change the journeys in journeys/: they were approved before the build, and the runner stops the run on a review that changes them. Then review again the same way. Two rounds at most: stop when the second round is done, or when a review comes back clean or with only nits.
+Spawn a subagent with a fresh context that uses \`review-code\`. Hand it the diff, $(realpath "$PLAN") as the spec it reviews against, and the result of the checks - the runner's last run of both checks, green on the commit you start from, or, once you have changed the code, your own run of the fast check - saying which it is. Not the parts or what their builds left standing, which are the reasoning behind the code. Evaluate what comes back, fix what is worth fixing, run the fast check and commit. A fix that would change a hard decision of the plan or what the journeys say is not made: you leave it standing for the person. Never change the journeys in journeys/: they were approved before the build, and the runner stops the run on a review that changes them. Then review again the same way. Two rounds at most: stop when the second round is done, or when a review comes back clean or with only nits.
 
-Then write what you left standing to $(realpath "$REVIEW") and commit it. It opens with \`## For you\`: what is still open once this review is done, a line or two each, each naming the part it came from or the review. What needs the person's decision first - every fix you did not make because it would change a hard decision of the plan or what the journeys say - then the rest of what is open, from what the builds left standing and from your own findings alike, most important first. Where nothing is open, it says \`Nothing.\` Below it, under headings of your own, the rest: findings you did not fix and why, the fixes you made after the last review, which no reviewer saw, checks you did not run, and for your own fixes what a build leaves standing - read /implement-code for what that is. Nobody reads your closing message in an unattended run: REVIEW.md is read at acceptance, and the run counts the review as finished only once that file is committed.$standing"
+Then write what you left standing into $(realpath "$PLAN"), under a \`### End review\` heading at the end of its \`## Left standing\`. It opens with what is still open once this review is done, a line or two each, each naming the part it came from or the review: what needs the person's decision first - every fix you did not make because it would change a hard decision of the plan or what the journeys say - then the rest, from what the builds left standing and from your own findings alike, most important first. Where nothing is open, it says \`Nothing.\` Below that, the rest: findings you did not fix and why, the fixes you made after the last review, which no reviewer saw, checks you did not run, and for your own fixes what a build leaves standing - read /implement-code for what that is. Set plan.md's \`status: done\` in its frontmatter and commit it. Nobody reads your closing message in an unattended run: plan.md's Left standing is read at acceptance, and the run counts the review as finished only once plan.md is committed at \`status: done\`.$standing"
 }

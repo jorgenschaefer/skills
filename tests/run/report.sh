@@ -10,6 +10,11 @@ set -uo pipefail
 # shellcheck source=harness.sh
 . "$(dirname "$0")/harness.sh"
 
+# The end review marks itself finished by committing plan.md at status: done.
+reviewed_in_head() {
+  [ "$(git -C "$WORK" show HEAD:changes/x/plan.md | sed -n 's/^status: *//p' | head -1)" = "done" ]
+}
+
 # --- the final review
 #
 # Each build is reviewed on its own, which cannot see what lies between them:
@@ -36,7 +41,7 @@ workspace
 rm "$WORK/changes/x/plan/02.md"; commit
 plan build
 rc="$(run)"
-if [ "$rc" = 0 ] && [ "$(wc -l < "$STUB_CALLS")" = 1 ] && [ ! -e "$WORK/changes/x/REVIEW.md" ]; then
+if [ "$rc" = 0 ] && [ "$(wc -l < "$STUB_CALLS")" = 1 ] && [ "$(field PLAN status)" = ready ]; then
   ok "a single part gets no final review"
 else bad "a single part gets no final review" "rc=$rc $(calls) $(out)"; fi
 
@@ -47,14 +52,14 @@ if [ "$rc" != 0 ] && [ "$(wc -l < "$STUB_CALLS")" = 2 ]; then
   ok "a run with a halt gets no final review"
 else bad "a run with a halt gets no final review" "rc=$rc $(calls) $(out)"; fi
 
-# REVIEW.md is how the review is known to have finished, so a session that
-# ended without one has not.
+# plan.md at status: done in HEAD is how the review is known to have finished,
+# so a session that ended without committing it has not.
 workspace
 plan build build review-dies review
 rc="$(run)"
 if [ "$rc" != 0 ] && grep -q 'the final review did not finish' "$WORK/.out"; then
-  ok "a final review that ends without committing REVIEW.md fails the run, and says so"
-else bad "a final review that ends without committing REVIEW.md fails the run, and says so" "rc=$rc $(out)"; fi
+  ok "a final review that ends without committing plan.md done fails the run, and says so"
+else bad "a final review that ends without committing plan.md done fails the run, and says so" "rc=$rc $(out)"; fi
 if ! grep -q '/accept-change' "$WORK/.out"; then
   ok "a run whose review did not finish does not point on to acceptance"
 else bad "a run whose review did not finish does not point on to acceptance" "$(out)"; fi
@@ -63,20 +68,19 @@ else bad "a run whose review did not finish does not point on to acceptance" "$(
 # run first, because nothing in this run has run them yet.
 rc="$(run)"
 # shellcheck disable=SC2016 # the backticks are Markdown's, matched literally
-if [ "$rc" = 0 ] && git -C "$WORK" cat-file -e HEAD:changes/x/REVIEW.md 2>/dev/null \
-   && grep -q '`true`' <(tail -1 "$STUB_CALLS"); then
+if [ "$rc" = 0 ] && reviewed_in_head && grep -q '`true`' <(tail -1 "$STUB_CALLS"); then
   ok "a run started again after a failed review runs it again, told the checks"
 else bad "a run started again after a failed review runs it again, told the checks" "rc=$rc $(calls) $(out)"; fi
 
 # A review that ends its turn while what it spawned still runs is ended by
-# `-p` with that work killed and no REVIEW.md - one did, waiting on its
-# the reviewer. It is resumed once rather than started over, as a build is.
+# `-p` with that work killed and plan.md not done - one did, waiting on its
+# reviewer. It is resumed once rather than started over, as a build is.
 workspace
 plan build build review-stop-early review
 rc="$(run)"
-review_id="$(awk '$1 == "start" && $3 ~ /REVIEW\.md$/ { print $2 }' "$STUB_SESSIONS")"
-if [ "$rc" = 0 ] && git -C "$WORK" cat-file -e HEAD:changes/x/REVIEW.md 2>/dev/null \
-   && grep -qx "resume $review_id" "$STUB_SESSIONS" && grep -q 'REVIEW.md was committed' <(tail -1 "$STUB_CALLS"); then
+review_id="$(awk '$1 == "start" && $4 == "review" { print $2 }' "$STUB_SESSIONS")"
+if [ "$rc" = 0 ] && reviewed_in_head \
+   && grep -qx "resume $review_id" "$STUB_SESSIONS" && grep -q 'plan.md was committed' <(tail -1 "$STUB_CALLS"); then
   ok "a final review that stops short is resumed, told why"
 else bad "a final review that stops short is resumed, told why" "rc=$rc $(cat "$STUB_SESSIONS") $(calls) $(out)"; fi
 
@@ -112,6 +116,26 @@ if [ "$(wc -l < "$WORK/.runs")" = $((runs + 1)) ]; then
   ok "a run started again after its review runs the checks before pointing on"
 else bad "a run started again after its review runs the checks before pointing on" "before=$runs after=$(wc -l < "$WORK/.runs") $(out)"; fi
 
+# The review writes what it left into plan.md, where acceptance reads every
+# other build's, and no file of its own.
+workspace
+plan build build review
+rc="$(run)"
+if [ "$rc" = 0 ] && reviewed_in_head && [ ! -e "$WORK/changes/x/REVIEW.md" ] \
+   && git -C "$WORK" show HEAD:changes/x/plan.md | sed -n '/^### End review$/,$p' | grep -q 'the review left: a seam'; then
+  ok "the final review leaves plan.md committed at status: done, with what it left under End review"
+else bad "the final review leaves plan.md committed at status: done, with what it left under End review" "rc=$rc $(chk PLAN) $(out)"; fi
+
+# A new split sets plan.md back to ready, because the review reviewed what is
+# changing; the parts it rebuilt are reviewed again. Here the split is a person
+# setting the status back, with the parts left as they were built.
+sed -i 's/^status: .*/status:    ready/' "$(chunk_path PLAN)"; commit
+: > "$STUB_CALLS"; plan review
+rc="$(run)"
+if [ "$rc" = 0 ] && [ "$(wc -l < "$STUB_CALLS")" = 1 ] && grep -q '^Review the whole change' "$STUB_CALLS" && reviewed_in_head; then
+  ok "a run started again after a new split set plan.md back to ready reviews again"
+else bad "a run started again after a new split set plan.md back to ready reviews again" "rc=$rc $(calls) $(out)"; fi
+
 # --- the end of a run
 #
 # Nobody watches a run, so what needs a person is printed at the end of it,
@@ -129,8 +153,8 @@ workspace
 plan build build review
 rc="$(run)"
 if [ "$rc" = 0 ] && ! grep -q 'the review left: a seam' "$WORK/.out" && ! grep -q 'left by' "$WORK/.out"; then
-  ok "a finished run prints neither REVIEW.md nor what the builds left standing - acceptance reads them"
-else bad "a finished run prints neither REVIEW.md nor what the builds left standing - acceptance reads them" "rc=$rc $(out)"; fi
+  ok "a finished run prints neither what the review nor what the builds left standing - acceptance reads them"
+else bad "a finished run prints neither what the review nor what the builds left standing - acceptance reads them" "rc=$rc $(out)"; fi
 if tail -1 "$WORK/.out" | grep -q '/accept-change .*changes/x'; then
   ok "a finished run ends pointing on to /accept-change"
 else bad "a finished run ends pointing on to /accept-change" "$(out)"; fi
@@ -227,7 +251,7 @@ workspace
 yes -- '- a thing left standing' | head -c 140000 > "$WORK/.left-extra"
 plan build build review
 rc="$( STUB_LEFT_EXTRA="$WORK/.left-extra" run )"
-if [ "$rc" = 0 ] && [ -f "$WORK/changes/x/REVIEW.md" ] && grep -q 'a thing left standing' <(tail -1 "$STUB_CALLS"); then
+if [ "$rc" = 0 ] && reviewed_in_head && grep -q 'a thing left standing' <(tail -1 "$STUB_CALLS"); then
   ok "a review handed more than 128 KiB of Left standing still starts"
 else bad "a review handed more than 128 KiB of Left standing still starts" "rc=$rc $(tail -5 "$WORK/.out")"; fi
 
@@ -242,10 +266,10 @@ workspace
 STUB_VERIFY='echo x >> .runs; if [ -f .red ]; then echo REDMARK; exit 1; fi'
 plan build build review-red fix-red
 rc="$(run)"
-review_id="$(awk '$1 == "start" && $3 ~ /REVIEW\.md$/ { print $2 }' "$STUB_SESSIONS")"
+review_id="$(awk '$1 == "start" && $4 == "review" { print $2 }' "$STUB_SESSIONS")"
 if [ "$rc" = 0 ] && [ "$(tail -1 "$STUB_SESSIONS")" = "resume $review_id" ] \
    && grep -qF 'the fast check, `' <(tail -1 "$STUB_CALLS") && grep -q 'REDMARK' <(tail -1 "$STUB_CALLS") \
-   && grep -q 'after .*REVIEW.md was committed.*with the fix added to REVIEW.md among the fixes no reviewer saw' <(tail -1 "$STUB_CALLS") \
+   && grep -q 'after .*plan.md was committed at .status: done.*with the fix added to what you left standing in plan.md, among the fixes no reviewer saw' <(tail -1 "$STUB_CALLS") \
    && grep -q "handing it back to its session, attempt 1 of 2" "$WORK/.out" \
    && tail -1 "$WORK/.out" | grep -q '/accept-change'; then
   ok "checks red after the final review commits go back to the review session, which fixes them"
@@ -279,13 +303,12 @@ else bad "a run started again over a committed review with red checks halts agai
 # red check and stopped without committing left HEAD red, and the run pointed on
 # to acceptance. What it leaves uncommitted is put aside, as a build's is.
 workspace
-# Red once the review is committed, until a fix is in the tree - named without
-# its .md, which the stub would take for the review's own path.
-STUB_VERIFY='test -f fix || ! ls changes/x | grep -q ^REVIEW'
+# Red once the review is committed, until a fix is in the tree.
+STUB_VERIFY='test -f fix || ! grep -q "^status: *done" changes/x/plan.md'
 plan build build review fix-uncommitted die
 rc="$(run)"
 if [ "$rc" = 1 ] && [ "$(wc -l < "$STUB_CALLS")" = 5 ] && ! grep -q '/accept-change' "$WORK/.out" \
-   && git -C "$WORK" stash list | grep -q 'REVIEW.md.*left uncommitted' && ending | grep -q 'RUN STOPPED:.*git stash list'; then
+   && git -C "$WORK" stash list | grep -q 'plan.md.*left uncommitted' && ending | grep -q 'RUN STOPPED:.*git stash list'; then
   ok "a fix the final review left uncommitted is put aside, and does not turn its checks green"
 else bad "a fix the final review left uncommitted is put aside, and does not turn its checks green" "rc=$rc $(git -C "$WORK" stash list) $(calls) $(out)"; fi
 

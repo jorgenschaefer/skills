@@ -91,10 +91,11 @@ if grep -qF "$(git -C "$WORK" rev-parse main~1)" <(tail -1 "$STUB_CALLS"); then
   ok "the review is given the change from before its parts were added"
 else bad "the review is given the change from before its parts were added" "$(tail -1 "$STUB_CALLS")"; fi
 # shellcheck disable=SC2016 # the backticks are Markdown's, matched literally
-if grep -qF "$(realpath "$WORK")/changes/x/REVIEW.md" <(tail -1 "$STUB_CALLS") \
-   && grep -q '`true`' <(tail -1 "$STUB_CALLS"); then
-  ok "the review is told where REVIEW.md goes, and the project's checks"
-else bad "the review is told where REVIEW.md goes, and the project's checks" "$(tail -1 "$STUB_CALLS")"; fi
+if grep -qF "write what you left standing into $(realpath "$WORK")/changes/x/plan.md, under a \`### End review\` heading" <(tail -1 "$STUB_CALLS") \
+   && grep -q "Set plan.md's \`status: done\`" <(tail -1 "$STUB_CALLS") && grep -q 'Two rounds at most' <(tail -1 "$STUB_CALLS") \
+   && grep -q '`true`' <(tail -1 "$STUB_CALLS") && ! grep -q 'REVIEW.md' <(tail -1 "$STUB_CALLS"); then
+  ok "the review is told to leave what it left under End review in plan.md, set it done, two rounds at most, and the project's checks"
+else bad "the review is told to leave what it left under End review in plan.md, set it done, two rounds at most, and the project's checks" "$(tail -1 "$STUB_CALLS")"; fi
 # A build left a blocker it had not fixed in its Left standing, and the review,
 # shown none of them, found the same bug again. Left standing is handed over
 # whole, not pointed at: whole parts are the plans the reviewer must not see.

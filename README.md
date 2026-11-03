@@ -38,9 +38,8 @@ What lives where:
 - `journeys/` holds one file per thing a user does. It outlives every change, and describes
   the software as it is.
 - `changes/YYYY-MM-DD-<slug>/` holds what one change produces, on the change's own branch:
-  `CHANGE.md`, the agreed prototype in `prototype/`, the chunks in `chunks/` where the change
-  was split, and `REVIEW.md` where the runner's final review ran. It is deleted once the change
-  is accepted.
+  `CHANGE.md`, the agreed prototype in `prototype/` and the chunks in `chunks/` where the
+  change was split. It is deleted once the change is accepted.
 - `changes/friction/` holds one note per place that was hard to change or hard to debug and, for
   an accepted change, the review findings about the code that nobody fixed. They stay until a
   refactor deals with them.
@@ -132,13 +131,18 @@ is worth fixing, two rounds at most, and commits. It is handed what the builds l
 not, and settles the blockers and should-fix a build left unfixed: fixed, or left for the
 person.
 
-It writes what it left to `REVIEW.md`, which opens with `## For you`: what is still open, what
-needs a decision first, then the rest, most important first. A review that ends without
-committing `REVIEW.md` fails the run. Once it is committed, the runner runs both checks again.
-A red one goes back to the review session, on a part's attempt budget. Still red, the run
-halts and names the red check and its output. A run started again over a committed review
-runs both checks and halts again while either is red, so a run never points on to acceptance
-with a red check. A new split deletes `REVIEW.md`, so the rebuilt change is reviewed again.
+It writes what it left into `plan.md`, under `### End review` in its `## Left standing`, where
+acceptance reads what every build left: first what needs the developer's decision, then the
+rest of what is open, most important first. Then it sets `plan.md` to `status: done` and
+commits. That commit is how the runner knows the review finished: a review that ends without
+it fails the run, and a run started again after it does not review again.
+
+Once the review is committed, the runner runs both checks again. A red one goes back to the
+review session, on a part's attempt budget. Still red, the run halts and names the red check
+and its output. A run started again over a committed review runs both checks and halts again
+while either is red, so a run never points on to acceptance with a red check. A new split sets
+`plan.md` back to `status: ready` and removes the end review's leftovers, so the rebuilt change
+is reviewed again.
 
 **What it records.** Each part's cost in context tokens read, main session and subagents
 apart, since a long session re-reads its growing context on every turn. And every call a

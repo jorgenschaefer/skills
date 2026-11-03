@@ -67,7 +67,9 @@ if [ "$rc" = 0 ] && [ "$(field 01 status)" = "done" ] && [ "$(field 02 status)" 
    && grep -qF "Use /implement-plan on $(realpath "$WORK")/changes/x/plan/01.md." <(sed -n 2p "$STUB_CALLS"); then
   ok "a plan split on a first start by /split-plan builds the parts it wrote"
 else bad "a plan split on a first start by /split-plan builds the parts it wrote" "rc=$rc $(calls) $(out)"; fi
-if [ "$(field PLAN status)" = ready ]; then
+# Its status is the end review's once there are parts, so its attempts and the
+# briefs say whether it was built.
+if [ "$(field PLAN attempts)" = 0 ] && ! grep -qF "Use /implement-plan on $(realpath "$WORK")/changes/x/plan.md." "$STUB_CALLS"; then
   ok "once split, plan.md itself is not built"
 else bad "once split, plan.md itself is not built" "$(chk PLAN)"; fi
 
@@ -75,7 +77,7 @@ workspace; unsplit
 plan split-none build
 rc="$(run)"
 if [ "$rc" = 0 ] && [ "$(field PLAN status)" = "done" ] && [ "$(wc -l < "$STUB_CALLS")" = 2 ] \
-   && grep -q 'building plan.md as it is' "$WORK/.out" && [ ! -e "$WORK/changes/x/REVIEW.md" ] \
+   && grep -q 'building plan.md as it is' "$WORK/.out" \
    && grep -qF "Use /implement-plan on $(realpath "$WORK")/changes/x/plan.md." <(sed -n 2p "$STUB_CALLS"); then
   ok "a plan that fits one agent is built as plan.md, with no final review"
 else bad "a plan that fits one agent is built as plan.md, with no final review" "rc=$rc $(calls) $(out)"; fi
