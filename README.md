@@ -21,6 +21,8 @@ journeys of the developer. This README says how to install the skills and what t
 
 Each of the developer's journeys uses these skills:
 
+- **Start on an existing project:** `init-project` writes the glossary, the first one to three
+  journeys and a hard test for each.
 - **Add a feature:** `idea` finds the problem underneath the idea and writes it into a
   backlog item. `create-spec` works out the design with the developer and writes `spec.md`,
   using `design-user-journeys`, `design-domain` and `design-frontend` for the parts the change
@@ -194,6 +196,10 @@ instruction points at something that is not there, and that every script passes 
 ## Available skills
 
 What each skill does today. What it is meant to be is in `SDLC.md`.
+
+### Start on an existing project
+
+- **init-project** - set a project that already has code up for these skills. It reads the code and proposes three to six journeys the software already has, with the code each rests on, and recommends the one to three that would hurt the user most if they broke; the developer picks, and confirms each journey as written from what the software does today. It proposes domain terms from those journeys and from the stored and wire formats, one sentence each, and the developer cuts what they don't want. Then `implement-code` builds a hard test that walks each journey from the outside, each broken once to see it fail; choosing test tooling where there is none is a hard decision, and tests too large for one session go to `create-plan`. Everything else grows one change at a time. Typed
 
 ### Add a feature
 

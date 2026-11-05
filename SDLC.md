@@ -48,6 +48,14 @@ If a user reports a problem or a wishlist item and receives an update soon, they
 
 ## SDLC User Journeys
 
+### Start on an existing project
+
+As a developer, I bring a project that already has code to these skills with `/init-project`.
+
+It reads the code and proposes a few journeys the software already has. It recommends the one to three that would hurt the user most if they broke, and I pick. It writes each from what the software does today, and I confirm it. It proposes the domain terms those journeys use, and the things the software stores or sends, and I cut what I don't want. Then it builds a hard test that walks each journey. If the project has no way to test from the outside, choosing one is a hard decision and mine.
+
+Everything else grows one change at a time: a change that touches something no journey describes writes that journey first.
+
 ### Add a feature
 
 As a developer, I open claude code and tell it about an idea I have for the software.
