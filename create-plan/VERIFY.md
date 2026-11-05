@@ -29,7 +29,7 @@ The bar: **an engineer who has never seen the conversation could build the chang
 - **Each one names what breaks** for the user if the tested thing changes. "It was in the design" is not a break.
 - **Each one tests from the outside**: the UI, the API or the stored data. A hard test of internals freezes the code.
 - **A journey's test names its journey and step**, and no *(judged)* step has one.
-- **An existing hard test the plan changes is listed**, with the developer's yes.
+- **An existing hard test the plan changes or deletes is listed**, with the developer's yes.
 - **The list is short.** A test with no break named is soft, and a finding where it is listed as hard.
 
 ## The UI

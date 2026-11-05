@@ -8,7 +8,7 @@
 Designed for the problem in `intent.md`, beside this file.
 
 ## Journeys
-<Each journey the change adds or changes, by its path in `journeys/`, with one line on what changes in it and the part of intent.md it serves.>
+<Each journey the change adds, changes or ends, by its path in `journeys/`, with one line on what changes in it and the part of intent.md it serves.>
 
 ## Domain
 <The things the user works with that the change adds or changes: how they hang together, their rules and their lifecycle, in the user's words. Each rule a user relies on says so, such as "a training keeps the name of its plan, so deleting a plan loses nothing". Then what happens to what the software already holds. Each item names the part of intent.md it serves.>

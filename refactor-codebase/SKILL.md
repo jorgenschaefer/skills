@@ -66,7 +66,8 @@ Spawn `review-code` with a fresh context. Give it the diff from where the branch
 
 ## Docs last
 
-- **`CLAUDE.md`:** hold every statement it makes about the code - a layout, a file, a rule - against the code, and fix whichever is wrong.
+- **`CLAUDE.md`:** hold every statement it makes about the code - a layout, a file, a rule - against the code, and fix whichever is wrong. A line under `## Constraints` is the developer's: where it is about something no longer in the code, ask before removing it.
+- **Hard tests**: one that names a journey or a step that no longer exists goes to the developer. Delete it only with their yes.
 - **`UBIQUITOUS_LANGUAGE.md`**, where the repository has one: run `/init-ubiquitous-language` for its drift.
 
 ## Finish

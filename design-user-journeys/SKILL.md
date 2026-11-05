@@ -19,7 +19,7 @@ This skill's `JOURNEY_FORMAT.md` settles the shape of a journey. A journey is li
 
 **Read the codebase and `journeys/` first**: what is already there, what the project calls things, and who can do what today.
 
-**List the journeys this change affects**, existing and new, and show them to the developer.
+**List the journeys this change affects**, existing and new, and the ones it ends, and show them to the developer.
 
 **Where the software already does something the change affects and no journey describes it, write that journey first**, from what the software does today: read the code, and run the software where you can. Show it and get the developer's confirmation that it is right before you change it. It describes the software as it is, so a wrong one is corrected here, not designed around.
 
@@ -43,4 +43,4 @@ This skill's `JOURNEY_FORMAT.md` settles the shape of a journey. A journey is li
 
 **Show each journey the change affects as it will read afterwards, and ask whether this is right.** A no sends you back into the walk.
 
-**Write the agreed journeys into `journeys/`**, in `JOURNEY_FORMAT.md`'s shape, and hand their paths back to your caller. Do not commit them: your caller does. Where you were used on your own, the developer commits them.
+**Write the agreed journeys into `journeys/`**, in `JOURNEY_FORMAT.md`'s shape, delete the files of the ones the change ends, and hand all their paths back to your caller. Do not commit them: your caller does. Where you were used on your own, the developer commits them.

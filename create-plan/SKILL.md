@@ -33,7 +33,7 @@ Read the code the change touches, and plan only what is not built yet. Look at w
 
 **Write the least plan that does the job.** Nothing the spec does not ask for. A failure case the user sees goes in only where the spec has it. How the code handles failures underneath is the plan's.
 
-**Each constraint in the spec** becomes a hard test where it can be one. Otherwise, a step adds it as one line under `## Constraints` in the project's `CLAUDE.md`.
+**Each constraint in the spec** becomes a hard test where it can be one. Otherwise, a step adds it as one line under `## Constraints` in the project's `CLAUDE.md`. A line already there that the change would break is a hard decision, and a step changes or removes it.
 
 **Where the developer wants the plan built as one part**, write so in `plan.md`, as `PLAN_FORMAT.md` shows.
 
@@ -54,7 +54,7 @@ Soft: file names, module boundaries, internal names, the structure of helpers. S
 
 **Each hard decision** has its options, the simplest first and called the simplest, a recommendation, why it is hard, and the line of the spec it comes from. Where there are none, the plan says so in one line.
 
-**Hard tests** pin a hard decision or something a user relies on: a journey's test, a rule a user relies on, who may *not* see or do something, a wire format or stored data, that a failure does not lose the user's work, a bug's reproducing test. Each tests from the outside, is named for its rule in the user's words, and names what breaks if the tested thing changes. Where you cannot name a break, the test is soft and stays out of the list. The developer sees every hard test, so the list is short. A journey's test walks it from the outside and names its journey and step; a *(judged)* step gets none. An existing hard test the plan changes is listed too.
+**Hard tests** pin a hard decision or something a user relies on: a journey's test, a rule a user relies on, who may *not* see or do something, a wire format or stored data, that a failure does not lose the user's work, a bug's reproducing test. Each tests from the outside, is named for its rule in the user's words, and names what breaks if the tested thing changes. Where you cannot name a break, the test is soft and stays out of the list. The developer sees every hard test, so the list is short. A journey's test walks it from the outside and names its journey and step; a *(judged)* step gets none. An existing hard test the plan changes or deletes is listed too, such as the test of a journey the change ends.
 
 ## Check it with an agent that did not write it
 
@@ -66,7 +66,7 @@ Soft: file names, module boundaries, internal names, the structure of helpers. S
 
 **One at a time.** Show the decision with its options, the simplest first, your recommendation and why it is hard. Write each answer into the plan, with the date, before you ask the next. An answer that changes the plan changes it now.
 
-**Then the hard tests.** Show the list, and ask for a yes to each existing hard test the plan changes. Write each yes into the plan.
+**Then the hard tests.** Show the list, and ask for a yes to each existing hard test the plan changes or deletes. Write each yes into the plan.
 
 **Approving the rest of the plan is the developer's choice.** Offer it once. Do not walk them through the soft parts.
 

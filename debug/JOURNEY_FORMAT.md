@@ -1,6 +1,6 @@
 # Journey format
 
-`journeys/<slug>.md`, one file per thing a user does, named after it, such as "pay-an-invoice.md". A journey describes the software as it is. A change edits the journeys it affects, so no two files describe the same thing.
+`journeys/<slug>.md`, one file per thing a user does, named after it, such as "pay-an-invoice.md". A journey describes the software as it is. A change edits the journeys it affects and deletes the ones it ends, so no two files describe the same thing.
 
 ```markdown
 # <What the user does, in their words: "Pay an invoice">

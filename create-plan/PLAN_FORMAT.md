@@ -36,7 +36,7 @@ Decided: <the developer's answer, and the date>.
 ## Hard tests
 
 - **<Its rule, in the user's words>** - `<path>.hard.test.ts`. <For a journey's test: the journey and the step it walks.> Breaks if: <what breaks for the user if the tested thing changes>.
-- **<An existing hard test the plan changes>** - `<path>.hard.test.ts`. Changes: <what changes, and why>. Breaks if: <...>. The developer's yes: <the date>.
+- **<An existing hard test the plan changes or deletes>** - `<path>.hard.test.ts`. Changes: <what changes, and why>. Breaks if: <...>. The developer's yes: <the date>.
 
 <Or, where there are none, one line: "No hard tests.">
 
@@ -94,7 +94,7 @@ Part of `changes/YYYY-MM-DD-<slug>/plan.md`.
 
 **The plan says how.** The files, the order of the work and the tests, but no code. It covers what the user does not see: infrastructure, dependencies, tools, and the technical side of the frontend. How the UI looks was settled in the design.
 
-**Hard and soft.** A decision or a test is hard if something outside the code depends on it: a revert removes the code, but not what the code wrote, sent or promised. The developer decides each hard decision before the run and approves each hard test the plan changes. Every soft decision is the build's, and the build may change it.
+**Hard and soft.** A decision or a test is hard if something outside the code depends on it: a revert removes the code, but not what the code wrote, sent or promised. The developer decides each hard decision before the run and approves each hard test the plan changes or deletes. Every soft decision is the build's, and the build may change it.
 
 **A hard test is a file with `.hard.` before its test suffix.** It tests from the outside - the UI, the API or the stored data - and its name says its rule in the user's words. A journey's step marked *(judged)* gets no test.
 

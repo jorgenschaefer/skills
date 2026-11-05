@@ -29,7 +29,7 @@ Read `spec.md`, and `intent.md` where there is one.
 Then spawn two subagents side by side, each with a fresh context:
 
 - **`review-change`**, given the diff from that commit, `git diff <base>`, the paths of `spec.md` and `intent.md`, the hard tests `plan.md` lists, and the journeys `spec.md` names. Not the plan's parts or what the builds left standing: they are the reasoning behind the code.
-- **`walk-user-journeys`**, given the journeys `spec.md` names, the failure cases under its `## Failure cases`, copied as text, and how to run the software. Nothing else: it never reads the code or the rest of the design. Where `spec.md` names no journey, it walks every journey.
+- **`walk-user-journeys`**, given the journeys `spec.md` names, except the ones it ends, the failure cases under its `## Failure cases`, copied as text, and how to run the software. Nothing else: it never reads the code or the rest of the design. Where `spec.md` names no journey, it walks every journey.
 
 **Report only once both have reported back.**
 
