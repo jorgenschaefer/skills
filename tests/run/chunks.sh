@@ -92,6 +92,19 @@ if [ "$rc" = 0 ] && [ "$(grep -c '^/split-plan' "$STUB_CALLS")" = 1 ] && [ "$(fi
   ok "a run started again after the split does not split again"
 else bad "a run started again after the split does not split again" "rc=$rc $(calls) $(out)"; fi
 
+# A limit that outlasts every wait hands a part its attempt back, but plan.md
+# at no attempts reads as a first start: a run started again split it again,
+# on a tree its build had already committed to.
+workspace; unsplit
+plan split-none limit build
+MAX_WAITS=0 run > /dev/null
+before="$(field PLAN status) $(field PLAN attempts)"
+rc="$(run)"
+if [ "$before" = "ready 1" ] && [ "$rc" = 0 ] && [ "$(grep -c '^/split-plan' "$STUB_CALLS")" = 1 ] \
+   && [ "$(field PLAN status)" = "done" ]; then
+  ok "a run started again after a limit stopped plan.md's build does not split again"
+else bad "a run started again after a limit stopped plan.md's build does not split again" "before=$before rc=$rc $(calls) $(out)"; fi
+
 workspace; unsplit
 plan halt:blocked
 rc="$(run)"

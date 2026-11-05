@@ -221,7 +221,7 @@ plan limit limit
 rc="$( ( cd "$WORK" && PATH="$WORK/.bin:$PATH" WAIT_SECONDS=0 LIMIT_MARGIN=0 MAX_WAITS=1 \
            bash "$RUNNER" changes/x > "$WORK/.out" 2>&1 ); echo $?)"
 if [ "$rc" != 0 ] && ending | grep -q 'RUN STOPPED: .*usage limit' && ending | grep -q '01.md' \
-   && ! ending | grep -q 'log:'; then
+   && ! ending | grep -q 'log:' && [ "$(field 01 status) $(field 01 attempts)" = "ready 0" ]; then
   ok "a limit that stops a run is what the end of the run names, with no halt's log"
 else bad "a limit that stops a run is what the end of the run names, with no halt's log" "rc=$rc $(out)"; fi
 

@@ -71,10 +71,12 @@ drive() {
     if [ "$rc" = "$EX_LIMIT" ]; then
       # A limit that outlasted every wait says nothing about the part, so it is
       # handed back as it was claimed, attempt and all, rather than left for the
-      # budget to halt.
+      # budget to halt. Not plan.md built as it is: at no attempts it reads as a
+      # first start, and a run started again would split it again, on a tree its
+      # build may already have committed to.
       if [ "$(field "$part" status)" = doing ]; then
         set_field "$part" status ready
-        set_field "$part" attempts "$((attempts - 1))"
+        [ "$part" = "$PLAN" ] || set_field "$part" attempts "$((attempts - 1))"
       fi
       release "$part"
       end_run 1 "a usage limit outlasted every wait - $(basename "$part") is at $(field "$part" status), run again once it has lifted"

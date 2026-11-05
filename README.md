@@ -114,7 +114,8 @@ code. Nothing is walked inside the run: the walk is acceptance's.
   not, and amends the part file into it if the session left it out. A session commits its own
   halts on the spot.
 - The attempt budget is a counter in the part file. A usage limit is waited out rather than
-  spent from the budget.
+  spent from the budget. A limit that outlasts every wait gives a part its attempt back, except
+  `plan.md` built as it is: at no attempts it would be split again on the next run.
 - A session that ends its turn with its work uncommitted is resumed once rather than started
   over. What an abandoned attempt leaves behind goes to the stash, so the next one starts on the
   tree the checks were green on.
