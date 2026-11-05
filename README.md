@@ -18,7 +18,8 @@ npx skills add jorgenschaefer/skills@<skill-name>
 
 `IDEAS.md` says what good software with coding agents needs: the ideas behind these skills,
 without saying how to carry them out. `anthropic-sdlc.md` summarizes Anthropic's AI-native
-SDLC playbook, as a reference.
+SDLC playbook, as a reference. `WORKFLOW.md` says how a developer changes an existing
+project with these skills.
 
 A skill installs alone and cannot read a sibling's directory, so a file two skills need is
 copied into each.
@@ -39,6 +40,9 @@ that is not there, and what `sync.sh` does.
 ## Available skills
 
 - **`backlog`**: add to, extend or pick from the project's backlog in `changes/backlog/`.
+- **`decide`**: find the decisions in a change that would be hard to undo, tell the developer
+  about each and ask where there is a real choice, and record in `docs/adr/` what the code does
+  not show.
 - **`git-commit-message`**: write a commit message that follows the repository's conventions.
 - **`nextjs-project-setup`**: set up a TypeScript / Next.js project the way this developer
   sets them up.
