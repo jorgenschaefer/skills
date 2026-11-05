@@ -1,6 +1,6 @@
 ---
 name: upgrade-dependencies
-description: Upgrade npm dependencies safely and incrementally - keeping the project green after every step, with every commit reviewed by review-code, and each upgrade that needs real code changes handed to the backlog.
+description: Upgrade npm dependencies safely and incrementally - keeping the project green after every step, with every commit reviewed in a fresh context, and each upgrade that needs real code changes handed to the backlog.
 disable-model-invocation: true
 ---
 
@@ -16,8 +16,8 @@ line where there is none - and the slow check on the `Slow check:` line. Where `
 none, find the commands that run type-checks, lint and tests. Wherever this skill says to run the
 checks, run both.
 
-**The hard tests pass unchanged** - the test files with `.hard.` in their name. An upgrade that would
-need one changed changes what the software does: revert it, and put it to the developer.
+**An upgrade does not change what the software does.** If one would, revert it and put it to the
+developer.
 
 **Replacing a library is not an upgrade.** It is a hard decision: what the code is built around.
 Propose it to the developer, and do not do it.
@@ -86,7 +86,7 @@ As part of pass 3, bump `@types/node` to match the Node major the project actual
 
 ## 4. Review every commit
 
-Spawn `review-code` with a fresh context for each commit of the upgrade. Give it the commit's diff,
+Have a subagent with a fresh context review each commit of the upgrade. Give it the commit's diff,
 the result of the checks, and as its spec, the changelogs and migration notes of the packages it
 upgrades. Fix the blockers and the should-fix in a commit of their own, and say what you left
 standing.
@@ -94,6 +94,4 @@ standing.
 ## 5. The follow-up list goes to the backlog
 
 Hand each upgrade on the follow-up list to `/backlog`, one item per upgrade: the package and the
-version, the changelog's migration notes, and what failed. When the developer picks such an item,
-it is built with `/implement-code` where it fits one session and has no hard decision the
-developer has not seen, and planned with `/create-plan` otherwise.
+version, the changelog's migration notes, and what failed.

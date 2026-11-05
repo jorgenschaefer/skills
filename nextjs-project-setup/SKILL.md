@@ -68,7 +68,7 @@ Vitest runs the tests.
 
 `npm run check` runs every test, the type check and Biome, and exits non-zero on any failure. `npm run format` also organizes the imports.
 
-Declare it in `CLAUDE.md`, so `run.sh` and the other skills find it:
+Declare it in `CLAUDE.md`, so agents find it:
 
 ```markdown
 Fast check: `npm run check`
