@@ -16,10 +16,12 @@ npx skills add jorgenschaefer/skills@<skill-name>
 
 ## How it works
 
-`IDEAS.md` says what good software with coding agents needs: the ideas behind these skills,
-without saying how to carry them out. `anthropic-sdlc.md` summarizes Anthropic's AI-native
-SDLC playbook, as a reference. `WORKFLOW.md` says how a developer changes an existing
-project with these skills.
+`docs/manifesto.md` says what good software with coding agents needs: the ideas behind these
+skills, without saying how to carry them out. `docs/workflow.md` says how a developer changes an
+existing project with these skills, and what each skill is for. `docs/evidence/` holds one file
+per test run: what was observed, and where in the session logs to look. Skills change because of
+what is in there. `docs/reference/` holds outside material, such as a summary of Anthropic's
+AI-native SDLC playbook.
 
 A skill installs alone and cannot read a sibling's directory, so a file two skills need is
 copied into each.

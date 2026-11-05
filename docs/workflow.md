@@ -1,7 +1,7 @@
 # Changing an existing project
 
 How a developer changes something in a project that already has code, with
-these skills. It serves the ideas in `IDEAS.md`. Changes too large for one
+these skills. It serves the ideas in `docs/manifesto.md`. Changes too large for one
 session are not covered yet.
 
 The developer is involved at three points: saying what they want, the
@@ -31,6 +31,30 @@ agent's.
    back to step 2.
 7. **Wrap up.** Commit. What could wait goes to the backlog. Delete the
    change file.
+
+## How explore and decide are split
+
+The two skills were split along two different axes: `explore` by phase
+(before there is a direction), `decide` by criterion (hard to undo). Things
+fell between them in the first test run. The new split:
+
+- **`explore` understands.** What are we solving, how does the real world
+  work, and roughly which way do we go? It designs nothing.
+- **`decide` designs what is costly to change, and the builder the rest.**
+  The line runs between costly and cheap to change, not between look,
+  interaction and data:
+
+| | Costly to change: `decide` | Cheap to change: builder |
+|---|---|---|
+| **Interaction** | how the user moves through the task, what they enter when | the order of two fields |
+| **Look** | the design system: components, type, colours, spacing | the colour of one button |
+| **Data** | where it lives, what past records mean, deleting | an internal name |
+
+A new app needs a design system, so `decide` asks about it, with real
+alternatives the developer can see, not ASCII. In an existing app, a
+completely new page is shown to the developer as a mock-up before it is
+built, even when there is nothing to ask. So "tell" has two forms: a line of
+text, or a picture.
 
 ## The change file
 

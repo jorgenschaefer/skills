@@ -1,4 +1,4 @@
-# Evidence
+# Evidence: the workout logbook, 2026-11-05
 
 What we observed when using the new skills on a real project. Skills change
 because of what is in here, not because of how they feel. Each observation
@@ -49,7 +49,7 @@ Nothing says the mock-ups belong in the repository.
 
 ### 3. The skills assume an existing project
 
-`WORKFLOW.md` and `decide` ("read the code the change touches") assume there
+`docs/workflow.md` and `decide` ("read the code the change touches") assume there
 is code. In a new project there is none, which made observation 2 worse.
 
 ### 4. Everything was committed to main
@@ -83,7 +83,7 @@ which is where the review found the serious bugs.
 ### 7. The report was good, but came too late
 
 "Decisions I made that you may want to know about" and "Small gaps" are close
-to what step 6 of `WORKFLOW.md` asks for. But the developer was told after the
+to what step 6 of `docs/workflow.md` asks for. But the developer was told after the
 build, when they should have been asked before it.
 
 ### 8. The review found serious bugs the build missed
@@ -152,33 +152,7 @@ tests.
 
 ## What this suggests
 
-### Agreed: how `explore` and `decide` are split
-
-The two skills were split along two different axes: `explore` by phase
-(before there is a direction), `decide` by criterion (hard to undo). Things
-fell between them (1, 13). The new split:
-
-- **`explore` understands.** What are we solving, how does the real world
-  work, and roughly which way do we go? It designs nothing.
-- **`decide` designs what is costly to change, and the builder the rest.**
-  The line runs between costly and cheap to change, not between look,
-  interaction and data:
-
-| | Costly to change: `decide` | Cheap to change: builder |
-|---|---|---|
-| **Interaction** | how the user moves through the task, what they enter when | the order of two fields |
-| **Look** | the design system: components, type, colours, spacing | the colour of one button |
-| **Data** | where it lives, what past records mean, deleting | an internal name |
-
-A new app needs a design system, so `decide` asks about it, with real
-alternatives the developer can see, not ASCII. In an existing app, a
-completely new page is shown to the developer as a mock-up before it is
-built, even when there is nothing to ask. So "tell" has two forms: a line of
-text, or a picture.
-
-### Not yet agreed
-
-For discussion.
+Not yet agreed. For discussion.
 
 - **`decide` looks too narrowly.** It missed the interaction design (1), what
   happens to user input when something fails (5, 8), how access ends and where
