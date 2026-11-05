@@ -15,7 +15,7 @@ This skill's `UBIQUITOUS_LANGUAGE_FORMAT.md` settles the shape of `UBIQUITOUS_LA
 
 ## Draw the model as it is
 
-**Read the schema, the migrations and `UBIQUITOUS_LANGUAGE.md` first.** Where the project has no glossary, say that `/init-ubiquitous-language` writes one, and carry on with the words the code and the journeys use.
+**Read the schema, the migrations and `UBIQUITOUS_LANGUAGE.md` first.** Where the project has no glossary, say that `/init-project` writes one, and carry on with the words the code and the journeys use.
 
 **Draw the current model for the developer**: the things, and how they hang together - which belongs to which, how many of each, what happens to one when the other is deleted. In the glossary's words, not the table names. Leave out IDs, join tables, timestamps, sync columns and whatever else is there only for the code. A small diagram says this quicker than a list; use one where it helps.
 
@@ -45,6 +45,6 @@ This skill's `UBIQUITOUS_LANGUAGE_FORMAT.md` settles the shape of `UBIQUITOUS_LA
 
 **Show the agreed model** as it will be after the change - the drawing and the rules - and ask whether this is right.
 
-**Update `UBIQUITOUS_LANGUAGE.md`** where the change brings new words or changes what a word means, following the format's updating rules. Where there is no glossary, leave it: `/init-ubiquitous-language` writes one.
+**Update `UBIQUITOUS_LANGUAGE.md`** where the change brings new words or changes what a word means, following the format's updating rules. Where there is no glossary, leave it: `/init-project` writes one.
 
 **Hand the agreed model and its rules back to your caller.** Write no other file: the model is drawn when it is needed, not kept beside the schema, where it would drift. Where you were used on your own, the agreed model stays in the conversation, and the developer commits the glossary.
