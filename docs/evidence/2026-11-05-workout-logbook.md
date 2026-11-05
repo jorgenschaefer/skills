@@ -150,6 +150,25 @@ is hard to write.
 The review session itself said these belong in `decide` and the ADRs, not in
 tests.
 
+### 14. Things fell between `explore` and `decide`
+
+The interaction design (1) and the design questions about data (13) belonged
+to both skills, and neither did them. `explore` also proposes approaches that
+are often hard to undo themselves, such as "offline first".
+
+Why: the two skills were split along different axes. `explore` was split by
+phase (before there is a direction), `decide` by criterion (hard to undo).
+Those axes cross, so some things landed in both and some in neither.
+
+In the discussion afterwards, the line between look and interaction did not
+hold either. A design system is look, but every screen is built on it, so it
+is costly to change. The developer also wants to see a completely new page
+before it is built, even when there is nothing to ask.
+
+Agreed: `explore` understands and designs nothing; `decide` designs whatever
+is costly to change, whether interaction, look or data, and the builder the
+rest. The split is in `docs/workflow.md`.
+
 ## What this suggests
 
 Not yet agreed. For discussion.
