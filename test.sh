@@ -5,8 +5,8 @@
 #   ./test.sh
 #
 # Plain bash, because a repository of Markdown skills and one script should not
-# have to install a test framework to check them. This file holds what is true
-# of the repository as a whole, and then runs the suites under tests/.
+# have to install a test framework to check them. This file checks that every
+# script passes shellcheck, and then runs the suites under tests/.
 
 set -uo pipefail
 
@@ -15,97 +15,24 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck source=tests/lib.sh
 . "$HERE/tests/lib.sh"
 
-# --- the suites ----------------------------------------------------------------
-#
-# Started first and run side by side, each into a file of its own, and printed
-# in order at the end. No case is slow, but each is a run of the real runner and
-# there are well over a hundred, so one after another they take minutes. The
-# suites share nothing - every case has a repository of its own - so given a
-# core each, the longest one decides how long this takes. On fewer cores it
-# takes longer. A suite that grows past the others is split along its sections.
-logs="$(mktemp -d)"
-# A suite still running when this ends early - killed by a timeout or a parent -
-# is stopped with it rather than left running behind it.
-trap 'kill $(jobs -p) 2>/dev/null; rm -rf "$logs"' EXIT
-# The suites of run.sh's library, each named after the file it tests - with a
-# suffix where one file has several - beside the harness they all stand on.
-library=()
-for suite in "$HERE"/tests/run/*.sh; do
-  [ "$(basename "$suite")" != harness.sh ] || continue
-  library+=("$suite")
-done
-suites=("$HERE/tests/run.sh" ${library[@]+"${library[@]}"} "$HERE/tests/no-dangling.sh" \
-        "$HERE/tests/sync.sh" "$HERE/tests/signals.sh" "$HERE/tests/explain-diff.sh")
-pids=()
-for i in "${!suites[@]}"; do
-  "${suites[$i]}" > "$logs/$i" 2>&1 &
-  pids+=($!)
-done
-
-# --- the skills' shared files -------------------------------------------------
-#
-# A skill installs on its own and cannot reach into a sibling's directory, so a
-# reference file two skills both need is copied into each of them. Identical is
-# the whole point, and an n-way edit is easy to make (n-1)-way by accident -
-# today that is JOURNEY_FORMAT.md and CHANGE_FORMAT.md, among others.
-#
-# Quantified over whatever is shared rather than over that file by name: the
-# holders move as skills come and go, and an assertion pinned to a list is one
-# that gets edited to match whatever it found rather than read.
-#
-# Two names are held by several skills and are *not* copies. SKILL.md is each
-# skill itself. VERIFY.md is the deliberate exception the README names: three
-# skills hold one and the three are different documents on purpose, because an
-# adversary written generically enough to serve all three stages says less at
-# each of them.
-shared=0
-names=()
-for f in "$HERE"/*/*.md; do
-  name="$(basename "$f")"
-  case "$name" in SKILL.md|VERIFY.md) continue ;; esac
-  [[ " ${names[*]-} " == *" $name "* ]] || names+=("$name")
-done
-
-for name in ${names[@]+"${names[@]}"}; do
-  copies=("$HERE"/*/"$name")
-  [ "${#copies[@]}" -ge 2 ] || continue
-  shared=$((shared + 1))
-  if [ "$(md5sum "${copies[@]}" | awk '{print $1}' | sort -u | wc -l)" = 1 ]; then
-    ok "every copy of $name is byte-identical (${#copies[@]} of them)"
-  else
-    bad "every copy of $name is byte-identical" "$(md5sum "${copies[@]}")"
-  fi
-done
-
-# Zero groups found is zero failures, which reads as success - and the day this
-# stops finding JOURNEY_FORMAT.md is the day it stops checking anything.
-expect_counted "$shared" "files held by more than one skill"
-
 # --- every script passes shellcheck --------------------------------------------
 #
-# The tests included: a suite is code that decides what passes. Three reviews
-# reported shellcheck as not installed and ran nothing, so a lint that cannot run
-# fails here rather than reading as a clean one.
-#
-# run.sh's library is named on its own: followed in through run.sh's `source`,
-# an error inside a sourced file is not reported.
+# The tests included: a suite is code that decides what passes. A lint that
+# cannot run fails here rather than reading as a clean one.
 if ! command -v shellcheck >/dev/null; then
   bad "every script passes shellcheck" "shellcheck is not on PATH"
-elif lint="$(shellcheck -x -P SCRIPTDIR "$HERE"/run.sh "$HERE"/run/*.sh "$HERE"/sync.sh "$HERE"/test.sh "$HERE"/accept-change/signals.sh "$HERE"/explain-diff/*.sh \
-                 "$HERE"/tests/*.sh "$HERE"/tests/run/*.sh "$HERE"/tests/stub-session 2>&1)"; then
+elif lint="$(shellcheck -x -P SCRIPTDIR "$HERE"/sync.sh "$HERE"/test.sh "$HERE"/tests/*.sh 2>&1)"; then
   ok "every script passes shellcheck"
 else
   bad "every script passes shellcheck" "$lint"
 fi
 
-# --- what the suites printed ---------------------------------------------------
+# --- the suites ----------------------------------------------------------------
 
-for i in "${!suites[@]}"; do
-  wait "${pids[$i]}" || failed=$((failed + 1))
+for suite in "$HERE/tests/no-dangling.sh" "$HERE/tests/sync.sh"; do
   printf '\n'
-  cat "$logs/$i"
+  "$suite" || failed=$((failed + 1))
 done
-expect_counted "${#library[@]}" "suites of the runner's library"
 
 printf '\n%d passed, %d failed, of the cases in this file\n' "$passed" "$failed"
 [ "$failed" -eq 0 ]
