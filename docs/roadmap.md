@@ -243,7 +243,11 @@ Workflow steps 5 and 6.
   flagged. A safety net for step 5 of this roadmap (observation 5).
 - The builder fixes what the two find.
 - The report shows the developer only what is hard to undo and what is still
-  open. It comes before the change is wrapped up.
+  open.
+- Once the developer says the change solves their problem, `check` accepts
+  it: what could wait goes to the backlog, and the change file and its
+  mock-ups are deleted and committed. The developer merges the branch. So
+  the skill may be better named `accept-change`.
 
 Outside support: AWS says self-correction only works against checks the AI
 cannot change. Thoughtworks saw agents get around their own tests. OpenAI
@@ -261,10 +265,10 @@ Watch especially:
 - whether `decide` now brings up interaction, the life of the data and
   patterns without being pushed;
 - whether the builder still decides things alone that are hard to undo;
-- what `review` and the stand-in miss that the developer then finds.
+- what `review` and the stand-in miss that the developer then finds;
+- whether the branches work: one per change, and nothing left on `main`.
 
-This run does not test the changes for new projects, nor branches unless
-step 6 is done first. Those need a later run.
+This run does not test the changes for new projects. Those need a later run.
 
 ## Step 5: make `decide` start during the build
 
@@ -288,8 +292,8 @@ catch it during the build, cheapest first:
 
 Open question 4. In the first run everything was committed to `main`
 (observation 4). This is the developer's decision. The recommendation:
-`explore` creates a branch when it writes the change file, and wrap-up merges
-it. For a change that skips `explore`, `decide` creates the branch. It is
+`explore` creates a branch when it writes the change file, and the developer
+merges it. For a change that skips `explore`, `decide` creates the branch. It is
 small, so it can be done before step 4 if the second run should already use a
 branch.
 

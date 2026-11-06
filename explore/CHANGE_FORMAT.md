@@ -18,7 +18,7 @@ it is read later as a rule. Git history keeps it.
 system, the data. Links to the mock-ups in changes/.>
 
 ## Decisions that matter
-- <the decision> - held by <the code | a test of what | docs/adr/NNNN-<slug>.md>
+- <the decision> - held by <the code | a test of what | structure: what | docs/adr/NNNN-<slug>.md>
 
 ## Could wait
 - <item> -> backlog

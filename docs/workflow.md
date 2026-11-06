@@ -15,8 +15,8 @@ agent's.
 2. **Explore** (skill). Find the real problem behind the request and how the
    domain works in the real world. Propose at least three approaches, the
    simplest first. Ask instead of assuming. Stop when the developer has a
-   direction. Designs nothing. Creates a branch for the change and writes the
-   change file on it.
+   direction. Designs nothing. Creates a branch for the change, unless the
+   developer wants it on the current one, and writes the change file on it.
 3. **Decide** (skill). Design what in this change is costly to change: how
    the user moves through the task, the design system, the data, and in a
    new project the stack. Ask the developer where there is a real choice,
@@ -35,8 +35,11 @@ agent's.
 6. **Report.** Show the developer only what is hard to undo and what is
    still open. The developer tries it. If it does not solve their problem,
    back to step 2.
-7. **Wrap up.** What could wait goes to the backlog. Delete the change file
-   and its mock-ups. Commit, and merge the branch.
+7. **Wrap up.** Once the developer says the change solves their problem,
+   what could wait goes to the backlog, and the change file and its
+   mock-ups are deleted and committed. The developer merges the branch.
+   Merge without squashing: the change file and mock-ups are kept only in
+   the branch's history.
 
 ## How explore and decide are split
 
@@ -82,7 +85,7 @@ nothing in it is read later as a rule. Git history keeps it.
 system, the data. Links to the mock-ups in changes/.>
 
 ## Decisions that matter
-- <the decision> - held by <the code | a test of what | docs/adr/NNNN-<slug>.md>
+- <the decision> - held by <the code | a test of what | structure: what | docs/adr/NNNN-<slug>.md>
 
 ## Could wait
 - <item> -> backlog

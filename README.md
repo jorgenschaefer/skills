@@ -17,8 +17,8 @@ npx skills add jorgenschaefer/skills@<skill-name>
 ## How it works
 
 `docs/manifesto.md` says what good software with coding agents needs: the ideas behind these
-skills, without saying how to carry them out. `docs/workflow.md` says how a developer changes an
-existing project with these skills, and what each skill is for. `docs/evidence/` holds one file
+skills, without saying how to carry them out. `docs/workflow.md` says how a developer makes a
+change with these skills, in a new or an existing project, and what each skill is for. `docs/evidence/` holds one file
 per test run: what was observed, and where in the session logs to look. Skills change because of
 what is in there. `docs/reference/` holds outside material, such as a summary of Anthropic's
 AI-native SDLC playbook.

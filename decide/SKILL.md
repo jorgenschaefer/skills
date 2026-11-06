@@ -27,16 +27,16 @@ The colour of one button, wording and internal names are not hard to undo, even 
 
 ## Before you ask
 
-1. **Read what was agreed**: the change file in `changes/`, if there is one, or else what the developer said.
+1. **Read what was agreed**: the change file in `changes/`, if there is one, or else what the developer said. The direction in its Approach may itself be hard to undo, such as "the app has to work offline, because the gym has bad internet". Then it goes on your list. The developer already chose it, so tell it rather than ask, and record it and its reason in an ADR. How to achieve it is yours to design, like any other decision on the list.
 2. **Read `docs/adr/`.** If the change would break a recorded decision, that is a decision that matters.
 3. **Read the code the change touches**, to see what it already stores, sends and allows. In a new project there is no code; work from the change file, and the stack is one of your decisions.
 4. **List the decisions that matter.** For each, name what it would cost to undo. If you cannot name a cost, it is not on the list. In a small change to an existing project the list is often empty. A new project always has a stack to decide, and a design system if it has screens.
 
-If the list is empty, say so in one line and carry on.
+If the list is empty, say so in one line and carry on. There is nothing to record: no branch, no change file, no commit.
 
 ## Telling and asking
 
-The developer hears about every decision on the list before the build. They are asked only where there is a real choice.
+The developer hears about every decision on the list before it is built. They are asked only where there is a real choice.
 
 **Where there is a real choice, ask.** One decision at a time. For each:
 
@@ -68,18 +68,20 @@ In the change file, add two sections after `## Approach`:
 system, the data. Links to the mock-ups.>
 
 ## Decisions that matter
-- <the decision> - held by <the code | a test of what | docs/adr/NNNN-<slug>.md>
+- <the decision> - held by <the code | a test of what | structure: what | docs/adr/NNNN-<slug>.md>
 ```
 
-List every decision you told or asked, not only the ones you asked. Before there is code, the change file is their only record. If the change skipped `/explore` and has no change file, create one, `changes/YYYY-MM-DD-<slug>.md`, with a title and these two sections.
+List every decision you told or asked, not only the ones you asked. Before there is code, the change file is their only record. If the change skipped `/explore` and has no change file, create one, `changes/YYYY-MM-DD-<slug>.md`, with a title, `## Problem` in a sentence or two from what the developer said, and these two sections.
 
 The change file is deleted when the change is done, so each decision also needs something that holds it afterwards:
 
 - **The code** holds what it shows, such as a `due_date` column.
 - **A test** holds a promise about behaviour, such as old saves still parsing after a deploy, or the last save winning when two phones save the same set. Name the test in the change file; the builder writes it.
-- **Structure** holds a rule every piece of code would otherwise have to remember. Don't settle for "every route checks the login"; decide that the login is checked once, for all routes.
+- **Structure** holds a rule every piece of code would otherwise have to remember. Name it in the change file; the builder builds it. Don't settle for "every route checks the login"; decide that the login is checked once, for all routes.
 - **An ADR** holds what the code cannot show: a hosting provider, a vendor contract, a promise made to a partner, a rule such as "this email never goes to third parties".
 
 Write each ADR as `docs/adr/NNNN-<slug>.md`, in the format of `ADR_FORMAT.md`. If it replaces a recorded decision, delete that file in the same change.
 
-Commit the ADRs, your part of the change file and the mock-ups in one commit, before the build. A builder in a fresh context then finds them in the repository. Commit on the change's branch. If the change skipped `/explore` and has no branch yet, create one first, named after the change. An ADR for a change that is never built is then simply not merged.
+Commit the ADRs, your part of the change file and the mock-ups in a commit of their own, before anything more is built. A builder in a fresh context then finds them in the repository. If you start in the middle of a build, leave the build's unfinished work out of that commit.
+
+Commit on the change's branch. If the change skipped `/explore`, find the branch first. If you are on the default branch, create a branch from it, named after the change file's slug. If you are on another branch, ask the developer whether this change belongs there. An ADR for a change that is never built is then simply not merged.

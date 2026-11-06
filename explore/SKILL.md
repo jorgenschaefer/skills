@@ -23,7 +23,7 @@ Match the depth to the request. A sharp request with one obvious approach needs 
 
 ## Propose
 
-**Offer at least three approaches** that differ in substance, not in detail. An approach is a general direction, and it comes from how the real world works, not from technology. "The gym has bad internet, and the app has to deal with that" is a direction. Which parts work offline, and how, is for `/decide`, which may find that only some parts need to. Put the simplest first and call it the simplest. For each, say in a few lines what it is, what it is good for, and what it costs. Say which you would pick and why, and then let the developer think.
+**Offer at least three approaches** that differ in substance, not in detail. An approach is a general direction. It comes from how the real world works, not from technology. "The gym has bad internet" is an insight; "the app has to work offline" is the direction that follows from it. Which parts work offline, and how, is for `/decide`, which may find that only some parts need to. Put the simplest first and call it the simplest. For each, say in a few lines what it is, what it is good for, and what it costs. Say which you would pick and why, and then let the developer think.
 
 **Keep it small.** The developer will learn by using the software. Prefer the approach that can be used soonest and that leaves the decisions that are hard to undo for later, when more is known. Name what could wait.
 
@@ -31,7 +31,7 @@ Match the depth to the request. A sharp request with one obvious approach needs 
 
 ## Write it down
 
-When the developer has a direction, create a branch for the change, named after its slug, unless you are already on one. Then write the change file, in the format of `CHANGE_FORMAT.md`. Write its Problem, Approach and Could wait; `/decide` adds the rest. Show it to the developer and correct what they correct. Commit it on its own, on that branch.
+When the developer has a direction, find the branch for the change. If you are on the default branch, create a branch from it, named after the change file's slug. If you are on another branch, ask the developer whether this change belongs there. Then write the change file, in the format of `CHANGE_FORMAT.md`. Write its Problem, Approach and Could wait; `/decide` adds the rest. Show it to the developer and correct what they correct. Commit it on its own, on the change's branch.
 
 Put what could wait on the backlog with `/backlog`, one item each, if the developer wants to keep it.
 
