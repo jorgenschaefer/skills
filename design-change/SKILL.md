@@ -85,3 +85,9 @@ Write each ADR as `docs/adr/NNNN-<slug>.md`, in the format of `ADR_FORMAT.md`. I
 Commit the ADRs, your part of the change file and the mock-ups in a commit of their own, before anything more is built. A builder in a fresh context then finds them in the repository. If you start in the middle of a build, leave the build's unfinished work out of that commit.
 
 Commit on the change's branch. If the change skipped `/understand-change`, find the branch first. If you are on the default branch, create a branch from it, named after the change file's slug. If you are on another branch, ask the developer whether this change belongs there. An ADR for a change that is never built is then simply not merged.
+
+## Then stop
+
+Don't start the build in this session. It starts in a fresh one, so the builder works from what is in the repository, not from this conversation. Tell the developer what to set up first, if anything, and the line that starts the build, such as `Build the change in changes/YYYY-MM-DD-<slug>.md`.
+
+If you started in the middle of a build, carry on with the build instead.
