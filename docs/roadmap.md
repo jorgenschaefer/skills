@@ -161,14 +161,14 @@ mind, and the bugs that mattered were exactly what nobody had in mind
 (observation 10). Google and OpenAI recommend tests first; our evidence does
 not support that as a rule.
 
-## Step 3: `review`, then `check`
+## Step 3: `review-change`, then `check`
 
 The serious bugs in the first run were found only by a review the developer
 ran by hand (observations 6, 8). This step has the most evidence behind it.
 
 ### The four goals, split by who can see them
 
-| Goal | `review` reads the code | User stand-in uses the running app |
+| Goal | `review-change` reads the code | User stand-in uses the running app |
 |---|---|---|
 | Utility | Find bugs. | Does it solve the problem in the change file? |
 | Security | Find where someone can see or do more than they should. | |
@@ -185,13 +185,17 @@ step 6.
 The security cell for the stand-in is empty on purpose. A stand-in could try
 to open someone else's data, but no run has shown the need yet.
 
-### `review` (new skill, build first)
+### `review-change` (new skill, build first)
+
+**Done.** Named `review-change`, because the built-in `/code-review` answers
+to `review`. It runs with `context: fork`, so it always starts in a fresh
+context and sees only what it is asked to review.
 
 An adversarial code review in a fresh context. Its own skill, because it is
 useful outside the workflow: on any diff, or on a whole repository.
 
 `upgrade-dependencies` already asks for a fresh-context review of each
-commit. Change it to use `review`.
+commit. Change it to use `review-change`.
 
 **The baseline** is the prompt the developer used in session `3ee51f13`. It
 found the serious bugs, and it covers three of the four goals in three
@@ -230,11 +234,11 @@ independent (arXiv paper). A fresh context and an adversarial prompt help,
 but don't remove this. That is one more reason for the user stand-in and for
 the developer's own look.
 
-### `check` (new skill, after `review`)
+### `check` (new skill, after `review-change`)
 
 Workflow steps 5 and 6.
 
-- Runs `review` and the user stand-in, each in a fresh context. They find
+- Runs `review-change` and the user stand-in, each in a fresh context. They find
   different things: one reads the code, the other uses the app.
 - The user stand-in uses the running app, including what happens when things
   fail, not only the happy paths. In the first run the builder tried only
@@ -265,7 +269,7 @@ Watch especially:
 - whether `decide` now brings up interaction, the life of the data and
   patterns without being pushed;
 - whether the builder still decides things alone that are hard to undo;
-- what `review` and the stand-in miss that the developer then finds;
+- what `review-change` and the stand-in miss that the developer then finds;
 - whether the branches work: one per change, and nothing left on `main`.
 
 This run does not test the changes for new projects. Those need a later run.
@@ -318,7 +322,7 @@ all sessions of that project since its last run, not only the current one.
 
 ### What it looks for
 
-The same approach as `review`: a broad baseline, and a list from the evidence
+The same approach as `review-change`: a broad baseline, and a list from the evidence
 as the first expansion, not as the limit.
 
 **The baseline:** where did the work fall short of the four goals or the
@@ -390,10 +394,10 @@ collected evidence.
 
 - **Guidance for the build** (open questions 1 and 2). Plain Claude Code
   built a good structure (observation 9). The build gets its tests through
-  step 2, and the list of tests by kind of risk lives only in `review`. That
+  step 2, and the list of tests by kind of risk lives only in `review-change`. That
   answers open question 2 for now, against the evidence file's suggestion
   that "the build may need guidance". Add guidance for the build only when
-  runs show `review` catching the same kind of bug too late again and again.
+  runs show `review-change` catching the same kind of bug too late again and again.
 - **Spec tools and staged ceremony** in the style of AWS AI-DLC. Thoughtworks
   found that spec tools give "a false sense of control". The old pipeline
   skills were deleted for this reason.

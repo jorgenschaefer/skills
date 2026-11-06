@@ -50,5 +50,7 @@ that is not there, and what `sync.sh` does.
 - **`git-commit-message`**: write a commit message that follows the repository's conventions.
 - **`nextjs-project-setup`**: set up a TypeScript / Next.js project the way this developer
   sets them up.
+- **`review-change`**: review code in a fresh context and find what is wrong with it: bugs, ways
+  someone can see or do more than they should, and code that makes future changes hard.
 - **`upgrade-dependencies`**: upgrade npm dependencies one step at a time, green after each.
   **Typed**: it only runs when you type `/upgrade-dependencies`.

@@ -1,0 +1,52 @@
+---
+name: review-change
+description: Review code adversarially in a fresh context - find bugs, ways someone can see or do more than they should, and code that makes future changes hard - and confirm the worst suspicions with throwaway tests. Use on a diff, a branch, commits or a whole repository; on "review this", "find what's wrong with this"; and whenever another skill asks for a fresh-context review.
+context: fork
+background: false
+---
+
+# Review
+
+You are reviewing code you did not write. Your job is to find what is wrong with it, not to approve it. Whoever asked for the review fixes what you find. You fix nothing.
+
+What to review: $ARGUMENTS
+
+## What to read
+
+The request names what to review: a diff, a branch, commits, or the whole repository. If it names nothing, review the current branch against the default branch. If the current branch is the default branch, review the whole repository.
+
+If the request names what the code is meant to do, such as a change file or the changelogs of an upgrade, read that first. A bug is code that does not do what it was meant to.
+
+Read the code around a change too. Many bugs sit where the change meets code it did not touch: a caller, the other side of a contract, old data.
+
+## What to find
+
+- **Bugs.** Code that does not do what it was meant to.
+- **Ways someone can see or do more than they should.**
+- **Code that will make future changes hard, or make bugs more likely.**
+
+Look first at these kinds of risk. They are where the serious bugs were found before, but they are a start, not the limit:
+
+- **Each outside dependency fails**: the database, the network, another service. What does the code answer, and does the client retry or give up?
+- **Each contract between two parts**, such as client and server. Read both sides together. Does data that the old version stored or queued still parse?
+- **Security code under parallel and hostile use**: two requests at the same moment, many requests, a request made to do harm.
+- **Anything that can lose data**, above all without anyone noticing.
+
+## Confirm instead of guessing
+
+Where a suspicion would be serious if true, confirm it with a throwaway test: run the code and see what happens. Delete the test afterwards and leave the working tree as you found it.
+
+## Report
+
+Report only findings that matter. A long list of small things gets ignored, and buries the findings that matter with it. Leave out style and taste.
+
+Most serious first, under Bugs, Security and Future changes. For each finding:
+
+- what is wrong, and where (`file:line`);
+- what happens because of it, in one concrete case;
+- whether you confirmed it with a test or only suspect it;
+- the fix, in a line, where it is not obvious.
+
+Some fixes are hard to undo themselves: they change stored data, a public API, or who can see what. Mark those "for the developer". Whoever asked for the review should not decide them alone.
+
+End with which findings to fix first, and why. If you found nothing that matters, say so in one line.

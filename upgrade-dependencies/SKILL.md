@@ -86,10 +86,10 @@ As part of pass 3, bump `@types/node` to match the Node major the project actual
 
 ## 4. Review every commit
 
-Have a subagent with a fresh context review each commit of the upgrade. Give it the commit's diff,
-the result of the checks, and as its spec, the changelogs and migration notes of the packages it
-upgrades. Fix the blockers and the should-fix in a commit of their own, and say what you left
-standing.
+Run `/review-change` on each commit of the upgrade. Give it the commit, the result of the checks,
+and as what the code is meant to do, the changelogs and migration notes of the packages it
+upgrades. Fix what it finds in a commit of its own. Put what it marks "for the developer" to the developer, and
+say what you left standing.
 
 ## 5. The follow-up list goes to the backlog
 
