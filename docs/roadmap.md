@@ -12,9 +12,10 @@ observation in the evidence file.
 
 - `explore` and `decide` exist and were used once, on a new app.
 - The build is plain Claude Code. There is no build skill.
-- Steps 1, 2, 3 and 6 are done: the split between `explore` and `decide`,
-  promises held by tests or structure, `review-change`, `try-change` and
-  `accept-change`, and a branch per change.
+- Steps 1, 2, 3, 6 and 7 are done: the split between `explore` and
+  `decide`, promises held by tests or structure, `review-change`,
+  `try-change` and `accept-change`, a branch per change, and
+  `learn-from-sessions`.
 
 ## How to work on this
 
@@ -306,6 +307,11 @@ small, so it can be done before step 4 if the second run should already use a
 branch.
 
 ## Step 7: learn from the sessions
+
+**Done**, to be tuned by hand (see Later). `sessions.py` lists a project's
+unread sessions, its worktrees included, and keeps the list of read ones
+beside the logs, because the logs exist only on that machine. A first run on
+a project with many sessions asks from which date to start.
 
 So far, evidence was collected by hand from the session logs in
 `~/.claude/projects/<project>/`. A skill does this, and the developer decides

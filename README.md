@@ -51,6 +51,9 @@ that is not there, and what `sync.sh` does.
 - **`explore`**: think a change through with the developer before anything is built, and write
   what was agreed into a change file.
 - **`git-commit-message`**: write a commit message that follows the repository's conventions.
+- **`learn-from-sessions`**: read a project's sessions since the last run, and propose what
+  should change in the project or, as evidence, in these skills. **Typed**: it only runs when
+  you type `/learn-from-sessions`, in the project's repository.
 - **`nextjs-project-setup`**: set up a TypeScript / Next.js project the way this developer
   sets them up.
 - **`review-change`**: review code in a fresh context and find what is wrong with it: bugs, ways
