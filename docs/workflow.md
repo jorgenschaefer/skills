@@ -27,9 +27,9 @@ agent's.
    the mock-ups into `changes/`, and the ADRs into `docs/adr/`. Commits them
    before the build, on the change's branch. If the change skipped step 2,
    creates the branch first.
-4. **Build.** Plain Claude Code: the smallest thing that does the job, in the
-   domain's words, with the tests the change file names and the project's
-   checks green.
+4. **Build.** Plain Claude Code, in a fresh session that starts from the
+   change file: the smallest thing that does the job, in the domain's words,
+   with the tests the change file names and the project's checks green.
 5. **Check** (`accept-change` skill, with steps 6 and 7). A reviewer with a
    fresh context (`/review-change`) tries to find what is wrong with the
    diff. A user stand-in with a fresh context (`/try-change`) uses the
