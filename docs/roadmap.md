@@ -2,7 +2,7 @@
 
 What we change in the skills next, and why. It follows from the first test
 run (`docs/evidence/2026-11-05-workout-logbook.md`) and the summaries in
-`docs/reference/`. Delete this file when the plan is built.
+`docs/reference/`. Delete this file when all six steps are done.
 
 Three kinds of numbers appear below. "Step 1" is a step of this roadmap.
 "Workflow step 5" is a step in `docs/workflow.md`. "Observation 8" is an
@@ -268,13 +268,15 @@ Open question 3 in the evidence file. Wait for the second run before choosing
 how. Steps 1 and 2 may fix most of it: with the stack, the data shape and the
 tells in the change file, the builder has fewer decisions left to make alone.
 
-If the builder still decides alone, the options, cheapest first:
+The safety net in `check` (step 3) reports such decisions in any case, but
+only after the build. If the builder still decides alone, the options to
+catch it during the build, cheapest first:
 
 1. A line in the change file telling the builder to stop and run `/decide`
    when a decision is hard to undo.
-2. The safety net in `check` alone, which reports such decisions after the
-   fact.
-3. A hook.
+2. A hook that reminds the builder to run `/decide` when it changes the
+   files where such decisions usually show: the database schema, the
+   dependencies, the deployment setup.
 
 ## Step 6: branches
 
