@@ -71,7 +71,7 @@ system, the data. Links to the mock-ups.>
 - <the decision> - held by <the code | a test of what | docs/adr/NNNN-<slug>.md>
 ```
 
-List every decision you told or asked, not only the ones you asked. Before there is code, the change file is their only record. If there is no change file, tell the developer what you would have written there.
+List every decision you told or asked, not only the ones you asked. Before there is code, the change file is their only record. If the change skipped `/explore` and has no change file, create one, `changes/YYYY-MM-DD-<slug>.md`, with a title and these two sections.
 
 The change file is deleted when the change is done, so each decision also needs something that holds it afterwards:
 
