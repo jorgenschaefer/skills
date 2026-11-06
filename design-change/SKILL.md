@@ -38,14 +38,14 @@ If the list is empty, say so in one line and carry on. There is nothing to recor
 
 The developer hears about every decision on the list before it is built. They are asked only where there is a real choice.
 
-**Where there is a real choice, ask.** One decision at a time. For each:
+**Where there is a real choice, ask.** This skill narrows down which decisions reach the developer. For each one it asks about, it opens up again. One decision at a time. For each:
 
 - the decision, in one sentence;
 - what it would cost to undo;
-- the options, simplest first: three where there are three real ones;
+- three options that differ in substance, simplest first. The obvious solution is one of them, not all three. Look for the others in how the real world works and in what the software already has;
 - which you recommend, and why.
 
-Where the options look or behave differently, show them as clickable mock-ups, not ASCII. For a new project with screens, ask about the design system this way: components, type, colours, spacing.
+Where the options look or behave differently, show them as clickable mock-ups, not ASCII. Put them in the real page, with everything that is already on it: whether an option fits often depends on what is next to it. For a new project with screens, ask about the design system this way: components, type, colours, spacing.
 
 If the developer's answer settles another decision on the list too, don't ask about that one.
 
