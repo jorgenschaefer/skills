@@ -27,7 +27,7 @@ Match the depth to the request. A sharp request with one obvious approach needs 
 
 **Keep it small.** The developer will learn by using the software. Prefer the approach that can be used soonest and that leaves the decisions that are hard to undo for later, when more is known. Name what could wait.
 
-**Build on the developer's answers.** They will combine approaches, reject all of them, or come up with a fourth. Follow them. Propose again where it helps.
+**Weigh the developer's answers before you follow them.** When they choose differently from your recommendation, put their reasons next to yours. Say what their choice gives up, answer the concerns they raised, and look for an approach that keeps the best of both. If their reasons change your view, say so and why. Then the developer decides. They may also combine approaches, reject all of them, or come up with a fourth; propose again where it helps.
 
 ## Write it down
 
