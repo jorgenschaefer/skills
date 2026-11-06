@@ -45,11 +45,9 @@ that is not there, and what `sync.sh` does.
   they find, report to the developer only what needs them, and wrap the change up once they
   accept it.
 - **`backlog`**: add to, extend or pick from the project's backlog in `changes/backlog/`.
-- **`decide`**: design what in a change would be costly to change, tell the developer about
-  each such decision and ask where there is a real choice, write them into the change file, and
-  record in `docs/adr/` what the code does not show.
-- **`explore`**: think a change through with the developer before anything is built, and write
-  what was agreed into a change file.
+- **`design-change`**: design what in a change would be costly to change, tell the developer
+  about each such decision and ask where there is a real choice, write them into the change
+  file, and record in `docs/adr/` what the code does not show.
 - **`git-commit-message`**: write a commit message that follows the repository's conventions.
 - **`learn-from-sessions`**: read a project's sessions since the last run, and propose what
   should change in the project or, as evidence, in these skills. **Typed**: it only runs when
@@ -60,5 +58,7 @@ that is not there, and what `sync.sh` does.
   someone can see or do more than they should, and code that makes future changes hard.
 - **`try-change`**: use a change on the running software as a real user would, in a fresh
   context, and report what a user would trip over.
+- **`understand-change`**: think a change through with the developer before anything is built,
+  and write what was agreed into a change file.
 - **`upgrade-dependencies`**: upgrade npm dependencies one step at a time, green after each.
   **Typed**: it only runs when you type `/upgrade-dependencies`.

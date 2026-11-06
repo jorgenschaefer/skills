@@ -12,20 +12,21 @@ agent's.
 
 1. **Say what you want**, in plain words. A clear, small change skips to
    step 3. An unclear or larger one goes to step 2.
-2. **Explore** (skill). Find the real problem behind the request and how the
-   domain works in the real world. Propose at least three approaches, the
-   simplest first. Ask instead of assuming. Stop when the developer has a
-   direction. Designs nothing. Creates a branch for the change, unless the
-   developer wants it on the current one, and writes the change file on it.
-3. **Decide** (skill). Design what in this change is costly to change: how
-   the user moves through the task, the design system, the data, and in a
-   new project the stack. Ask the developer where there is a real choice,
-   with options and a recommendation. Where there is only one sensible
+2. **Understand** (`understand-change` skill). Find the real problem behind
+   the request and how the domain works in the real world. Propose at least
+   three approaches, the simplest first. Ask instead of assuming. Stop when
+   the developer has a direction. Designs nothing. Creates a branch for the
+   change, unless the developer wants it on the current one, and writes the
+   change file on it.
+3. **Design** (`design-change` skill). Design what in this change is costly to
+   change: how the user moves through the task, the design system, the data,
+   and in a new project the stack. Ask the developer where there is a real
+   choice, with options and a recommendation. Where there is only one sensible
    option, tell them in one line or a mock-up. Make every other decision
-   without mentioning it. Writes the design, every decision told or asked
-   and the mock-ups into `changes/`, and the ADRs into `docs/adr/`. Commits
-   them before the build, on the change's branch. If the change skipped
-   step 2, creates the branch first.
+   without mentioning it. Writes the design, every decision told or asked and
+   the mock-ups into `changes/`, and the ADRs into `docs/adr/`. Commits them
+   before the build, on the change's branch. If the change skipped step 2,
+   creates the branch first.
 4. **Build.** Plain Claude Code: the smallest thing that does the job, in the
    domain's words, with the tests the change file names and the project's
    checks green.
@@ -44,25 +45,25 @@ agent's.
    Merge without squashing: the change file and mock-ups are kept only in
    the branch's history.
 
-## How explore and decide are split
+## How understand-change and design-change are split
 
-The two skills were split along two different axes: `explore` by phase
-(before there is a direction), `decide` by criterion (hard to undo). Things
-fell between them in the first test run. The new split:
+The two skills were split along two different axes: `understand-change` by
+phase (before there is a direction), `design-change` by criterion (hard to
+undo). Things fell between them in the first test run. The new split:
 
-- **`explore` understands.** What are we solving, how does the real world
-  work, and roughly which way do we go? It designs nothing.
-- **`decide` designs what is costly to change, and the builder the rest.**
-  The line runs between costly and cheap to change, not between look,
+- **`understand-change` understands.** What are we solving, how does the real
+  world work, and roughly which way do we go? It designs nothing.
+- **`design-change` designs what is costly to change, and the builder the
+  rest.** The line runs between costly and cheap to change, not between look,
   interaction and data:
 
-| | Costly to change: `decide` | Cheap to change: builder |
+| | Costly to change: `design-change` | Cheap to change: builder |
 |---|---|---|
 | **Interaction** | how the user moves through the task, what they enter when | the order of two fields |
 | **Look** | the design system: components, type, colours, spacing | the colour of one button |
 | **Data** | where it lives, what past records mean, deleting | an internal name |
 
-A new app needs a design system, so `decide` asks about it, with real
+A new app needs a design system, so `design-change` asks about it, with real
 alternatives the developer can see, not ASCII. In an existing app, a
 completely new page is shown to the developer as a mock-up before it is
 built, even when there is nothing to ask. So "tell" has two forms: a line of
@@ -94,9 +95,10 @@ system, the data. Links to the mock-ups in changes/.>
 - <item> -> backlog
 ```
 
-`explore` writes Problem, Approach and Could wait. `decide` adds Design and
-Decisions that matter: every decision it told or asked, each with what holds
-it after the change file is gone. An empty section says "None."
+`understand-change` writes Problem, Approach and Could wait. `design-change`
+adds Design and Decisions that matter: every decision it told or asked, each
+with what holds it after the change file is gone. An empty section says
+"None."
 
 ## Decisions that matter
 
@@ -105,13 +107,13 @@ afterwards needs a record that outlives it:
 
 - **The code** holds what it shows, such as a `due_date` column.
 - **A test** holds a promise about behaviour, such as old saves still parsing
-  after a deploy. `decide` names it, and the builder writes it.
+  after a deploy. `design-change` names it, and the builder writes it.
 - **Structure** holds a rule every piece of code would otherwise have to
   remember: the login is checked once for all routes, not in each route.
 - **An ADR** holds what the code cannot show, such as the hosting.
   `docs/adr/NNNN-<slug>.md`, one file per decision. A later change that would
   break one brings it back to the developer. The format is in
-  `decide/ADR_FORMAT.md`.
+  `design-change/ADR_FORMAT.md`.
 
 There is no rule about test-driven development or coverage. In the first run
 the bugs that mattered were the cases nobody had in mind, and such rules test

@@ -1,13 +1,13 @@
 ---
-name: explore
+name: understand-change
 description: Think a change through with the developer before anything is built - the real problem behind the request, how the domain works in the real world, and several approaches to choose from - and write what was agreed into a change file. Use when the developer brings an idea, a wish or a problem that is not yet clear, or a change larger than a quick fix; and on "let's think this through", "how should we do this", "what are the options", "I have an idea".
 ---
 
-# Explore
+# Understand a change
 
 Help the developer think. This is brainstorming, not an interview and not a rush to a solution. Consider several views and approaches, and put them to the developer so they can think them through. Stop when the developer has a direction.
 
-Explore understands: what are we solving, how does the real world work, and roughly which way do we go. It designs nothing. `/decide` designs whatever is costly to change, and the builder the rest.
+This skill understands: what are we solving, how does the real world work, and roughly which way do we go. It designs nothing. `/design-change` designs whatever is costly to change, and the builder the rest.
 
 Match the depth to the request. A sharp request with one obvious approach needs a few minutes, not a long talk.
 
@@ -23,7 +23,7 @@ Match the depth to the request. A sharp request with one obvious approach needs 
 
 ## Propose
 
-**Offer at least three approaches** that differ in substance, not in detail. An approach is a general direction. It comes from how the real world works, not from technology. "The gym has bad internet" is an insight; "the app has to work offline" is the direction that follows from it. Which parts work offline, and how, is for `/decide`, which may find that only some parts need to. Put the simplest first and call it the simplest. For each, say in a few lines what it is, what it is good for, and what it costs. Say which you would pick and why, and then let the developer think.
+**Offer at least three approaches** that differ in substance, not in detail. An approach is a general direction. It comes from how the real world works, not from technology. "The gym has bad internet" is an insight; "the app has to work offline" is the direction that follows from it. Which parts work offline, and how, is for `/design-change`, which may find that only some parts need to. Put the simplest first and call it the simplest. For each, say in a few lines what it is, what it is good for, and what it costs. Say which you would pick and why, and then let the developer think.
 
 **Keep it small.** The developer will learn by using the software. Prefer the approach that can be used soonest and that leaves the decisions that are hard to undo for later, when more is known. Name what could wait.
 
@@ -31,8 +31,8 @@ Match the depth to the request. A sharp request with one obvious approach needs 
 
 ## Write it down
 
-When the developer has a direction, find the branch for the change. If you are on the default branch, create a branch from it, named after the change file's slug. If you are on another branch, ask the developer whether this change belongs there. Then write the change file, in the format of `CHANGE_FORMAT.md`. Write its Problem, Approach and Could wait; `/decide` adds the rest. Show it to the developer and correct what they correct. Commit it on its own, on the change's branch.
+When the developer has a direction, find the branch for the change. If you are on the default branch, create a branch from it, named after the change file's slug. If you are on another branch, ask the developer whether this change belongs there. Then write the change file, in the format of `CHANGE_FORMAT.md`. Write its Problem, Approach and Could wait; `/design-change` adds the rest. Show it to the developer and correct what they correct. Commit it on its own, on the change's branch.
 
 Put what could wait on the backlog with `/backlog`, one item each, if the developer wants to keep it.
 
-Then run `/decide` on the change.
+Then run `/design-change` on the change.

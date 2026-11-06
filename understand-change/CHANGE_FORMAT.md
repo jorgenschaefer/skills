@@ -24,6 +24,7 @@ system, the data. Links to the mock-ups in changes/.>
 - <item> -> backlog
 ```
 
-`explore` writes Problem, Approach and Could wait. `decide` adds Design and
-Decisions that matter: every decision it told or asked, each with what holds
-it after the change file is gone. An empty section says "None."
+`understand-change` writes Problem, Approach and Could wait. `design-change`
+adds Design and Decisions that matter: every decision it told or asked, each
+with what holds it after the change file is gone. An empty section says
+"None."

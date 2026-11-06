@@ -44,9 +44,9 @@ Tell the developer the change is ready to try, and show them only:
 
 Not what you fixed, and not what went well. If there is nothing to show, say the change is ready to try, in one line.
 
-What the developer settles needs a record that outlives the change file, as `/decide` would give it: a test for a promise about behaviour, an ADR for what the code cannot show.
+What the developer settles needs a record that outlives the change file, as `/design-change` would give it: a test for a promise about behaviour, an ADR for what the code cannot show.
 
-Then the developer tries it. If it does not solve their problem, go back to `/explore` with what they found.
+Then the developer tries it. If it does not solve their problem, go back to `/understand-change` with what they found.
 
 ## 5. Accept
 

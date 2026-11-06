@@ -10,10 +10,13 @@ observation in the evidence file.
 
 ## Where we are
 
-- `explore` and `decide` exist and were used once, on a new app.
+- `explore` and `decide` are now called `understand-change` and
+  `design-change`. The evidence files keep the old names.
+- `understand-change` and `design-change` exist and were used once, on a new
+  app.
 - The build is plain Claude Code. There is no build skill.
-- Steps 1, 2, 3, 6 and 7 are done: the split between `explore` and
-  `decide`, promises held by tests or structure, `review-change`,
+- Steps 1, 2, 3, 6 and 7 are done: the split between `understand-change` and
+  `design-change`, promises held by tests or structure, `review-change`,
   `try-change` and `accept-change`, a branch per change, and
   `learn-from-sessions`.
 
@@ -35,38 +38,40 @@ observation in the evidence file.
 
 ## Words used here
 
-- **Tell and ask.** `decide` puts every decision that is hard to undo to the
-  developer. Where there is a real choice, it asks, with options and a
-  recommendation. Where there is only one sensible option, it tells: one
-  line, so the developer can object. "A tell" is such a line.
+- **Tell and ask.** `design-change` puts every decision that is hard to undo
+  to the developer. Where there is a real choice, it asks, with options and a
+  recommendation. Where there is only one sensible option, it tells: one line,
+  so the developer can object. "A tell" is such a line.
 - **Change file.** `changes/YYYY-MM-DD-<slug>.md`, the agreement for one
   change. It is deleted when the change is done.
 
-## Step 1: apply the split between explore and decide
+## Step 1: apply the split between understand-change and design-change
 
 **Done.**
 
 Agreed in the discussion after the first run. Mostly writing.
 
-**`explore/SKILL.md`: `explore` designs nothing.** It understands: what are we
-solving, how does the real world work, and roughly which way do we go.
+**`understand-change/SKILL.md`: `understand-change` designs nothing.** It
+understands: what are we solving, how does the real world work, and roughly
+which way do we go.
 
 - Delete the paragraph "Where it looks and behaves differently ... A rough
   sketch in text is often enough." That sentence is why nobody designed the
   interaction (observation 1).
-- `explore` picks the general direction, and `decide` the details. The
-  direction comes from how the real world works, not from technology. "The
-  gym has bad internet, and the app has to deal with that" is an insight for
-  `explore`. Which parts work offline, and how, is for `decide`, which may
-  find that only some parts need to (observation 14).
+- `understand-change` picks the general direction, and `design-change` the
+  details. The direction comes from how the real world works, not from
+  technology. "The gym has bad internet, and the app has to deal with that" is
+  an insight for `understand-change`. Which parts work offline, and how, is
+  for `design-change`, which may find that only some parts need to
+  (observation 14).
 - "Read the code the request touches" assumes there is code. Say what to do
   when there is none (observation 3).
 
-**`decide/SKILL.md`: `decide` designs whatever is costly to change.** The line
-runs between costly and cheap to change, not between look, interaction and
-data. The table in `docs/workflow.md` shows it.
+**`design-change/SKILL.md`: `design-change` designs whatever is costly to
+change.** The line runs between costly and cheap to change, not between look,
+interaction and data. The table in `docs/workflow.md` shows it.
 
-New to `decide`:
+New to `design-change`:
 
 - how the user moves through the task, and what they enter when
   (observation 1);
@@ -81,8 +86,8 @@ New to `decide`:
   time and what past records mean then, how many users there will be
   (observation 13).
 
-Already in `decide`, but missed in the run, so make it clearer instead of
-adding it again:
+Already in `design-change`, but missed in the run, so make it clearer instead
+of adding it again:
 
 - the stack, under "Things much else is built on" (observation 5);
 - a pattern that gets copied, such as every new record type touching nine
@@ -90,7 +95,7 @@ adding it again:
 - what happens to the user's input when saving fails, which is "Trust that
   was lost" (observations 5, 8).
 
-Other changes to `decide`:
+Other changes to `design-change`:
 
 - Rewrite the sentence "A choice of colour, wording, layout, internal names
   or code structure is not hard to undo" without layout, which was wrong
@@ -101,25 +106,25 @@ Other changes to `decide`:
   (observation 2).
 - **Mock-ups are saved in `changes/`**, next to the change file, not left in
   the chat or the scratchpad (observation 2).
-- **New projects.** When there is no code, `decide` works from the change
-  file, and the stack is one of its decisions (observations 3, 5). The
+- **New projects.** When there is no code, `design-change` works from the
+  change file, and the stack is one of its decisions (observations 3, 5). The
   description says "Use before building any change to an existing project";
   drop "existing".
 - **Commit what was agreed before the build.** Replace "Don't commit them on
-  their own": `decide` commits its ADRs, its part of the change file and the
-  mock-ups in one commit, so a builder in a fresh context finds them in the
-  repository (observation 4). With a branch per change (step 6), an ADR for
-  a change that is never built is simply not merged.
+  their own": `design-change` commits its ADRs, its part of the change file
+  and the mock-ups in one commit, so a builder in a fresh context finds them
+  in the repository (observation 4). With a branch per change (step 6), an ADR
+  for a change that is never built is simply not merged.
 - **Ask before the build, not after.** In the run, the developer heard about
-  the builder's decisions only in the report (observation 7). `decide`
+  the builder's decisions only in the report (observation 7). `design-change`
   covering more (above) is the first answer; step 5 is the second.
 
-**`explore/CHANGE_FORMAT.md`.** Say who writes each section:
+**`understand-change/CHANGE_FORMAT.md`.** Say who writes each section:
 
-- `explore` writes Problem, Approach and Could wait.
-- `decide` writes Design, which is now what is costly to change, with links
-  to the mock-ups in `changes/`.
-- `decide` also writes Decisions that matter: every decision it told or
+- `understand-change` writes Problem, Approach and Could wait.
+- `design-change` writes Design, which is now what is costly to change, with
+  links to the mock-ups in `changes/`.
+- `design-change` also writes Decisions that matter: every decision it told or
   asked, each with what holds it later: the code, a test (step 2) or an
   ADR.
 
@@ -149,13 +154,13 @@ and last-writer-wins was only in the change file, which gets deleted
   the change file. The code holds what it shows, such as a `due_date`
   column. A test holds a promise about behaviour. An ADR holds what the code
   cannot show, such as the hosting.
-- So when `decide` settles a promise, such as old saves still parsing or
-  last-writer-wins, it names the test that will hold it. The change file
+- So when `design-change` settles a promise, such as old saves still parsing
+  or last-writer-wins, it names the test that will hold it. The change file
   lists it under Decisions that matter, and the builder writes it
   (observations 8, 11).
 - When a rule is a convention every piece of code has to remember, such as
-  every route checking the login, `decide` asks for structure instead: check
-  the login once for all routes (observation 12).
+  every route checking the login, `design-change` asks for structure instead:
+  check the login once for all routes (observation 12).
 
 No general rule about TDD or coverage. TDD tests what the developer has in
 mind, and the bugs that mattered were exactly what nobody had in mind
@@ -249,7 +254,7 @@ Workflow steps 5 and 6.
 - The user stand-in uses the running app, including what happens when things
   fail, not only the happy paths. In the first run the builder tried only
   happy paths and one offline case (observation 6).
-- Lists every decision the builder made alone that `decide` would have
+- Lists every decision the builder made alone that `design-change` would have
   flagged. A safety net for step 5 of this roadmap (observation 5).
 - The builder fixes what the two find.
 - The report shows the developer only what is hard to undo and what is still
@@ -271,7 +276,7 @@ form as the first.
 
 Watch especially:
 
-- whether `decide` now brings up interaction, the life of the data and
+- whether `design-change` now brings up interaction, the life of the data and
   patterns without being pushed;
 - whether the builder still decides things alone that are hard to undo;
 - what `review-change` and the stand-in miss that the developer then finds;
@@ -279,7 +284,7 @@ Watch especially:
 
 This run does not test the changes for new projects. Those need a later run.
 
-## Step 5: make `decide` start during the build
+## Step 5: make `design-change` start during the build
 
 Open question 3 in the evidence file. Wait for the second run before choosing
 how. Steps 1 and 2 may fix most of it: with the stack, the data shape and the
@@ -289,9 +294,9 @@ The safety net in `accept-change` (step 3) reports such decisions in any case, b
 only after the build. If the builder still decides alone, the options to
 catch it during the build, cheapest first:
 
-1. A line in the change file telling the builder to stop and run `/decide`
-   when a decision is hard to undo.
-2. A hook that reminds the builder to run `/decide` when it changes the
+1. A line in the change file telling the builder to stop and run
+   `/design-change` when a decision is hard to undo.
+2. A hook that reminds the builder to run `/design-change` when it changes the
    files where such decisions usually show: the database schema, the
    dependencies, the deployment setup.
 
@@ -301,10 +306,10 @@ catch it during the build, cheapest first:
 
 Open question 4. In the first run everything was committed to `main`
 (observation 4). This is the developer's decision. The recommendation:
-`explore` creates a branch when it writes the change file, and the developer
-merges it. For a change that skips `explore`, `decide` creates the branch. It is
-small, so it can be done before step 4 if the second run should already use a
-branch.
+`understand-change` creates a branch when it writes the change file, and the
+developer merges it. For a change that skips `understand-change`,
+`design-change` creates the branch. It is small, so it can be done before step
+4 if the second run should already use a branch.
 
 ## Step 7: learn from the sessions
 
