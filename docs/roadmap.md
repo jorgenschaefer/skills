@@ -1,0 +1,231 @@
+# Roadmap
+
+What we change in the skills next, and why. It follows from the first test
+run (`docs/evidence/2026-11-05-workout-logbook.md`) and the summaries in
+`docs/reference/`. Numbers in brackets, such as (8), are observations in that
+evidence file. Delete this file when the plan is built.
+
+## Where we are
+
+- `explore` and `decide` exist and were used once, on a new app.
+- The build is plain Claude Code. There is no build skill.
+- The check step (steps 5 and 6 of `docs/workflow.md`) has no skill yet.
+- The split between `explore` and `decide` is agreed and written in
+  `docs/workflow.md`, but not yet in the two skills.
+
+## How to work on this
+
+- **Every change to a skill comes from evidence.** Name the observation it
+  answers. A skill starts small and grows only when a test run shows that it
+  missed something. Don't add rules because they feel right.
+- **A skill only sees its own directory.** A file two skills need is copied
+  into each.
+- **Run `./test.sh`** after every change. It checks that references to other
+  skills and files are not broken.
+- **Write plain English**, in the skills too: each sentence understood on
+  first reading.
+- **Fix a weak passage by rewriting it simpler**, not by adding a
+  qualifier.
+- **Steps 1 and 2 can be done in one sitting.** Commit them as logical
+  commits, not one per edit.
+
+## Step 1: apply the split between explore and decide
+
+Agreed in the discussion after the first run. Mostly writing.
+
+**`explore/SKILL.md`: `explore` designs nothing.** It understands: what are we
+solving, how does the real world work, and roughly which way do we go.
+
+- Delete the paragraph "Where it looks and behaves differently ... A rough
+  sketch in text is often enough." That sentence is why nobody designed the
+  interaction (1).
+- If an approach is itself hard to undo, such as "offline first", say so and
+  leave it for `decide` (14).
+
+**`decide/SKILL.md`: `decide` designs whatever is costly to change.** The line
+runs between costly and cheap to change, not between look, interaction and
+data. The table in `docs/workflow.md` shows it.
+
+- Delete "A choice of colour, wording, layout, ..." in its current form. The
+  layout half is wrong (1). Colour of one button, wording, internal names and
+  code structure stay cheap.
+- Add what it missed in the first run:
+  - how the user moves through the task, and what they enter when (1);
+  - for a new app, the design system: components, type, colours, spacing,
+    asked with alternatives the developer can see, not ASCII (1);
+  - for a completely new page in an existing app, a mock-up shown before it
+    is built, even when there is nothing to ask (1);
+  - what happens to the user's input when saving fails (5, 8);
+  - how access ends, and where data stays afterwards, such as on the phone (8);
+  - the life of the data: how things are deleted, which fields change over
+    time and what past records mean then, how many users there will be (13);
+  - a pattern that will be copied, such as every new record type touching
+    nine places (12, 13).
+- "Tell" has two forms: a line of text, or a picture.
+- **Write down what is told, not only what is asked.** The one-line tells go
+  into the change file. Before there is code, the code cannot be their
+  record (2).
+- **Mock-ups are saved in `changes/`**, next to the change file, not left in
+  the chat or the scratchpad (2).
+- **New projects.** When there is no code, `decide` works from the change
+  file, and the stack is one of its decisions (3, 5).
+
+**`explore/CHANGE_FORMAT.md`** gets a place for the told decisions and for the
+mock-ups. Keep it short. Copy any change to the format into
+`docs/workflow.md`, which repeats it.
+
+**`docs/workflow.md`**: step 2 no longer agrees on the interaction; step 3
+designs what is costly to change. Cover new projects, not only existing ones
+(3).
+
+Outside support: the arXiv paper says a chat is not a record. OpenAI, the
+only source that talks about design systems, says people own the design
+system and UX patterns.
+
+## Step 2: promises become tests or structure
+
+In the first run, "old saves keep working after a deploy" was only a comment,
+and last-writer-wins was only in the change file, which gets deleted (8).
+
+- When `decide` settles a promise to the outside world, such as old saves
+  still parsing, it names the test that will hold it. The change file lists
+  it, and the builder writes it (8, 11). This is the useful core of the old
+  "hard tests".
+- When a rule is a convention every piece of code has to remember, such as
+  every route checking the login, `decide` asks for structure instead: check
+  the login once for all routes (12).
+
+No general rule about TDD or coverage. TDD tests what the developer has in
+mind, and the bugs that mattered were exactly what nobody had in mind (10).
+Google and OpenAI recommend tests first; our evidence does not support that
+as a rule.
+
+## Step 3: `review`, then `check`
+
+The serious bugs in the first run were found only by a review the developer
+ran by hand (6, 8). This step has the most evidence behind it.
+
+### The four goals, split by who can see them
+
+| Goal | `review` reads the code | User stand-in uses the running app |
+|---|---|---|
+| Utility | Find bugs. | Does it solve the problem in the change file? |
+| Security | Find where someone can see or do more than they should. | |
+| Usability | | Use it as a real user would. |
+| Maintainability | Find code that makes future changes hard or bugs more likely. | |
+
+Utility has two sides. A bug means the code does not do what it was meant to,
+and a review finds that. Whether the change solves the user's problem can
+only be found by using it. A change can be free of bugs and still do the
+wrong job. The stand-in checks the change against the problem and the real
+example in the change file. The developer has the final word in step 6.
+
+The security cell for the stand-in is empty on purpose. A stand-in could try
+to open someone else's data, but no run has shown the need yet.
+
+### `review` (new skill, build first)
+
+An adversarial code review in a fresh context. Its own skill, because it is
+useful outside the workflow: on any diff, or on a whole repository.
+`upgrade-dependencies` already asks for a fresh-context review of each commit
+and should use it.
+
+**The baseline** is the prompt the developer used in session `3ee51f13`. It
+found the serious bugs, and it repeats three of the four goals:
+
+> Find bugs. Find issues where someone can see or do more than they should.
+> Furthermore, find code that will make future changes hard or make it more
+> likely to add bugs in the future.
+
+**Expansions with evidence from the first run:**
+
+- For bugs, look first at four kinds of risk (11):
+  - each outside dependency fails: what does the code answer, and does the
+    client retry?
+  - each contract between two parts, tested from both sides together, and
+    old data still parses;
+  - security code under parallel and hostile use;
+  - anything that can lose data.
+- Confirm a suspicion with a throwaway test instead of guessing. The reviewer
+  in the run did this for its two worst suspicions (8).
+
+Each point grows only when a later run shows the review missed something.
+
+**Adversarial** means: the reviewer's job is to find what is wrong, not to
+approve. Report only findings that matter; OpenAI's experience is that
+verbose reviews get ignored like lint noise. The builder fixes the findings.
+A finding that is hard to undo goes to the developer.
+
+**Why not the built-in `/code-review` or `/security-review`:** each covers only
+part of the three questions, and neither looks at maintainability.
+
+**A known limit:** a reviewer on the same model as the builder is not fully
+independent (arXiv paper). A fresh context and an adversarial prompt help,
+but don't remove this. That is one more reason for the user stand-in and for
+the developer's own look.
+
+### `check` (new skill, after `review`)
+
+Steps 5 and 6 of `docs/workflow.md`.
+
+- Runs `review` and the user stand-in, each in a fresh context. They find
+  different things: one reads the code, the other uses the app.
+- The user stand-in uses the running app, including what happens when things
+  fail, not only the happy paths. In the first run the builder tried only
+  happy paths and one offline case (6).
+- Lists every decision the builder made alone that `decide` would have
+  flagged. A safety net for step 5 below (5).
+- The builder fixes what the two find.
+- The report shows the developer only what is hard to undo and what is still
+  open, and it comes before anything is merged. In the first run the report
+  was good but came too late (7).
+
+Outside support: AWS says self-correction only works against checks the AI
+cannot change. Thoughtworks saw agents get around their own tests. OpenAI
+writes tests in a separate session from the code.
+
+## Step 4: second test run, on an existing project
+
+`docs/workflow.md` is written for changing an existing project, and the first
+run was a new app. Use the full workflow on a real change to an existing
+project. Write what happened into a new file in `docs/evidence/`, in the same
+form as the first.
+
+Watch especially:
+
+- whether `decide` now brings up interaction, the life of the data and
+  patterns without being pushed;
+- whether the builder still decides things alone that are hard to undo;
+- what `review` and the stand-in miss that the developer then finds.
+
+## Step 5: make `decide` start during the build
+
+Open question 3 in the evidence file. Wait for the second run before choosing
+how. Steps 1 and 2 may fix most of it: with the stack, the data shape and the
+tells in the change file, the builder has fewer decisions left to make alone.
+
+If the builder still decides alone, the options, cheapest first:
+
+1. A line in the change file telling the builder to stop and run `/decide`
+   when a decision is hard to undo.
+2. The safety net in `check` alone, which reports such decisions after the
+   fact.
+3. A hook.
+
+## Step 6: branches
+
+Open question 4. In the first run everything was committed to `main` (4).
+This is the developer's decision. The recommendation: `explore` creates a
+branch when it writes the change file, and wrap-up merges it. For a change
+that skips `explore`, `decide` creates the branch. It is small, so it can be
+done before step 4 if the second run should already use a branch.
+
+## Not on the roadmap
+
+- **A build skill** (open question 1). Plain Claude Code built a good
+  structure (9). Steps 2 and 3 cover what the build missed. Add one only if a
+  run shows a gap.
+- **Spec tools and staged ceremony** in the style of AWS AI-DLC. Thoughtworks
+  found that spec tools give "a false sense of control". The old pipeline
+  skills were deleted for this reason.
+- **Rules about test coverage** (10).
