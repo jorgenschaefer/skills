@@ -18,16 +18,20 @@ Steps 1, 2, 3, 6 and 7 are done. What they changed is in the skills, in
   `explore` and `decide`, and the evidence files use those names.
 - Step 2: a promise about behaviour is held by a test, and a rule every piece
   of code would have to remember by structure.
-- Step 3: `accept-change` checks a built change with `review-change` and the
-  user stand-in `try-change`, each in a fresh context. The developer starts
-  it in a fresh session, not the builder.
+- Step 3: `build-change` builds a change and checks it with `review-change`
+  and the user stand-in `try-change`, each in a fresh context.
+  `accept-change` wraps it up once the developer accepts it. The developer
+  starts both.
 - Step 6: each change gets its own branch. The developer merges it.
 - Step 7: `learn-from-sessions` collects evidence from a project's session
   logs.
 
 `understand-change` and `design-change` ran once, under their old names, on a
-new app. `try-change` and `accept-change` have never run. The build is plain
-Claude Code; there is no build skill.
+new app. In kh-finder the checking ran from a build session and from a
+fresh one, but it never got to the wrap-up: that waited for the developer to
+come back to the same session. So it moved into its own skill, and
+`build-change` took over the checking. `build-change` and the new
+`accept-change` have never run.
 
 ## How to work on this
 
@@ -80,11 +84,11 @@ Open question 3 in the evidence file. Wait for the second run before choosing
 how. Steps 1 and 2 may fix most of it: with the stack, the data shape and the
 tells in the change file, the builder has fewer decisions left to make alone.
 
-The safety net in `accept-change` (step 3) reports such decisions in any
+The safety net in `review-change` (step 3) reports such decisions in any
 case, but only after the build. If the builder still decides alone, the
 options to catch it during the build, cheapest first:
 
-1. A line in the change file telling the builder to stop and run
+1. A line in `build-change` telling the builder to stop and run
    `/design-change` when a decision is hard to undo.
 2. A hook that reminds the builder to run `/design-change` when it changes
    the files where such decisions usually show: the database schema, the
@@ -107,13 +111,13 @@ now sends findings that are not fixed to the backlog.
 
 ## Not on the roadmap
 
-- **Guidance for the build** (open questions 1 and 2). Plain Claude Code
-  built a good structure (observation 9). The build gets its tests through
-  step 2, and the list of tests by kind of risk lives only in
-  `review-change`. That answers open question 2 for now, against the
-  evidence file's suggestion that "the build may need guidance". Add
-  guidance for the build only when runs show `review-change` catching the
-  same kind of bug too late again and again.
+- **Advice on how to build** (open questions 1 and 2). Plain Claude Code
+  built a good structure (observation 9), and in kh-finder it wrote tests
+  first and asked before a decision that was hard to undo. The build gets
+  its tests through step 2, and the list of tests by kind of risk lives only
+  in `review-change`. `build-change` gets advice like any skill: when a run
+  shows it missed something, such as `review-change` catching the same kind
+  of bug too late again and again.
 - **Spec tools and staged ceremony** in the style of AWS AI-DLC. Thoughtworks
   found that spec tools give "a false sense of control". The old pipeline
   skills were deleted for this reason.

@@ -27,24 +27,25 @@ agent's.
    the mock-ups into `changes/`, and the ADRs into `docs/adr/`. Commits them
    before the build, on the change's branch. If the change skipped step 2,
    creates the branch first.
-4. **Build.** Plain Claude Code, in a fresh session that starts from the
-   change file: the smallest thing that does the job, in the domain's words,
-   with the tests the change file names and the project's checks green.
-5. **Check** (`accept-change` skill, with steps 6 and 7), started by the
-   developer in a fresh session, not by the builder. A reviewer with a fresh
-   context (`/review-change`) tries to find what is wrong with the diff. A
-   user stand-in with a fresh context (`/try-change`) uses the change on the
-   running software as a real user would. The session lists the decisions
-   made during the build that are hard to undo, and fixes what the two
-   found.
+4. **Build** (`build-change` skill, with steps 5 and 6), started by the
+   developer in a fresh session. Starts from the change file: the smallest
+   thing that does the job, in the domain's words, with the tests the change
+   file names and the project's checks green.
+5. **Check.** A reviewer with a fresh context (`/review-change`) tries to
+   find what is wrong with the diff, and lists the decisions made during the
+   build that are hard to undo and not in the change file. A user stand-in
+   with a fresh context (`/try-change`) uses the change on the running
+   software as a real user would. The builder fixes what the two found.
 6. **Report.** Show the developer only what is hard to undo and what is
-   still open. The developer tries it. If it does not solve their problem,
+   still open. What they settle goes into the change file, with what holds
+   it. The developer tries the change. If it does not solve their problem,
    back to step 2.
-7. **Wrap up.** Once the developer says the change solves their problem,
-   what could wait goes to the backlog, and the change file and its
-   mock-ups are deleted and committed. The developer merges the branch.
-   Merge without squashing: the change file and mock-ups are kept only in
-   the branch's history.
+7. **Accept** (`accept-change` skill), started by the developer once the
+   change solves their problem. Checks that each decision that matters is
+   held by something that outlives the change file. What could wait goes to
+   the backlog, and the change file and its mock-ups are deleted and
+   committed. The developer merges the branch. Merge without squashing: the
+   change file and mock-ups are kept only in the branch's history.
 
 ## How understand-change and design-change are split
 

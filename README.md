@@ -41,11 +41,13 @@ that is not there, and what `sync.sh` does.
 
 ## Available skills
 
-- **`accept-change`**: check a built change with a fresh review and a user stand-in, fix what
-  they find, report to the developer only what needs them, and wrap the change up once they
-  accept it. **Typed**: start it with `/accept-change` in a fresh session once the build is
-  done.
+- **`accept-change`**: wrap up a change the developer has tried and accepted: check that each
+  decision that matters is held by something, backlog what could wait, and delete the change
+  file. **Typed**: start it with `/accept-change` once the change solves your problem.
 - **`backlog`**: add to, extend or pick from the project's backlog in `changes/backlog/`.
+- **`build-change`**: build a change from its change file, check it with a fresh review and a
+  user stand-in, fix what they find, and report only what needs the developer. **Typed**:
+  start it with `/build-change` in a fresh session once the change is designed.
 - **`design-change`**: design what in a change would be costly to change, tell the developer
   about each such decision and ask where there is a real choice, write them into the change
   file, and record in `docs/adr/` what the code does not show.

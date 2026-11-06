@@ -24,6 +24,7 @@ Read the code around a change too. Many bugs sit where the change meets code it 
 - **Bugs.** Code that does not do what it was meant to.
 - **Ways someone can see or do more than they should.**
 - **Code that will make future changes hard, or make bugs more likely.**
+- **Decisions that are hard to undo and that nobody agreed to.** If the request names a change file, list each such decision in the code that its `## Decisions that matter` does not have. A decision is hard to undo when, after the software has been in use for a while, undoing it takes more than a revert: stored data and its shape; anything sent or published; who can see or do what; what happens to input when something fails; money or contracts; what much else is built on, such as the stack, the deployment or a pattern that gets copied.
 
 Look first at these kinds of risk. They are where the serious bugs were found before, but they are a start, not the limit:
 
@@ -40,13 +41,13 @@ Where a suspicion would be serious if true, confirm it with a throwaway test: ru
 
 Report only findings that matter. A long list of small things gets ignored, and buries the findings that matter with it. Leave out style and taste.
 
-Most serious first, under Bugs, Security and Future changes. For each finding:
+Most serious first, under Bugs, Security, Future changes and Decisions. For each finding:
 
 - what is wrong, and where (`file:line`);
 - what happens because of it, in one concrete case;
 - whether you confirmed it with a test or only suspect it;
 - the fix, in a line, where it is not obvious.
 
-Some fixes are hard to undo themselves: they change stored data, a public API, or who can see what. Mark those "for the developer". Whoever asked for the review should not decide them alone.
+Some fixes are hard to undo themselves: they change stored data, a public API, or who can see what. Mark those "for the developer", and the decisions too. Whoever asked for the review should not decide them alone.
 
 End with which findings to fix first, and why. Then say that whatever is not fixed now goes on the backlog with `/backlog`: your report is the only place the findings are written down. If you found nothing that matters, say so in one line.
