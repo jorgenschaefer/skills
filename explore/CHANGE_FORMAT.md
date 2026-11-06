@@ -11,16 +11,19 @@ it is read later as a rule. Git history keeps it.
 <What is wrong, in the user's words, and one real instance.>
 
 ## Approach
-<The approach chosen. Also considered: <the others, one line each>.>
+<The general direction chosen. Also considered: <the others, one line each>.>
 
 ## Design
-<What was agreed about how it looks and behaves, if anything.>
+<What is costly to change: how the user moves through the task, the design
+system, the data. Links to the mock-ups in changes/.>
 
 ## Decisions that matter
-- docs/adr/NNNN-<slug>.md (new | replaced)
+- <the decision> - held by <the code | a test of what | docs/adr/NNNN-<slug>.md>
 
 ## Could wait
 - <item> -> backlog
 ```
 
-An empty section says "None." `decide` fills in `## Decisions that matter`.
+`explore` writes Problem, Approach and Could wait. `decide` adds Design and
+Decisions that matter: every decision it told or asked, each with what holds
+it after the change file is gone. An empty section says "None."

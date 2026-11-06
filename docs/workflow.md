@@ -1,8 +1,8 @@
-# Changing an existing project
+# Making a change
 
-How a developer changes something in a project that already has code, with
-these skills. It serves the ideas in `docs/manifesto.md`. Changes too large for one
-session are not covered yet.
+How a developer changes something in a project with these skills, whether the
+project already has code or is new. It serves the ideas in
+`docs/manifesto.md`. Changes too large for one session are not covered yet.
 
 The developer is involved at three points: saying what they want, the
 decisions that matter, and looking at the result. Everything else is the
@@ -15,12 +15,15 @@ agent's.
 2. **Explore** (skill). Find the real problem behind the request and how the
    domain works in the real world. Propose at least three approaches, the
    simplest first. Ask instead of assuming. Stop when the developer has a
-   direction. Writes the change file.
-3. **Decide** (skill). Name the decisions in this change that would be hard
-   to undo. Ask the developer where there is a real choice, with options and
-   a recommendation. Where there is only one sensible option, tell them in
-   one line. Make every other decision without mentioning it. Writes the
-   ADRs, and lists them in the change file.
+   direction. Designs nothing. Writes the change file.
+3. **Decide** (skill). Design what in this change is costly to change: how
+   the user moves through the task, the design system, the data, and in a
+   new project the stack. Ask the developer where there is a real choice,
+   with options and a recommendation. Where there is only one sensible
+   option, tell them in one line or a mock-up. Make every other decision
+   without mentioning it. Writes the design, every decision told or asked
+   and the mock-ups into `changes/`, and the ADRs into `docs/adr/`. Commits
+   them before the build.
 4. **Build.** Plain Claude Code: the smallest thing that does the job, in the
    domain's words, with the project's checks green.
 5. **Check** (skill, with step 6). A reviewer with a fresh context tries to
@@ -30,7 +33,7 @@ agent's.
    still open. The developer tries it. If it does not solve their problem,
    back to step 2.
 7. **Wrap up.** Commit. What could wait goes to the backlog. Delete the
-   change file.
+   change file and its mock-ups.
 
 ## How explore and decide are split
 
@@ -69,19 +72,22 @@ nothing in it is read later as a rule. Git history keeps it.
 <What is wrong, in the user's words, and one real instance.>
 
 ## Approach
-<The approach chosen. Also considered: <the others, one line each>.>
+<The general direction chosen. Also considered: <the others, one line each>.>
 
 ## Design
-<What was agreed about how it looks and behaves, if anything.>
+<What is costly to change: how the user moves through the task, the design
+system, the data. Links to the mock-ups in changes/.>
 
 ## Decisions that matter
-- docs/adr/NNNN-<slug>.md (new | replaced)
+- <the decision> - held by <the code | a test of what | docs/adr/NNNN-<slug>.md>
 
 ## Could wait
 - <item> -> backlog
 ```
 
-An empty section says "None."
+`explore` writes Problem, Approach and Could wait. `decide` adds Design and
+Decisions that matter: every decision it told or asked, each with what holds
+it after the change file is gone. An empty section says "None."
 
 ## Decisions that matter
 

@@ -42,9 +42,9 @@ that is not there, and what `sync.sh` does.
 ## Available skills
 
 - **`backlog`**: add to, extend or pick from the project's backlog in `changes/backlog/`.
-- **`decide`**: find the decisions in a change that would be hard to undo, tell the developer
-  about each and ask where there is a real choice, and record in `docs/adr/` what the code does
-  not show.
+- **`decide`**: design what in a change would be costly to change, tell the developer about
+  each such decision and ask where there is a real choice, write them into the change file, and
+  record in `docs/adr/` what the code does not show.
 - **`explore`**: think a change through with the developer before anything is built, and write
   what was agreed into a change file.
 - **`git-commit-message`**: write a commit message that follows the repository's conventions.
