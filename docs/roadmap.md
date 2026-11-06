@@ -13,8 +13,8 @@ observation in the evidence file.
 - `explore` and `decide` exist and were used once, on a new app.
 - The build is plain Claude Code. There is no build skill.
 - Workflow steps 5 and 6, check and report, have no skill yet.
-- The split between `explore` and `decide` is agreed and written in
-  `docs/workflow.md`, but not yet in the two skills.
+- Steps 1, 2 and 6 are done: the split between `explore` and `decide`,
+  promises held by tests or structure, and a branch per change.
 
 ## How to work on this
 
@@ -42,6 +42,8 @@ observation in the evidence file.
   change. It is deleted when the change is done.
 
 ## Step 1: apply the split between explore and decide
+
+**Done.**
 
 Agreed in the discussion after the first run. Mostly writing.
 
@@ -135,6 +137,8 @@ only source that talks about design systems, says people own the design
 system and UX patterns.
 
 ## Step 2: promises become tests or structure
+
+**Done.**
 
 In the first run, "old saves keep working after a deploy" was only a comment,
 and last-writer-wins was only in the change file, which gets deleted
@@ -279,6 +283,8 @@ catch it during the build, cheapest first:
    dependencies, the deployment setup.
 
 ## Step 6: branches
+
+**Done.**
 
 Open question 4. In the first run everything was committed to `main`
 (observation 4). This is the developer's decision. The recommendation:
