@@ -15,7 +15,8 @@ agent's.
 2. **Explore** (skill). Find the real problem behind the request and how the
    domain works in the real world. Propose at least three approaches, the
    simplest first. Ask instead of assuming. Stop when the developer has a
-   direction. Designs nothing. Writes the change file.
+   direction. Designs nothing. Creates a branch for the change and writes the
+   change file on it.
 3. **Decide** (skill). Design what in this change is costly to change: how
    the user moves through the task, the design system, the data, and in a
    new project the stack. Ask the developer where there is a real choice,
@@ -23,7 +24,8 @@ agent's.
    option, tell them in one line or a mock-up. Make every other decision
    without mentioning it. Writes the design, every decision told or asked
    and the mock-ups into `changes/`, and the ADRs into `docs/adr/`. Commits
-   them before the build.
+   them before the build, on the change's branch. If the change skipped
+   step 2, creates the branch first.
 4. **Build.** Plain Claude Code: the smallest thing that does the job, in the
    domain's words, with the tests the change file names and the project's
    checks green.
@@ -33,8 +35,8 @@ agent's.
 6. **Report.** Show the developer only what is hard to undo and what is
    still open. The developer tries it. If it does not solve their problem,
    back to step 2.
-7. **Wrap up.** Commit. What could wait goes to the backlog. Delete the
-   change file and its mock-ups.
+7. **Wrap up.** What could wait goes to the backlog. Delete the change file
+   and its mock-ups. Commit, and merge the branch.
 
 ## How explore and decide are split
 

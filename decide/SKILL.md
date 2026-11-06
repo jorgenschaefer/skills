@@ -82,4 +82,4 @@ The change file is deleted when the change is done, so each decision also needs 
 
 Write each ADR as `docs/adr/NNNN-<slug>.md`, in the format of `ADR_FORMAT.md`. If it replaces a recorded decision, delete that file in the same change.
 
-Commit the ADRs, your part of the change file and the mock-ups in one commit, before the build. A builder in a fresh context then finds them in the repository.
+Commit the ADRs, your part of the change file and the mock-ups in one commit, before the build. A builder in a fresh context then finds them in the repository. Commit on the change's branch. If the change skipped `/explore` and has no branch yet, create one first, named after the change. An ADR for a change that is never built is then simply not merged.

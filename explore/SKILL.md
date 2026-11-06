@@ -31,7 +31,7 @@ Match the depth to the request. A sharp request with one obvious approach needs 
 
 ## Write it down
 
-When the developer has a direction, write the change file, in the format of `CHANGE_FORMAT.md`. Write its Problem, Approach and Could wait; `/decide` adds the rest. Show it to the developer and correct what they correct. Commit it on its own.
+When the developer has a direction, create a branch for the change, named after its slug, unless you are already on one. Then write the change file, in the format of `CHANGE_FORMAT.md`. Write its Problem, Approach and Could wait; `/decide` adds the rest. Show it to the developer and correct what they correct. Commit it on its own, on that branch.
 
 Put what could wait on the backlog with `/backlog`, one item each, if the developer wants to keep it.
 
