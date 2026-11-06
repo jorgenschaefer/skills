@@ -134,6 +134,68 @@ if [ -L "$DEST/live-elsewhere" ]; then
   ok "a link that still resolves is left alone"
 else bad "a link that still resolves is left alone" "$(ls -l "$DEST")"; fi
 
+# --- a name that is taken ----------------------------------------------------
+#
+# The guard only matters where a name clashes with a skill here. Without the
+# clash, a case above stays green with the guard deleted.
+
+workspace
+mkdir -p "$DEST/alpha" && echo mine > "$DEST/alpha/SKILL.md"
+out="$(sync 2>&1)"
+if [ ! -L "$DEST/alpha" ] && [ "$(cat "$DEST/alpha/SKILL.md")" = mine ] \
+   && [ "$(find "$DEST/alpha" -mindepth 1 | wc -l)" = 1 ]; then
+  ok "a directory with a skill's name is left as it was"
+else bad "a directory with a skill's name is left as it was" "$(ls -lR "$DEST")"; fi
+
+if printf '%s' "$out" | grep -q 'alpha.*left alone'; then
+  ok "a directory with a skill's name is reported"
+else bad "a directory with a skill's name is reported" "$out"; fi
+
+workspace
+echo precious > "$DEST/alpha"
+out="$(sync 2>&1)"
+if [ ! -L "$DEST/alpha" ] && [ "$(cat "$DEST/alpha")" = precious ]; then
+  ok "a file with a skill's name is left as it was"
+else bad "a file with a skill's name is left as it was" "$(ls -l "$DEST")"; fi
+
+if printf '%s' "$out" | grep -q 'alpha.*left alone'; then
+  ok "a file with a skill's name is reported"
+else bad "a file with a skill's name is reported" "$out"; fi
+
+workspace
+mkdir -p "$WORK/other/beta" && : > "$WORK/other/beta/SKILL.md"
+ln -s "$WORK/other/beta" "$DEST/beta"
+out="$(sync 2>&1)"
+if [ "$(readlink -f "$DEST/beta")" = "$(readlink -f "$WORK/other/beta")" ]; then
+  ok "a link into another repository with a skill's name is left as it was"
+else bad "a link into another repository with a skill's name is left as it was" "$(ls -l "$DEST")"; fi
+
+if printf '%s' "$out" | grep -q 'beta.*left alone'; then
+  ok "a link into another repository with a skill's name is reported"
+else bad "a link into another repository with a skill's name is reported" "$out"; fi
+
+# --- a skill that became this repository's own -------------------------------
+
+workspace
+sync >/dev/null 2>&1
+mkdir -p "$SRC/.claude/skills" && ln -s ../../beta "$SRC/.claude/skills/beta"
+sync >/dev/null 2>&1
+if [ ! -e "$DEST/beta" ] && [ ! -L "$DEST/beta" ] && [ -L "$DEST/alpha" ]; then
+  ok "a link to a skill now kept for this repository is removed"
+else bad "a link to a skill now kept for this repository is removed" "$(ls -l "$DEST")"; fi
+
+# --- a target it cannot enter -------------------------------------------------
+#
+# Without a stop, the target becomes "" and the links land in /.
+
+workspace
+chmod 000 "$DEST"
+out="$(sync 2>&1)"; status=$?
+chmod 755 "$DEST"
+if [ "$status" -ne 0 ] && ! printf '%s' "$out" | grep -q '^linked'; then
+  ok "a target it cannot enter stops the run"
+else bad "a target it cannot enter stops the run" "status $status: $out"; fi
+
 # --- a target that is not there yet -------------------------------------------
 
 workspace
