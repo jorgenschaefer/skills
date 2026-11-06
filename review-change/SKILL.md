@@ -49,4 +49,4 @@ Most serious first, under Bugs, Security and Future changes. For each finding:
 
 Some fixes are hard to undo themselves: they change stored data, a public API, or who can see what. Mark those "for the developer". Whoever asked for the review should not decide them alone.
 
-End with which findings to fix first, and why. If you found nothing that matters, say so in one line.
+End with which findings to fix first, and why. Then say that whatever is not fixed now goes on the backlog with `/backlog`: your report is the only place the findings are written down. If you found nothing that matters, say so in one line.
