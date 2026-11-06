@@ -2,7 +2,7 @@
 
 What we change in the skills next, and why. It follows from the first test
 run (`docs/evidence/2026-11-05-workout-logbook.md`) and the summaries in
-`docs/reference/`. Delete this file when all six steps are done.
+`docs/reference/`. Delete this file when all seven steps are done.
 
 Three kinds of numbers appear below. "Step 1" is a step of this roadmap.
 "Workflow step 5" is a step in `docs/workflow.md`. "Observation 8" is an
@@ -286,6 +286,53 @@ Open question 4. In the first run everything was committed to `main`
 it. For a change that skips `explore`, `decide` creates the branch. It is
 small, so it can be done before step 4 if the second run should already use a
 branch.
+
+## Step 7: collect evidence from the sessions
+
+So far, evidence was collected by hand from the session logs in
+`~/.claude/projects/<project>/`. A skill does this, and the developer decides
+what changes. Corrections are only candidates until a human approves them, as
+in AWS AI-DLC 2.0.
+
+**A skill run by hand, `/evidence`**, in a project repository or this one.
+
+- It reads the sessions of that project since its last run, and notes which
+  sessions it has read, so nothing is counted twice.
+- It looks for these signals, all seen in the first run:
+  - the developer corrected the agent, or had to push for something
+    (observation 1);
+  - the developer asked a question that showed a gap (observation 2);
+  - a skill should have started and did not (observation 5);
+  - the agent decided something hard to undo alone (observation 5);
+  - a later session found bugs the build missed (observation 8).
+- Each observation has a session ID and a quote, so it can be checked. No
+  quote, no observation.
+- The same kind of observation seen again is counted, not listed twice.
+- Each observation gets a proposed destination:
+
+| Destination | When |
+|---|---|
+| The project's `CLAUDE.md` or code | It is about this project: its domain, its conventions, a missing check. |
+| A skill in this repository, with an entry in `docs/evidence/` | It is about how a skill or the workflow behaves, in any project. |
+| Nowhere | A one-off, or already known. |
+
+- The developer picks what to apply. The skill makes those changes, or
+  writes the evidence entry.
+- An evidence entry describes the pattern in its own words. It does not copy
+  code or data from the project.
+
+The hard part is the extraction prompt: what counts as a signal, and how to
+avoid false observations. It needs a few rounds of tuning, so the skill is
+run by hand first. Once its list can be trusted, a local cron job running
+`claude -p "/evidence"` every night is enough to automate it. A cloud
+routine cannot read the local session logs.
+
+`evidence/narrate.py`, written to read the logs of the first run, is a
+starting point for reading sessions compactly. The skill's `SKILL.md` goes
+next to it.
+
+This step can come before step 4, so the second test run is the first with
+collected evidence.
 
 ## Not on the roadmap
 
