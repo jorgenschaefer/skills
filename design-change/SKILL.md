@@ -88,6 +88,6 @@ Commit on the change's branch. If the change skipped `/understand-change`, find 
 
 ## Then stop
 
-Don't start the build in this session. It starts in a fresh one, so the builder works from what is in the repository, not from this conversation. Tell the developer what to set up first, if anything, and the line that starts the build, such as `Build the change in changes/YYYY-MM-DD-<slug>.md`.
+Don't start the build in this session. It starts in a fresh one, so the builder works from what is in the repository, not from this conversation. Tell the developer what to set up first, if anything, and the line that starts the build, such as `Build the change in changes/YYYY-MM-DD-<slug>.md`. Once it is built, the developer starts `/accept-change` in another fresh session.
 
 If you started in the middle of a build, carry on with the build instead.

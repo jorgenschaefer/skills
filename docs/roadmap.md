@@ -19,7 +19,8 @@ Steps 1, 2, 3, 6 and 7 are done. What they changed is in the skills, in
 - Step 2: a promise about behaviour is held by a test, and a rule every piece
   of code would have to remember by structure.
 - Step 3: `accept-change` checks a built change with `review-change` and the
-  user stand-in `try-change`, each in a fresh context.
+  user stand-in `try-change`, each in a fresh context. The developer starts
+  it in a fresh session, not the builder.
 - Step 6: each change gets its own branch. The developer merges it.
 - Step 7: `learn-from-sessions` collects evidence from a project's session
   logs.
@@ -63,7 +64,6 @@ Watch especially:
 - whether `design-change` now brings up interaction, the life of the data and
   patterns without being pushed;
 - whether the builder still decides things alone that are hard to undo;
-- whether the builder runs `/accept-change` at the end without being told;
 - whether `try-change` can start and use the software;
 - what `review-change` and `try-change` miss that the developer then finds. A
   reviewer on the same model as the builder is not fully independent (arXiv

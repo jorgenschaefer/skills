@@ -1,13 +1,14 @@
 ---
 name: accept-change
-description: Check a built change before the developer looks at it - a fresh-context review and a user stand-in, then fix what they find - report to the developer only what is hard to undo and what is still open, and wrap the change up once the developer accepts it. Use when the build of a change is done, before telling the developer it is ready; and on "is this ready", "check the change", "wrap this up".
+description: Check a built change before the developer looks at it - a fresh-context review and a user stand-in, then fix what they find - report to the developer only what is hard to undo and what is still open, and wrap the change up once the developer accepts it. Started by the developer in a fresh session once the build is done.
+disable-model-invocation: true
 ---
 
 # Accept a change
 
 The developer's attention is the scarce resource. Before they look at a change, find what is wrong with it and fix it. Then show them only what needs them.
 
-The change is on its own branch. Its change file is in `changes/`, if it has one.
+You did not build this change, and that is the point: you see it the way the builder could not. The change is on its own branch. Its change file is in `changes/`, if it has one. Read it first.
 
 ## 1. Review and try it
 
@@ -16,9 +17,9 @@ Run both, each in a fresh context. They find different things: one reads the cod
 - **`/review-change`** on the change's branch against the default branch. Give it the change file as what the code is meant to do.
 - **`/try-change`** on the change. Give it the change file. If you know how to start the software and the project's files don't say, give it that too. Don't give it your view of the change: it is there to see what a user sees.
 
-## 2. Decisions you made alone
+## 2. Decisions made during the build
 
-While building, you made decisions. Some of them may be hard to undo, and the developer has not heard of them. Go through the diff and list every decision that is hard to undo and not under `## Decisions that matter` in the change file. A decision is hard to undo when, after the software has been in use for a while, undoing it takes more than a revert:
+The builder made decisions. Some of them may be hard to undo, and the developer has not heard of them. Go through the diff and list every decision that is hard to undo and not under `## Decisions that matter` in the change file. A decision is hard to undo when, after the software has been in use for a while, undoing it takes more than a revert:
 
 - data that was stored: where it lives, its shape, what past records mean;
 - things sent or published: an API, a wire format, URLs;

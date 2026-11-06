@@ -43,7 +43,8 @@ that is not there, and what `sync.sh` does.
 
 - **`accept-change`**: check a built change with a fresh review and a user stand-in, fix what
   they find, report to the developer only what needs them, and wrap the change up once they
-  accept it.
+  accept it. **Typed**: start it with `/accept-change` in a fresh session once the build is
+  done.
 - **`backlog`**: add to, extend or pick from the project's backlog in `changes/backlog/`.
 - **`design-change`**: design what in a change would be costly to change, tell the developer
   about each such decision and ask where there is a real choice, write them into the change
