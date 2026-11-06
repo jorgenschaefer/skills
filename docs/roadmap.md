@@ -287,49 +287,91 @@ it. For a change that skips `explore`, `decide` creates the branch. It is
 small, so it can be done before step 4 if the second run should already use a
 branch.
 
-## Step 7: collect evidence from the sessions
+## Step 7: learn from the sessions
 
 So far, evidence was collected by hand from the session logs in
 `~/.claude/projects/<project>/`. A skill does this, and the developer decides
-what changes. Corrections are only candidates until a human approves them, as
-in AWS AI-DLC 2.0.
+what changes. Findings are only candidates until a human approves them, as in
+AWS AI-DLC 2.0.
 
-**A skill run by hand, `/evidence`**, in a project repository or this one.
+### Where it runs
 
-- It reads the sessions of that project since its last run, and notes which
-  sessions it has read, so nothing is counted twice.
-- It looks for these signals, all seen in the first run:
-  - the developer corrected the agent, or had to push for something
-    (observation 1);
-  - the developer asked a question that showed a gap (observation 2);
-  - a skill should have started and did not (observation 5);
-  - the agent decided something hard to undo alone (observation 5);
-  - a later session found bugs the build missed (observation 8).
-- Each observation has a session ID and a quote, so it can be checked. No
-  quote, no observation.
-- The same kind of observation seen again is counted, not listed twice.
-- Each observation gets a proposed destination:
+**One skill, `learn-from-sessions`, run in a project repository.** It covers
+all sessions of that project since its last run, not only the current one.
+
+- The sessions belong to the project, and only with the project's
+  `CLAUDE.md`, code and conventions at hand can the skill tell a finding about
+  the project from one about a skill.
+- It is installed globally like the other skills, but starts only when the
+  developer types it: `disable-model-invocation: true` in its frontmatter.
+- It notes which sessions it has read, so nothing is counted twice.
+
+### What it looks for
+
+The same approach as `review`: a broad baseline, and a list from the evidence
+as the first expansion, not as the limit.
+
+**The baseline:** where did the work fall short of the four goals or the
+ideas in `docs/manifesto.md`? Where did the developer have to step in,
+correct, repeat something, or find something too late? What took more of the
+developer's attention than it should have?
+
+**Also what worked.** Observation 9, "plain Claude Code built a good
+structure", was evidence too: it kept us from adding a build skill. A skill
+that only looks for faults only ever proposes adding things.
+
+**First expansion, places to look first**, all seen in the first run:
+
+- the developer corrected the agent, or had to push for something
+  (observation 1);
+- the developer asked a question that showed a gap (observation 2);
+- a skill should have started and did not (observation 5);
+- the agent decided something hard to undo alone (observation 5);
+- a later session found bugs the build missed (observation 8).
+
+The list grows only when the developer finds something in the logs that the
+skill missed.
+
+### What it reports
+
+- Each finding has a session ID and a quote, so it can be checked. No quote,
+  no finding.
+- The same kind of finding seen again is counted, not listed twice. Seen in
+  three sessions is stronger than seen once.
+- Each finding gets a proposed destination:
 
 | Destination | When |
 |---|---|
 | The project's `CLAUDE.md` or code | It is about this project: its domain, its conventions, a missing check. |
-| A skill in this repository, with an entry in `docs/evidence/` | It is about how a skill or the workflow behaves, in any project. |
+| This repository, as an evidence file | It is about how a skill or the workflow behaves, in any project. |
 | Nowhere | A one-off, or already known. |
 
-- The developer picks what to apply. The skill makes those changes, or
-  writes the evidence entry.
-- An evidence entry describes the pattern in its own words. It does not copy
+- The developer picks what to apply. The skill makes the project changes
+  with the developer, in the project repository.
+- Findings about skills go into `docs/evidence/YYYY-MM-DD-<project>.md` in
+  this repository, in the form of the first evidence file. The skill finds
+  this repository by following its own symlink in `~/.claude/skills/`, which
+  `sync.sh` created. It writes the file but does not change any skill.
+- An evidence file describes the pattern in its own words. It does not copy
   code or data from the project.
 
-The hard part is the extraction prompt: what counts as a signal, and how to
-avoid false observations. It needs a few rounds of tuning, so the skill is
-run by hand first. Once its list can be trusted, a local cron job running
-`claude -p "/evidence"` every night is enough to automate it. A cloud
-routine cannot read the local session logs.
+### No second skill here
 
-`evidence/narrate.py`, written to read the logs of the first run, is a
-starting point for reading sessions compactly. The skill's `SKILL.md` goes
-next to it.
+Turning evidence into skill changes is ordinary work in this repository, and
+`CLAUDE.md` already guides it. Add a skill for it only if that work starts to
+repeat itself.
+
+### Later
+
+The hard part is the prompt: what counts as a finding, and how to avoid false
+ones. It needs a few rounds of tuning, so the skill is run by hand first.
+Once its list can be trusted, a local cron job running
+`claude -p "/learn-from-sessions"` every night automates it. A cloud routine
+cannot read the local session logs.
+
+`learn-from-sessions/narrate.py`, written to read the logs of the first run,
+is a starting point for reading sessions compactly. The skill's `SKILL.md`
+goes next to it.
 
 This step can come before step 4, so the second test run is the first with
 collected evidence.
