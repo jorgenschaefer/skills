@@ -25,7 +25,8 @@ agent's.
    and the mock-ups into `changes/`, and the ADRs into `docs/adr/`. Commits
    them before the build.
 4. **Build.** Plain Claude Code: the smallest thing that does the job, in the
-   domain's words, with the project's checks green.
+   domain's words, with the tests the change file names and the project's
+   checks green.
 5. **Check** (skill, with step 6). A reviewer with a fresh context tries to
    find what is wrong with the diff. A user stand-in uses the change on the
    running software as a real user would. The builder fixes what they find.
@@ -91,7 +92,19 @@ it after the change file is gone. An empty section says "None."
 
 ## Decisions that matter
 
-`docs/adr/NNNN-<slug>.md`, one file per decision that would be hard to undo
-and that the code does not show. They outlive the change. A later
-change that would break one brings it back to the developer. The format is in
-`decide/ADR_FORMAT.md`.
+The change file is deleted when the change is done. Whatever must still hold
+afterwards needs a record that outlives it:
+
+- **The code** holds what it shows, such as a `due_date` column.
+- **A test** holds a promise about behaviour, such as old saves still parsing
+  after a deploy. `decide` names it, and the builder writes it.
+- **Structure** holds a rule every piece of code would otherwise have to
+  remember: the login is checked once for all routes, not in each route.
+- **An ADR** holds what the code cannot show, such as the hosting.
+  `docs/adr/NNNN-<slug>.md`, one file per decision. A later change that would
+  break one brings it back to the developer. The format is in
+  `decide/ADR_FORMAT.md`.
+
+There is no rule about test-driven development or coverage. In the first run
+the bugs that mattered were the cases nobody had in mind, and such rules test
+what someone has in mind.

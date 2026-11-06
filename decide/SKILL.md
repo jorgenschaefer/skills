@@ -73,7 +73,12 @@ system, the data. Links to the mock-ups.>
 
 List every decision you told or asked, not only the ones you asked. Before there is code, the change file is their only record. If there is no change file, tell the developer what you would have written there.
 
-The change file is deleted when the change is done, so each decision also needs something that holds it afterwards. The code holds what it shows, such as a `due_date` column. Write an ADR only for a decision the code does not show: a hosting provider, a vendor contract, a promise made to a partner, a rule such as "this email never goes to third parties".
+The change file is deleted when the change is done, so each decision also needs something that holds it afterwards:
+
+- **The code** holds what it shows, such as a `due_date` column.
+- **A test** holds a promise about behaviour, such as old saves still parsing after a deploy, or the last save winning when two phones save the same set. Name the test in the change file; the builder writes it.
+- **Structure** holds a rule every piece of code would otherwise have to remember. Don't settle for "every route checks the login"; decide that the login is checked once, for all routes.
+- **An ADR** holds what the code cannot show: a hosting provider, a vendor contract, a promise made to a partner, a rule such as "this email never goes to third parties".
 
 Write each ADR as `docs/adr/NNNN-<slug>.md`, in the format of `ADR_FORMAT.md`. If it replaces a recorded decision, delete that file in the same change.
 
