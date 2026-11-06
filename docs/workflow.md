@@ -29,10 +29,12 @@ agent's.
 4. **Build.** Plain Claude Code: the smallest thing that does the job, in the
    domain's words, with the tests the change file names and the project's
    checks green.
-5. **Check** (skill, with step 6). A reviewer with a fresh context
-   (`/review-change`) tries to find what is wrong with the diff. A user
-   stand-in uses the change on the running software as a real user would.
-   The builder fixes what they find.
+5. **Check** (`accept-change` skill, with steps 6 and 7). A reviewer with a
+   fresh context (`/review-change`) tries to find what is wrong with the
+   diff. A user stand-in with a fresh context (`/try-change`) uses the
+   change on the running software as a real user would. The builder lists
+   the decisions it made alone that are hard to undo, and fixes what the
+   two found.
 6. **Report.** Show the developer only what is hard to undo and what is
    still open. The developer tries it. If it does not solve their problem,
    back to step 2.

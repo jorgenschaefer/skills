@@ -41,6 +41,9 @@ that is not there, and what `sync.sh` does.
 
 ## Available skills
 
+- **`accept-change`**: check a built change with a fresh review and a user stand-in, fix what
+  they find, report to the developer only what needs them, and wrap the change up once they
+  accept it.
 - **`backlog`**: add to, extend or pick from the project's backlog in `changes/backlog/`.
 - **`decide`**: design what in a change would be costly to change, tell the developer about
   each such decision and ask where there is a real choice, write them into the change file, and
@@ -52,5 +55,7 @@ that is not there, and what `sync.sh` does.
   sets them up.
 - **`review-change`**: review code in a fresh context and find what is wrong with it: bugs, ways
   someone can see or do more than they should, and code that makes future changes hard.
+- **`try-change`**: use a change on the running software as a real user would, in a fresh
+  context, and report what a user would trip over.
 - **`upgrade-dependencies`**: upgrade npm dependencies one step at a time, green after each.
   **Typed**: it only runs when you type `/upgrade-dependencies`.

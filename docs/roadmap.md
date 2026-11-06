@@ -12,9 +12,9 @@ observation in the evidence file.
 
 - `explore` and `decide` exist and were used once, on a new app.
 - The build is plain Claude Code. There is no build skill.
-- Workflow steps 5 and 6, check and report, have no skill yet.
-- Steps 1, 2 and 6 are done: the split between `explore` and `decide`,
-  promises held by tests or structure, and a branch per change.
+- Steps 1, 2, 3 and 6 are done: the split between `explore` and `decide`,
+  promises held by tests or structure, `review-change`, `try-change` and
+  `accept-change`, and a branch per change.
 
 ## How to work on this
 
@@ -161,7 +161,7 @@ mind, and the bugs that mattered were exactly what nobody had in mind
 (observation 10). Google and OpenAI recommend tests first; our evidence does
 not support that as a rule.
 
-## Step 3: `review-change`, then `check`
+## Step 3: `review-change`, then `accept-change`
 
 The serious bugs in the first run were found only by a review the developer
 ran by hand (observations 6, 8). This step has the most evidence behind it.
@@ -234,7 +234,12 @@ independent (arXiv paper). A fresh context and an adversarial prompt help,
 but don't remove this. That is one more reason for the user stand-in and for
 the developer's own look.
 
-### `check` (new skill, after `review-change`)
+### `accept-change` (new skill, after `review-change`)
+
+**Done.** Named `accept-change`. The user stand-in is a skill of its own,
+`try-change`, forked like `review-change`, so the builder's view of the
+change cannot reach it. The builder itself lists the decisions it made
+alone; the second run will show whether it misses some.
 
 Workflow steps 5 and 6.
 
@@ -248,10 +253,9 @@ Workflow steps 5 and 6.
 - The builder fixes what the two find.
 - The report shows the developer only what is hard to undo and what is still
   open.
-- Once the developer says the change solves their problem, `check` accepts
-  it: what could wait goes to the backlog, and the change file and its
-  mock-ups are deleted and committed. The developer merges the branch. So
-  the skill may be better named `accept-change`.
+- Once the developer says the change solves their problem, `accept-change`
+  accepts it: what could wait goes to the backlog, and the change file and
+  its mock-ups are deleted and committed. The developer merges the branch.
 
 Outside support: AWS says self-correction only works against checks the AI
 cannot change. Thoughtworks saw agents get around their own tests. OpenAI
@@ -280,7 +284,7 @@ Open question 3 in the evidence file. Wait for the second run before choosing
 how. Steps 1 and 2 may fix most of it: with the stack, the data shape and the
 tells in the change file, the builder has fewer decisions left to make alone.
 
-The safety net in `check` (step 3) reports such decisions in any case, but
+The safety net in `accept-change` (step 3) reports such decisions in any case, but
 only after the build. If the builder still decides alone, the options to
 catch it during the build, cheapest first:
 
