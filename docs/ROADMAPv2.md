@@ -2,23 +2,39 @@
 
 Where the skills, as written today, lead a model to work against
 `docs/manifesto.md`. Each finding names what the model will do, where in a
-skill that comes from, and two ratings.
+skill that comes from, two ratings, and what the evidence says.
 
 - **Likelihood**: how likely a model is to do this when it follows the skill.
 - **Impact**: how much harm it does, measured as the manifesto measures it:
   by how hard it is to undo.
+- **Evidence**: what the test runs showed. "Logbook" is
+  `docs/evidence/2026-11-05-workout-logbook.md`, "kh-finder" is
+  `docs/evidence/2026-11-07-kh-finder.md`. A finding is confirmed,
+  contradicted, or has no evidence yet.
 
-Only finding 1 rests on evidence so far (observation 5 in
-`docs/evidence/2026-11-05-workout-logbook.md`). The others come from reading
-the skills. `docs/roadmap.md` says every change to a skill needs evidence, so
-treat them as things to watch in the next test run, not as changes to make
-now.
+The findings first came from reading the skills. The kh-finder run then
+confirmed some, contradicted others, and added three. The numbers stay as
+first written. Ratings changed where evidence came in, so the order is no
+longer strictly worst first.
+
+`docs/roadmap.md` says every change to a skill needs evidence. Findings with
+no evidence yet are things to watch in the next run, not changes to make now.
 
 ## What to fix first
 
-Findings 1, 2 and 3. Together they turn most security findings into problems
-nobody acts on: the builder decides alone, small changes are never checked,
-and what the check finds sinks in the backlog.
+The findings with evidence behind them:
+
+- **11**, secrets and paid outside calls. Seen in both runs.
+- **15 and 17**, a redesign inside `accept-change` that nobody reviews or
+  tries again.
+- **21**, the agent recommending more than the problem needs. The developer
+  cut it back several times.
+- **22**, `backlog` choosing sizes on its own. This also makes 3 worse.
+- **1**, the builder deciding alone. Seen in the logbook. kh-finder adds no
+  new data.
+
+Of those with no evidence yet, 2 and 3 matter most: small changes never
+checked, and security fixes sinking in the backlog.
 
 ## Questions for the next run
 
@@ -36,17 +52,21 @@ it, and to how many people or how much data?" Don't send every wide change
 to the developer: the manifesto ranks a harm that is fully undone, such as an
 outage that is over, lower on purpose.
 
+No evidence yet.
+
 ## High likelihood, high impact
 
 ### 1. The builder decides hard-to-undo things alone
 
 `build-change/SKILL.md:19` says only "Build the smallest thing that does the
 job". Nothing tells the builder to stop and run `/design-change` when a
-decision is hard to undo. Observation 5 shows this happening. Roadmap step 5
-is still open. `review-change` reports such decisions, but only after they
-are built.
+decision is hard to undo. Roadmap step 5 is still open. `review-change`
+reports such decisions, but only after they are built.
 
 Likelihood: high. Impact: high.
+
+Evidence: confirmed in the logbook, observation 5. kh-finder adds no new
+data.
 
 ### 2. Small changes skip the check
 
@@ -60,6 +80,9 @@ small change this way. It also conflicts with "Then stop" (`:89-91`).
 
 Likelihood: high. Impact: medium to high.
 
+Evidence: none yet. In kh-finder, stopping before the build held, but only on
+the path with a change file.
+
 ### 3. The backlog ranks security fixes low
 
 The backlog ranks items by utility minus effort, and utility is "what it
@@ -70,6 +93,10 @@ second, above usability.
 
 Likelihood: high. Impact: high.
 
+Evidence: none yet on the ranking. kh-finder observation 3 makes it worse:
+called from another skill, `backlog` chose the sizes itself, so nobody checks
+them (finding 22).
+
 ### 4. `upgrade-dependencies` ignores known vulnerabilities
 
 There is no `npm audit`, and nothing puts security fixes first. If the fix
@@ -79,6 +106,27 @@ skill reverts it and hands it to the backlog like any other upgrade
 
 Likelihood: high. Impact: high.
 
+Evidence: none yet.
+
+### 11. Secrets and paid outside calls are nobody's design
+
+The list of risks in `review-change/SKILL.md:29-34` comes from one offline
+app. It does not name reading other users' records by changing an ID,
+injection, cross-site scripting, secrets that end up in the client bundle, or
+a new route that skips the login check. `design-change`'s list of what is
+hard to undo (`design-change/SKILL.md:16-22`) does not name where secrets
+live, or how often a paid call fires. No skill does.
+
+Likelihood: high. Impact: high.
+
+Evidence: confirmed in kh-finder, observations 4 and 5. `design-change` never
+asked where the API key lives during development, so the agent asked for it
+in the chat, and it ended up in the transcript. Nobody asked how often the
+paid call fires: 28 requests on a 3 km drive. Under the dev server, any page
+on another localhost port could read the key; the review caught it. The
+logbook's observations 11 and 13 point the same way. First rated low
+likelihood; the evidence says high.
+
 ## Medium likelihood, high impact
 
 ### 5. The builder can drop review findings without a trace
@@ -87,10 +135,13 @@ Likelihood: high. Impact: high.
 what is "for the developer" and what could not be fixed, "Not what you fixed"
 (`:41`). If the builder decides a finding is wrong, nobody sees it.
 `review-change:53` says that findings not fixed go to the backlog, but
-`build-change` never says so. And the builder is the author, the one most
-likely to dismiss a finding.
+`build-change` never says so.
 
-Likelihood: medium. Impact: high.
+Likelihood: low. Impact: high.
+
+Evidence: contradicted in kh-finder, observation 2. All five reports showed
+more than asked, fixes and successes included, not less. First rated medium
+likelihood.
 
 ### 6. Tests may reach real services
 
@@ -103,6 +154,9 @@ network on the developer's machine.
 
 Likelihood: medium. Impact: high.
 
+Evidence: none yet. In kh-finder the checks used a throwaway container and a
+faked API answer, which is the safe way.
+
 ### 7. Nobody checks the build against the existing ADRs
 
 `build-change/SKILL.md:13` reads only the ADRs the change file links to.
@@ -111,6 +165,8 @@ build that breaks an older recorded decision passes both. Only
 `design-change:31` reads `docs/adr/`, and that is before there is code.
 
 Likelihood: medium. Impact: high.
+
+Evidence: none yet.
 
 ### 8. "In a small change the list is often empty"
 
@@ -121,6 +177,8 @@ exactly the decisions about who can see what.
 
 Likelihood: medium. Impact: high.
 
+Evidence: none yet.
+
 ### 9. A real choice becomes a one-line tell
 
 Asking takes three options that differ in substance, and mock-ups
@@ -130,6 +188,10 @@ Tells come as a list of one-liners (`:52-55`), so the developer skims past a
 security-relevant one such as "sessions never expire".
 
 Likelihood: medium. Impact: medium to high.
+
+Evidence: partly confirmed in kh-finder, observation 10. The developer reads
+the chat summary, not the change file, and one summary left out "the app asks
+the API by itself".
 
 ## Low likelihood, high impact
 
@@ -143,26 +205,21 @@ developer's machine.
 
 Likelihood: low. Impact: high.
 
-### 11. The security lens is narrow
-
-The list of risks in `review-change/SKILL.md:29-34` comes from one offline
-app. It does not name reading other users' records by changing an ID,
-injection, cross-site scripting, secrets that end up in the client bundle, or
-a new route that skips the login check. "A start, not the limit" helps, but
-the list steers where the model looks. No skill says where secrets live.
-
-Likelihood: low. Impact: high.
+Evidence: none yet.
 
 ## Medium impact
 
-### 12. The change file never says who the user is
+### 12. `try-change` cannot check phone width
 
 The change file has no place for who uses the software, on which device, and
-where. `try-change/SKILL.md:22` asks for "the screen size they use it on" but
-has nowhere to learn it, so it guesses a desktop. The manifesto says the agent
-"has to know what the software is really used for, and by whom".
+where. `try-change/SKILL.md:22` asks for "the screen size they use it on".
 
 Likelihood: high. Impact: medium.
+
+Evidence: partly confirmed in kh-finder, observation 8, with a different
+cause. The stand-in knew the app is used on phones, but could not resize the
+browser. Once it checked in a 360 px frame instead; once it reported "Nobody
+tried the change at phone width."
 
 ### 13. A confirmed bug leaves no test behind
 
@@ -172,12 +229,17 @@ can come back with the next change.
 
 Likelihood: high. Impact: medium.
 
+Evidence: none yet. In kh-finder the builder showed that its new tests fail
+on the old code, which is the opposite habit.
+
 ### 14. The builder recommends on its own decisions
 
 `build-change/SKILL.md:38` asks for "what you recommend" on decisions the
 builder made alone. It will defend what it already built.
 
 Likelihood: high. Impact: medium.
+
+Evidence: none yet.
 
 ### 15. Fixes are not tried again
 
@@ -186,7 +248,12 @@ Likelihood: high. Impact: medium.
 `try-change` never runs again, so a fix for a usability problem is never
 used by a user stand-in.
 
-Likelihood: medium. Impact: medium.
+Likelihood: high. Impact: medium.
+
+Evidence: confirmed in kh-finder, observation 6. After the second rebuild
+inside `accept-change`, no review ran, and the stand-in never tried the new
+button. The developer had to start both again by hand. First rated medium
+likelihood.
 
 ### 16. A decision settled along the way is never written down
 
@@ -197,14 +264,23 @@ leaves it out. Nothing holds it once the change file is deleted.
 
 Likelihood: medium. Impact: medium.
 
-### 17. `accept-change` adds code after acceptance
+Evidence: none yet.
+
+### 17. `accept-change` changes code after acceptance
 
 "Add what is missing" (`accept-change/SKILL.md:13`) can mean new tests,
 structure or ADRs, written after the developer tried the change, with no
 review and no try. It can also produce an ADR saying "Decided: by the
-developer" for something the developer never decided.
+developer" for something the developer never decided. And nothing says what
+to do when the developer asks for a redesign inside the accept session.
 
 Likelihood: medium. Impact: medium.
+
+Evidence: mixed. Confirmed in kh-finder, observation 6: the feature was
+rebuilt twice inside `accept-change`, and nothing sent it back to the
+review and the stand-in. But in `68ef4750`, "add what is missing" worked
+well: it found a test that did not pin its decision, added one, and asked
+about three findings the developer had never answered.
 
 ### 18. Approaches don't show what they expose
 
@@ -214,6 +290,8 @@ as sharing the logbook with a coach, without seeing what it exposes.
 `design-change` only ever sees the approach that was picked.
 
 Likelihood: medium. Impact: medium.
+
+Evidence: none yet.
 
 ### 19. `nextjs-project-setup` and `design-change` both decide the stack
 
@@ -226,6 +304,10 @@ does not cover.
 
 Likelihood: medium. Impact: medium.
 
+Evidence: a related case in kh-finder, observation 7. Without
+`understand-change`, the agent used `nextjs-project-setup` as a guide to the
+developer's stack for an existing project.
+
 ### 20. `learn-from-sessions` writes project details into a public repository
 
 The evidence files hold project names, paths, session IDs and descriptions of
@@ -236,22 +318,51 @@ What leaked cannot be unleaked.
 
 Likelihood: medium. Impact: medium.
 
-### 21. "The smallest thing" read as "the least code"
+Evidence: none yet. The kh-finder evidence file names the project and its
+domain; for this project that is fine.
 
-A model may read `build-change/SKILL.md:19` as leave to copy code instead of
-sharing it, or to skip validation.
+### 21. The agent recommends more than the problem needs
 
-Likelihood: low. Impact: medium.
+The manifesto says to build small (`docs/manifesto.md:58-61`): the least that
+solves the problem, so you learn early. `understand-change/SKILL.md:26` says
+to put the simplest approach first, but the agent still recommends a bigger
+one. `build-change/SKILL.md:19` says "the smallest thing", which could also
+be read as "the least code" and lead to shortcuts; there is no evidence of
+that.
+
+Likelihood: high. Impact: medium.
+
+Evidence: confirmed in kh-finder, observation 1. The agent proposed a
+five-phase rewrite and a proxy with a PIN per person and rate limiting
+(`c7547d4c`), recommended the bigger of three approaches (`2e97ef0c`), and a
+rule on distance and time when time alone was enough (`6878405c`,
+`dc1e029c`). The developer cut each back. Why the skill's "simplest first"
+did not hold is not clear yet. First rated low likelihood.
+
+The cases about dependencies in `723ff5f4`, a server written by hand and a
+global install, do not belong here. kh-finder's `CLAUDE.md` still said
+"nothing it ships has a dependency", and the agent followed it. They show
+something narrower: a project rule the developer drops in the session should
+give way to what they said, and `CLAUDE.md` should change with it.
+Observation 1 in the evidence file counts them with the rest and concludes
+that "simplest" was read as "fewest dependencies"; that conclusion does not
+hold.
+
+### 22. `backlog` chooses sizes on its own when another skill calls it
+
+`backlog/SKILL.md:35` says to propose effort and utility and write the file
+once the user confirms. When another skill hands over an item in the middle
+of its work, the model skips the confirmation.
+
+Likelihood: high. Impact: medium, because unchecked sizes decide the ranking
+(finding 3).
+
+Evidence: confirmed in kh-finder, observation 3. Twice in `68ef4750` it wrote
+and committed items with sizes it chose, then said the developer had not
+confirmed them. Started directly, it asked first. This replaces the first
+version of this finding, which feared the opposite: too many confirmations.
 
 ## Low impact, mostly the developer's attention
-
-### 22. The backlog asks for confirmation item by item
-
-Each item handed over needs the developer to confirm its sizes
-(`backlog/SKILL.md:35`). `accept-change`, `review-change` and
-`upgrade-dependencies` each hand over several items, one at a time.
-
-Likelihood: high. Impact: low.
 
 ### 23. Nobody checks accessibility
 
@@ -259,6 +370,8 @@ Likelihood: high. Impact: low.
 or uses a screen reader.
 
 Likelihood: high. Impact: low to medium.
+
+Evidence: none yet.
 
 ### 24. A new project means a long row of questions
 
@@ -268,6 +381,8 @@ tired developer starts accepting whatever is recommended.
 
 Likelihood: medium. Impact: low to medium.
 
+Evidence: none yet. kh-finder was an existing project.
+
 ### 25. Three approaches even for a sharp request
 
 "Offer at least three approaches" (`understand-change/SKILL.md:26`) works
@@ -276,12 +391,16 @@ options.
 
 Likelihood: medium. Impact: low.
 
+Evidence: none yet.
+
 ### 26. Every failed try goes back to `understand-change`
 
 `build-change/SKILL.md:45` sends every failure back to `/understand-change`,
 even a plain bug.
 
 Likelihood: medium. Impact: low.
+
+Evidence: none yet.
 
 ### 27. The setup skill installs every preferred library
 
@@ -290,3 +409,31 @@ The model may add TanStack Query and Mantine before anything needs them
 to earn its place.
 
 Likelihood: medium. Impact: low.
+
+Evidence: none yet.
+
+## Found in the kh-finder run
+
+### 28. `understand-change` does not start on an open request
+
+Its description (`understand-change/SKILL.md:3`) names ideas, wishes and
+problems, and phrases such as "let's think this through". A request like
+"question every assumption and write a roadmap" matches none of them.
+
+Likelihood: medium. Impact: medium, because the change starts from a premise
+nobody questioned.
+
+Evidence: kh-finder, observation 7. The agent agreed with the premise and put
+a feeling, a migration and a feature into one change file. Once the skill
+ran, asking what prompted the request found the real problem.
+
+### 29. `learn-from-sessions` loses its work when a run ends early
+
+It shows the findings and asks the developer what to apply
+(`learn-from-sessions/SKILL.md:62`). Only after the answer does it write
+anything down or mark sessions as read.
+
+Likelihood: medium. Impact: low, but a whole run's reading is lost.
+
+Evidence: kh-finder, observation 9. A run read 11 sessions, asked, got no
+answer, and the next run had to read them all again.
