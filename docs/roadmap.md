@@ -1,43 +1,45 @@
 # Roadmap
 
-What we change in the skills next, and why. It follows from the first test
-run (`docs/evidence/2026-11-05-workout-logbook.md`) and the summaries in
-`docs/reference/`. Delete this file when everything below is done.
+What we change in the skills next, and why. It follows from two test runs,
+from reading the skills against `docs/manifesto.md`, and from the summaries
+in `docs/reference/`. Delete this file when everything below is done.
 
-Three kinds of numbers appear below. "Step 1" is a step of this roadmap.
-"Workflow step 5" is a step in `docs/workflow.md`. "Observation 8" is an
-observation in the evidence file.
+Four kinds of numbers appear below. "Step 1" is a step of this roadmap.
+"Finding 1" is a finding in this file. "Workflow step 5" is a step in
+`docs/workflow.md`. "Logbook observation 8" and "kh-finder observation 8"
+are observations in the evidence files
+`docs/evidence/2026-11-05-workout-logbook.md` and
+`docs/evidence/2026-11-07-kh-finder.md`.
 
 ## Where we are
 
-Steps 1, 2, 3, 6 and 7 are done. What they changed is in the skills, in
-`docs/workflow.md` and in git history.
+Steps 1, 2, 3, 4, 6 and 7 are done. What they changed is in the skills, in
+`docs/workflow.md`, in `docs/evidence/` and in git history.
 
 - Step 1: `understand-change` understands the problem and picks a direction.
   `design-change` designs what is costly to change. They were called
-  `explore` and `decide`, and the evidence files use those names.
+  `explore` and `decide`, and the logbook uses those names.
 - Step 2: a promise about behaviour is held by a test, and a rule every piece
   of code would have to remember by structure.
 - Step 3: `build-change` builds a change and checks it with `review-change`
   and the user stand-in `try-change`, each in a fresh context.
   `accept-change` wraps it up once the developer accepts it. The developer
   starts both.
+- Step 4: the second test run, on kh-finder, an existing project. It ran
+  the whole workflow, and `build-change` and `accept-change` ran for the
+  first time. What it showed is in the findings below.
 - Step 6: each change gets its own branch. The developer merges it.
 - Step 7: `learn-from-sessions` collects evidence from a project's session
   logs.
 
-`understand-change` and `design-change` ran once, under their old names, on a
-new app. In kh-finder the checking ran from a build session and from a
-fresh one, but it never got to the wrap-up: that waited for the developer to
-come back to the same session. So it moved into its own skill, and
-`build-change` took over the checking. `build-change` and the new
-`accept-change` have never run.
+Step 5, starting `design-change` during the build, is now finding 2.
 
 ## How to work on this
 
 - **Every change to a skill comes from evidence.** Name the observation it
   answers. A skill starts small and grows only when a test run shows that it
-  missed something. Don't add rules because they feel right.
+  missed something. Don't add rules because they feel right. The findings
+  without evidence below are things to watch, not changes to make.
 - **A skill only sees its own directory.** A file two skills need is copied
   into each.
 - **Run `./test.sh`** after every change. It checks that references to other
@@ -55,44 +57,40 @@ come back to the same session. So it moved into its own skill, and
   so the developer can object. "A tell" is such a line.
 - **Change file.** `changes/YYYY-MM-DD-<slug>.md`, the agreement for one
   change. It is deleted when the change is done.
+- **Likelihood**: how likely a model is to do what a finding says, when it
+  follows the skill.
+- **Impact**: how much harm that does, measured as the manifesto measures
+  it: by how hard it is to undo.
 
-## Step 4: second test run, on an existing project
+## Next: a third test run
 
-The first run was a new app. Use the full workflow on a real change to an
-existing project. Collect the evidence with `/learn-from-sessions` in that
-project, and write it into a new file in `docs/evidence/`, in the same form
-as the first.
+The changes for new projects have not been tested since the logbook. A run on
+a new project would test them. Watch especially:
 
-Watch especially:
-
-- whether `design-change` now brings up interaction, the life of the data and
-  patterns without being pushed;
-- whether the builder still decides things alone that are hard to undo;
-- whether `try-change` can start and use the software;
-- what `review-change` and `try-change` miss that the developer then finds. A
-  reviewer on the same model as the builder is not fully independent (arXiv
-  paper). A fresh context and an adversarial prompt help, but don't remove
-  this;
-- whether the branches work: one per change, and nothing left on `main`;
-- what `learn-from-sessions` misses that the developer finds in the logs.
-
-This run does not test the changes for new projects. Those need a later run.
-
-## Step 5: make `design-change` start during the build
-
-Open question 3 in the evidence file. Wait for the second run before choosing
-how. Steps 1 and 2 may fix most of it: with the stack, the data shape and the
-tells in the change file, the builder has fewer decisions left to make alone.
-
-The safety net in `review-change` (step 3) reports such decisions in any
-case, but only after the build. If the builder still decides alone, the
-options to catch it during the build, cheapest first:
-
-1. A line in `build-change` telling the builder to stop and run
-   `/design-change` when a decision is hard to undo.
-2. A hook that reminds the builder to run `/design-change` when it changes
-   the files where such decisions usually show: the database schema, the
-   dependencies, the deployment setup.
+- **What the kh-finder run did not answer:**
+  - whether the builder still decides things alone that are hard to undo
+    (finding 2);
+  - whether the branches work: one per change, and nothing left on `main`;
+  - what `review-change` and `try-change` miss that the developer then finds.
+    A reviewer on the same model as the builder is not fully independent
+    (arXiv paper). A fresh context and an adversarial prompt help, but don't
+    remove this;
+  - whether `design-change` brings up interaction, the life of the data and
+    patterns without being pushed. In kh-finder it missed secrets and paid
+    calls (finding 1), but nothing shows about the rest;
+  - what `learn-from-sessions` misses that the developer finds in the logs.
+- **Did a wide decision slip through because it was easy to revert?** Some
+  decisions reach a lot: a shared login check, a global limit, a migration
+  over every record. Reverting the code is easy. But what the software did
+  before the revert may not be: data that leaked, users locked out. The
+  skills already count that as hard to undo (`design-change/SKILL.md:14`),
+  but a model may read "easy to revert" and stop there. If it happens,
+  sharpen the existing question rather than add a rule: "If this is wrong,
+  what happens before anyone reverts it, and to how many people or how much
+  data?" Don't send every wide change to the developer: the manifesto ranks a
+  harm that is fully undone, such as an outage that is over, lower on
+  purpose. No evidence yet.
+- **The findings without evidence**, below.
 
 ## Tuning `learn-from-sessions`
 
@@ -103,22 +101,432 @@ logs that it missed. Once its list can be trusted, a local cron job running
 `claude -p "/learn-from-sessions"` every night automates it. A cloud routine
 cannot read the local session logs.
 
-The first run, on 2026-11-06, read the logbook's three sessions. It found
-three things about the skills and four about the project, each with a quote.
-It left out what the evidence file already had, so whether it would find
-those on its own is still untested. One change came of it: `review-change`
-now sends findings that are not fixed to the backlog.
+Two runs so far:
+
+- On 2026-11-06 it read the logbook's three sessions. It found three things
+  about the skills and four about the project, each with a quote. One change
+  came of it: `review-change` now sends findings that are not fixed to the
+  backlog.
+- On kh-finder it ran twice. The first run lost its work (finding 13). The
+  second wrote the evidence file. Its observation 1 counted cases with
+  different causes as one pattern, and drew a conclusion that did not hold:
+  some of the cases followed an old project rule. The developer caught it.
+  That is the kind of false finding the tuning has to prevent.
+
+## Findings with evidence
+
+What the evidence confirms, ordered worst first. Fix these first.
+
+### 1. Secrets and paid outside calls are nobody's design
+
+`design-change`'s list of what is hard to undo
+(`design-change/SKILL.md:16-22`) does not name where secrets live, or how
+often a paid call fires. No skill does. The list of risks in
+`review-change/SKILL.md:29-34` comes from one offline app. It also does not
+name reading other users' records by changing an ID, injection, cross-site
+scripting, secrets that end up in the client bundle, or a new route that
+skips the login check.
+
+Likelihood: high. Impact: high.
+
+Evidence: kh-finder observations 4 and 5, and logbook observations 11 and 13.
+`design-change` never asked where the API key lives during development, so
+the agent asked for it in the chat, and it ended up in the transcript. Nobody
+asked how often the paid call fires: 28 requests on a 3 km drive. Under the
+dev server, any page on another localhost port could read the key; the
+review caught it. The evidence covers secrets and paid calls only. The other
+kinds of risk named above have no evidence yet.
+
+### 2. The builder decides hard-to-undo things alone
+
+`build-change/SKILL.md:19` says only "Build the smallest thing that does the
+job". Nothing tells the builder to stop and run `/design-change` when a
+decision is hard to undo. `review-change` reports such decisions, but only
+after they are built.
+
+Likelihood: high. Impact: high.
+
+Evidence: logbook observation 5. kh-finder has no case of it, which fits the
+guess that steps 1 and 2 fix most of it: with the stack, the data shape and
+the tells in the change file, the builder has fewer decisions left to make
+alone. If it shows up again, the options, cheapest first:
+
+1. A line in `build-change` telling the builder to stop and run
+   `/design-change` when a decision is hard to undo.
+2. A hook that reminds the builder to run `/design-change` when it changes
+   the files where such decisions usually show: the database schema, the
+   dependencies, the deployment setup.
+
+### 3. Fixes are not tried again
+
+`/review-change` runs again only "if a fix changed the code a lot"
+(`build-change/SKILL.md:32`), and the builder decides what "a lot" is.
+`try-change` never runs again, so a fix for a usability problem is never
+used by a user stand-in.
+
+Likelihood: high. Impact: medium.
+
+Evidence: kh-finder observation 6. After the second rebuild inside
+`accept-change`, no review ran, and the stand-in never tried the new button.
+The developer had to start both again by hand.
+
+### 4. The agent recommends more than the problem needs
+
+The manifesto says to build small (`docs/manifesto.md:58-61`): the least that
+solves the problem, so you learn early. `understand-change/SKILL.md:26` says
+to put the simplest approach first, but the agent still recommends a bigger
+one.
+
+Likelihood: high. Impact: medium.
+
+Evidence: kh-finder observation 1. The agent proposed a five-phase rewrite
+and a proxy with a PIN per person and rate limiting (`c7547d4c`), recommended
+the bigger of three approaches (`2e97ef0c`), and a rule on distance and time
+when time alone was enough (`6878405c`, `dc1e029c`). The developer cut each
+back. Why "simplest first" did not hold is not clear yet. The cases about
+dependencies in the same observation belong to finding 10, not here.
+
+### 5. `backlog` chooses sizes on its own when another skill calls it
+
+`backlog/SKILL.md:35` says to propose effort and utility and write the file
+once the user confirms. When another skill hands over an item in the middle
+of its work, the model skips the confirmation.
+
+Likelihood: high. Impact: medium, because unchecked sizes decide the ranking
+(finding 16).
+
+Evidence: kh-finder observation 3. Twice in `68ef4750` it wrote and committed
+items with sizes it chose, then said the developer had not confirmed them.
+Started directly, it asked first.
+
+### 6. `try-change` cannot check phone width
+
+`try-change/SKILL.md:22` asks for "the screen size they use it on", but the
+stand-in cannot resize the browser. The change file also has no place for
+who uses the software, on which device, and where.
+
+Likelihood: high. Impact: medium.
+
+Evidence: kh-finder observation 8. The stand-in knew the app is used on
+phones. Once it checked in a 360 px frame instead; once it reported "Nobody
+tried the change at phone width." That the change file lacks the user's
+device has no evidence yet: in kh-finder the stand-in knew it.
+
+### 7. Reports list fixes and successes, although the skills forbid it
+
+`build-change/SKILL.md:41` says to show "Not what you fixed, and not what went
+well". The reports do it anyway.
+
+Likelihood: high. Impact: low, but it costs the developer attention.
+
+Evidence: kh-finder observation 2, five reports. One case may be a fair
+exception: a fixed bug that broke a decision that matters, such as a race
+with the user's consent. Either the rule goes, or the skill says why it is
+there and names the exception.
+
+### 8. A real choice becomes a one-line tell
+
+Asking takes three options that differ in substance, and mock-ups
+(`design-change/SKILL.md:41-48`). Telling takes one line. So the model leans
+toward "only one sensible option", and "sensible" means its own default.
+Tells come as a list of one-liners (`:52-55`), so the developer skims past a
+security-relevant one such as "sessions never expire".
+
+Likelihood: medium. Impact: medium to high.
+
+Evidence: partly, kh-finder observation 10. The developer reads the chat
+summary, not the change file, and one summary left out "the app asks the API
+by itself". That the model tells where it should ask has no evidence yet.
+
+### 9. `accept-change` changes code after acceptance
+
+"Add what is missing" (`accept-change/SKILL.md:13`) can mean new tests,
+structure or ADRs, written after the developer tried the change, with no
+review and no try. And nothing says what to do when the developer asks for a
+redesign inside the accept session: go back to `build-change`, or run the
+review and the stand-in again.
+
+Likelihood: medium. Impact: medium.
+
+Evidence: mixed. kh-finder observation 6 confirms the redesign case: the
+feature was rebuilt twice inside `accept-change`, and nothing sent it back to
+the review and the stand-in. But in `68ef4750`, "add what is missing" worked
+well: it found a test that did not pin its decision, added one, and asked
+about three findings the developer had never answered.
+
+### 10. A project rule the developer drops still wins
+
+When the developer says in the session that a rule in `CLAUDE.md` no longer
+holds, the agent keeps following the file.
+
+Likelihood: medium. Impact: medium.
+
+Evidence: kh-finder observation 1, `723ff5f4`. `CLAUDE.md` still said
+"nothing it ships has a dependency", although the developer had just dropped
+the rule. The agent recommended a server written by hand, then a global
+install. The rule should give way to what the developer said, and `CLAUDE.md`
+should change with it.
+
+### 11. `understand-change` does not start on an open request
+
+Its description (`understand-change/SKILL.md:3`) names ideas, wishes and
+problems, and phrases such as "let's think this through". A request like
+"question every assumption and write a roadmap" matches none of them.
+
+Likelihood: medium. Impact: medium, because the change starts from a premise
+nobody questioned.
+
+Evidence: kh-finder observation 7. The agent agreed with the premise and put
+a feeling, a migration and a feature into one change file. Once the skill
+ran, asking what prompted the request found the real problem.
+
+### 12. `nextjs-project-setup` and `design-change` both decide the stack
+
+`design-change/SKILL.md:33,48` asks about the stack and the design system,
+with three options each. `nextjs-project-setup/SKILL.md:8,18-25` says both are
+already decided: Next.js and Mantine. Either the developer is asked what they
+already answered, or the setup skill runs first and the stack is chosen
+without a word, including hosting, database and login, which the setup skill
+does not cover.
+
+Likelihood: medium. Impact: medium.
+
+Evidence: only a related case, kh-finder observation 7. Without
+`understand-change`, the agent used `nextjs-project-setup` as a guide to the
+developer's stack for an existing project. The clash itself has no evidence
+yet; it needs a new project.
+
+### 13. `learn-from-sessions` loses its work when a run ends early
+
+It shows the findings and asks the developer what to apply
+(`learn-from-sessions/SKILL.md:62`). Only after the answer does it write
+anything down or mark sessions as read.
+
+Likelihood: medium. Impact: low, but a whole run's reading is lost.
+
+Evidence: kh-finder observation 9. A run read 11 sessions, asked, got no
+answer, and the next run had to read them all again.
+
+## Findings without evidence yet
+
+These come only from reading the skills. No test run has shown them. Watch
+for them in the next run, and don't change a skill for them until one does.
+Ordered worst first.
+
+### 14. Small changes skip the check
+
+When `design-change` finds nothing that matters, it says "say so in one line
+and carry on. There is nothing to record: no branch, no change file, no
+commit" (`design-change/SKILL.md:35`). But `build-change` needs a change
+file, and the model cannot start it on its own (`disable-model-invocation`).
+So "carry on" means a plain build in the same session: no fresh review, no
+`try-change`, and the commits go to `main`. Workflow step 1 sends every clear,
+small change this way. It also conflicts with "Then stop" (`:89-91`).
+
+Likelihood: high. Impact: medium to high.
+
+Evidence: none yet. In kh-finder, stopping before the build held, but only on
+the path with a change file.
+
+### 15. `upgrade-dependencies` ignores known vulnerabilities
+
+There is no `npm audit`, and nothing puts security fixes first. If the fix
+for a known vulnerability is a major version that turns the checks red, the
+skill reverts it and hands it to the backlog like any other upgrade
+(`upgrade-dependencies/SKILL.md:56-66`). Finding 16 then buries it.
+
+Likelihood: high. Impact: high.
+
+Evidence: none yet.
+
+### 16. The backlog ranks security fixes low
+
+The backlog ranks items by utility minus effort, and utility is "what it
+gives the user" (`backlog/SKILL.md:23,40`). A security fix that
+`review-change` or `upgrade-dependencies` hands over gives the user nothing
+they can see, so it gets a low utility and sinks. The manifesto puts security
+second, above usability.
+
+Likelihood: high. Impact: high.
+
+Evidence: none yet on the ranking. Finding 5 makes it worse: nobody checks
+the sizes when another skill hands over an item.
+
+### 17. Tests may reach real services
+
+`review-change/SKILL.md:38` runs throwaway tests, and does not say against
+what. `try-change/SKILL.md:22` forbids production, but a local instance still
+reads `.env`, which may hold live payment or email keys, or point at a shared
+database. To make "the network goes away" or "the server fails" happen
+(`try-change:29-34`), the model may stop shared Docker services or change the
+network on the developer's machine.
+
+Likelihood: medium. Impact: high.
+
+Evidence: none yet. In kh-finder the checks used a throwaway container and a
+faked API answer, which is the safe way.
+
+### 18. Nobody checks the build against the existing ADRs
+
+`build-change/SKILL.md:13` reads only the ADRs the change file links to.
+`review-change/SKILL.md:27` compares the code only with the change file. A
+build that breaks an older recorded decision passes both. Only
+`design-change:31` reads `docs/adr/`, and that is before there is code.
+
+Likelihood: medium. Impact: high.
+
+Evidence: none yet.
+
+### 19. "In a small change the list is often empty"
+
+`design-change/SKILL.md:33` tells the model to expect nothing. Add "If you
+cannot name a cost, it is not on the list", and a small change slips through
+even when it adds an endpoint, an export or a personal-data field. Those are
+exactly the decisions about who can see what.
+
+Likelihood: medium. Impact: high.
+
+Evidence: none yet.
+
+### 20. Upgrades install brand-new releases at once
+
+`upgrade-dependencies` installs the newest versions right away, and their
+install scripts run (`upgrade-dependencies/SKILL.md:35,54`). There is no
+minimum age for a release, and no look at new transitive dependencies or
+install scripts. A compromised release that came out yesterday runs on the
+developer's machine.
+
+Likelihood: low. Impact: high.
+
+Evidence: none yet.
+
+### 21. A confirmed bug leaves no test behind
+
+The reviewer deletes its throwaway test (`review-change/SKILL.md:38`), and
+`build-change:30` does not ask for a lasting test with the fix. The same bug
+can come back with the next change.
+
+Likelihood: high. Impact: medium.
+
+Evidence: none yet. In kh-finder the builder showed that its new tests fail
+on the old code, which is the opposite habit.
+
+### 22. The builder recommends on its own decisions
+
+`build-change/SKILL.md:38` asks for "what you recommend" on decisions the
+builder made alone. It will defend what it already built.
+
+Likelihood: high. Impact: medium.
+
+Evidence: none yet.
+
+### 23. A decision settled along the way is never written down
+
+"If the developer's answer settles another decision on the list too, don't
+ask about that one" (`design-change/SKILL.md:50`). That decision is then
+neither told nor asked, so "List every decision you told or asked" (`:74`)
+leaves it out. Nothing holds it once the change file is deleted.
+
+Likelihood: medium. Impact: medium.
+
+Evidence: none yet.
+
+### 24. Approaches don't show what they expose
+
+`understand-change/SKILL.md:26` asks what each approach "is good for, and what
+it costs", in the terms of the domain. The developer picks a direction, such
+as sharing the logbook with a coach, without seeing what it exposes.
+`design-change` only ever sees the approach that was picked.
+
+Likelihood: medium. Impact: medium.
+
+Evidence: none yet.
+
+### 25. `learn-from-sessions` writes project details into a public repository
+
+The evidence files hold project names, paths, session IDs and descriptions of
+what happened (`learn-from-sessions/SKILL.md:65`). This repository is public
+(`npx skills add jorgenschaefer/skills`). "Don't copy the project's code or
+data" does not cover a client's name or confidential details of its domain.
+What leaked cannot be unleaked.
+
+Likelihood: medium. Impact: medium.
+
+Evidence: none yet. The kh-finder evidence file names the project and its
+domain; for this project that is fine.
+
+### 26. Nobody checks accessibility
+
+`try-change` never uses the software with a keyboard alone, checks contrast,
+or uses a screen reader.
+
+Likelihood: high. Impact: low to medium.
+
+Evidence: none yet.
+
+### 27. A new project means a long row of questions
+
+One decision at a time, with mock-ups (`design-change/SKILL.md:41`), means
+many rounds in a new project: stack, design system, data, hosting, login. A
+tired developer starts accepting whatever is recommended.
+
+Likelihood: medium. Impact: low to medium.
+
+Evidence: none yet. kh-finder was an existing project.
+
+### 28. Three approaches even for a sharp request
+
+"Offer at least three approaches" (`understand-change/SKILL.md:26`) works
+against "Match the depth to the request" (`:12`). The model pads with weak
+options.
+
+Likelihood: medium. Impact: low.
+
+Evidence: none yet.
+
+### 29. Every failed try goes back to `understand-change`
+
+`build-change/SKILL.md:45` sends every failure back to `/understand-change`,
+even a plain bug.
+
+Likelihood: medium. Impact: low.
+
+Evidence: none yet.
+
+### 30. The setup skill installs every preferred library
+
+The model may add TanStack Query and Mantine before anything needs them
+(`nextjs-project-setup/SKILL.md:18-25`). The manifesto says every feature has
+to earn its place.
+
+Likelihood: medium. Impact: low.
+
+Evidence: none yet.
+
+## Contradicted by the evidence
+
+Expected from reading the skills, but the run showed otherwise.
+
+- **The builder drops review findings without a trace.**
+  `build-change/SKILL.md:41` says "Not what you fixed", so a finding the
+  builder thinks is wrong could vanish. kh-finder observation 2 showed the
+  opposite: the reports showed more than asked (finding 7).
+- **`backlog` asks for too many confirmations.** kh-finder observation 3
+  showed the opposite: called from another skill, it asked for none
+  (finding 5).
+- **"Smallest thing" read as "least code", leading to shortcuts.** No sign of
+  it. The agent built more, not less (finding 4).
 
 ## Not on the roadmap
 
-- **Advice on how to build** (open questions 1 and 2). Plain Claude Code
-  built a good structure (observation 9), and in kh-finder it wrote tests
-  first and asked before a decision that was hard to undo. The build gets
-  its tests through step 2, and the list of tests by kind of risk lives only
-  in `review-change`. `build-change` gets advice like any skill: when a run
+- **Advice on how to build.** Plain Claude Code built a good structure
+  (logbook observation 9), and in kh-finder it wrote tests first and asked
+  before a decision that was hard to undo. The build gets its tests through
+  step 2, and the list of tests by kind of risk lives only in
+  `review-change`. `build-change` gets advice like any skill: when a run
   shows it missed something, such as `review-change` catching the same kind
   of bug too late again and again.
 - **Spec tools and staged ceremony** in the style of AWS AI-DLC. Thoughtworks
   found that spec tools give "a false sense of control". The old pipeline
   skills were deleted for this reason.
-- **Rules about test coverage** (observation 10).
+- **Rules about test coverage** (logbook observation 10).
