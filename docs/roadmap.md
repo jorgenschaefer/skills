@@ -9,7 +9,8 @@ Four kinds of numbers appear below. "Step 1" is a step of this roadmap.
 `docs/workflow.md`. "Logbook observation 8" and "kh-finder observation 8"
 are observations in the evidence files
 `docs/evidence/2026-11-05-workout-logbook.md` and
-`docs/evidence/2026-11-07-kh-finder.md`.
+`docs/evidence/2026-11-07-kh-finder.md`. A fixed finding is cut, and its
+number is not used again.
 
 ## Where we are
 
@@ -76,8 +77,11 @@ a new project would test them. Watch especially:
     (arXiv paper). A fresh context and an adversarial prompt help, but don't
     remove this;
   - whether `design-change` brings up interaction, the life of the data and
-    patterns without being pushed. In kh-finder it missed secrets and paid
-    calls (finding 1), but nothing shows about the rest;
+    patterns without being pushed. kh-finder shows nothing about these;
+  - whether the three fixes made after kh-finder hold: `design-change` asks
+    where keys live and how often a paid call fires; `backlog` asks for
+    sizes when another skill hands over an item; `learn-from-sessions`
+    writes its report before it asks;
   - what `learn-from-sessions` misses that the developer finds in the logs.
 - **Did a wide decision slip through because it was easy to revert?** Some
   decisions reach a lot: a shared login check, a global limit, a migration
@@ -107,35 +111,16 @@ Two runs so far:
   about the skills and four about the project, each with a quote. One change
   came of it: `review-change` now sends findings that are not fixed to the
   backlog.
-- On kh-finder it ran twice. The first run lost its work (finding 13). The
-  second wrote the evidence file. Its observation 1 counted cases with
-  different causes as one pattern, and drew a conclusion that did not hold:
-  some of the cases followed an old project rule. The developer caught it.
-  That is the kind of false finding the tuning has to prevent.
+- On kh-finder it ran twice. The first run lost its work, because it wrote
+  nothing down before asking; that is fixed now. The second wrote the evidence
+  file. Its observation 1 counted cases with different causes as one pattern,
+  and drew a conclusion that did not hold: some of the cases followed an old
+  project rule. The developer caught it. That is the kind of false finding the
+  tuning has to prevent.
 
 ## Findings with evidence
 
 What the evidence confirms, ordered worst first. Fix these first.
-
-### 1. Secrets and paid outside calls are nobody's design
-
-`design-change`'s list of what is hard to undo
-(`design-change/SKILL.md:16-22`) does not name where secrets live, or how
-often a paid call fires. No skill does. The list of risks in
-`review-change/SKILL.md:29-34` comes from one offline app. It also does not
-name reading other users' records by changing an ID, injection, cross-site
-scripting, secrets that end up in the client bundle, or a new route that
-skips the login check.
-
-Likelihood: high. Impact: high.
-
-Evidence: kh-finder observations 4 and 5, and logbook observations 11 and 13.
-`design-change` never asked where the API key lives during development, so
-the agent asked for it in the chat, and it ended up in the transcript. Nobody
-asked how often the paid call fires: 28 requests on a 3 km drive. Under the
-dev server, any page on another localhost port could read the key; the
-review caught it. The evidence covers secrets and paid calls only. The other
-kinds of risk named above have no evidence yet.
 
 ### 2. The builder decides hard-to-undo things alone
 
@@ -185,19 +170,6 @@ the bigger of three approaches (`2e97ef0c`), and a rule on distance and time
 when time alone was enough (`6878405c`, `dc1e029c`). The developer cut each
 back. Why "simplest first" did not hold is not clear yet. The cases about
 dependencies in the same observation belong to finding 10, not here.
-
-### 5. `backlog` chooses sizes on its own when another skill calls it
-
-`backlog/SKILL.md:35` says to propose effort and utility and write the file
-once the user confirms. When another skill hands over an item in the middle
-of its work, the model skips the confirmation.
-
-Likelihood: high. Impact: medium, because unchecked sizes decide the ranking
-(finding 16).
-
-Evidence: kh-finder observation 3. Twice in `68ef4750` it wrote and committed
-items with sizes it chose, then said the developer had not confirmed them.
-Started directly, it asked first.
 
 ### 6. `try-change` cannot check phone width
 
@@ -296,17 +268,6 @@ Evidence: only a related case, kh-finder observation 7. Without
 developer's stack for an existing project. The clash itself has no evidence
 yet; it needs a new project.
 
-### 13. `learn-from-sessions` loses its work when a run ends early
-
-It shows the findings and asks the developer what to apply
-(`learn-from-sessions/SKILL.md:62`). Only after the answer does it write
-anything down or mark sessions as read.
-
-Likelihood: medium. Impact: low, but a whole run's reading is lost.
-
-Evidence: kh-finder observation 9. A run read 11 sessions, asked, got no
-answer, and the next run had to read them all again.
-
 ## Findings without evidence yet
 
 These come only from reading the skills. No test run has shown them. Watch
@@ -349,8 +310,9 @@ second, above usability.
 
 Likelihood: high. Impact: high.
 
-Evidence: none yet on the ranking. Finding 5 makes it worse: nobody checks
-the sizes when another skill hands over an item.
+Evidence: none yet on the ranking. In kh-finder, `backlog` chose the sizes
+itself when another skill handed over an item, so nobody checked them. That
+is fixed now.
 
 ### 17. Tests may reach real services
 
@@ -399,6 +361,18 @@ developer's machine.
 Likelihood: low. Impact: high.
 
 Evidence: none yet.
+
+### 31. The review looks for the risks of one app
+
+The list of risks in `review-change/SKILL.md:29-34` comes from one offline
+app. It does not name reading other users' records by changing an ID,
+injection, cross-site scripting, secrets that end up in the client bundle, or
+a new route that skips the login check. "A start, not the limit" helps, but
+the list steers where the model looks.
+
+Likelihood: low. Impact: high.
+
+Evidence: none yet. In kh-finder the review did catch the leaked key.
 
 ### 21. A confirmed bug leaves no test behind
 
@@ -512,8 +486,8 @@ Expected from reading the skills, but the run showed otherwise.
   builder thinks is wrong could vanish. kh-finder observation 2 showed the
   opposite: the reports showed more than asked (finding 7).
 - **`backlog` asks for too many confirmations.** kh-finder observation 3
-  showed the opposite: called from another skill, it asked for none
-  (finding 5).
+  showed the opposite: called from another skill, it asked for none. That
+  is fixed now.
 - **"Smallest thing" read as "least code", leading to shortcuts.** No sign of
   it. The agent built more, not less (finding 4).
 
