@@ -32,7 +32,7 @@ Where `changes/backlog/` holds items in another shape - numbered files, a direct
 
 1. **Read the code the item touches.**
 2. **Look for an item it overlaps.** Where one exists, add the new finding to that item instead of writing a new one, and propose its sizes again.
-3. **Propose effort and utility**, each with a one-line reason. Write the file once the user confirms or corrects them.
+3. **Propose effort and utility**, each with a one-line reason, and wait for the user's answer before you write the file. The sizes decide what gets built next, so the user sets them, whichever skill handed the item over. When several items come at once, propose all their sizes in one message.
 4. **Commit that file alone.**
 
 ## Picking the next item
