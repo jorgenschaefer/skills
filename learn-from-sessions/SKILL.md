@@ -18,6 +18,8 @@ List this project's sessions that have not been read yet:
 python3 <this skill's directory>/sessions.py <project path>
 ```
 
+If a `learn-from-sessions-report.md` is already in the directory of the session logs, an earlier run ended before the developer answered. Show its findings along with the new ones.
+
 Leave out the session you are running in: the newest one, whose last message asks for this skill. If this is the first run in the project and there are more than about ten sessions, ask the developer from which date to start, and mark the older ones as read (below) without reading them.
 
 Turn each session into a readable conversation in the scratchpad, and read it:
@@ -59,13 +61,15 @@ Before you call a finding about a skill new, read the skills repository's `docs/
 
 ## Report
 
-Show the developer the findings, grouped by destination, the strongest first. Then let them pick what to apply.
-
-- **Findings about this project**: make the changes the developer picks, with them, in this repository.
-- **Findings about skills**: write them into `docs/evidence/YYYY-MM-DD-<project>.md` in the skills repository, in the form of the evidence files there. Describe each pattern in your own words. Don't copy the project's code or data into it: the evidence file lives in another repository. Don't change any skill: turning evidence into skill changes is work for that repository. Commit the evidence file there.
-
-When the developer is done, mark every session you read as read, so the next run does not count it twice:
+First write the findings, grouped by destination, the strongest first, to `learn-from-sessions-report.md` in the directory of the session logs. Then mark every session you read as read:
 
 ```
 python3 <this skill's directory>/sessions.py <project path> --mark <session id>...
 ```
+
+If the session ends before the developer answers, nothing is lost. Then show the developer the findings, and let them pick what to apply.
+
+- **Findings about this project**: make the changes the developer picks, with them, in this repository.
+- **Findings about skills**: write them into `docs/evidence/YYYY-MM-DD-<project>.md` in the skills repository, in the form of the evidence files there. Describe each pattern in your own words. Don't copy the project's code or data into it: the evidence file lives in another repository. Don't change any skill: turning evidence into skill changes is work for that repository. Commit the evidence file there.
+
+When the developer is done, delete the report file.
