@@ -79,6 +79,23 @@ Why: the branch rule in `understand-change` and `design-change` assumes a
 default branch with at least one commit. This adds to observations 3 and 4
 of the workout logbook.
 
+### 4. The stack came from the setup skill and was named only at the end
+
+`design-change` read `nextjs-project-setup` and took the stack and the
+design system from it: Next.js, Prisma, Mantine and the rest. It neither
+asked nor told about them while it worked. They first appeared in the
+closing list of all decisions, after the data, hosting, login and the flow
+had been decided on top of them (`c6098c3a`).
+
+It did ask about what the setup skill does not cover: where the data lives,
+hosting and login. For hosting it recommended Vercel with Neon. The
+developer pointed it to the setup they already use in `../infrastructure`
+and `../drk-barmbek` instead.
+
+Why: `nextjs-project-setup` holds the developer's answer on the stack, so
+there is only one sensible option, and a tell is enough. But nothing says
+when a tell comes. Here it came last, after the decisions that rest on it.
+
 ## What this suggests
 
 Not yet agreed. For discussion.
@@ -91,3 +108,5 @@ Not yet agreed. For discussion.
   database**, not on the stand-in's leftovers (2).
 - **The branch rule needs a case for an empty repository**, such as a first
   commit on `main` before the change branch (3).
+- **A tell about the stack should come before the decisions that rest on
+  it** (4).
