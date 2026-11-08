@@ -19,7 +19,7 @@ Don't read the code. A user cannot, and the code would tell you what the builder
 
 ## Start the software
 
-Find how to start it in the project's `CLAUDE.md` or `README.md`. Use a local or test instance, never production and never real users' data. Use it the way its users do: a web app in a browser, at the screen size they use it on; a command-line tool in a shell.
+Find how to start it in the project's `CLAUDE.md` or `README.md`. Use a local or test instance, never production and never real users' data. Use it the way its users do: a web app in a browser, at the screen size they use it on; a command-line tool in a shell. A browser window may report that it resized and stay as large as before, so check the size in a screenshot. If it did not change, put the app in a frame of that width: a small page with an `<iframe>` of the app, served by the app's own server.
 
 If you cannot start it, say so and stop. Don't fall back to reading the code.
 
