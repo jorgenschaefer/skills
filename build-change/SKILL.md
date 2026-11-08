@@ -38,7 +38,7 @@ Tell the developer the change is ready to try, and show them only:
 - **what needs their decision**: what the review and the user stand-in marked "for the developer", each with what it would cost to undo and what you recommend;
 - **what is still open**: what you could not fix, and what nobody could try, such as a part the user stand-in could not reach.
 
-Not what you fixed, and not what went well. If there is nothing to show, say the change is ready to try, in one line.
+Not what you fixed, and not what went well: the developer reads every line, and a problem that is fixed needs nothing from them. The exception is a fixed bug that broke something under `## Decisions that matter`. Show it in one line, because the developer will want to try that part themselves. If there is nothing to show, say the change is ready to try, in one line.
 
 Add what the developer settles to `## Decisions that matter` in the change file, with what holds it: the code, a test, structure, or an ADR in `docs/adr/` for what the code cannot show. Build the test, the structure or the ADR, and commit.
 
