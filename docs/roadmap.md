@@ -54,9 +54,10 @@ has what each step changed. Two of them come up below:
 ## Next: a fourth test run
 
 Workout-tracker was the third run, on a new project. It showed that the
-builder still decides things alone (finding 2), and that the branch rule
-breaks in an empty repository (finding 41). Its evidence file says little
-about the other questions below, so they are still open. Watch especially:
+builder still decides things alone (finding 2), that the branch rule
+breaks in an empty repository (finding 41), and how the stack was chosen on
+a new project (finding 12). Its evidence file says little about the other
+questions below, so they are still open. Watch especially:
 
 - **What the kh-finder and workout-tracker runs did not answer:**
   - what `review-change` and `try-change` miss that the developer then finds.
@@ -196,23 +197,6 @@ rule "how it's meant to work (from the change file …)", and said that an
 explicit "done" would "change a decision in the change file". The developer
 had never agreed to that decision.
 
-### 12. `nextjs-project-setup` and `design-change` both decide the stack
-
-`design-change/SKILL.md:33,48` asks about the stack and the design system,
-with three options each. `nextjs-project-setup/SKILL.md:8,18-25` says both are
-already decided: Next.js and Mantine. Either the developer is asked what they
-already answered, or the setup skill runs first and the stack is chosen
-without a word, including hosting, database and login, which the setup skill
-does not cover.
-
-Likelihood: medium. Impact: medium.
-
-Evidence: only a related case, kh-finder observation 7. Without
-`understand-change`, the agent used `nextjs-project-setup` as a guide to the
-developer's stack for an existing project. The clash itself has no evidence
-yet. Workout-tracker was a new project, but its evidence file does not say
-how the stack was chosen.
-
 ### 40. The developer tries the change on the stand-in's data
 
 `try-change` leaves its test data in the local database. Neither it nor
@@ -243,6 +227,25 @@ Evidence: tracker observation 3. The reviewer diffed from a commit instead.
 check the base. Logbook observations 3 and 4 are the same kind of problem:
 the skills assumed an existing project. The evidence file suggests a first
 commit on `main` before the change branch.
+
+### 12. `nextjs-project-setup` and `design-change` both decide the stack
+
+`design-change/SKILL.md:33,48` asks about the stack and the design system,
+with three options each. `nextjs-project-setup/SKILL.md:8,18-25` says both are
+already decided: Next.js and Mantine. Either the developer is asked what they
+already answered, or the stack is chosen without a word.
+
+Likelihood: medium. Impact: low.
+
+Evidence: tracker observation 4. `design-change` took the stack and the
+design system from `nextjs-project-setup` without a word, and named them
+only in its closing list of decisions. It did ask about where the data
+lives, hosting and login. So the clash is milder than feared: the
+developer's answer is in the setup skill, so a tell is enough. The only
+problem is that the tell came last, after the decisions that rest on it.
+kh-finder observation 7 is related: without `understand-change`, the agent
+used `nextjs-project-setup` as a guide to the developer's stack for an
+existing project.
 
 ## Findings without evidence yet
 
