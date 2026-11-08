@@ -85,6 +85,8 @@ a new project would test them. Watch especially:
   - whether the two fixes for a redesign hold: `accept-change` sends a
     different behaviour back to `build-change`, and `build-change` runs the
     review and the stand-in once more after its fixes;
+  - whether `try-change` now checks phone width, in a frame if the window
+    does not resize, and whether the build's report now leaves out fixes;
   - what `learn-from-sessions` misses that the developer finds in the logs.
 - **Did a wide decision slip through because it was easy to revert?** Some
   decisions reach a lot: a shared login check, a global limit, a migration
@@ -160,31 +162,6 @@ the bigger of three approaches (`2e97ef0c`), and a rule on distance and time
 when time alone was enough (`6878405c`, `dc1e029c`). The developer cut each
 back. Why "simplest first" did not hold is not clear yet. The cases about
 dependencies in the same observation belong to finding 10, not here.
-
-### 6. `try-change` cannot check phone width
-
-`try-change/SKILL.md:22` asks for "the screen size they use it on", but the
-stand-in cannot resize the browser. The change file also has no place for
-who uses the software, on which device, and where.
-
-Likelihood: high. Impact: medium.
-
-Evidence: kh-finder observation 8. The stand-in knew the app is used on
-phones. Once it checked in a 360 px frame instead; once it reported "Nobody
-tried the change at phone width." That the change file lacks the user's
-device has no evidence yet: in kh-finder the stand-in knew it.
-
-### 7. Reports list fixes and successes, although the skills forbid it
-
-`build-change/SKILL.md:41` says to show "Not what you fixed, and not what went
-well". The reports do it anyway.
-
-Likelihood: high. Impact: low, but it costs the developer attention.
-
-Evidence: kh-finder observation 2, five reports. One case may be a fair
-exception: a fixed bug that broke a decision that matters, such as a race
-with the user's consent. Either the rule goes, or the skill says why it is
-there and names the exception.
 
 ### 8. A real choice becomes a one-line tell
 
@@ -416,6 +393,15 @@ Likelihood: medium. Impact: medium.
 Evidence: none yet. The kh-finder evidence file names the project and its
 domain; for this project that is fine.
 
+### 33. The change file never says who uses the software
+
+The change file has no place for who uses the software, on which device, and
+where. `try-change` has to find the screen size elsewhere.
+
+Likelihood: medium. Impact: medium.
+
+Evidence: none yet. In kh-finder the stand-in knew the app is used on phones.
+
 ### 26. Nobody checks accessibility
 
 `try-change` never uses the software with a keyboard alone, checks contrast,
@@ -471,7 +457,7 @@ Expected from reading the skills, but the run showed otherwise.
 - **The builder drops review findings without a trace.**
   `build-change/SKILL.md:41` says "Not what you fixed", so a finding the
   builder thinks is wrong could vanish. kh-finder observation 2 showed the
-  opposite: the reports showed more than asked (finding 7).
+  opposite: the reports showed more than asked. That is fixed now.
 - **`backlog` asks for too many confirmations.** kh-finder observation 3
   showed the opposite: called from another skill, it asked for none. That
   is fixed now.
