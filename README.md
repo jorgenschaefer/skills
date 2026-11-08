@@ -56,7 +56,7 @@ that is not there, and what `sync.sh` does.
   should change in the project or, as evidence, in these skills. **Typed**: it only runs when
   you type `/learn-from-sessions`, in the project's repository.
 - **`nextjs-project-setup`**: set up a TypeScript / Next.js project the way this developer
-  sets them up.
+  sets them up, including the login, with tested templates for three kinds of users.
 - **`review-change`**: review code in a fresh context and find what is wrong with it: bugs, ways
   someone can see or do more than they should, and code that makes future changes hard.
 - **`try-change`**: use a change on the running software as a real user would, in a fresh
