@@ -42,7 +42,7 @@ The developer hears about every decision on the list before it is built. They ar
 
 - the decision, in one sentence;
 - what it would cost to undo;
-- three options that differ in substance, simplest first. The obvious solution is one of them, not all three. Look for the others in how the real world works and in what the software already has;
+- three options that differ in substance, simplest first. Simple means the least we write, understand and keep. A dependency that replaces code of our own is often simpler. The obvious solution is one of them, not all three. Look for the others in how the real world works and in what the software already has;
 - which you recommend, and why.
 
 Where the options look or behave differently, show them as clickable mock-ups, not ASCII. Put them in the real page, with everything that is already on it: whether an option fits often depends on what is next to it. For a new project with screens, ask about the design system this way: components, type, colours, spacing.
@@ -88,6 +88,10 @@ Commit on the change's branch. If the change skipped `/understand-change`, find 
 
 ## Then stop
 
-Don't start the build in this session. It starts in a fresh one, so the builder works from what is in the repository, not from this conversation. Tell the developer what to set up first, if anything, and to start the build in a fresh session with `/build-change`.
+Don't start the build in this session. It starts in a fresh one, so the builder works from what is in the repository, not from this conversation.
+
+End with every decision on the list, told or asked, one line each, as in `## Decisions that matter`. The developer reads this, not the change file. A decision missing here is one they never saw.
+
+Tell the developer what to set up first, if anything, and to start the build in a fresh session with `/build-change`.
 
 If you started in the middle of a build, carry on with the build instead.
