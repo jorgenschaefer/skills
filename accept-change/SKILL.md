@@ -10,6 +10,8 @@ The developer has tried the change, and it solves their problem. Wrap it up so t
 
 The change is on its own branch. Its change file is in `changes/`. Read it.
 
+If the developer asks for a different behaviour here, the change is not ready to accept. Don't build it in this session. Write what they want into the change file and commit it. If it is hard to undo, run `/design-change` first. Then tell them to start `/build-change` in a fresh session.
+
 1. **Check what holds each decision.** The change file is about to be deleted. Each decision under `## Decisions that matter` names what holds it afterwards: the code, a test, structure, or an ADR in `docs/adr/`. Check that each is there and holds the decision. Add what is missing, and run the project's checks.
 2. **Put what could wait on the backlog** with `/backlog`, one item each, unless that was done already.
 3. **Delete the change file and its mock-ups** in `changes/`, and commit.
