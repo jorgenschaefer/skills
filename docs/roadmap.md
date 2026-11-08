@@ -87,6 +87,10 @@ a new project would test them. Watch especially:
     review and the stand-in once more after its fixes;
   - whether `try-change` now checks phone width, in a frame if the window
     does not resize, and whether the build's report now leaves out fixes;
+  - whether `design-change` now ends with every decision in the chat,
+    whether `understand-change` now starts on an open request, and whether
+    the definition of simple stops a server written by hand from counting
+    as simpler than a package;
   - what `learn-from-sessions` misses that the developer finds in the logs.
 - **Did a wide decision slip through because it was easy to revert?** Some
   decisions reach a lot: a shared login check, a global limit, a migration
@@ -118,10 +122,12 @@ Two runs so far:
   backlog.
 - On kh-finder it ran twice. The first run lost its work, because it wrote
   nothing down before asking; that is fixed now. The second wrote the evidence
-  file. Its observation 1 counted cases with different causes as one pattern,
-  and drew a conclusion that did not hold: some of the cases followed an old
-  project rule. The developer caught it. That is the kind of false finding the
-  tuning has to prevent.
+  file. Its observation 1 put two kinds of cases into one pattern: too much
+  scope, and "simplest" read as "fewest dependencies". Its conclusion fitted
+  only the second kind. Then a correction blamed the second kind on an old
+  project rule, until the session showed the agent had confirmed the rule was
+  dropped. Both mistakes would have been caught by checking each case against
+  its quote. That is the kind of false finding the tuning has to prevent.
 
 ## Findings with evidence
 
@@ -160,48 +166,13 @@ Evidence: kh-finder observation 1. The agent proposed a five-phase rewrite
 and a proxy with a PIN per person and rate limiting (`c7547d4c`), recommended
 the bigger of three approaches (`2e97ef0c`), and a rule on distance and time
 when time alone was enough (`6878405c`, `dc1e029c`). The developer cut each
-back. Why "simplest first" did not hold is not clear yet. The cases about
-dependencies in the same observation belong to finding 10, not here.
+back. Why "simplest first" did not hold is not clear yet.
 
-### 8. A real choice becomes a one-line tell
-
-Asking takes three options that differ in substance, and mock-ups
-(`design-change/SKILL.md:41-48`). Telling takes one line. So the model leans
-toward "only one sensible option", and "sensible" means its own default.
-Tells come as a list of one-liners (`:52-55`), so the developer skims past a
-security-relevant one such as "sessions never expire".
-
-Likelihood: medium. Impact: medium to high.
-
-Evidence: partly, kh-finder observation 10. The developer reads the chat
-summary, not the change file, and one summary left out "the app asks the API
-by itself". That the model tells where it should ask has no evidence yet.
-
-### 10. A project rule the developer drops still wins
-
-When the developer says in the session that a rule in `CLAUDE.md` no longer
-holds, the agent keeps following the file.
-
-Likelihood: medium. Impact: medium.
-
-Evidence: kh-finder observation 1, `723ff5f4`. `CLAUDE.md` still said
-"nothing it ships has a dependency", although the developer had just dropped
-the rule. The agent recommended a server written by hand, then a global
-install. The rule should give way to what the developer said, and `CLAUDE.md`
-should change with it.
-
-### 11. `understand-change` does not start on an open request
-
-Its description (`understand-change/SKILL.md:3`) names ideas, wishes and
-problems, and phrases such as "let's think this through". A request like
-"question every assumption and write a roadmap" matches none of them.
-
-Likelihood: medium. Impact: medium, because the change starts from a premise
-nobody questioned.
-
-Evidence: kh-finder observation 7. The agent agreed with the premise and put
-a feeling, a migration and a feature into one change file. Once the skill
-ran, asking what prompted the request found the real problem.
+In the same observation, `723ff5f4` showed a second kind of case: "simplest"
+read as "fewest dependencies", so a server written by hand counted as
+simpler than a dev-only package. That part is fixed: `understand-change` and
+`design-change` now say what simple means. The cases of too much scope stay
+open.
 
 ### 12. `nextjs-project-setup` and `design-change` both decide the stack
 
@@ -401,6 +372,18 @@ where. `try-change` has to find the screen size elsewhere.
 Likelihood: medium. Impact: medium.
 
 Evidence: none yet. In kh-finder the stand-in knew the app is used on phones.
+
+### 34. A real choice becomes a one-line tell
+
+Asking takes three options that differ in substance, and mock-ups
+(`design-change/SKILL.md:41-48`). Telling takes one line. So the model may
+lean toward "only one sensible option", and "sensible" means its own
+default.
+
+Likelihood: medium. Impact: medium to high.
+
+Evidence: none yet. kh-finder showed only that a decision can go missing
+from the chat summary, and that is fixed.
 
 ### 26. Nobody checks accessibility
 
