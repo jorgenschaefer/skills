@@ -29,7 +29,7 @@ Run both. Each runs in a fresh context, and they find different things: one read
 
 Fix what they found, except what they marked "for the developer". Run the project's checks. Commit the fixes.
 
-If a fix changed the code a lot, run `/review-change` again on the fixes.
+Then run `/review-change` and `/try-change` once more, as in step 3, and fix what they find. Don't run them a third time: what is still wrong goes into the report as still open.
 
 ## 5. Report
 
