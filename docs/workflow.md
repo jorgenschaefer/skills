@@ -52,10 +52,6 @@ agent's.
 
 ## How understand-change and design-change are split
 
-The two skills were split along two different axes: `understand-change` by
-phase (before there is a direction), `design-change` by criterion (hard to
-undo). Things fell between them in the first test run. The new split:
-
 - **`understand-change` understands.** What are we solving, how does the real
   world work, and roughly which way do we go? It designs nothing.
 - **`design-change` designs what is costly to change, and the builder the
@@ -76,49 +72,10 @@ text, or a picture.
 
 ## The change file
 
-`changes/YYYY-MM-DD-<slug>.md`. It holds what was agreed for this one change,
-so it can be built and checked. It is deleted when the change is done, so
-nothing in it is read later as a rule. Git history keeps it.
-
-```markdown
-# <Title>
-
-## Problem
-<What is wrong, in the user's words, and one real instance.>
-
-## Approach
-<The general direction chosen. Also considered: <the others, one line each>.>
-
-## Design
-<What is costly to change: how the user moves through the task, the design
-system, the data. Links to the mock-ups in changes/.>
-
-## Decisions that matter
-- <the decision> - held by <the code | a test of what | structure: what | docs/adr/NNNN-<slug>.md>
-
-## Could wait
-- <item> -> backlog
-```
-
-`understand-change` writes Problem, Approach and Could wait. `design-change`
-adds Design and Decisions that matter: every decision it told or asked, each
-with what holds it after the change file is gone. An empty section says
-"None."
-
-## Decisions that matter
-
-The change file is deleted when the change is done. Whatever must still hold
-afterwards needs a record that outlives it:
-
-- **The code** holds what it shows, such as a `due_date` column.
-- **A test** holds a promise about behaviour, such as old saves still parsing
-  after a deploy. `design-change` names it, and the builder writes it.
-- **Structure** holds a rule every piece of code would otherwise have to
-  remember: the login is checked once for all routes, not in each route.
-- **An ADR** holds what the code cannot show, such as the hosting.
-  `docs/adr/NNNN-<slug>.md`, one file per decision. A later change that would
-  break one brings it back to the developer. The format is in
-  `design-change/ADR_FORMAT.md`.
+The change file holds what was agreed for one change, and is deleted when the
+change is done. Its format, and which skill writes which section, are in
+`understand-change/CHANGE_FORMAT.md`. What holds each decision after the
+change file is gone is in `design-change/SKILL.md`, under "Recording them".
 
 There is no rule about test-driven development or coverage. In the first run
 the bugs that mattered were the cases nobody had in mind, and such rules test

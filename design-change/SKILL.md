@@ -1,6 +1,6 @@
 ---
 name: design-change
-description: Design what in a change would be costly to change - how the user moves through the task, the design system, the data, the stack - and put each such decision to the developer before the build. Ask where there is a real choice, tell where there is only one, and write both down. Make every other decision without mentioning it. Use before building any change, once what to build is clear; when such a decision comes up in the middle of a build; and on "what needs deciding here", "is this a big decision".
+description: Design what in a change would be costly to change - how the user moves through the task, the design system, the data, the stack - and put each such decision to the developer before the build. Ask where there is a real choice, tell where there is only one, and write both down. Make every other decision without mentioning it. Use before building any change, once what to build is clear; and on "what needs deciding here", "is this a big decision".
 ---
 
 # Design a change
@@ -82,7 +82,7 @@ The change file is deleted when the change is done, so each decision also needs 
 
 Write each ADR as `docs/adr/NNNN-<slug>.md`, in the format of `ADR_FORMAT.md`. If it replaces a recorded decision, delete that file in the same change.
 
-Commit the ADRs, your part of the change file and the mock-ups in a commit of their own, before anything more is built. A builder in a fresh context then finds them in the repository. If you start in the middle of a build, leave the build's unfinished work out of that commit.
+Commit the ADRs, your part of the change file and the mock-ups in a commit of their own, before anything more is built. A builder in a fresh context then finds them in the repository.
 
 Commit on the change's branch. If the change skipped `/understand-change`, find the branch first. If you are on the default branch, create a branch from it, named after the change file's slug. If you are on another branch, ask the developer whether this change belongs there. An ADR for a change that is never built is then simply not merged.
 
@@ -93,5 +93,3 @@ Don't start the build in this session. It starts in a fresh one, so the builder 
 End with every decision on the list, told or asked, one line each, as in `## Decisions that matter`. The developer reads this, not the change file. A decision missing here is one they never saw.
 
 Tell the developer what to set up first, if anything, and to start the build in a fresh session with `/build-change`.
-
-If you started in the middle of a build, carry on with the build instead.

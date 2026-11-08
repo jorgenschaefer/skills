@@ -14,26 +14,13 @@ number is not used again.
 
 ## Where we are
 
-Steps 1, 2, 3, 4, 6 and 7 are done. What they changed is in the skills, in
-`docs/workflow.md`, in `docs/evidence/` and in git history.
+Steps 1 to 7 are done, except step 5, which is now finding 2. Git history
+has what each step changed. Two of them come up below:
 
-- Step 1: `understand-change` understands the problem and picks a direction.
-  `design-change` designs what is costly to change. They were called
-  `explore` and `decide`, and the logbook uses those names.
-- Step 2: a promise about behaviour is held by a test, and a rule every piece
-  of code would have to remember by structure.
-- Step 3: `build-change` builds a change and checks it with `review-change`
-  and the user stand-in `try-change`, each in a fresh context.
-  `accept-change` wraps it up once the developer accepts it. The developer
-  starts both.
-- Step 4: the second test run, on kh-finder, an existing project. It ran
-  the whole workflow, and `build-change` and `accept-change` ran for the
-  first time. What it showed is in the findings below.
-- Step 6: each change gets its own branch. The developer merges it.
-- Step 7: `learn-from-sessions` collects evidence from a project's session
-  logs.
-
-Step 5, starting `design-change` during the build, is now finding 2.
+- Step 1 split the work between `understand-change` and `design-change`.
+  They were called `explore` and `decide`, and the logbook uses those names.
+- Step 2: a test holds a promise about behaviour, and structure holds a rule
+  every piece of code would have to remember.
 
 ## How to work on this
 
@@ -114,20 +101,9 @@ logs that it missed. Once its list can be trusted, a local cron job running
 `claude -p "/learn-from-sessions"` every night automates it. A cloud routine
 cannot read the local session logs.
 
-Two runs so far:
-
-- On 2026-11-06 it read the logbook's three sessions. It found three things
-  about the skills and four about the project, each with a quote. One change
-  came of it: `review-change` now sends findings that are not fixed to the
-  backlog.
-- On kh-finder it ran twice. The first run lost its work, because it wrote
-  nothing down before asking; that is fixed now. The second wrote the evidence
-  file. Its observation 1 put two kinds of cases into one pattern: too much
-  scope, and "simplest" read as "fewest dependencies". Its conclusion fitted
-  only the second kind. Then a correction blamed the second kind on an old
-  project rule, until the session showed the agent had confirmed the rule was
-  dropped. Both mistakes would have been caught by checking each case against
-  its quote. That is the kind of false finding the tuning has to prevent.
+The false findings to prevent look like kh-finder observation 1. It put two
+kinds of cases into one pattern, and a later correction blamed the wrong
+cause. Checking each case against its quote would have caught both.
 
 ## Findings with evidence
 
@@ -148,7 +124,9 @@ the tells in the change file, the builder has fewer decisions left to make
 alone. If it shows up again, the options, cheapest first:
 
 1. A line in `build-change` telling the builder to stop and run
-   `/design-change` when a decision is hard to undo.
+   `/design-change` when a decision is hard to undo. `design-change` then
+   needs lines on starting in the middle of a build again. They were cut
+   because nothing started it there (logbook observation 5).
 2. A hook that reminds the builder to run `/design-change` when it changes
    the files where such decisions usually show: the database schema, the
    dependencies, the deployment setup.
@@ -250,19 +228,6 @@ Likelihood: medium. Impact: high.
 Evidence: none yet. In kh-finder the checks used a throwaway container and a
 faked API answer, which is the safe way.
 
-### 35. Findings still open after the build are lost
-
-`review-change` sends findings that are not fixed to the backlog. When
-`build-change` runs it, what is still open after the second round only goes
-into the build's report (`build-change/SKILL.md:32,39`). `accept-change`
-sends only `## Could wait` to the backlog (`accept-change/SKILL.md:16`). Once
-the developer accepts the change, nothing holds those findings.
-
-Likelihood: medium. Impact: high.
-
-Evidence: none yet on this path. The logbook lost two save bugs the same way,
-before `review-change` sent its findings to the backlog.
-
 ### 18. Nobody checks the build against the existing ADRs
 
 `build-change/SKILL.md:13` reads only the ADRs the change file links to.
@@ -284,6 +249,19 @@ exactly the decisions about who can see what.
 Likelihood: medium. Impact: high.
 
 Evidence: none yet.
+
+### 35. Findings still open after the build are lost
+
+`review-change` sends findings that are not fixed to the backlog. When
+`build-change` runs it, what is still open after the second round only goes
+into the build's report (`build-change/SKILL.md:32,39`). `accept-change`
+sends only `## Could wait` to the backlog (`accept-change/SKILL.md:16`). Once
+the developer accepts the change, nothing holds those findings.
+
+Likelihood: medium. Impact: high.
+
+Evidence: none yet on this path. The logbook lost two save bugs the same way,
+before `review-change` sent its findings to the backlog.
 
 ### 20. Upgrades install brand-new releases at once
 
@@ -385,17 +363,6 @@ where. `try-change` has to find the screen size elsewhere.
 Likelihood: medium. Impact: medium.
 
 Evidence: none yet. In kh-finder the stand-in knew the app is used on phones.
-### 36. `learn-from-sessions` never reads a session again
-
-The list of read sessions holds only their IDs
-(`learn-from-sessions/sessions.py:60-75`). A session still running in another
-terminal is marked as read, and so is one the developer later resumes. Its
-later turns are skipped on every run, and nobody notices.
-
-Likelihood: medium. Impact: low to medium.
-
-Evidence: none yet.
-
 
 ### 34. A real choice becomes a one-line tell
 
@@ -418,6 +385,17 @@ Likelihood: high. Impact: low to medium.
 
 Evidence: none yet.
 
+### 36. `learn-from-sessions` never reads a session again
+
+The list of read sessions holds only their IDs
+(`learn-from-sessions/sessions.py:60-75`). A session still running in another
+terminal is marked as read, and so is one the developer later resumes. Its
+later turns are skipped on every run, and nobody notices.
+
+Likelihood: medium. Impact: low to medium.
+
+Evidence: none yet.
+
 ### 27. A new project means a long row of questions
 
 One decision at a time, with mock-ups (`design-change/SKILL.md:41`), means
@@ -435,32 +413,6 @@ against "Match the depth to the request" (`:12`). The model pads with weak
 options.
 
 Likelihood: medium. Impact: low.
-
-Evidence: none yet.
-
-### 38. The change file's format is written down in four places
-
-The format, and which skill writes which section, are in
-`understand-change/CHANGE_FORMAT.md`, `design-change/SKILL.md:63-74` and
-`docs/workflow.md:79-106`, and partly in `review-change` and
-`accept-change`. The copies in skills are needed, but they already disagree:
-the format says an empty section says "None.", and
-`design-change/SKILL.md:35` writes no change file at all (finding 14).
-`docs/workflow.md` could point to the format instead of repeating it.
-
-Likelihood: medium. Impact: low.
-
-Evidence: none yet from a test run.
-
-### 37. `learn-from-sessions` needs the `sync.sh` install
-
-It finds the skills repository by following the link to its own directory
-(`learn-from-sessions/SKILL.md:13`). The `npx skills add` install, which
-`README.md` gives first, makes no link. Then there is no
-`docs/manifesto.md` and no `docs/evidence/`, and the skill does not say
-what to do.
-
-Likelihood: low. Impact: low.
 
 Evidence: none yet.
 
@@ -486,17 +438,35 @@ Likelihood: medium. Impact: low.
 
 Evidence: none yet.
 
+### 38. The skills hold several copies of the change file's format
+
+The format, and which skill writes which section, are in
+`understand-change/CHANGE_FORMAT.md` and `design-change/SKILL.md:63-74`,
+and partly in `review-change` and `accept-change`. The copies are needed,
+because each skill only sees its own directory. But they already disagree:
+the format says an empty section says "None.", and
+`design-change/SKILL.md:35` writes no change file at all (finding 14).
+
+Likelihood: medium. Impact: low.
+
+Evidence: none yet from a test run.
+
+### 37. `learn-from-sessions` needs the `sync.sh` install
+
+It finds the skills repository by following the link to its own directory
+(`learn-from-sessions/SKILL.md:13`). The `npx skills add` install, which
+`README.md` gives first, makes no link. Then there is no
+`docs/manifesto.md` and no `docs/evidence/`, and the skill does not say
+what to do.
+
+Likelihood: low. Impact: low.
+
+Evidence: none yet.
+
 ## Contradicted by the evidence
 
 Expected from reading the skills, but the run showed otherwise.
 
-- **The builder drops review findings without a trace.**
-  `build-change/SKILL.md:41` says "Not what you fixed", so a finding the
-  builder thinks is wrong could vanish. kh-finder observation 2 showed the
-  opposite: the reports showed more than asked. That is fixed now.
-- **`backlog` asks for too many confirmations.** kh-finder observation 3
-  showed the opposite: called from another skill, it asked for none. That
-  is fixed now.
 - **"Smallest thing" read as "least code", leading to shortcuts.** No sign of
   it. The agent built more, not less (finding 4).
 
