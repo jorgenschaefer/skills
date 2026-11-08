@@ -35,14 +35,17 @@ agent's.
    find what is wrong with the diff, and lists the decisions made during the
    build that are hard to undo and not in the change file. A user stand-in
    with a fresh context (`/try-change`) uses the change on the running
-   software as a real user would. The builder fixes what the two found.
+   software as a real user would. The builder fixes what the two found,
+   then runs both once more and fixes what they find then.
 6. **Report.** Show the developer only what is hard to undo and what is
    still open. What they settle goes into the change file, with what holds
    it. The developer tries the change. If it does not solve their problem,
    back to step 2.
 7. **Accept** (`accept-change` skill), started by the developer once the
    change solves their problem. Checks that each decision that matters is
-   held by something that outlives the change file. What could wait goes to
+   held by something that outlives the change file. If the developer asks
+   for a different behaviour here, it goes into the change file, and the
+   build starts again in a fresh session. What could wait goes to
    the backlog, and the change file and its mock-ups are deleted and
    committed. The developer merges the branch. Merge without squashing: the
    change file and mock-ups are kept only in the branch's history.
