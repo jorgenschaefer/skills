@@ -82,6 +82,9 @@ a new project would test them. Watch especially:
     where keys live and how often a paid call fires; `backlog` asks for
     sizes when another skill hands over an item; `learn-from-sessions`
     writes its report before it asks;
+  - whether the two fixes for a redesign hold: `accept-change` sends a
+    different behaviour back to `build-change`, and `build-change` runs the
+    review and the stand-in once more after its fixes;
   - what `learn-from-sessions` misses that the developer finds in the logs.
 - **Did a wide decision slip through because it was easy to revert?** Some
   decisions reach a lot: a shared login check, a global limit, a migration
@@ -142,19 +145,6 @@ alone. If it shows up again, the options, cheapest first:
    the files where such decisions usually show: the database schema, the
    dependencies, the deployment setup.
 
-### 3. Fixes are not tried again
-
-`/review-change` runs again only "if a fix changed the code a lot"
-(`build-change/SKILL.md:32`), and the builder decides what "a lot" is.
-`try-change` never runs again, so a fix for a usability problem is never
-used by a user stand-in.
-
-Likelihood: high. Impact: medium.
-
-Evidence: kh-finder observation 6. After the second rebuild inside
-`accept-change`, no review ran, and the stand-in never tried the new button.
-The developer had to start both again by hand.
-
 ### 4. The agent recommends more than the problem needs
 
 The manifesto says to build small (`docs/manifesto.md:58-61`): the least that
@@ -209,22 +199,6 @@ Likelihood: medium. Impact: medium to high.
 Evidence: partly, kh-finder observation 10. The developer reads the chat
 summary, not the change file, and one summary left out "the app asks the API
 by itself". That the model tells where it should ask has no evidence yet.
-
-### 9. `accept-change` changes code after acceptance
-
-"Add what is missing" (`accept-change/SKILL.md:13`) can mean new tests,
-structure or ADRs, written after the developer tried the change, with no
-review and no try. And nothing says what to do when the developer asks for a
-redesign inside the accept session: go back to `build-change`, or run the
-review and the stand-in again.
-
-Likelihood: medium. Impact: medium.
-
-Evidence: mixed. kh-finder observation 6 confirms the redesign case: the
-feature was rebuilt twice inside `accept-change`, and nothing sent it back to
-the review and the stand-in. But in `68ef4750`, "add what is missing" worked
-well: it found a test that did not pin its decision, added one, and asked
-about three findings the developer had never answered.
 
 ### 10. A project rule the developer drops still wins
 
@@ -415,6 +389,19 @@ as sharing the logbook with a coach, without seeing what it exposes.
 Likelihood: medium. Impact: medium.
 
 Evidence: none yet.
+
+### 32. `accept-change` adds tests, structure or ADRs nobody checks
+
+"Add what is missing" (`accept-change/SKILL.md:13`) writes them after the
+developer tried the change, with no review and no try. It can also produce
+an ADR saying "Decided: by the developer" for something the developer never
+decided.
+
+Likelihood: medium. Impact: medium.
+
+Evidence: none yet. In kh-finder (`68ef4750`) the step worked well: it found
+a test that did not pin its decision, added one, and asked about three
+findings the developer had never answered.
 
 ### 25. `learn-from-sessions` writes project details into a public repository
 
