@@ -250,6 +250,19 @@ Likelihood: medium. Impact: high.
 Evidence: none yet. In kh-finder the checks used a throwaway container and a
 faked API answer, which is the safe way.
 
+### 35. Findings still open after the build are lost
+
+`review-change` sends findings that are not fixed to the backlog. When
+`build-change` runs it, what is still open after the second round only goes
+into the build's report (`build-change/SKILL.md:32,39`). `accept-change`
+sends only `## Could wait` to the backlog (`accept-change/SKILL.md:16`). Once
+the developer accepts the change, nothing holds those findings.
+
+Likelihood: medium. Impact: high.
+
+Evidence: none yet on this path. The logbook lost two save bugs the same way,
+before `review-change` sent its findings to the backlog.
+
 ### 18. Nobody checks the build against the existing ADRs
 
 `build-change/SKILL.md:13` reads only the ADRs the change file links to.
@@ -372,6 +385,17 @@ where. `try-change` has to find the screen size elsewhere.
 Likelihood: medium. Impact: medium.
 
 Evidence: none yet. In kh-finder the stand-in knew the app is used on phones.
+### 36. `learn-from-sessions` never reads a session again
+
+The list of read sessions holds only their IDs
+(`learn-from-sessions/sessions.py:60-75`). A session still running in another
+terminal is marked as read, and so is one the developer later resumes. Its
+later turns are skipped on every run, and nobody notices.
+
+Likelihood: medium. Impact: low to medium.
+
+Evidence: none yet.
+
 
 ### 34. A real choice becomes a one-line tell
 
@@ -414,10 +438,39 @@ Likelihood: medium. Impact: low.
 
 Evidence: none yet.
 
+### 38. The change file's format is written down in four places
+
+The format, and which skill writes which section, are in
+`understand-change/CHANGE_FORMAT.md`, `design-change/SKILL.md:63-74` and
+`docs/workflow.md:79-106`, and partly in `review-change` and
+`accept-change`. The copies in skills are needed, but they already disagree:
+the format says an empty section says "None.", and
+`design-change/SKILL.md:35` writes no change file at all (finding 14).
+`docs/workflow.md` could point to the format instead of repeating it.
+
+Likelihood: medium. Impact: low.
+
+Evidence: none yet from a test run.
+
+### 37. `learn-from-sessions` needs the `sync.sh` install
+
+It finds the skills repository by following the link to its own directory
+(`learn-from-sessions/SKILL.md:13`). The `npx skills add` install, which
+`README.md` gives first, makes no link. Then there is no
+`docs/manifesto.md` and no `docs/evidence/`, and the skill does not say
+what to do.
+
+Likelihood: low. Impact: low.
+
+Evidence: none yet.
+
 ### 29. Every failed try goes back to `understand-change`
 
 `build-change/SKILL.md:45` sends every failure back to `/understand-change`,
-even a plain bug.
+even a plain bug. There, `understand-change/SKILL.md:34` writes a new change
+file and does not look for the one already on the branch. With two change
+files, `build-change` cannot pick "the only one there", and `accept-change`
+may delete one and leave the other to be merged into `main`.
 
 Likelihood: medium. Impact: low.
 
