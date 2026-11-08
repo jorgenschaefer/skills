@@ -1,15 +1,16 @@
 # Roadmap
 
-What we change in the skills next, and why. It follows from two test runs,
+What we change in the skills next, and why. It follows from three test runs,
 from reading the skills against `docs/manifesto.md`, and from the summaries
 in `docs/reference/`. Delete this file when everything below is done.
 
 Four kinds of numbers appear below. "Step 1" is a step of this roadmap.
 "Finding 1" is a finding in this file. "Workflow step 5" is a step in
-`docs/workflow.md`. "Logbook observation 8" and "kh-finder observation 8"
-are observations in the evidence files
-`docs/evidence/2026-11-05-workout-logbook.md` and
-`docs/evidence/2026-11-07-kh-finder.md`. A fixed finding is cut, and its
+`docs/workflow.md`. "Logbook observation 8", "kh-finder observation 8" and
+"tracker observation 3" are observations in the evidence files
+`docs/evidence/2026-11-05-workout-logbook.md`,
+`docs/evidence/2026-11-07-kh-finder.md` and
+`docs/evidence/2026-11-08-workout-tracker.md`. A fixed finding is cut, and its
 number is not used again.
 
 ## Where we are
@@ -50,16 +51,17 @@ has what each step changed. Two of them come up below:
 - **Impact**: how much harm that does, measured as the manifesto measures
   it: by how hard it is to undo.
 
-## Next: a third test run
+## Next: a fourth test run
 
-The changes for new projects have not been tested since the logbook. A run on
-a new project would test them. Watch especially:
+Workout-tracker was the third run, on a new project. It showed that the
+builder still decides things alone (finding 2), and that the branch rule
+breaks in an empty repository (finding 41). Its evidence file says little
+about the other questions below, so they are still open. Watch especially:
 
-- **What the kh-finder run did not answer:**
-  - whether the builder still decides things alone that are hard to undo
-    (finding 2);
-  - whether the branches work: one per change, and nothing left on `main`;
+- **What the kh-finder and workout-tracker runs did not answer:**
   - what `review-change` and `try-change` miss that the developer then finds.
+    Workout-tracker has one case: both reviews missed a decision nobody
+    agreed to (finding 2).
     A reviewer on the same model as the builder is not fully independent
     (arXiv paper). A fresh context and an adversarial prompt help, but don't
     remove this;
@@ -118,18 +120,47 @@ after they are built.
 
 Likelihood: high. Impact: high.
 
-Evidence: logbook observation 5. kh-finder has no case of it, which fits the
-guess that steps 1 and 2 fix most of it: with the stack, the data shape and
-the tells in the change file, the builder has fewer decisions left to make
-alone. If it shows up again, the options, cheapest first:
+Evidence: logbook observation 5 and tracker observation 1. kh-finder had no
+case of it, and we guessed that steps 1 and 2 fix most of it: with the stack,
+the data shape and the tells in the change file, the builder has fewer
+decisions left to make alone. Workout-tracker shows that this does not cover
+a gap `design-change` left open (finding 39). The builder decided alone how a
+training starts and ends, and its report did not say so. Both reviews read
+that code and did not list the decision, although
+`review-change/SKILL.md:27` asks for exactly that. When the developer was
+confused, the builder said its rule came from the change file (finding 22).
 
-1. A line in `build-change` telling the builder to stop and run
+The options, cheapest first:
+
+1. The build's report names each gap the builder filled in how the user
+   moves through the task. Today it shows only what the review and the
+   stand-in marked (`build-change/SKILL.md:36-39`), so a gap the review
+   misses never reaches the developer.
+2. A line in `build-change` telling the builder to stop and run
    `/design-change` when a decision is hard to undo. `design-change` then
    needs lines on starting in the middle of a build again. They were cut
    because nothing started it there (logbook observation 5).
-2. A hook that reminds the builder to run `/design-change` when it changes
+3. A hook that reminds the builder to run `/design-change` when it changes
    the files where such decisions usually show: the database schema, the
-   dependencies, the deployment setup.
+   dependencies, the deployment setup. It would not have caught the
+   workout-tracker case, which changed how the user moves through the task.
+
+### 39. A short label hides a second decision
+
+`design-change/SKILL.md:22` counts how the user moves through the task as
+costly to change: "which steps, in which order, and what they enter when".
+It does not ask when each thing the user works on starts and ends. And one
+label in a mock-up can stand for two decisions. The developer agrees to the
+meaning they see, and the builder fills in the other one (finding 2).
+
+Likelihood: medium. Impact: high.
+
+Evidence: tracker observation 1. "kein Fertig" meant both "there is no save
+button" and "a training never ends". The developer read it as the first, and
+only that was discussed. Logbook observation 1 is related: there, nobody put
+the interaction to the developer at all. The evidence file suggests that
+`design-change` asks when each thing starts and ends, and splits a label
+that covers more than one decision.
 
 ### 4. The agent recommends more than the problem needs
 
@@ -152,6 +183,19 @@ simpler than a dev-only package. That part is fixed: `understand-change` and
 `design-change` now say what simple means. The cases of too much scope stay
 open.
 
+### 22. The builder defends its own decisions
+
+`build-change/SKILL.md:38` asks for "what you recommend" on decisions the
+builder made alone. It will defend what it already built.
+
+Likelihood: high. Impact: medium.
+
+Evidence: only a related case, tracker observation 1. The decision was not
+in the report at all. When the developer asked, the builder called its own
+rule "how it's meant to work (from the change file …)", and said that an
+explicit "done" would "change a decision in the change file". The developer
+had never agreed to that decision.
+
 ### 12. `nextjs-project-setup` and `design-change` both decide the stack
 
 `design-change/SKILL.md:33,48` asks about the stack and the design system,
@@ -166,7 +210,39 @@ Likelihood: medium. Impact: medium.
 Evidence: only a related case, kh-finder observation 7. Without
 `understand-change`, the agent used `nextjs-project-setup` as a guide to the
 developer's stack for an existing project. The clash itself has no evidence
-yet; it needs a new project.
+yet. Workout-tracker was a new project, but its evidence file does not say
+how the stack was chosen.
+
+### 40. The developer tries the change on the stand-in's data
+
+`try-change` leaves its test data in the local database. Neither it nor
+`build-change` says what happens to that data before the developer tries
+the change. So the developer sees a state the normal flow would not make,
+and takes it for how the change works.
+
+Likelihood: high. Impact: low to medium.
+
+Evidence: tracker observation 2. The stand-in had trained both gym plans on
+the same day. So the developer saw reps already filled in, and the wrong
+plan as "next". The report had said only in passing that the database held
+the stand-in's data. The evidence file suggests a clean database, or one
+the report plainly describes.
+
+### 41. In an empty repository, there is no default branch
+
+`understand-change/SKILL.md:34` and `design-change/SKILL.md:87` create the
+change's branch from the default branch. In a repository with no commits,
+that branch never exists. Every later step compares against it:
+`build-change/SKILL.md:25`, `review-change/SKILL.md:16`, and `accept-change`,
+which says the branch is ready to merge.
+
+Likelihood: high on a new project. Impact: low.
+
+Evidence: tracker observation 3. The reviewer diffed from a commit instead.
+`accept-change` found that `main..HEAD` failed and asked the developer to
+check the base. Logbook observations 3 and 4 are the same kind of problem:
+the skills assumed an existing project. The evidence file suggests a first
+commit on `main` before the change branch.
 
 ## Findings without evidence yet
 
@@ -297,15 +373,6 @@ Likelihood: high. Impact: medium.
 
 Evidence: none yet. In kh-finder the builder showed that its new tests fail
 on the old code, which is the opposite habit.
-
-### 22. The builder recommends on its own decisions
-
-`build-change/SKILL.md:38` asks for "what you recommend" on decisions the
-builder made alone. It will defend what it already built.
-
-Likelihood: high. Impact: medium.
-
-Evidence: none yet.
 
 ### 23. A decision settled along the way is never written down
 
