@@ -166,6 +166,13 @@ options, cheapest first:
    dependencies, the deployment setup. It would not have caught the
    workout-tracker case, which changed how the user moves through the task.
 
+The second workout-tracker evidence file (2026-11-09) shows what such a
+decision costs later. A review of the whole repository proposed a unique
+index on the builder's rule, and asked about the index, not the rule. The
+index made the rule firm, and a whole change undid both. The build's report
+did name what the builder decided alone in that run. `review-change` now
+asks about the rule itself when a fix makes an unagreed rule firmer.
+
 ### 4. The agent recommends more than the problem needs
 
 The manifesto says to build small (`docs/manifesto.md:58-61`): the least that

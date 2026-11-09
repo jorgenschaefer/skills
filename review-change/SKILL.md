@@ -56,3 +56,4 @@ These are where the serious bugs were found before. They are a start, not the li
 - **Security code under parallel and hostile use**: two requests at the same moment, many requests, a request made to do harm.
 - **Anything that can lose data**, such as what the user entered, above all without anyone noticing.
 - **Decisions nobody agreed to about how the user moves through the task**, such as when something the user works on starts and ends.
+- **A fix that makes an existing rule firmer**, such as a unique index, a constraint or stricter validation. Unless a change file or an ADR shows that the rule was agreed, ask the developer about the rule itself, not only about the fix.
