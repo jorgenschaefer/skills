@@ -242,8 +242,8 @@ is fixed now.
 ### 17. Tests may reach real services
 
 `review-change/SKILL.md:38` runs throwaway tests, and does not say against
-what. `try-change/SKILL.md:22` forbids production and gives the stand-in a
-database of its own, but a local instance still reads `.env`, which may hold
+what. `try-change/SKILL.md:22` forbids production and gives the stand-in
+data of its own, but a local instance still reads `.env`, which may hold
 live payment or email keys. To make "the network goes away" or "the server fails" happen
 (`try-change:29-34`), the model may stop shared Docker services or change the
 network on the developer's machine.
