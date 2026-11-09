@@ -27,10 +27,8 @@ has what each step changed. Two of them come up below:
 
 ## How to work on this
 
-- **Every change to a skill comes from evidence.** Name the observation it
-  answers. A skill starts small and grows only when a test run shows that it
-  missed something. Don't add rules because they feel right. The findings
-  without evidence below are things to watch, not changes to make.
+- **A change that answers a test run names the observation it answers.**
+  The findings without evidence below are things to watch.
 - **A skill has a core and a list to look out for.** What a typical run
   needs is the core. The rest of what test runs taught goes under
   `## Look out for`, as general categories. `CLAUDE.md` says how.
