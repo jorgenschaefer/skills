@@ -89,6 +89,8 @@ questions below, so they are still open. Watch especially:
   - whether, on a new project, the change's branch now starts from a first
     commit, so the review and `accept-change` compare against `main`
     without a workaround;
+  - whether the developer now tries the change on their own data, with
+    nothing left over from the stand-in;
   - what `learn-from-sessions` misses that the developer finds in the logs.
 - **Did a wide decision slip through because it was easy to revert?** Some
   decisions reach a lot: a shared login check, a global limit, a migration
@@ -188,21 +190,6 @@ rule "how it's meant to work (from the change file …)", and said that an
 explicit "done" would "change a decision in the change file". The developer
 had never agreed to that decision.
 
-### 40. The developer tries the change on the stand-in's data
-
-`try-change` leaves its test data in the local database. Neither it nor
-`build-change` says what happens to that data before the developer tries
-the change. So the developer sees a state the normal flow would not make,
-and takes it for how the change works.
-
-Likelihood: high. Impact: low to medium.
-
-Evidence: tracker observation 2. The stand-in had trained both gym plans on
-the same day. So the developer saw reps already filled in, and the wrong
-plan as "next". The report had said only in passing that the database held
-the stand-in's data. The evidence file suggests a clean database, or one
-the report plainly describes.
-
 ### 12. `nextjs-project-setup` and `design-change` both decide the stack
 
 `design-change/SKILL.md:33,48` asks about the stack and the design system,
@@ -271,9 +258,9 @@ is fixed now.
 ### 17. Tests may reach real services
 
 `review-change/SKILL.md:38` runs throwaway tests, and does not say against
-what. `try-change/SKILL.md:22` forbids production, but a local instance still
-reads `.env`, which may hold live payment or email keys, or point at a shared
-database. To make "the network goes away" or "the server fails" happen
+what. `try-change/SKILL.md:22` forbids production and gives the stand-in a
+database of its own, but a local instance still reads `.env`, which may hold
+live payment or email keys. To make "the network goes away" or "the server fails" happen
 (`try-change:29-34`), the model may stop shared Docker services or change the
 network on the developer's machine.
 
