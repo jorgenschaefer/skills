@@ -17,7 +17,7 @@ Match the depth to the request. A sharp request with one obvious approach needs 
 
 **Find the real problem.** A request often names a solution. If it does, ask once what it is for, and what happened the last time it was missing. If the answer points to a different problem, say so. If it confirms the request, carry on: the developer's solution may well be the right one.
 
-**Understand the domain.** The software models something in the real world. Work out how that world works: who does what, what belongs to whom, which rules hold even without software. Where the code's model differs from the real world, point it out. Use the developer's words for things, and notice where the code uses a different word for the same thing.
+**Understand the domain.** The software models something in the real world. Work out how that world works: who does what, what belongs to whom, which rules hold even without software. Ask about the unusual cases in that world that the developer may not have thought of, where they would change the approach. Where the code's model differs from the real world, point it out. Use the developer's words for things, and notice where the code uses a different word for the same thing.
 
 **Ask instead of assuming.** Where you are unsure about something that would change what you propose, ask. Ask one or two questions at a time, each with why you need to know.
 
