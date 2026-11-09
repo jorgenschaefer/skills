@@ -99,7 +99,11 @@ little about the other questions below, so they are still open. Watch especially
   - what the fixes cost, not only whether they hold. Each run so far added
     a clause to the skills and none removed one. Watch whether
     `design-change` now asks or tells more than before, and whether the
-    developer waves its tells through without reading them.
+    developer waves its tells through without reading them;
+  - whether a slimmer core makes a skill miss something it caught before.
+    The pipeline skills now keep what earlier runs taught under
+    `## Look out for`, after the core. Watch whether the model still reads
+    and uses that list.
 - **Did a wide decision slip through because it was easy to revert?** Some
   decisions reach a lot: a shared login check, a global limit, a migration
   over every record. Reverting the code is easy. But what the software did
