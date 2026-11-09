@@ -40,7 +40,7 @@ Most serious first. For each finding:
 - what the user loses because of it;
 - whether it keeps the change from solving the problem.
 
-Some fixes would change how the user moves through the task, or what the change is for. Mark those "for the developer". Whoever asked should not decide them alone.
+Some fixes would change how the user moves through the task, or what the change is for. Mark those "for the developer". Whoever asked puts those that are hard to undo to the developer, and decides the rest.
 
 End with whether the change solves the problem in the change file, in one line. If you found nothing that matters, say so in one line.
 

@@ -88,8 +88,8 @@ As part of pass 3, bump `@types/node` to match the Node major the project actual
 
 Run `/review-change` on each commit of the upgrade. Give it the commit, the result of the checks,
 and as what the code is meant to do, the changelogs and migration notes of the packages it
-upgrades. Fix what it finds in a commit of its own. Put what it marks "for the developer" to the developer, and
-say what you left standing.
+upgrades. Fix what it finds in a commit of its own. Put what it marks "for the developer" and is hard to
+undo to the developer, decide the cheap ones, and say what you left standing.
 
 ## 5. The follow-up list goes to the backlog
 

@@ -43,7 +43,7 @@ Most serious first, under Bugs, Security, Future changes and Decisions. For each
 - whether you confirmed it with a test or only suspect it;
 - the fix, in a line, where it is not obvious.
 
-Some fixes are hard to undo themselves: they change stored data, a public API, or who can see what. Mark those "for the developer", and the decisions too. Whoever asked for the review should not decide them alone.
+Some fixes are hard to undo themselves: they change stored data, a public API, or who can see what. Mark those "for the developer", and the decisions too. Whoever asked for the review puts them to the developer.
 
 End with which findings to fix first, and why. Then say that whatever is not fixed now goes on the backlog with `/backlog`: your report is the only place the findings are written down. If you found nothing that matters, say so in one line.
 
