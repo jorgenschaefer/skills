@@ -13,7 +13,7 @@ Match the depth to the request. A sharp request with one obvious approach needs 
 
 ## Understand before proposing
 
-**Read the code the request touches**, and what the software already does about it. Many questions answer themselves there; don't ask the developer what the code can tell you. In a new project there is no code. Look instead at what the developer uses today, such as a spreadsheet or a paper form, if they can show it.
+**Read the code the request touches**, and what the software already does about it. Many questions answer themselves there; don't ask the developer what the code can tell you.
 
 **Find the real problem.** A request often names a solution. If it does, ask once what it is for, and what happened the last time it was missing. If the answer points to a different problem, say so. If it confirms the request, carry on: the developer's solution may well be the right one.
 
@@ -31,6 +31,12 @@ Match the depth to the request. A sharp request with one obvious approach needs 
 
 ## Write it down
 
-When the developer has a direction, find the branch for the change. If the repository has no commits yet, first make an empty commit on the default branch, so the change's branch has something to be compared against. If you are on the default branch, create a branch from it, named after the change file's slug. If you are on another branch, ask the developer whether this change belongs there. Then write the change file, in the format of `CHANGE_FORMAT.md`. Write its Problem, Approach and Could wait; `/design-change` adds the rest. Show it to the developer and correct what they correct. Commit it on its own, on the change's branch.
+When the developer has a direction, find the branch for the change. If you are on the default branch, create a branch from it, named after the change file's slug. If you are on another branch, ask the developer whether this change belongs there. Then write the change file, in the format of `CHANGE_FORMAT.md`. Write its Problem, Approach and Could wait; `/design-change` adds the rest. Show it to the developer and correct what they correct. Commit it on its own, on the change's branch.
 
 Then run `/design-change` on the change.
+
+## Look out for
+
+A start, not the limit.
+
+- **A new project.** There is no code to read. Look instead at what the developer uses today, such as a spreadsheet or a paper form, if they can show it. If the repository has no commits yet, make an empty commit on the default branch before you create the change's branch, so the branch has something to be compared against.
