@@ -16,7 +16,7 @@ Reverting a commit removes the code. It does not take back what the software did
 - **Data that was stored**: where it lives and what shape it has. Once real data is there, changing either takes a migration that has to decide what the old data means, such as which user gets the web address that was stored on the company. Think through the life of the data too: how things are deleted, which fields change over time and what past records mean then, and how many users there will be.
 - **Things that were sent or published**: an API, a wire format, emails, webhooks, URLs people saved. Others now rely on them.
 - **Information that leaked**: who can see or do what, how access ends, and where data stays afterwards, such as on a phone. Secrets count too: where each key lives, in development as well as in production. Leaked information cannot be unleaked.
-- **Trust that was lost**: the user relied on something, and it broke or changed under them. Above all: what happens to what the user entered when saving fails.
+- **Trust that was lost**: the user relied on something, and it broke or changed under them, such as what they entered being lost when saving fails.
 - **Money or contracts**: a paid service and how often the software calls it, a licence, a vendor that is hard to leave.
 - **Things much else is built on**: the tech stack and its versions, the deployment infrastructure, the design system, a pattern that gets copied across the code, such as every new record type touching nine places. Undoing one means changing everything built on it.
 - **How the user moves through the task**: which steps, in which order, what they enter when, and when each thing they work on starts and ends. The data and much of the code take their shape from it.
