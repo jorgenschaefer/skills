@@ -18,8 +18,10 @@ number is not used again.
 Steps 1 to 7 are done, except step 5, which is now finding 2. Git history
 has what each step changed. Two of them come up below:
 
-- Step 1 split the work between `understand-change` and `design-change`.
+- Step 1 split the work between `discover-change` and `design-change`.
   They were called `explore` and `decide`, and the logbook uses those names.
+  Later `discover-change` was called `understand-change`, and the evidence
+  uses that name.
 - Step 2: a test holds a promise about behaviour, and structure holds a rule
   every piece of code would have to remember.
 
@@ -78,7 +80,7 @@ questions below, so they are still open. Watch especially:
   - whether `try-change` now checks phone width, in a frame if the window
     does not resize, and whether the build's report now leaves out fixes;
   - whether `design-change` now ends with every decision in the chat,
-    whether `understand-change` now starts on an open request, and whether
+    whether `discover-change` now starts on an open request, and whether
     the definition of simple stops a server written by hand from counting
     as simpler than a package;
   - what `learn-from-sessions` misses that the developer finds in the logs.
@@ -166,7 +168,7 @@ that covers more than one decision.
 ### 4. The agent recommends more than the problem needs
 
 The manifesto says to build small (`docs/manifesto.md:58-61`): the least that
-solves the problem, so you learn early. `understand-change/SKILL.md:26` says
+solves the problem, so you learn early. `discover-change/SKILL.md:26` says
 to put the simplest approach first, but the agent still recommends a bigger
 one.
 
@@ -180,7 +182,7 @@ back. Why "simplest first" did not hold is not clear yet.
 
 In the same observation, `723ff5f4` showed a second kind of case: "simplest"
 read as "fewest dependencies", so a server written by hand counted as
-simpler than a dev-only package. That part is fixed: `understand-change` and
+simpler than a dev-only package. That part is fixed: `discover-change` and
 `design-change` now say what simple means. The cases of too much scope stay
 open.
 
@@ -214,7 +216,7 @@ the report plainly describes.
 
 ### 41. In an empty repository, there is no default branch
 
-`understand-change/SKILL.md:34` and `design-change/SKILL.md:87` create the
+`discover-change/SKILL.md:34` and `design-change/SKILL.md:87` create the
 change's branch from the default branch. In a repository with no commits,
 that branch never exists. Every later step compares against it:
 `build-change/SKILL.md:25`, `review-change/SKILL.md:16`, and `accept-change`,
@@ -243,7 +245,7 @@ only in its closing list of decisions. It did ask about where the data
 lives, hosting and login. So the clash is milder than feared: the
 developer's answer is in the setup skill, so a tell is enough. The only
 problem is that the tell came last, after the decisions that rest on it.
-kh-finder observation 7 is related: without `understand-change`, the agent
+kh-finder observation 7 is related: without `discover-change`, the agent
 used `nextjs-project-setup` as a guide to the developer's stack for an
 existing project.
 
@@ -390,7 +392,7 @@ Evidence: none yet.
 
 ### 24. Approaches don't show what they expose
 
-`understand-change/SKILL.md:26` asks what each approach "is good for, and what
+`discover-change/SKILL.md:26` asks what each approach "is good for, and what
 it costs", in the terms of the domain. The developer picks a direction, such
 as sharing the logbook with a coach, without seeing what it exposes.
 `design-change` only ever sees the approach that was picked.
@@ -478,7 +480,7 @@ Evidence: none yet. kh-finder was an existing project.
 
 ### 28. Three approaches even for a sharp request
 
-"Offer at least three approaches" (`understand-change/SKILL.md:26`) works
+"Offer at least three approaches" (`discover-change/SKILL.md:26`) works
 against "Match the depth to the request" (`:12`). The model pads with weak
 options.
 
@@ -486,10 +488,10 @@ Likelihood: medium. Impact: low.
 
 Evidence: none yet.
 
-### 29. Every failed try goes back to `understand-change`
+### 29. Every failed try goes back to `discover-change`
 
-`build-change/SKILL.md:45` sends every failure back to `/understand-change`,
-even a plain bug. There, `understand-change/SKILL.md:34` writes a new change
+`build-change/SKILL.md:45` sends every failure back to `/discover-change`,
+even a plain bug. There, `discover-change/SKILL.md:34` writes a new change
 file and does not look for the one already on the branch. With two change
 files, `build-change` cannot pick "the only one there", and `accept-change`
 may delete one and leave the other to be merged into `main`.
@@ -511,7 +513,7 @@ Evidence: none yet.
 ### 38. The skills hold several copies of the change file's format
 
 The format, and which skill writes which section, are in
-`understand-change/CHANGE_FORMAT.md` and `design-change/SKILL.md:63-74`,
+`discover-change/CHANGE_FORMAT.md` and `design-change/SKILL.md:63-74`,
 and partly in `review-change` and `accept-change`. The copies are needed,
 because each skill only sees its own directory. But they already disagree:
 the format says an empty section says "None.", and

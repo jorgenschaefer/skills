@@ -42,4 +42,4 @@ Not what you fixed, and not what went well: the developer reads every line, and 
 
 Add what the developer settles to `## Decisions that matter` in the change file, with what holds it: the code, a test, structure, or an ADR in `docs/adr/` for what the code cannot show. Build the test, the structure or the ADR, and commit.
 
-Then the developer tries the change. If it does not solve their problem, go back to `/understand-change` with what they found. If it does, they start `/accept-change`.
+Then the developer tries the change. If it does not solve their problem, go back to `/discover-change` with what they found. If it does, they start `/accept-change`.

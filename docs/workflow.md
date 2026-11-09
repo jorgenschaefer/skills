@@ -12,7 +12,7 @@ agent's.
 
 1. **Say what you want**, in plain words. A clear, small change skips to
    step 3. An unclear or larger one goes to step 2.
-2. **Understand** (`understand-change` skill). Find the real problem behind
+2. **Discover** (`discover-change` skill). Find the real problem behind
    the request and how the domain works in the real world. Propose at least
    three approaches, the simplest first. Ask instead of assuming. Stop when
    the developer has a direction. Designs nothing. Creates a branch for the
@@ -50,9 +50,9 @@ agent's.
    committed. The developer merges the branch. Merge without squashing: the
    change file and mock-ups are kept only in the branch's history.
 
-## How understand-change and design-change are split
+## How discover-change and design-change are split
 
-- **`understand-change` understands.** What are we solving, how does the real
+- **`discover-change` finds out.** What are we solving, how does the real
   world work, and roughly which way do we go? It designs nothing.
 - **`design-change` designs what is costly to change, and the builder the
   rest.** The line runs between costly and cheap to change, not between look,
@@ -74,7 +74,7 @@ text, or a picture.
 
 The change file holds what was agreed for one change, and is deleted when the
 change is done. Its format, and which skill writes which section, are in
-`understand-change/CHANGE_FORMAT.md`. What holds each decision after the
+`discover-change/CHANGE_FORMAT.md`. What holds each decision after the
 change file is gone is in `design-change/SKILL.md`, under "Recording them".
 
 There is no rule about test-driven development or coverage. In the first run

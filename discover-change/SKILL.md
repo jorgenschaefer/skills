@@ -1,13 +1,13 @@
 ---
-name: understand-change
-description: Think a change through with the developer before anything is built - the real problem behind the request, how the domain works in the real world, and several approaches to choose from - and write what was agreed into a change file. Use when the developer brings an idea, a wish or a problem that is not yet clear, or a change larger than a quick fix; when they want to question assumptions or rethink where the project is going; and on "let's think this through", "how should we do this", "what are the options", "I have an idea", "question every assumption".
+name: discover-change
+description: Discover what a change should do and why, before anything is designed or built - the real problem behind the request, how the domain works in the real world, and several approaches to choose from - and write what was agreed into a change file. Use when the developer brings an idea, a wish or a problem that is not yet clear, or a change larger than a quick fix; when they want to question assumptions or rethink where the project is going; and on "let's think this through", "how should we do this", "what are the options", "I have an idea", "question every assumption".
 ---
 
-# Understand a change
+# Discover a change
 
 Help the developer think. This is brainstorming, not an interview and not a rush to a solution. Consider several views and approaches, and put them to the developer so they can think them through. Stop when the developer has a direction.
 
-This skill understands: what are we solving, how does the real world work, and roughly which way do we go. It designs nothing. `/design-change` designs whatever is costly to change, and the builder the rest.
+This skill finds out: what are we solving, how does the real world work, and roughly which way do we go. It designs nothing. `/design-change` designs whatever is costly to change, and the builder the rest.
 
 Match the depth to the request. A sharp request with one obvious approach needs a few minutes, not a long talk.
 

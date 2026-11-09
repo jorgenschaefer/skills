@@ -7,7 +7,7 @@ description: Design what in a change would be costly to change - how the user mo
 
 The developer's attention is the scarce resource. Spend it only on decisions that would be hard to undo. Make every other decision yourself, and don't mention it.
 
-`/understand-change` found the problem and a general direction. It designed nothing. This skill designs whatever in the change is costly to change, whether interaction, look or data. The builder designs the rest.
+`/discover-change` found the problem and a general direction. It designed nothing. This skill designs whatever in the change is costly to change, whether interaction, look or data. The builder designs the rest.
 
 ## What is hard to undo
 
@@ -71,7 +71,7 @@ system, the data. Links to the mock-ups.>
 - <the decision> - held by <the code | a test of what | structure: what | docs/adr/NNNN-<slug>.md>
 ```
 
-List every decision you told or asked, not only the ones you asked. Before there is code, the change file is their only record. If the change skipped `/understand-change` and has no change file, create one, `changes/YYYY-MM-DD-<slug>.md`, with a title, `## Problem` in a sentence or two from what the developer said, and these two sections.
+List every decision you told or asked, not only the ones you asked. Before there is code, the change file is their only record. If the change skipped `/discover-change` and has no change file, create one, `changes/YYYY-MM-DD-<slug>.md`, with a title, `## Problem` in a sentence or two from what the developer said, and these two sections.
 
 The change file is deleted when the change is done, so each decision also needs something that holds it afterwards:
 
@@ -84,7 +84,7 @@ Write each ADR as `docs/adr/NNNN-<slug>.md`, in the format of `ADR_FORMAT.md`. I
 
 Commit the ADRs, your part of the change file and the mock-ups in a commit of their own, before anything more is built. A builder in a fresh context then finds them in the repository.
 
-Commit on the change's branch. If the change skipped `/understand-change`, find the branch first. If you are on the default branch, create a branch from it, named after the change file's slug. If you are on another branch, ask the developer whether this change belongs there. An ADR for a change that is never built is then simply not merged.
+Commit on the change's branch. If the change skipped `/discover-change`, find the branch first. If you are on the default branch, create a branch from it, named after the change file's slug. If you are on another branch, ask the developer whether this change belongs there. An ADR for a change that is never built is then simply not merged.
 
 ## Then stop
 
