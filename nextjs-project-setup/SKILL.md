@@ -24,6 +24,16 @@ Prefer these over alternatives that do the same job:
 
 Where the project uses Mantine, set up PostCSS the way Mantine's Next.js guide does, with `postcss-preset-mantine` and `postcss-simple-vars`, and take icons from `@tabler/icons-react`.
 
+## Next.js docs
+
+Next.js changes faster than the model's training data, and it ships the docs for the installed version. Point agents to them in `CLAUDE.md`:
+
+```markdown
+Next.js may differ from what you know. Before you write Next.js code, read its guide in `node_modules/next/dist/docs/`.
+```
+
+Don't let Next.js write `AGENTS.md`. Pass `--no-agents-md` to `create-next-app`, and set `agentRules: false` in `next.config.ts`. Otherwise `next dev` writes the file again whenever an agent runs it. In an existing project, `next dev` then removes its block from `AGENTS.md` on its next run.
+
 ## Biome
 
 Biome lints and formats everything; there is no ESLint and no Prettier. Where `create-next-app` sets up ESLint, say no or remove it.
