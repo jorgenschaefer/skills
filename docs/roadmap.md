@@ -174,9 +174,11 @@ back. Why "simplest first" did not hold is not clear yet.
 
 In the same observation, `723ff5f4` showed a second kind of case: "simplest"
 read as "fewest dependencies", so a server written by hand counted as
-simpler than a dev-only package. That part is fixed: `discover-change` and
-`design-change` now say what simple means. The cases of too much scope stay
-open.
+simpler than a dev-only package. `discover-change` and `design-change` now
+say what simple means: the least we write, understand and keep. They no
+longer add that a dependency is often simpler. The project's `CLAUDE.md`
+banned dependencies at the time, and the session cannot show whether that
+or the skill pushed the agent. The cases of too much scope stay open.
 
 ### 22. The builder defends its own decisions
 

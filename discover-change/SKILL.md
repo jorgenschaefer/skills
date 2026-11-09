@@ -23,7 +23,7 @@ Match the depth to the request. A sharp request with one obvious approach needs 
 
 ## Propose
 
-**Offer at least three approaches** that differ in substance, not in detail. An approach is a general direction. It comes from how the real world works, not from technology. "The gym has bad internet" is an insight; "the app has to work offline" is the direction that follows from it. Which parts work offline, and how, is for `/design-change`, which may find that only some parts need to. Put the simplest first and call it the simplest. Simple means the least we write, understand and keep. A dependency that replaces code of our own is often simpler. For each, say in a few lines what it is, what it is good for, and what it costs. Say which you would pick and why, and then let the developer think.
+**Offer at least three approaches** that differ in substance, not in detail. An approach is a general direction. It comes from how the real world works, not from technology. "The gym has bad internet" is an insight; "the app has to work offline" is the direction that follows from it. Which parts work offline, and how, is for `/design-change`, which may find that only some parts need to. Put the simplest first and call it the simplest. Simple means the least we write, understand and keep. For each, say in a few lines what it is, what it is good for, and what it costs. Say which you would pick and why, and then let the developer think.
 
 **Keep it small.** The developer will learn by using the software. Prefer the approach that can be used soonest and that leaves the decisions that are hard to undo for later, when more is known. Name what could wait.
 

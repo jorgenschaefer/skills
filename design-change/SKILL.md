@@ -42,7 +42,7 @@ The developer hears about every decision on the list before it is built. They ar
 
 - the decision, in one sentence;
 - what it would cost to undo;
-- three options that differ in substance, simplest first. Simple means the least we write, understand and keep. A dependency that replaces code of our own is often simpler. The obvious solution is one of them, not all three. Look for the others in how the real world works and in what the software already has;
+- three options that differ in substance, simplest first. Simple means the least we write, understand and keep. The obvious solution is one of them, not all three. Look for the others in how the real world works and in what the software already has;
 - which you recommend, and why.
 
 Where the options look or behave differently, show them as clickable mock-ups, not ASCII. Put them in the real page, with everything that is already on it: whether an option fits often depends on what is next to it. For a new project with screens, ask about the design system this way: components, type, colours, spacing.
