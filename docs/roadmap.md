@@ -31,6 +31,9 @@ has what each step changed. Two of them come up below:
   answers. A skill starts small and grows only when a test run shows that it
   missed something. Don't add rules because they feel right. The findings
   without evidence below are things to watch, not changes to make.
+- **A skill has a core and a list to look out for.** What a typical run
+  needs is the core. The rest of what test runs taught goes under
+  `## Look out for`, as general categories. `CLAUDE.md` says how.
 - **A skill only sees its own directory.** A file two skills need is copied
   into each.
 - **Run `./test.sh`** after every change. It checks that references to other
