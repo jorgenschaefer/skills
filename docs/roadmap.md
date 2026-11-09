@@ -143,7 +143,7 @@ how the user moves through the task. When the developer was confused, the
 builder said its rule came from the change file (finding 22).
 
 Three fixes followed. `design-change` now asks when each thing starts and
-ends, and splits a label that holds two decisions. `review-change` now counts
+ends. `review-change` now counts
 how the user moves through the task. The build's report now names each
 decision the builder made alone. If the builder still decides alone, the
 options, cheapest first:

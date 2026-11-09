@@ -30,7 +30,7 @@ The colour of one button, wording and internal names are not hard to undo, even 
 1. **Read what was agreed**: the change file in `changes/`, if there is one, or else what the developer said. The direction in its Approach may itself be hard to undo, such as "the app has to work offline, because the gym has bad internet". Then it goes on your list. The developer already chose it, so tell it rather than ask, and record it and its reason in an ADR. How to achieve it is yours to design, like any other decision on the list.
 2. **Read `docs/adr/`.** If the change would break a recorded decision, that is a decision that matters.
 3. **Read the code the change touches**, to see what it already stores, sends and allows. In a new project there is no code; work from the change file, and the stack is one of your decisions.
-4. **List the decisions that matter.** For each, name what it would cost to undo. A short label can hold two decisions: "no done button" can mean there is no save button, or that a training never ends. List each. If you cannot name a cost, it is not on the list. In a small change to an existing project the list is often empty. A new project always has a stack to decide, and a design system if it has screens.
+4. **List the decisions that matter.** For each, name what it would cost to undo. If you cannot name a cost, it is not on the list. In a small change to an existing project the list is often empty. A new project always has a stack to decide, and a design system if it has screens.
 
 If the list is empty, say so in one line and carry on. There is nothing to record: no branch, no change file, no commit.
 

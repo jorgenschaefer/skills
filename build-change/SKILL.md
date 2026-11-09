@@ -36,7 +36,7 @@ Then run `/review-change` and `/try-change` once more, as in step 3, and fix wha
 Tell the developer the change is ready to try, and show them only:
 
 - **what needs their decision**: what the review and the user stand-in marked "for the developer", each with what it would cost to undo and what you recommend;
-- **what you decided alone**: each decision that is hard to undo and not under `## Decisions that matter`, such as when a training ends. Say what you built.
+- **what you decided alone**: each decision that is hard to undo and not under `## Decisions that matter`. Say what you built.
 - **what is still open**: what you could not fix, and what nobody could try, such as a part the user stand-in could not reach.
 
 Not what you fixed, and not what went well: the developer reads every line, and a problem that is fixed needs nothing from them. The exception is a fixed bug that broke something under `## Decisions that matter`. Show it in one line, because the developer will want to try that part themselves. If there is nothing to show, say the change is ready to try, in one line.
