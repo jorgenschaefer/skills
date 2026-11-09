@@ -39,8 +39,14 @@ Tell the developer the change is ready to try, and show them only:
 - **what you decided alone**: each decision that is hard to undo and not under `## Decisions that matter`. Say what you built.
 - **what is still open**: what you could not fix, and what nobody could try, such as a part the user stand-in could not reach.
 
-Not what you fixed, and not what went well: the developer reads every line, and a problem that is fixed needs nothing from them. The exception is a fixed bug that broke something under `## Decisions that matter`. Show it in one line, because the developer will want to try that part themselves. If there is nothing to show, say the change is ready to try, in one line.
+Not what you fixed, and not what went well: the developer reads every line, and a problem that is fixed needs nothing from them. If there is nothing to show, say the change is ready to try, in one line.
 
 Add what the developer settles to `## Decisions that matter` in the change file, with what holds it: the code, a test, structure, or an ADR in `docs/adr/` for what the code cannot show. Build the test, the structure or the ADR, and commit.
 
 Then the developer tries the change. If it does not solve their problem, go back to `/discover-change` with what they found. If it does, they start `/accept-change`.
+
+## Look out for
+
+A start, not the limit.
+
+- **A fixed bug that broke something under `## Decisions that matter`.** Show it in the report in one line, although it is fixed: the developer will want to try that part themselves.
