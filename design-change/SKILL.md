@@ -13,13 +13,13 @@ The developer's attention is the scarce resource. Spend it only on decisions tha
 
 Reverting a commit removes the code. It does not take back what the software did while it ran. A decision is hard to undo when, after the software has been in use for a while, undoing it takes more than a revert. Ask what would be left behind:
 
-- **Data that was stored**: where it lives and what shape it has. Once real data is there, changing either takes a migration that has to decide what the old data means, such as which user gets the web address that was stored on the company. Think through the life of the data too: how things are deleted, which fields change over time and what past records mean then, and how many users there will be.
+- **Data that was stored**: where it lives and what shape it has. Once real data is there, changing either takes a migration that has to decide what the old data means, such as which user gets the web address that was stored on the company.
 - **Things that were sent or published**: an API, a wire format, emails, webhooks, URLs people saved. Others now rely on them.
-- **Information that leaked**: who can see or do what, how access ends, and where data stays afterwards, such as on a phone. Secrets count too: where each key lives, in development as well as in production. Leaked information cannot be unleaked.
-- **Trust that was lost**: the user relied on something, and it broke or changed under them, such as what they entered being lost when saving fails.
-- **Money or contracts**: a paid service and how often the software calls it, a licence, a vendor that is hard to leave.
-- **Things much else is built on**: the tech stack and its versions, the deployment infrastructure, the design system, a pattern that gets copied across the code, such as every new record type touching nine places. Undoing one means changing everything built on it.
-- **How the user moves through the task**: which steps, in which order, what they enter when, and when each thing they work on starts and ends. The data and much of the code take their shape from it.
+- **Information that leaked**: who can see or do what. Leaked information cannot be unleaked.
+- **Trust that was lost**: the user relied on something, and it broke or changed under them.
+- **Money or contracts**: a paid service, a licence, a vendor that is hard to leave.
+- **Things much else is built on**: the tech stack and its versions, the deployment infrastructure, the design system, a pattern that gets copied across the code. Undoing one means changing everything built on it.
+- **How the user moves through the task**: which steps, in which order, and what they enter when. The data and much of the code take their shape from it.
 
 The colour of one button, wording and internal names are not hard to undo, even if someone chose them carefully. Nor is code structure, until it becomes a pattern that gets copied. Changing them later needs nobody's permission. A decision does not become important just because it was made.
 
@@ -27,16 +27,16 @@ The colour of one button, wording and internal names are not hard to undo, even 
 
 ## Before you ask
 
-1. **Read what was agreed**: the change file in `changes/`, if there is one, or else what the developer said. The direction in its Approach may itself be hard to undo, such as "the app has to work offline, because the gym has bad internet". Then it goes on your list. The developer already chose it, so tell it rather than ask, and record it and its reason in an ADR. How to achieve it is yours to design, like any other decision on the list.
+1. **Read what was agreed**: the change file in `changes/`, if there is one, or else what the developer said.
 2. **Read `docs/adr/`.** If the change would break a recorded decision, that is a decision that matters.
-3. **Read the code the change touches**, to see what it already stores, sends and allows. In a new project there is no code; work from the change file, and the stack is one of your decisions.
-4. **List the decisions that matter.** For each, name what it would cost to undo. If you cannot name a cost, it is not on the list. In a small change to an existing project the list is often empty. A new project always has a stack to decide, and a design system if it has screens.
+3. **Read the code the change touches**, to see what it already stores, sends and allows.
+4. **List the decisions that matter.** For each, name what it would cost to undo. If you cannot name a cost, it is not on the list. In a small change to an existing project the list is often empty.
 
 If the list is empty, say so in one line and carry on. There is nothing to record: no branch, no change file, no commit.
 
 ## Telling and asking
 
-The developer hears about every decision on the list before it is built. They are asked only where there is a real choice. Start with what the other decisions rest on, such as the stack, whether you tell it or ask about it.
+The developer hears about every decision on the list before it is built. They are asked only where there is a real choice.
 
 **Where there is a real choice, ask.** This skill narrows down which decisions reach the developer. For each one it asks about, it opens up again. One decision at a time. For each:
 
@@ -45,7 +45,7 @@ The developer hears about every decision on the list before it is built. They ar
 - three options that differ in substance, simplest first. Simple means the least we write, understand and keep. The obvious solution is one of them, not all three. Look for the others in how the real world works and in what the software already has;
 - which you recommend, and why.
 
-Where the options look or behave differently, show them as clickable mock-ups, not ASCII. Put them in the real page, with everything that is already on it: whether an option fits often depends on what is next to it. For a new project with screens, ask about the design system this way: components, type, colours, spacing.
+Where the options look or behave differently, show them as clickable mock-ups, not ASCII.
 
 If the developer's answer settles another decision on the list too, don't ask about that one.
 
@@ -53,8 +53,6 @@ If the developer's answer settles another decision on the list too, don't ask ab
 
 > Hard to undo, but only one sensible option:
 > - `invoices.due_date`, a date column on the invoice
-
-A completely new page in an existing app is told as a mock-up, shown before it is built, even when there is nothing to ask.
 
 ## Recording them
 
@@ -84,7 +82,7 @@ Write each ADR as `docs/adr/NNNN-<slug>.md`, in the format of `ADR_FORMAT.md`. I
 
 Commit the ADRs, your part of the change file and the mock-ups in a commit of their own, before anything more is built. A builder in a fresh context then finds them in the repository.
 
-Commit on the change's branch. If the change skipped `/discover-change`, find the branch first. If the repository has no commits yet, first make an empty commit on the default branch, so the change's branch has something to be compared against. If you are on the default branch, create a branch from it, named after the change file's slug. If you are on another branch, ask the developer whether this change belongs there. An ADR for a change that is never built is then simply not merged.
+Commit on the change's branch. If the change skipped `/discover-change`, find the branch first. If you are on the default branch, create a branch from it, named after the change file's slug. If you are on another branch, ask the developer whether this change belongs there. An ADR for a change that is never built is then simply not merged.
 
 ## Then stop
 
@@ -93,3 +91,19 @@ Don't start the build in this session. It starts in a fresh one, so the builder 
 End with every decision on the list, told or asked, one line each, as in `## Decisions that matter`. The developer reads this, not the change file. A decision missing here is one they never saw.
 
 Tell the developer what to set up first, if anything, and to start the build in a fresh session with `/build-change`.
+
+## Look out for
+
+Earlier changes missed these. They are a start, not the limit, and not a list of questions to ask: each one is only on your list if it has a cost to undo in this change.
+
+- **The life of the data**: how things are deleted, which fields change over time and what past records mean then, and how many users there will be.
+- **What happens to what the user entered when something fails**, such as saving.
+- **How access ends, and where data stays afterwards**, such as on a phone.
+- **Where each secret lives**, in development as well as in production. A key pasted into the chat has leaked.
+- **How often a paid service is called.**
+- **When each thing the user works on starts and ends**, and who decides it.
+- **A direction in the Approach that is itself hard to undo**, such as "the app has to work offline". The developer already chose it, so tell it rather than ask, and record it and its reason in an ADR. How to achieve it is yours to design.
+- **What the other decisions rest on**, such as the stack. Tell it or ask about it first.
+- **A new project.** There is no code, so work from the change file. The stack is always on the list, and a design system if it has screens: ask about it with mock-ups of components, type, colours and spacing. If the repository has no commits yet, make an empty commit on the default branch before you create the change's branch, so the branch has something to be compared against.
+- **A completely new page in an existing app.** Show it as a mock-up before it is built, even when there is nothing to ask.
+- **Mock-ups of options.** Put them in the real page, with everything already on it: whether an option fits often depends on what is next to it.
