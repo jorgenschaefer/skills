@@ -57,6 +57,9 @@ that is not there, and what `sync.sh` does.
   you type `/learn-from-sessions`, in the project's repository.
 - **`nextjs-project-setup`**: set up a TypeScript / Next.js project the way this developer
   sets them up, including the login, with tested templates for three kinds of users.
+- **`propose`**: sharpen an idea of any kind with a partner who is on your side but critical,
+  until a paragraph or two says the whole idea. **Typed**: start it with `/propose` and the
+  idea.
 - **`review-change`**: review code in a fresh context and find what is wrong with it: bugs, ways
   someone can see or do more than they should, and code that makes future changes hard.
 - **`try-change`**: use a change on the running software as a real user would, in a fresh
