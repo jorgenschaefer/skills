@@ -84,7 +84,7 @@ Write each ADR as `docs/adr/NNNN-<slug>.md`, in the format of `ADR_FORMAT.md`. I
 
 Commit the ADRs, your part of the change file and the mock-ups in a commit of their own, before anything more is built. A builder in a fresh context then finds them in the repository.
 
-Commit on the change's branch. If the change skipped `/discover-change`, find the branch first. If you are on the default branch, create a branch from it, named after the change file's slug. If you are on another branch, ask the developer whether this change belongs there. An ADR for a change that is never built is then simply not merged.
+Commit on the change's branch. If the change skipped `/discover-change`, find the branch first. If the repository has no commits yet, first make an empty commit on the default branch, so the change's branch has something to be compared against. If you are on the default branch, create a branch from it, named after the change file's slug. If you are on another branch, ask the developer whether this change belongs there. An ADR for a change that is never built is then simply not merged.
 
 ## Then stop
 

@@ -56,9 +56,8 @@ has what each step changed. Two of them come up below:
 ## Next: a fourth test run
 
 Workout-tracker was the third run, on a new project. It showed that the
-builder still decides things alone (finding 2), that the branch rule
-breaks in an empty repository (finding 41), and how the stack was chosen on
-a new project (finding 12). Its evidence file says little about the other
+builder still decides things alone (finding 2), and how the stack was
+chosen on a new project (finding 12). Its evidence file says little about the other
 questions below, so they are still open. Watch especially:
 
 - **What the kh-finder and workout-tracker runs did not answer:**
@@ -87,6 +86,9 @@ questions below, so they are still open. Watch especially:
     each thing starts and ends, the review flags decisions about how the
     user moves through the task, and the build's report names what the
     builder decided alone;
+  - whether, on a new project, the change's branch now starts from a first
+    commit, so the review and `accept-change` compare against `main`
+    without a workaround;
   - what `learn-from-sessions` misses that the developer finds in the logs.
 - **Did a wide decision slip through because it was easy to revert?** Some
   decisions reach a lot: a shared login check, a global limit, a migration
@@ -200,22 +202,6 @@ the same day. So the developer saw reps already filled in, and the wrong
 plan as "next". The report had said only in passing that the database held
 the stand-in's data. The evidence file suggests a clean database, or one
 the report plainly describes.
-
-### 41. In an empty repository, there is no default branch
-
-`discover-change/SKILL.md:34` and `design-change/SKILL.md:87` create the
-change's branch from the default branch. In a repository with no commits,
-that branch never exists. Every later step compares against it:
-`build-change/SKILL.md:25`, `review-change/SKILL.md:16`, and `accept-change`,
-which says the branch is ready to merge.
-
-Likelihood: high on a new project. Impact: low.
-
-Evidence: tracker observation 3. The reviewer diffed from a commit instead.
-`accept-change` found that `main..HEAD` failed and asked the developer to
-check the base. Logbook observations 3 and 4 are the same kind of problem:
-the skills assumed an existing project. The evidence file suggests a first
-commit on `main` before the change branch.
 
 ### 12. `nextjs-project-setup` and `design-change` both decide the stack
 
