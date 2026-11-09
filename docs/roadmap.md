@@ -101,7 +101,10 @@ little about the other questions below, so they are still open. Watch especially
   - whether a slimmer core makes a skill miss something it caught before.
     The pipeline skills now keep what earlier runs taught under
     `## Look out for`, after the core. Watch whether the model still reads
-    and uses that list.
+    and uses that list;
+  - whether the build's report now leaves out cheap findings that the
+    review or the stand-in marked "for the developer", and still asks the
+    cheap questions that need the developer's knowledge of the domain.
 - **Did a wide decision slip through because it was easy to revert?** Some
   decisions reach a lot: a shared login check, a global limit, a migration
   over every record. Reverting the code is easy. But what the software did

@@ -35,7 +35,7 @@ Then run `/review-change` and `/try-change` once more, as in step 3, and fix wha
 
 Tell the developer the change is ready to try, and show them only:
 
-- **what needs their decision**: what the review and the user stand-in marked "for the developer", each with what it would cost to undo and what you recommend;
+- **what needs their decision**: what the review and the user stand-in marked "for the developer" and is hard to undo, each with what it would cost to undo and what you recommend. Decide the cheap ones yourself;
 - **what you decided alone**: each decision that is hard to undo and not under `## Decisions that matter`. Say what you built.
 - **what is still open**: what you could not fix, and what nobody could try, such as a part the user stand-in could not reach.
 
@@ -50,3 +50,4 @@ Then the developer tries the change. If it does not solve their problem, go back
 A start, not the limit.
 
 - **A fixed bug that broke something under `## Decisions that matter`.** Show it in the report in one line, although it is fixed: the developer will want to try that part themselves.
+- **A cheap question that needs the developer's knowledge of the domain.** Ask it, and say that it is cheap.
