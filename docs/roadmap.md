@@ -56,9 +56,8 @@ has what each step changed. Two of them come up below:
 ## Next: a fourth test run
 
 Workout-tracker was the third run, on a new project. It showed that the
-builder still decides things alone (finding 2), and how the stack was
-chosen on a new project (finding 12). Its evidence file says little about the other
-questions below, so they are still open. Watch especially:
+builder still decides things alone (finding 2). Its evidence file says
+little about the other questions below, so they are still open. Watch especially:
 
 - **What the kh-finder and workout-tracker runs did not answer:**
   - what `review-change` and `try-change` miss that the developer then finds.
@@ -91,6 +90,8 @@ questions below, so they are still open. Watch especially:
     without a workaround;
   - whether the developer now tries the change on their own data, with
     nothing left over from the stand-in;
+  - whether `design-change` now names the stack before the decisions that
+    rest on it;
   - what `learn-from-sessions` misses that the developer finds in the logs.
 - **Did a wide decision slip through because it was easy to revert?** Some
   decisions reach a lot: a shared login check, a global limit, a migration
@@ -189,25 +190,6 @@ in the report at all. When the developer asked, the builder called its own
 rule "how it's meant to work (from the change file …)", and said that an
 explicit "done" would "change a decision in the change file". The developer
 had never agreed to that decision.
-
-### 12. `nextjs-project-setup` and `design-change` both decide the stack
-
-`design-change/SKILL.md:33,48` asks about the stack and the design system,
-with three options each. `nextjs-project-setup/SKILL.md:8,18-25` says both are
-already decided: Next.js and Mantine. Either the developer is asked what they
-already answered, or the stack is chosen without a word.
-
-Likelihood: medium. Impact: low.
-
-Evidence: tracker observation 4. `design-change` took the stack and the
-design system from `nextjs-project-setup` without a word, and named them
-only in its closing list of decisions. It did ask about where the data
-lives, hosting and login. So the clash is milder than feared: the
-developer's answer is in the setup skill, so a tell is enough. The only
-problem is that the tell came last, after the decisions that rest on it.
-kh-finder observation 7 is related: without `discover-change`, the agent
-used `nextjs-project-setup` as a guide to the developer's stack for an
-existing project.
 
 ## Findings without evidence yet
 

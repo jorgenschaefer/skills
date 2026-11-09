@@ -36,7 +36,7 @@ If the list is empty, say so in one line and carry on. There is nothing to recor
 
 ## Telling and asking
 
-The developer hears about every decision on the list before it is built. They are asked only where there is a real choice.
+The developer hears about every decision on the list before it is built. They are asked only where there is a real choice. Start with what the other decisions rest on, such as the stack, whether you tell it or ask about it.
 
 **Where there is a real choice, ask.** This skill narrows down which decisions reach the developer. For each one it asks about, it opens up again. One decision at a time. For each:
 
