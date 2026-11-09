@@ -83,6 +83,10 @@ questions below, so they are still open. Watch especially:
     whether `discover-change` now starts on an open request, and whether
     the definition of simple stops a server written by hand from counting
     as simpler than a package;
+  - whether the three fixes for finding 2 hold: `design-change` asks when
+    each thing starts and ends, the review flags decisions about how the
+    user moves through the task, and the build's report names what the
+    builder decided alone;
   - what `learn-from-sessions` misses that the developer finds in the logs.
 - **Did a wide decision slip through because it was easy to revert?** Some
   decisions reach a lot: a shared login check, a global limit, a migration
@@ -118,8 +122,8 @@ What the evidence confirms, ordered worst first. Fix these first.
 
 `build-change/SKILL.md:19` says only "Build the smallest thing that does the
 job". Nothing tells the builder to stop and run `/design-change` when a
-decision is hard to undo. `review-change` reports such decisions, but only
-after they are built.
+decision is hard to undo. `review-change` and the build's report name such
+decisions, but only after they are built.
 
 Likelihood: high. Impact: high.
 
@@ -127,43 +131,26 @@ Evidence: logbook observation 5 and tracker observation 1. kh-finder had no
 case of it, and we guessed that steps 1 and 2 fix most of it: with the stack,
 the data shape and the tells in the change file, the builder has fewer
 decisions left to make alone. Workout-tracker shows that this does not cover
-a gap `design-change` left open (finding 39). The builder decided alone how a
-training starts and ends, and its report did not say so. Both reviews read
-that code and did not list the decision, although
-`review-change/SKILL.md:27` asks for exactly that. When the developer was
-confused, the builder said its rule came from the change file (finding 22).
+a gap `design-change` left open. The builder decided alone how a training
+starts and ends, and its report did not say so. Both reviews read that code
+and did not list the decision: their list of what is hard to undo left out
+how the user moves through the task. When the developer was confused, the
+builder said its rule came from the change file (finding 22).
 
-The options, cheapest first:
+Three fixes followed. `design-change` now asks when each thing starts and
+ends, and splits a label that holds two decisions. `review-change` now counts
+how the user moves through the task. The build's report now names each
+decision the builder made alone. If the builder still decides alone, the
+options, cheapest first:
 
-1. The build's report names each gap the builder filled in how the user
-   moves through the task. Today it shows only what the review and the
-   stand-in marked (`build-change/SKILL.md:36-39`), so a gap the review
-   misses never reaches the developer.
-2. A line in `build-change` telling the builder to stop and run
+1. A line in `build-change` telling the builder to stop and run
    `/design-change` when a decision is hard to undo. `design-change` then
    needs lines on starting in the middle of a build again. They were cut
    because nothing started it there (logbook observation 5).
-3. A hook that reminds the builder to run `/design-change` when it changes
+2. A hook that reminds the builder to run `/design-change` when it changes
    the files where such decisions usually show: the database schema, the
    dependencies, the deployment setup. It would not have caught the
    workout-tracker case, which changed how the user moves through the task.
-
-### 39. A short label hides a second decision
-
-`design-change/SKILL.md:22` counts how the user moves through the task as
-costly to change: "which steps, in which order, and what they enter when".
-It does not ask when each thing the user works on starts and ends. And one
-label in a mock-up can stand for two decisions. The developer agrees to the
-meaning they see, and the builder fills in the other one (finding 2).
-
-Likelihood: medium. Impact: high.
-
-Evidence: tracker observation 1. "kein Fertig" meant both "there is no save
-button" and "a training never ends". The developer read it as the first, and
-only that was discussed. Logbook observation 1 is related: there, nobody put
-the interaction to the developer at all. The evidence file suggests that
-`design-change` asks when each thing starts and ends, and splits a label
-that covers more than one decision.
 
 ### 4. The agent recommends more than the problem needs
 
@@ -335,7 +322,7 @@ Evidence: none yet.
 
 `review-change` sends findings that are not fixed to the backlog. When
 `build-change` runs it, what is still open after the second round only goes
-into the build's report (`build-change/SKILL.md:32,39`). `accept-change`
+into the build's report (`build-change/SKILL.md:32,40`). `accept-change`
 sends only `## Could wait` to the backlog (`accept-change/SKILL.md:16`). Once
 the developer accepts the change, nothing holds those findings.
 
@@ -490,7 +477,7 @@ Evidence: none yet.
 
 ### 29. Every failed try goes back to `discover-change`
 
-`build-change/SKILL.md:45` sends every failure back to `/discover-change`,
+`build-change/SKILL.md:46` sends every failure back to `/discover-change`,
 even a plain bug. There, `discover-change/SKILL.md:34` writes a new change
 file and does not look for the one already on the branch. With two change
 files, `build-change` cannot pick "the only one there", and `accept-change`

@@ -60,7 +60,7 @@ agent's.
 
 | | Costly to change: `design-change` | Cheap to change: builder |
 |---|---|---|
-| **Interaction** | how the user moves through the task, what they enter when | the order of two fields |
+| **Interaction** | how the user moves through the task, what they enter when, when things start and end | the order of two fields |
 | **Look** | the design system: components, type, colours, spacing | the colour of one button |
 | **Data** | where it lives, what past records mean, deleting | an internal name |
 

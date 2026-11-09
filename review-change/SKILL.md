@@ -24,7 +24,7 @@ Read the code around a change too. Many bugs sit where the change meets code it 
 - **Bugs.** Code that does not do what it was meant to.
 - **Ways someone can see or do more than they should.**
 - **Code that will make future changes hard, or make bugs more likely.**
-- **Decisions that are hard to undo and that nobody agreed to.** If the request names a change file, list each such decision in the code that its `## Decisions that matter` does not have. A decision is hard to undo when, after the software has been in use for a while, undoing it takes more than a revert: stored data and its shape; anything sent or published; who can see or do what; what happens to input when something fails; money or contracts; what much else is built on, such as the stack, the deployment or a pattern that gets copied.
+- **Decisions that are hard to undo and that nobody agreed to.** If the request names a change file, list each such decision in the code that its `## Decisions that matter` does not have. A decision is hard to undo when, after the software has been in use for a while, undoing it takes more than a revert: stored data and its shape; anything sent or published; who can see or do what; what happens to input when something fails; how the user moves through the task, such as when something starts and ends; money or contracts; what much else is built on, such as the stack, the deployment or a pattern that gets copied.
 
 Look first at these kinds of risk. They are where the serious bugs were found before, but they are a start, not the limit:
 
