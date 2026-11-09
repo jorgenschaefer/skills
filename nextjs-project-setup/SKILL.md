@@ -134,8 +134,8 @@ decided.
 - **Guessing.** `one-at-a-time.ts` runs the checks one after the other, and
   the login action pauses for one second after a wrong password. So guessing gets no faster
   than one try a second, and no IP address is needed.
-- **The session.** It lasts long and is renewed when used, so the person
-  rarely logs in. workout-tracker uses a year.
+- **The session.** It lasts long, such as a year, and is renewed when used,
+  so the person rarely logs in.
 
 ### A few shared accounts, one per role
 
@@ -143,9 +143,7 @@ decided.
   `secrets.prod.env`. Never the password itself.
 - **Guessing.** As for one person.
 - **The session.** One row per device, so a single device can be logged
-  out. Where the accounts serve a shift, `session-cutoff.ts` ends every
-  session at the shift change, as dom does at 06:00. Its shortcut is only
-  checked for Berlin, at hours 0 and 3 to 23.
+  out.
 
 ### Named users
 
@@ -155,7 +153,7 @@ decided.
 - **Guessing.** `rate-limit.ts` counts failed tries per IP address and per
   IP address and user name. It reads the address with `client-ip.ts`, which
   is only correct behind the host's Caddy.
-- **The session.** 30 days at most, and it ends after 24 hours unused, as in
-  einsatz. A new password ends all sessions of that user. Users can log out
-  their other devices.
+- **The session.** 30 days at most, and it ends after 24 hours unused. A
+  new password ends all sessions of that user. Users can log out their
+  other devices.
 

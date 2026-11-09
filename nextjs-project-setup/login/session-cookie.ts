@@ -28,14 +28,11 @@ export function sessionCookie() {
   };
 }
 
-/** Pass `expiresAt` for sessions that end at a fixed time (./session-cutoff). */
-export async function setSessionCookie(token: string, expiresAt?: Date) {
+export async function setSessionCookie(token: string) {
   const { name, attributes } = sessionCookie();
   (await cookies()).set(name, token, {
     ...attributes,
-    ...(expiresAt
-      ? { expires: expiresAt }
-      : { maxAge: SESSION_LIFETIME_MS / 1000 }),
+    maxAge: SESSION_LIFETIME_MS / 1000,
   });
 }
 
