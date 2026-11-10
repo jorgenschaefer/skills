@@ -1,6 +1,6 @@
 ---
 name: review-change
-description: Review code adversarially in a fresh context - find bugs, ways someone can see or do more than they should, and code that makes future changes hard - and confirm the worst suspicions with throwaway tests. Use on a diff, a branch, commits or a whole repository; on "review this", "find what's wrong with this"; and whenever another skill asks for a fresh-context review.
+description: Review code adversarially in a fresh context - find bugs, ways someone can see or do more than they should, and code that makes future changes hard - and confirm the worst suspicions with throwaway tests. Use on a diff, a branch, commits or a whole repository; on "review this", "find what's wrong with this"; and whenever another skill asks for a fresh-context review. Without a change file, say in the request what the developer agreed to.
 context: fork
 background: false
 ---
@@ -15,7 +15,7 @@ What to review: $ARGUMENTS
 
 The request names what to review: a diff, a branch, commits, or the whole repository. If it names nothing, review the current branch against the default branch. If the current branch is the default branch, review the whole repository.
 
-If the request names what the code is meant to do, such as a change file or the changelogs of an upgrade, read that first. A bug is code that does not do what it was meant to.
+If the request names what the code is meant to do or what was agreed, such as a change file, the changelogs of an upgrade or a few lines in the request itself, read that first. A bug is code that does not do what it was meant to.
 
 Read the code around a change too. Many bugs sit where the change meets code it did not touch: a caller, the other side of a contract, old data.
 
@@ -24,7 +24,7 @@ Read the code around a change too. Many bugs sit where the change meets code it 
 - **Bugs.** Code that does not do what it was meant to.
 - **Ways someone can see or do more than they should.**
 - **Code that will make future changes hard, or make bugs more likely.**
-- **Decisions that are hard to undo and that nobody agreed to.** If the request names a change file, list each such decision in the code that its `## Decisions that matter` does not have. A decision is hard to undo when, after the software has been in use for a while, undoing it takes more than a revert: stored data and its shape; anything sent or published; who can see or do what; something the user relied on that broke or changed; money or contracts; what much else is built on, such as the stack, the deployment or a pattern that gets copied; how the user moves through the task.
+- **Decisions that are hard to undo and that nobody agreed to.** What was agreed is in the change file's `## Decisions that matter`, in ADRs, or in what the request says was agreed. List each such decision in the code that none of these has. If there is nothing to compare against, list each one you find. A decision is hard to undo when, after the software has been in use for a while, undoing it takes more than a revert: stored data and its shape; anything sent or published; who can see or do what; something the user relied on that broke or changed; money or contracts; what much else is built on, such as the stack, the deployment or a pattern that gets copied; how the user moves through the task.
 
 `## Look out for` says where to look first.
 
