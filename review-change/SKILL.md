@@ -17,7 +17,7 @@ The request names what to review: a diff, a branch, commits, or the whole reposi
 
 If the request names what the code is meant to do or what was agreed, such as a change file, the changelogs of an upgrade or a few lines in the request itself, read that first. A bug is code that does not do what it was meant to.
 
-Read the code around a change too. Many bugs sit where the change meets code it did not touch: a caller, the other side of a contract, old data.
+Read the code around a change too. Many bugs sit where the change meets code it did not touch: a caller, the other side of a contract, old data. Search the rest of the code for something that already does what the change does. Two copies of the same logic drift apart.
 
 ## What to find
 
