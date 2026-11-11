@@ -12,7 +12,7 @@ description: Add to, extend or pick from the project's backlog in changes/backlo
 ```markdown
 ---
 effort: M
-utility: L
+value: L
 ---
 
 # <Title>
@@ -20,7 +20,8 @@ utility: L
 <Body>
 ```
 
-- **Sizes** run XS, S, M, L, XL. Effort is the work to build it; utility is what it gives the user.
+- **Sizes** run XS, S, M, L, XL. Effort is the work to build it.
+- **Value is what the item does for four goals**, in this order: utility (it does what the user needs), security (nobody can do or see more than they should), usability (the user doesn't have to think about how to use it), maintainability (the next change is quick and easy). Harm that is hard to undo counts most - data that is leaked, lost or sent - even when no user sees the fix.
 - **The body is what the user had in mind**, as far as it got, or what the skill that handed it over found. Add the evidence from the code - files, lines, where it showed up. Do not add a solution the user did not have.
 - Write in the language the backlog's items already use; in an empty backlog, in the user's.
 
@@ -28,12 +29,12 @@ utility: L
 
 1. **Read the code the item touches.**
 2. **Look for an item it overlaps.** Where one exists, add the new finding to that item instead of writing a new one, and propose its sizes again.
-3. **Propose effort and utility**, each with a one-line reason, and wait for the user's answer before you write the file. The sizes decide what gets built next, so the user sets them.
+3. **Propose effort and value**, each with a one-line reason, and wait for the user's answer before you write the file. The reason for the value names the goal it serves. The sizes decide what gets built next, so the user sets them.
 4. **Commit that file alone.**
 
 ## Picking the next item
 
-1. **Rank** by utility minus effort, counting XS as 1 to XL as 5; on a tie the smaller effort goes first.
+1. **Rank** by value minus effort, counting XS as 1 to XL as 5. On a tie, the item that serves the earlier goal goes first, then the smaller effort.
 2. **Check the top three against the current code.** Where the problem no longer shows, show the evidence and propose deleting the item. Where a size no longer holds, propose a new one. Apply what the user agrees to and commit it, then rank again.
 3. **Recommend one item and a runner-up**, each with why.
 
@@ -46,4 +47,4 @@ Delete an item in the commit that builds it, or when the user agrees it is alrea
 A start, not the limit.
 
 - **Another skill hands over the item**, such as a build or `/accept-change`. Still propose the sizes and wait for the user's answer. When several items come at once, propose all their sizes in one message.
-- **An older backlog.** Where `changes/backlog/` holds items in another shape - numbered files, a directory per item, no sizes, a `complexity` field - convert every one to the shape above before anything else: keep the body, drop `complexity`, and propose effort and utility where they are missing. Get the sizes confirmed, then commit the conversion on its own.
+- **An older backlog.** Where `changes/backlog/` holds items in another shape - numbered files, a directory per item, no sizes, a `complexity` field, `utility` instead of `value` - convert every one to the shape above before anything else: keep the body, drop `complexity`, and propose effort and value where they are missing. Rename `utility` to `value`, and propose a new size only where the four goals give a different one. Get the sizes confirmed, then commit the conversion on its own.

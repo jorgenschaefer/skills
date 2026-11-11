@@ -238,25 +238,11 @@ the path with a change file.
 There is no `npm audit`, and nothing puts security fixes first. If the fix
 for a known vulnerability is a major version that turns the checks red, the
 skill reverts it and hands it to the backlog like any other upgrade
-(`upgrade-dependencies/SKILL.md:56-66`). Finding 16 then buries it.
+(`upgrade-dependencies/SKILL.md:56-66`).
 
 Likelihood: high. Impact: high.
 
 Evidence: none yet.
-
-### 16. The backlog ranks security fixes low
-
-The backlog ranks items by utility minus effort, and utility is "what it
-gives the user" (`backlog/SKILL.md:23,40`). A security fix that
-`review-change` or `upgrade-dependencies` hands over gives the user nothing
-they can see, so it gets a low utility and sinks. The manifesto puts security
-second, above usability.
-
-Likelihood: high. Impact: high.
-
-Evidence: none yet on the ranking. In kh-finder, `backlog` chose the sizes
-itself when another skill handed over an item, so nobody checked them. That
-is fixed now.
 
 ### 17. Tests may reach real services
 
